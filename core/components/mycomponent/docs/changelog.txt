@@ -1,0 +1,19 @@
+Changelog for MyComponent
+
+MyComponent 1.0.4
+-------------------
+Changed a few defaults
+Updated property descriptions
+Removed cancelbutton property
+Updated file headers
+fixed bug with unknown resource group
+
+MyComponent 1.0.3
+-------------------
+ - Fixed bug with numeric &template values
+
+
+MyComponent 1.0.2
+-----------------
+
+- Added changelog
