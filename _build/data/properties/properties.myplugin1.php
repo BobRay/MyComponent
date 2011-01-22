@@ -8,7 +8,7 @@
  * @package mycomponent
  * @subpackage build
  */
-/* ToDo: Add mc_ property0 property1 to search and replace list */
+/* ToDo: property1 property2 to search and replace list */
 $properties = array(
     array(
         'name' => 'property1',
