@@ -2,7 +2,7 @@ MyComponent Extra for MODx Revolution
 =======================================
 
 
-**Author:** YourName <you@yourdomain.com> [Bob's Guides](http://bobsguides.com)
+**Author:** Bob Ray <http://bobsguides.com> [Bob's Guides](http://bobsguides.com)
 **Author:** Shaun McCormick <shaun@modxcms.com>
 
 
