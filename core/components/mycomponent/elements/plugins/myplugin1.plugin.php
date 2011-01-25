@@ -5,9 +5,8 @@
  * Copyright 2011 Your Name <you@yourdomain.com>
  *
  * @author Your Name <you@yourdomain.com>
- * @created 09/23/2008
  * @version Version 1.0.0 Beta-1
- * 1/17/11
+ * 1/1/11
  *
  * Mycomponent is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -28,7 +27,7 @@
 /**
  * MODx Mycomponent myplugin1
  *
- * Description: Mycomponent plugin for MODx login verification
+ * Description
  * Events: OnBeforeManagerLogin, OnManagerLoginFormRender
  *
  * Important Note: If OnBeforeManagerLogin doesn't set
