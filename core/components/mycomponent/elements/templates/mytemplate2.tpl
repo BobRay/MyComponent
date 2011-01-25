@@ -1,4 +1,4 @@
-<!-- This is *not* a form template, it is a sample of what the rendered form might look like -->
+<!-- Example Template  -->
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
