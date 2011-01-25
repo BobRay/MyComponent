@@ -2,7 +2,7 @@
 /**
  * MyComponent Build Script
  *
- * Copyright 2011 YourName <you@yourdomain.com>
+ * Copyright 2011 Your Name <you@yourdomain.com>
  *
  * MyComponent is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -32,13 +32,13 @@
  * different names than your package.)
  * MyComponent -> Name of your package
  * mycomponent -> lowercase name of your package
- * YourName -> Your Actual Name
+ * Your Name -> Your Actual Name
  * you@yourdomain.com -> your email address
  */
 /* ToDo: unset variables */
 /* Set package info */
 define('PKG_NAME','mycomponent');
-define('PKG_VERSION','1.0.4');
+define('PKG_VERSION','1.0.0');
 define('PKG_RELEASE','Beta1');
 define('PKG_CATEGORY','MyComponent');
 
@@ -53,12 +53,11 @@ $hasTemplates = true;
 $hasResources = true;
 $hasValidator = true;
 $hasResolver = true;
-$hasReadme = true;
-$hasChangelog = true;
 $hasSetupOptions = true; /* HTML/PHP script to interact with user */
 $hasTemplateVariables = false;
 $hasTemplates = true;
 $hasMenu = true;
+$hasSettings = false;
 
 /* ToDo: Put these in the resolver */
  /* If the template has TVs, set this to false and
@@ -295,49 +294,53 @@ if ($hasTemplates) {
     }
 
 
-    $templates = include $sources['data'] . 'transport.templates.php';
-    if (!is_array($templates)) {
-        $modx->log(modX::LOG_LEVEL_ERROR,'Could not package in templates.');
-    } else {
-        foreach ($templates as $template) {
-            $name = strtolower($template->get('templatename'));
-                if ($hasTemplateVariables) {
-                    $tvs = include $sources['data'] . 'tvs/' . $name . '.templatevariables.php';
-                    if (is_array($tvs) && !empty($tvs)) {
-                        $modx->log(modX::LOG_LEVEL_INFO,'Added '.count($tvs).' TVs to ' . $name);
-                        $template->addMany($tvs);
-                        unset($tvs);
-                    } else {
-                        $modx->log(modX::LOG_LEVEL_ERROR,'Could not package in template variables.');
+    if ($hasTemplates) {
+        $templates = include $sources['data'] . 'transport.templates.php';
+        if (!is_array($templates)) {
+            $modx->log(modX::LOG_LEVEL_ERROR,'Could not package in templates.');
+        } else {
+            foreach ($templates as $template) {
+                $name = strtolower($template->get('templatename'));
+                    if ($hasTemplateVariables) {
+                        $tvs = include $sources['data'] . 'tvs/' . $name . '.templatevariables.php';
+                        if (is_array($tvs) && !empty($tvs)) {
+                            $modx->log(modX::LOG_LEVEL_INFO,'Added '.count($tvs).' TVs to ' . $name);
+                            $template->addMany($tvs);
+                            unset($tvs);
+                        } else {
+                            $modx->log(modX::LOG_LEVEL_ERROR,'Could not package in template variables.');
+                        }
                     }
-                }
-                $vehicle = $builder->createVehicle($template, $attributes);
-                $builder->putVehicle($vehicle);
+                    $vehicle = $builder->createVehicle($template, $attributes);
+                    $builder->putVehicle($vehicle);
 
-                }
+                    }
 
+        }
+        unset($vehicle,$attributes,$templates);
+        }
     }
-    unset($vehicle,$attributes,$templates);
-}
 
 /* Transport Resources */
 
-$resources = include $sources['data'].'transport.resources.php';
-if (!is_array($resources)) {
-    $modx->log(modX::LOG_LEVEL_ERROR,'Could not package in resources.');
-} else {
-    $attributes= array(
-        xPDOTransport::UNIQUE_KEY => 'pagetitle',
-        xPDOTransport::PRESERVE_KEYS => true,
-        xPDOTransport::UPDATE_OBJECT => false,
-    );
-    foreach ($resources as $resource) {
-        $vehicle = $builder->createVehicle($resource,$attributes);
-        $builder->putVehicle($vehicle);
+if ($hasResources) {
+    $resources = include $sources['data'].'transport.resources.php';
+    if (!is_array($resources)) {
+        $modx->log(modX::LOG_LEVEL_ERROR,'Could not package in resources.');
+    } else {
+        $attributes= array(
+            xPDOTransport::UNIQUE_KEY => 'pagetitle',
+            xPDOTransport::PRESERVE_KEYS => true,
+            xPDOTransport::UPDATE_OBJECT => false,
+        );
+        foreach ($resources as $resource) {
+            $vehicle = $builder->createVehicle($resource,$attributes);
+            $builder->putVehicle($vehicle);
+        }
+        $modx->log(modX::LOG_LEVEL_INFO,'Packaged in '.count($resources).' resources.');
     }
-    $modx->log(modX::LOG_LEVEL_INFO,'Packaged in '.count($resources).' resources.');
+    unset($resources,$resource,$attributes);
 }
-unset($resources,$resource,$attributes);
 
 /* Transport Menus */
 if ($hasMenu) {
@@ -366,21 +369,23 @@ if ($hasMenu) {
 }
 
 /* load system settings */
-$settings = include $sources['data'].'transport.settings.php';
-if (!is_array($settings)) {
-    $modx->log(modX::LOG_LEVEL_ERROR,'Could not package in settings.');
-} else {
-    $attributes= array(
-        xPDOTransport::UNIQUE_KEY => 'key',
-        xPDOTransport::PRESERVE_KEYS => true,
-        xPDOTransport::UPDATE_OBJECT => false,
-    );
-    foreach ($settings as $setting) {
-        $vehicle = $builder->createVehicle($setting,$attributes);
-        $builder->putVehicle($vehicle);
+if ($hasSettings) {
+    $settings = include $sources['data'].'transport.settings.php';
+    if (!is_array($settings)) {
+        $modx->log(modX::LOG_LEVEL_ERROR,'Could not package in settings.');
+    } else {
+        $attributes= array(
+            xPDOTransport::UNIQUE_KEY => 'key',
+            xPDOTransport::PRESERVE_KEYS => true,
+            xPDOTransport::UPDATE_OBJECT => false,
+        );
+        foreach ($settings as $setting) {
+            $vehicle = $builder->createVehicle($setting,$attributes);
+            $builder->putVehicle($vehicle);
+        }
+        $modx->log(modX::LOG_LEVEL_INFO,'Packaged in '.count($settings).' System Settings.');
+        unset($settings,$setting,$attributes);
     }
-    $modx->log(modX::LOG_LEVEL_INFO,'Packaged in '.count($settings).' System Settings.');
-    unset($settings,$setting,$attributes);
 }
 
 
