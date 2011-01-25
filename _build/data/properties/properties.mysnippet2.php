@@ -2,7 +2,7 @@
 
 /**
  * Default properties for the MyComponent snippet
- * @author YourName <you@yourdomain.com>
+ * @author Your Name <you@yourdomain.com>
  * 1/15/11
  *
  * @package mycomponent

@@ -1,7 +1,7 @@
 <?php
 /**
 * Template variable objects for the MyComponents package
-* @author YourName <you@yourdomain.com>
+* @author Your Name <you@yourdomain.com>
 * 1/17/11
 *
 * @package mycomponents

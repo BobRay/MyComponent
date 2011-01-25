@@ -2,8 +2,8 @@
 /**
  * Utility snippet for MyComponent development
  *
- * Copyright 2011 YourName <you@yourdomain.com>
- * @author YourName <you@yourdomain.com> <http://bobsguides.com>
+ * Copyright 2011 Your Name <you@yourdomain.com>
+ * @author Your Name <you@yourdomain.com>
  * 1/15/11
  *
  * MyComponent is free software; you can redistribute it and/or modify it

@@ -1,7 +1,7 @@
 <?php
 /**
  * Resource objects for the MyComponent package
- * @author Bob Ray
+ * @author Your Name <you@yourdomain.com>
  * 1/18/11
  *
  * @package mycomponent

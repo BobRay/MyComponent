@@ -2,8 +2,8 @@
 /**
  * Mycomponent pre-install script
  *
- * Copyright 2011 YourName <you@yourdomain.com>
- * @author YourName <you@yourdomain.com> <http://bobsguides.com>
+ * Copyright 2011 Your Name <you@yourdomain.com>
+ * @author Your Name <you@yourdomain.com>
  * 1/17/11
  *
  * Mycomponent is free software; you can redistribute it and/or modify it

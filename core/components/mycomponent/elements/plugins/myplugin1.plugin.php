@@ -2,12 +2,11 @@
 /**
  * Mycomponent myplugin1
  *
- * Copyright 2011 YourName <you@yourdomain.com>
+ * Copyright 2011 Your Name <you@yourdomain.com>
  *
- * @author YourName <you@yourdomain.com>
- * @editor Shaun McCormick <shaun@collabpad.com>
+ * @author Your Name <you@yourdomain.com>
  * @created 09/23/2008
- * @version 3.2.2
+ * @version Version 1.0.0 Beta-1
  * 1/17/11
  *
  * Mycomponent is free software; you can redistribute it and/or modify it
