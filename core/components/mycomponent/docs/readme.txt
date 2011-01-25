@@ -1,11 +1,8 @@
 --------------------
-Snippets: MyComponent, NpEditThisButton
+Snippets: MyComponent
 --------------------
-Author: YourName <you@yourdomain.com> <http://bobsguides.com>
-Author of Evolution version of MyComponent: Raymond Irving
+Author: Your Name <you@yourdomain.com>
 
-A Front-end resource editor for MODx Revolution.
-
-Official Documentation: http://bobsguides.com/mycomponent-tutorial.html
-Bugs and Feature Requests: https://github.com/BobRay/mycomponent
+Official Documentation: http://yourdomain.com/mycomponent-tutorial.html
+Bugs and Feature Requests: https://github.com/YourGitHubUserName/mycomponent
 Questions: http://modxcms.com/forums
