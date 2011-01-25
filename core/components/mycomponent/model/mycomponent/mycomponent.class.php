@@ -37,6 +37,7 @@
  * Description
  */
 
+/* Example Class File */
 class Mycomponent {
 
    /**
