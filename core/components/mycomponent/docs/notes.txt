@@ -121,7 +121,8 @@ to the lowercase name of your package. Then do another case-sensitive
 search-and-replace to change MyComponent to the camel-case name of
 your component. If your editor has the capability, you can do both
 at once using MyComponent->YourComponentName and the "preserve case"
-option set. Search for 2011 and replace it with the current year.
+option set. Search for 1/1/11 and change it to the current date.
+Search for 2011 and replace it with the current year.
 
 5. Look through the files to see if anything was missed. In most cases,
 you'll get a warning during the build for any references that are not
