@@ -3,10 +3,9 @@
 /**
  * MyComponent
  *
- * Copyright 2011 YourName <you@yourdomain.com>
+ * Copyright 2011 Your Name <you@yourdomain.com>
  *
- * @author YourName <you@yourdomain.com> <http://bobsguides.com>
- * @author Raymond Irving
+ * @author Your Name <you@yourdomain.com>
  * 1/15/11
  *
  * MyComponent is free software; you can redistribute it and/or modify it
@@ -27,7 +26,7 @@
 /**
  * MODx MyComponent Class
  *
- * @version Version 1.0.4
+ * @version Version 1.0.0 Beta-1
  *
  * @package  mycomponent
  *
@@ -35,9 +34,7 @@
  * creating resources. Rich text editing is available for text fields
  * and rich text template variables.
  *
- * Refactored for OOP and Revolution by YourName <you@yourdomain.com>, January, 2011
- * The Mycomponent class contains all functions relating to MyComponent's
- * operation.
+ * Description
  */
 
 class Mycomponent {

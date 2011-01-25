@@ -4,7 +4,7 @@
  *
  * Copyright 2011 Your Name <you@yourdomain.com>
  * @author Your Name <you@yourdomain.com>
- * 1/17/11
+ * 1/1/11
  *
  * Mycomponent is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free

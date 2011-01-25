@@ -2,7 +2,7 @@
 /**
 * Template variable objects for the MyComponents package
 * @author Your Name <you@yourdomain.com>
-* 1/17/11
+* 1/1/11
 *
 * @package mycomponents
 * @subpackage build

@@ -2,7 +2,7 @@
 /**
  * Resource objects for the MyComponent package
  * @author Your Name <you@yourdomain.com>
- * 1/18/11
+ * 1/1/11
  *
  * @package mycomponent
  * @subpackage build

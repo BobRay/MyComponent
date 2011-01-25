@@ -3,7 +3,7 @@
 /**
  * Default properties for the MyComponent snippet
  * @author Your Name <you@yourdomain.com>
- * 1/15/11
+ * 1/1/11
  *
  * @package mycomponent
  * @subpackage build
