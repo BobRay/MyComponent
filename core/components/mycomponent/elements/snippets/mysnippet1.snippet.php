@@ -17,21 +17,32 @@
  * Suite 330, Boston, MA 02111-1307 USA
  *
  * @package mycomponent
- * @author Your Name
  * @author Your Name <you@yourdomain.com>
- 
  *
- * Description: The MyComponent Description
+ * @version Version 1.0.0 Beta-1
+ * 1/1/11
  *
- * /
+ * Description
+ *
 
 /**
   @version Version 1.0.0 Beta-1
-  
-  Properties:
-    @property property 1 - (type) (optional/required) Description; default value.
-    @property property 1 - (type) (optional/required) Description; default value.
+
+ /** Example properties
+ * &package mycomponent
+ *
+ *  Required Properties:
+ *    @property property1 - (boolean) Description; default value.
+ *
+ *  Optional properties:
+ *    @property property1 - (string) Description; default value.
  */
+
+/* Example of how to use a system setting to load a class file
+
+require_once $modx->getOption('np.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'classes/mycomponent.class.php';
+
+*/
 
 /* Your snippet code here */
 
