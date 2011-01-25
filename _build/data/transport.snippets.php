@@ -1,8 +1,8 @@
 <?php
 /**
  * MyComponent transport snippets
- * Copyright 2011 YourName <you@yourdomain.com>
- * @author YourName <you@yourdomain.com> <http://bobsguides.com>
+ * Copyright 2011 Your Name <you@yourdomain.com>
+ * @author Your Name <you@yourdomain.com>
  * 1/15/11
  *
  * MyComponent is free software; you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ $snippets[1]->fromArray(array(
     'id' => 1,
     'name' => 'MySnippet1',
     'description' => 'MySnippet1 for MyComponent.',
-    'snippet' => getSnippetContent($sources['source_core'].'/elements/snippets/mysnippet2.snippet.php'),
+    'snippet' => getSnippetContent($sources['source_core'].'/elements/snippets/mysnippet1.snippet.php'),
 ),'',true,true);
 $properties = include $sources['data'].'/properties/properties.mysnippet1.php';
 $snippets[1]->setProperties($properties);
