@@ -26,6 +26,9 @@
  * tag
  * hidden
  */
+
+/* Example template variables */
+
 $templateVariables = array();
 
 $templateVariables[1]= $modx->newObject('modTemplateVar');

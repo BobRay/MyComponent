@@ -8,7 +8,9 @@
  * @package mycomponent
  * @subpackage build
  */
-/* ToDo: Add property1 property2 to search and replace list */
+/* Example Properties - the descriptions should
+ * match the keys in the lexicon properties file
+ */
 $properties = array(
     array(
         'name' => 'property1',

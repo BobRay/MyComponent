@@ -124,7 +124,9 @@ at once using MyComponent->YourComponentName and the "preserve case"
 option set. Search for 1/1/11 and change it to the current date.
 Search for 2011 and replace it with the current year. Search for
 yoursite.com an change it to the URL of your site. Search for Your Site
-and change it to the name of your web site.
+and change it to the name of your web site. Check the file paths in
+the _build/data/transport.*.php files. Search for Description and add
+a description for each file.
 
 5. Look through the files to see if anything was missed. In most cases,
 you'll get a warning during the build for any references that are not

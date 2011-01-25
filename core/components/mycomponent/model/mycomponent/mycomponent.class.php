@@ -30,10 +30,6 @@
  *
  * @package  mycomponent
  *
- * The MyComponent snippet presents a form in the front end for
- * creating resources. Rich text editing is available for text fields
- * and rich text template variables.
- *
  * Description
  */
 

@@ -40,13 +40,15 @@
  * Your Site -> Name of your site
  * yoursite -> domain name of your site
  * you@yourdomain.com -> your email address
+ * Description -> Description of file or component
  *
  * 1/1/11 -> Current date
  * 2011 -> Current Year
  */
 /* ToDo: unset variables */
 /* Set package info */
-define('PKG_NAME','mycomponent');
+define('PKG_NAME','MyComponent');
+define('PKG_NAME_LOWER','mycomponent');
 define('PKG_VERSION','1.0.0');
 define('PKG_RELEASE','Beta1');
 define('PKG_CATEGORY','MyComponent');
@@ -96,8 +98,8 @@ $sources= array (
     'root' => $root,
     'build' => $root . '_build/',
     /* note that the next two must not have a trailing slash */
-    'source_core' => $root . 'core/components/mycomponent',
-    'source_assets' => $root . 'assets/components/mycomponent',
+    'source_core' => $root.'core/components/'.PKG_NAME_LOWER,
+    'source_assets' => $root.'assets/components/'.PKG_NAME_LOWER,
     'data' => $root . '_build/data/',
     'docs' => $root . 'core/components/mycomponent/docs/',
 );
@@ -116,8 +118,8 @@ $modx->setLogTarget(XPDO_CLI_MODE ? 'ECHO' : 'HTML');
 /* load builder */
 $modx->loadClass('transport.modPackageBuilder','',false, true);
 $builder = new modPackageBuilder($modx);
-$builder->createPackage(PKG_NAME, PKG_VERSION, PKG_RELEASE);
-$builder->registerNamespace('mycomponent',false,true,'{core_path}components/mycomponent/');
+$builder->createPackage(PKG_NAME_LOWER, PKG_VERSION, PKG_RELEASE);
+$builder->registerNamespace(PKG_NAME_LOWER,false,true,'{core_path}components/'.PKG_NAME_LOWER.'/');
 
 /* create snippet objects */
 
