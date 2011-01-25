@@ -45,7 +45,7 @@
  * 1/1/11 -> Current date
  * 2011 -> Current Year
  */
-/* ToDo: unset variables */
+
 /* Set package info */
 define('PKG_NAME','MyComponent');
 define('PKG_NAME_LOWER','mycomponent');
@@ -241,7 +241,7 @@ $builder->putVehicle($vehicle);
 
  /* Because plugins have their own related events, it doesn't
  * work to add them to the category. We'll add them here
- * and ToDo: set the plugin category in the resolver script */
+ * and set the plugin category in the resolver script */
 if ($hasPlugins) {
     $attributes = array (
         xPDOTransport::PRESERVE_KEYS => false,
@@ -284,7 +284,7 @@ if ($hasPlugins) {
 /* Load Templates */
 /* Because templates have their own related TVs, it doesn't
  * work to add them to the category. We'll add them here
- * and ToDo: set the plugin category in the resolver script */
+ * and set the plugin category in the resolver script */
 if ($hasTemplates) {
     $attributes = array (
         xPDOTransport::PRESERVE_KEYS => false,
