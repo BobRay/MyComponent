@@ -2,12 +2,11 @@
 /**
  * Mycomponent plugin
  *
- * Copyright 2011 YourName <you@yourdomain.com>
+ * Copyright 2011 Your Name <you@yourdomain.com>
  *
- * @author YourName <you@yourdomain.com>
- * @editor Shaun McCormick <shaun@collabpad.com>
- * @created 09/23/2008
- * @version 3.2.2
+ * @author Your Name <you@yourdomain.com>
+  * @created 09/23/2008
+ * @version Version 1.0.0 Beta-1
  * 1/17/11
  *
  * Mycomponent is free software; you can redistribute it and/or modify it
@@ -29,7 +28,7 @@
 /**
  * MODx Mycomponent plugin
  *
- * Description: Mycomponent plugin for MODx login verification
+ * Description: Mycomponent plugin Description
  * Events: OnBeforeManagerLogin, OnManagerLoginFormRender
  *
  * @package mycomponent
@@ -39,6 +38,8 @@
 
 /* only do this if you need lexicon strings */
 $modx->lexicon->load('mycomponent:default');
+
+/* These are examples */
 
 switch ($modx->event->name) {
     case 'OnBeforeUserFormSave': /* register only for backend */

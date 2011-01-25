@@ -42,6 +42,7 @@
 /* only do this if you need lexicon strings */
 $modx->lexicon->load('mycomponent:default');
 
+/* These are examples */
 
 switch ($modx->event->name) {
     case 'OnBeforeManagerLogin':
