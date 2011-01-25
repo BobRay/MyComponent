@@ -27,13 +27,22 @@
  * @package mycomponent
  * @subpackage build
  */
-/* Search and replace tasks:
+/* See the mycomponent/core/docs/notes.txt file for
+ * more detailed information about using the package
+ *
+ * Search and replace tasks:
  * (edit the resource and element names first if they have
  * different names than your package.)
+ *
  * MyComponent -> Name of your package
  * mycomponent -> lowercase name of your package
  * Your Name -> Your Actual Name
+ * Your Site -> Name of your site
+ * yoursite -> domain name of your site
  * you@yourdomain.com -> your email address
+ *
+ * 1/1/11 -> Current date
+ * 2011 -> Current Year
  */
 /* ToDo: unset variables */
 /* Set package info */
