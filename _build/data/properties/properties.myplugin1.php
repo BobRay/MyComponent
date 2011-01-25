@@ -3,12 +3,17 @@
 /**
  * Default properties for the MyComponent snippet
  * @author Your Name <you@yourdomain.com>
- * 1/15/11
+ * 1/1/11
  *
  * @package mycomponent
  * @subpackage build
  */
-/* ToDo: property1 property2 to search and replace list */
+
+/* These are some example properties.
+ * The Descriptions should match
+ * keys in the properties lexicon file
+ */
+
 $properties = array(
     array(
         'name' => 'property1',

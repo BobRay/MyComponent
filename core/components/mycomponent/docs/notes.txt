@@ -113,7 +113,8 @@ and replace it with your GitHub username (if any).
 and resources to the names you want to use in your package. Watch
 what's happening to make sure that nothing outside your package
 is changed. If you're using PhpStorm, be sure to check the options
-to search for references and to look in comments and strings.
+to search for references and to look in comments and strings. Change
+any property file names.
 
 4. Do a case-sensitive global search-and-replace to change mycomponent
 to the lowercase name of your package. Then do another case-sensitive
