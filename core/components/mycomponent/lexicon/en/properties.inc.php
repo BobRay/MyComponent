@@ -26,7 +26,7 @@
  * @subpackage lexicon
  */
 
-/* MyComponent Property Description strings */
+/* MyComponent Property Description Example strings */
 $_lang['mc_aliastitle_desc'] = "(optional) Set to Yes to use lowercase, hyphenated, page title as alias. default: Yes - If set to No, 'article-(date created)' is used.  Ignored if alias is filled in form.";
 $_lang['mc_badwords_desc'] = '(optional) Comma delimited list of words not allowed in document.';
 $_lang['mc_cacheable_desc'] = "(optional) Sets the flag to as to whether or not the resource is cached; default: cache_default System Setting for new resources; set to `Parent` to use parent's setting.";

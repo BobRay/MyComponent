@@ -26,7 +26,7 @@
  * @subpackage lexicon
  */
 
-/* mycomponent strings */
+/* mycomponent example strings */
 $_lang['mc_not_in_group'] = 'You are not in any of the authorized user groups.';
 $_lang['mc_not_logged_in'] = 'You must be logged in to post.';
 $_lang['mc_no_permissions'] = 'You do not have the necessary permissions.';
