@@ -145,7 +145,8 @@ set the package name and version and to eliminate the components
 that your package doesn't have. You can delete the unwanted files
 and directories, or you can leave them there in case your package
 gets more complicated in the future. As long as the variables
-are set to false, the script will ignore them.
+are set to false, the script will ignore them. Edit the variables
+at the top of _build/resolvers/install.script.php.
 
 Plugin Your Code
 ----------------
@@ -170,7 +171,10 @@ MODX_CORE_PATH . components/mycomponents/model/mycomponents/myclass.class.php
 Edit the transport scripts in the _build/data directory to remove
 the sections for items you don't need, correct the fields for
 your elements and resources (if any), and correct the paths to
- the elements.
+the elements.
+
+If you need a script resolver, Edit the code in
+_build/resolvers/install.script.php to meet your needs.
 
 Do a global search for Description and edit the description of
 each item.
