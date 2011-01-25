@@ -88,14 +88,15 @@ Another good way to protect it is to just put it in a
 safe place, far away from your development directory or in a .zip
 file.
 
-Start by copying the whole mycomponent directory to a
-new directory (with a new name) under the assets/mycomponents
-directory. Name the directory for your package. If you want a package
-called "BobsPackage," for example, you'd create a directory under
-assets/mycomponents called bobspackage, containing the _build,
-core, and assets directories and the readme.md file.
+Start by copying the whole mycomponent directory (or just the parts
+of it you need) to a new directory (with a new name) under the
+assets/mycomponents directory. Name the directory for your package.
+If you want a package called "BobsPackage," for example, you'd create
+a directory under assets/mycomponents called bobspackage, containing
+the _build, core, and assets directories and the readme.md file.
 
-Next, do the renaming and refactoring.
+Do the Renaming and Refactoring
+-------------------------------
 
 1. Start by changing the language string prefix in the language files
 with search-and-replace. All the language strings have the mc_ prefix
@@ -103,9 +104,10 @@ with search-and-replace. All the language strings have the mc_ prefix
 package. You could use the full name of your package to make sure
 there won't be collisions with MODx strings and those of other packages.
 
-2. If you didn't do so earlier, do a search-and-replace for Bob Ray
-and replace it with your name. Then replace the URL following it with
-your URL or your email address.
+2. If you didn't do so earlier, do a search-and-replace for Your Name
+and replace it with your actual name. Then search for you@yourdomain.com
+and replace it with your email address. Search for YourGitHubUserName
+and replace it with your GitHub username (if any).
 
 3. Refactor the file names. Change the name of all the elements
 and resources to the names you want to use in your package. Watch
@@ -118,11 +120,16 @@ to the lowercase name of your package. Then do another case-sensitive
 search-and-replace to change MyComponent to the camel-case name of
 your component. If your editor has the capability, you can do both
 at once using MyComponent->YourComponentName and the "preserve case"
-option set.
+option set. Search for 2011 and replace it with the current year.
 
 5. Look through the files to see if anything was missed. In most cases,
 you'll get a warning during the build for any references that are not
 correct.
+
+6. Rewrite the readme.txt file. If you use GitHub, rewrite the
+readme.md file. It's in MarkDown format, use the tool at
+http://daringfireball.net/projects/markdown/dingus to get
+it to look right before pushing to GitHub.
 
 Configuring the Build
 ---------------------
@@ -153,6 +160,14 @@ Put any class files in the core/model/mycomponent/ directory and
 make sure the references to them in any plugin or snippet code
 is correct. The correct reference would be something like:
 MODX_CORE_PATH . components/mycomponents/model/mycomponents/myclass.class.php
+
+Edit the transport scripts in the _build/data directory to remove
+the sections for items you don't need, correct the fields for
+your elements and resources (if any), and correct the paths to
+ the elements.
+
+Do a global search for Description and edit the description of
+each item.
 
 Run the Build Script
 --------------------
