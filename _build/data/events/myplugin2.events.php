@@ -7,16 +7,24 @@
  */
 $events = array();
 
-$events['OnBeforeUserFormSave']= $modx->newObject('modPluginEvent');
-$events['OnBeforeUserFormSave']->fromArray(array(
-    'event' => 'OnBeforeUserFormSave',
+/* Note: These must not be existing System Events!
+
+ * This example is not used by default in the build.
+ * It shows how to add custom System Events
+ * for your plugin. See the commented out plugin section
+ * of built.transport.php */
+
+
+$events['OnBeforeSomething']= $modx->newObject('modPluginEvent');
+$events['OnBeforeSomething']->fromArray(array(
+    'event' => 'OnBeforeSomething',
     'priority' => 0,
     'propertyset' => 0,
 ),'',true,true);
 
-$events['OnUserFormSave']= $modx->newObject('modPluginEvent');
-$events['OnUserFormSave']->fromArray(array(
-    'event' => 'OnUserFormSave',
+$events['OnSomething']= $modx->newObject('modPluginEvent');
+$events['OnSomething']->fromArray(array(
+    'event' => 'OnSomething',
     'priority' => 0,
     'propertyset' => 0,
 ),'',true,true);

@@ -13,6 +13,7 @@ $resources = array();
 $modx->log(modX::LOG_LEVEL_INFO,'Packaging resource: resource1<br />');
 $resources[1]= $modx->newObject('modResource');
 $resources[1]->fromArray(array(
+    //'id' => 1,
     'class_key' => 'modResource',
     'context_key' => 'web',
     'type' => 'document',
@@ -37,6 +38,7 @@ $resources[1]->setContent(file_get_contents($sources['build'] . 'data/resources/
 $modx->log(modX::LOG_LEVEL_INFO,'Packaging resource: resource2<br />');
 $resources[2]= $modx->newObject('modResource');
 $resources[2]->fromArray(array(
+    //'id' => 2,
     'class_key' => 'modResource',
     'context_key' => 'web',
     'type' => 'document',

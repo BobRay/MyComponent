@@ -38,27 +38,24 @@ $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Running PHP Resolver.');
 switch($options[xPDOTransport::PACKAGE_ACTION]) {
     /* This code will execute during an install */
     case xPDOTransport::ACTION_INSTALL:
-        /* Assign plugins to category */
+        /* Assign plugins to System events */
         if ($hasPlugins) {
-            $plugin = $modx->getObject('modPlugin',array('name'=>'myplugin1.plugin.php'));
-            $categoryObj = $modx->getObject('modCategory', array('category'=>$category));
-            if ($categoryObj && $plugin) {
-                $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Assigning Plugin myplugin1.plugin.php to Category: ' . $category);
-                $plugin->set('category',$categoryObj->get('id'));
-            } else {
-                $object->xpdo->log(xPDO::LOG_LEVEL_ERROR,'Could not assigning Plugin myplugin1.plugin.php to Category: ' . $category);
-                $success=false;
-            }
-            $plugin = $modx->getObject('modPlugin',array('name'=>'myplugin2.plugin.php'));
-            if ($categoryObj && $plugin) {
-                $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Assigning Plugin myplugin2.plugin.php to Category: ' . $category);
-                $plugin->set('category',$categoryObj->get('id'));
-            } else {
-                $object->xpdo->log(xPDO::LOG_LEVEL_ERROR,'Could not assign Plugin myplugin2.plugin.php to Category: ' . $category);
-                $success=false;
+            $pluginObj = $object->xpdo->getObject('modPlugin',array('name'=>'MyPlugin1'));
+            $events[0] = 'OnBeforeUserFormSave';
+            $events[1] = 'OnUserFormSave';
+            if (! $pluginObj) $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'cannot get object: MyPlugin1');
+            if (empty($events)) $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Cannot get System Events');
+            if (!empty($events) && $pluginObj) {
+                $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Assigning Events to Plugins');
+
+                foreach($events as $event => $eventName) {
+                    $intersect = $object->xpdo->newObject('modPluginEvent');
+                    $intersect->set('event',$eventName);
+                    $intersect->set('pluginid',$pluginObj->get('id'));
+                    $intersect->save();
+                }
             }
         }
-
         break;
 
     /* This code will execute during an upgrade */

@@ -100,6 +100,7 @@ $sources= array (
     /* note that the next two must not have a trailing slash */
     'source_core' => $root.'core/components/'.PKG_NAME_LOWER,
     'source_assets' => $root.'assets/components/'.PKG_NAME_LOWER,
+    'resolvers' => $root . '_build/resolvers/',
     'data' => $root . '_build/data/',
     'docs' => $root . 'core/components/mycomponent/docs/',
 );
@@ -167,6 +168,14 @@ if (false) {
     }
 }
 
+if ($hasPlugins) {
+    $modx->log(modX::LOG_LEVEL_INFO,'Adding in Plugins.');
+    $plugins = include $sources['data'] . 'transport.plugins.php';
+     if (is_array($plugins)) {
+        $category->addMany($plugins);
+     }
+}
+
 /* ToDo: Refactor using Package Option variables */
 /* create category vehicle */
 $attr = array(
@@ -191,7 +200,12 @@ $attr = array(
                     xPDOTransport::UPDATE_OBJECT => true,
                     xPDOTransport::UNIQUE_KEY => 'name',
                 ),
-            ),
+                'Plugins' => array(
+                    xPDOTransport::UNIQUE_KEY => 'name',
+                    xPDOTransport::PRESERVE_KEYS => false,
+                    xPDOTransport::UPDATE_OBJECT => true,
+                    ),
+            )
         ),
         'Snippets' => array(
             xPDOTransport::PRESERVE_KEYS => false,
@@ -203,19 +217,34 @@ $attr = array(
             xPDOTransport::UPDATE_OBJECT => true,
             xPDOTransport::UNIQUE_KEY => 'name',
         ),
+        'Plugins' => array(
+                    xPDOTransport::UNIQUE_KEY => 'name',
+                    xPDOTransport::PRESERVE_KEYS => false,
+                    xPDOTransport::UPDATE_OBJECT => true,
+        ),
+
     )
+
 );
 /* create a vehicle for the category and all the things
  * we've added to it.
  */
 $vehicle = $builder->createVehicle($category,$attr);
 
+/* package in script resolver if any */
+if ($hasResolver) {
+    $modx->log(modX::LOG_LEVEL_INFO,'Adding in Script Resolver.');
+    $vehicle->resolve('php',array(
+        'source' => $sources['resolvers'] . 'install.script.php',
+));
+}
 /* This section transfers every file in the local
  mycomponents/mycomponent/assets directory to the
  target site's assets/mycomponent directory on install.
  It the assets dir. has been renamed or moved, they will still
  go to the right place.
  */
+
 $vehicle->resolve('file',array(
         'source' => $sources['source_core'],
         'target' => "return MODX_CORE_PATH . 'components/';",
@@ -242,44 +271,50 @@ $builder->putVehicle($vehicle);
  /* Because plugins have their own related events, it doesn't
  * work to add them to the category. We'll add them here
  * and set the plugin category in the resolver script */
-if ($hasPlugins) {
-    $attributes = array (
+
+/* If your plugin has custom System Events, comment out the plugin
+ * Sections above and use this code */
+
+/*
+    $attributes= array(
+        xPDOTransport::UNIQUE_KEY => 'name',
         xPDOTransport::PRESERVE_KEYS => false,
         xPDOTransport::UPDATE_OBJECT => true,
-        xPDOTransport::UNIQUE_KEY => 'name',
-    );
-    if ($hasPluginEvents) {
-        $pe = array(
-            xPDOTransport::RELATED_OBJECTS => true,
-            xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
+
+        xPDOTransport::RELATED_OBJECTS => true,
+        xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
+
             'PluginEvents' => array(
                 xPDOTransport::PRESERVE_KEYS => true,
                 xPDOTransport::UPDATE_OBJECT => false,
                 xPDOTransport::UNIQUE_KEY => array('pluginid','event'),
             ),
-        ));
-        $attributes = array_merge($attributes, $pe);
-    }
+        ),
+    );
 
+    $plugins = include $sources['data'] . 'transport.plugins.php';
 
-        $plugins = include $sources['data'] . 'transport.plugins.php';
+    foreach ($plugins as $plugin) {
 
-        foreach ($plugins as $plugin) {
-            $name = strtolower($plugin->get('name'));
-            if ($hasPluginEvents) {
-                $events = include $sources['data'] . 'events/' . $name . '.events.php';
-                if (is_array($events) && !empty($events)) {
-                    $modx->log(modX::LOG_LEVEL_INFO,'Added '.count($events).' events to ' . $name);
-                    $plugin->addMany($events);
-                    unset($events);
-                }
+        $name = strtolower($plugin->get('name'));
+
+        if (file_exists($sources['data']) . 'events/' . $name . 'events.php') {
+            $events = include $sources['data'] . 'events/' . $name . '.events.php';
+            if (is_array($events) && !empty($events)) {
+                $modx->log(modX::LOG_LEVEL_INFO,'Added '.count($events).' events to ' . $name);
+                $plugin->addMany($events);
+                unset($events);
             }
-            $vehicle = $builder->createVehicle($plugin, $attributes);
-            $builder->putVehicle($vehicle);
-
         }
-        unset($vehicle,$attributes,$plugins);
+
+        $vehicle = $builder->createVehicle($plugin, $attributes);
+        $builder->putVehicle($vehicle);
+
     }
+    unset($vehicle,$attributes,$plugins);
+    */
+
+ /************************************************/
 
 /* Load Templates */
 /* Because templates have their own related TVs, it doesn't
@@ -398,8 +433,6 @@ if ($hasSettings) {
         unset($settings,$setting,$attributes);
     }
 }
-
-
 
 /* $vehicle = $builder->createVehicle($settings,$attr); */
 

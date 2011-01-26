@@ -1,6 +1,6 @@
 <?php
 /**
- * Mycomponent plugin2
+ * Mycomponent myplugin2
  *
  * Copyright 2011 Your Name <you@yourdomain.com>
  *
@@ -25,29 +25,39 @@
  */
 
 /**
- * MODx Mycomponent plugin
+ * MODx Mycomponent myplugin2
  *
- * Description: 
+ * Description
  * Events: OnBeforeManagerLogin, OnManagerLoginFormRender
+ *
+ * Important Note: If OnBeforeManagerLogin doesn't set
+ * $modx->event->_output to true, the login will fail.
  *
  * @package mycomponent
  *
  * @property
  */
 
+
 /* only do this if you need lexicon strings */
 $modx->lexicon->load('mycomponent:default');
 
-/* These are examples */
+/* This example plugin could be connected to these two new
+ * System events created by the package.
+ * (see _build/data/events/myplugin2.events.php)
+ */
 
 switch ($modx->event->name) {
-    case 'OnBeforeUserFormSave': /* register only for backend */
-
+    case 'OnBeforeSomething':
+        $rt = true;
         /* do some stuff */
-         break;
-
-    case 'OnUserFormSave': /* register only for backend */
-
-        /* do some other stuff */
+        $modx->event->_output = $rt;
         break;
+
+    case 'OnSomething':
+        $rt = '';
+        /* do some other stuff */
+        $modx->event->_output = $rt;
+        
+    break;
 }
