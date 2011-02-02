@@ -134,9 +134,8 @@ $builder = new modPackageBuilder($modx);
 $builder->createPackage(PKG_NAME_LOWER, PKG_VERSION, PKG_RELEASE);
 $builder->registerNamespace(PKG_NAME_LOWER,false,true,'{core_path}components/'.PKG_NAME_LOWER.'/');
 
-/* create snippet objects */
 
-/* create category */
+/* create category  Important: The category is required!*/
 $category= $modx->newObject('modCategory');
 $category->set('id',1);
 $category->set('category',PKG_CATEGORY);
@@ -188,56 +187,109 @@ if ($hasPlugins) {
      }
 }
 
-/* ToDo: Refactor using Package Option variables */
-/* create category vehicle */
-$attr = array(
-    xPDOTransport::UNIQUE_KEY => 'category',
+/* Create Category attributes array dynamically
+ * based on which elements are present
+ */
+
+$attr = array(xPDOTransport::UNIQUE_KEY => 'category',
     xPDOTransport::PRESERVE_KEYS => false,
     xPDOTransport::UPDATE_OBJECT => true,
     xPDOTransport::RELATED_OBJECTS => true,
-    xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
-        'Children' => array(
+);
+
+
+if ($hasSnippets) {
+    $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Snippets'] = array(
             xPDOTransport::PRESERVE_KEYS => false,
             xPDOTransport::UPDATE_OBJECT => true,
-            xPDOTransport::UNIQUE_KEY => 'category',
-            xPDOTransport::RELATED_OBJECTS => true,
-            xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
+            xPDOTransport::UNIQUE_KEY => 'name',
+        );
+
+    $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Children'][xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Snippets'] = array (
                 'Snippets' => array(
                     xPDOTransport::PRESERVE_KEYS => false,
                     xPDOTransport::UPDATE_OBJECT => true,
                     xPDOTransport::UNIQUE_KEY => 'name',
-                ),
+                ));
+}
+
+if ($hasChunks) {
+    $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Chunks'] = array(
+            xPDOTransport::PRESERVE_KEYS => false,
+            xPDOTransport::UPDATE_OBJECT => true,
+            xPDOTransport::UNIQUE_KEY => 'name',
+        );
+
+    $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Children'][xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Chunks'] = array (
                 'Chunks' => array(
                     xPDOTransport::PRESERVE_KEYS => false,
                     xPDOTransport::UPDATE_OBJECT => true,
                     xPDOTransport::UNIQUE_KEY => 'name',
-                ),
+                ));
+}
+
+if ($hasPlugins) {
+    $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Plugins'] = array(
+        xPDOTransport::PRESERVE_KEYS => false,
+        xPDOTransport::UPDATE_OBJECT => true,
+        xPDOTransport::UNIQUE_KEY => 'name',
+    );
+
+    $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Children'][xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Plugins'] = array (
                 'Plugins' => array(
-                    xPDOTransport::UNIQUE_KEY => 'name',
                     xPDOTransport::PRESERVE_KEYS => false,
                     xPDOTransport::UPDATE_OBJECT => true,
+                    xPDOTransport::UNIQUE_KEY => 'name',
+                ));
+}
+
+if (false) {
+    $attr = array(
+
+        xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
+            'Children' => array(
+                xPDOTransport::PRESERVE_KEYS => false,
+                xPDOTransport::UPDATE_OBJECT => true,
+                xPDOTransport::UNIQUE_KEY => 'category',
+                xPDOTransport::RELATED_OBJECTS => true,
+                xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
+                    'Snippets' => array(
+                        xPDOTransport::PRESERVE_KEYS => false,
+                        xPDOTransport::UPDATE_OBJECT => true,
+                        xPDOTransport::UNIQUE_KEY => 'name',
                     ),
-            )
-        ),
-        'Snippets' => array(
-            xPDOTransport::PRESERVE_KEYS => false,
-            xPDOTransport::UPDATE_OBJECT => true,
-            xPDOTransport::UNIQUE_KEY => 'name',
-        ),
-        'Chunks' => array(
-            xPDOTransport::PRESERVE_KEYS => false,
-            xPDOTransport::UPDATE_OBJECT => true,
-            xPDOTransport::UNIQUE_KEY => 'name',
-        ),
-        'Plugins' => array(
-                    xPDOTransport::UNIQUE_KEY => 'name',
-                    xPDOTransport::PRESERVE_KEYS => false,
-                    xPDOTransport::UPDATE_OBJECT => true,
-        ),
+                    'Chunks' => array(
+                        xPDOTransport::PRESERVE_KEYS => false,
+                        xPDOTransport::UPDATE_OBJECT => true,
+                        xPDOTransport::UNIQUE_KEY => 'name',
+                    ),
+                    'Plugins' => array(
+                        xPDOTransport::UNIQUE_KEY => 'name',
+                        xPDOTransport::PRESERVE_KEYS => false,
+                        xPDOTransport::UPDATE_OBJECT => true,
+                        ),
+                )
+            ),
+            'Snippets' => array(
+                xPDOTransport::PRESERVE_KEYS => false,
+                xPDOTransport::UPDATE_OBJECT => true,
+                xPDOTransport::UNIQUE_KEY => 'name',
+            ),
+            'Chunks' => array(
+                xPDOTransport::PRESERVE_KEYS => false,
+                xPDOTransport::UPDATE_OBJECT => true,
+                xPDOTransport::UNIQUE_KEY => 'name',
+            ),
+            'Plugins' => array(
+                        xPDOTransport::UNIQUE_KEY => 'name',
+                        xPDOTransport::PRESERVE_KEYS => false,
+                        xPDOTransport::UPDATE_OBJECT => true,
+            ),
 
-    )
+        )
 
-);
+    );
+}
 /* create a vehicle for the category and all the things
  * we've added to it.
  */
