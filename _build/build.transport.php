@@ -27,6 +27,16 @@
  * @package mycomponent
  * @subpackage build
  */
+/* ToDo: Refactor attributes array */
+/* ToDo: Add Templates */
+/* ToDo: Add TVs */
+/* ToDo: Attach TVs to Templates in script resolver */
+/* ToDo: Add System Setings */
+/* ToDo: Add Menu Items */
+/* ToDo: Add Validator (check for getResources) */
+/* ToDo: Create MetaPackage with just a file resolver */
+/* ToDo: Do tutorial */
+
 /* See the mycomponent/core/docs/notes.txt file for
  * more detailed information about using the package
  *
@@ -56,6 +66,8 @@ define('PKG_CATEGORY','MyComponent');
 /* Set package options - you can turn these on one-by-one
  * as you build the package
  * */
+$hasAssets = true;
+$hasCore = true;
 $hasSnippets = true;
 $hasChunks = true;
 $hasPlugins = true;
@@ -245,10 +257,12 @@ if ($hasResolver) {
  go to the right place.
  */
 
-$vehicle->resolve('file',array(
-        'source' => $sources['source_core'],
-        'target' => "return MODX_CORE_PATH . 'components/';",
-    ));
+if ($hasCore) {
+    $vehicle->resolve('file',array(
+            'source' => $sources['source_core'],
+            'target' => "return MODX_CORE_PATH . 'components/';",
+        ));
+}
 
 /* This section transfers every file in the local 
  mycomponents/mycomponent/core directory to the
@@ -257,10 +271,12 @@ $vehicle->resolve('file',array(
  go to the right place.
  */
 
-    $vehicle->resolve('file',array(
-        'source' => $sources['source_assets'],
-        'target' => "return MODX_ASSETS_PATH . 'components/';",
-    ));
+    if ($hasAssets) {
+        $vehicle->resolve('file',array(
+            'source' => $sources['source_assets'],
+            'target' => "return MODX_ASSETS_PATH . 'components/';",
+        ));
+    }
 /* Put the category vehicle (with all the stuff we added to the
  * category) into the package 
  */
