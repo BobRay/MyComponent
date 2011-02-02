@@ -44,7 +44,7 @@ $plugins[1]->fromArray(array(
     'description' => 'MyPlugin1 for MyComponent.',
     'plugincode' => getPluginContent($sources['source_core'].'/elements/plugins/myplugin1.plugin.php'),
 ),'',true,true);
-$properties = include $sources['data'].'/properties/properties.myplugin1.php';
+$properties = include $sources['data'].'properties/properties.myplugin1.php';
 $plugins[1]->setProperties($properties);
 unset($properties);
 
@@ -56,7 +56,7 @@ $plugins[2]->fromArray(array(
     'description' => 'MyPlugin2 for MyComponent.',
     'plugincode' => getPluginContent($sources['source_core'].'/elements/plugins/myplugin2.plugin.php'),
 ),'',true,true);
-$properties = include $sources['data'].'/properties/properties.myplugin2.php';
+$properties = include $sources['data'].'properties/properties.myplugin2.php';
 $plugins[2]->setProperties($properties);
 unset($properties);
 
