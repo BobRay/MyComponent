@@ -8,13 +8,18 @@
  * @package mycomponent
  * @subpackage build
  */
-/* Example Properties - the descriptions should
- * match the keys in the lexicon properties file
- */
+/* These are example properties.
+ * The description fields should match
+ * keys in the lexicon property file
+ *
+ * Change plugin1, plugin2 to the name of your plugin.
+ * Change property1 to the name of the property.
+ * */
+
 $properties = array(
     array(
         'name' => 'property1',
-        'desc' => 'mc_property1_desc',
+        'desc' => 'mc_plugin2_property1_desc',
         'type' => 'combo-boolean',
         'options' => '',
         'value' => '1',
@@ -22,7 +27,7 @@ $properties = array(
     ),
      array(
         'name' => 'property2',
-        'desc' => 'mc_property2_desc',
+        'desc' => 'mc_plugin2_property2_desc',
         'type' => 'textfield',
         'options' => '',
         'value' => 'Some Text',
@@ -30,7 +35,7 @@ $properties = array(
     ),
     array(
         'name' => 'property3',
-        'desc' => 'mc_property3_desc',
+        'desc' => 'mc_plugin2_property3_desc',
         'type' => 'list',
         'options' => array(
             array(
