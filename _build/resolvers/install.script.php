@@ -29,9 +29,20 @@
  */
 
 /* Example Resolver script */
+
+/* Connecting plugins to the appropriate system events and
+ * connecting TVs to their templates is done here.
+ *
+ * You will have to hand-code the names of the elements and events
+ * in the arrays below.
+ */
+
+$pluginEvents = array('OnBeforeUserFormSave','OnUserFormSave');
+$plugins = array('MyPlugin1', 'MyPlugin2');
+
 $hasPlugins = true;
-$hasTemplates = true;
-$category = 'MyComponent';
+$hasTemplates = false;
+// $category = 'MyComponent';
 
 $success = true;
 $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Running PHP Resolver.');
@@ -40,19 +51,22 @@ switch($options[xPDOTransport::PACKAGE_ACTION]) {
     case xPDOTransport::ACTION_INSTALL:
         /* Assign plugins to System events */
         if ($hasPlugins) {
-            $pluginObj = $object->xpdo->getObject('modPlugin',array('name'=>'MyPlugin1'));
-            $events[0] = 'OnBeforeUserFormSave';
-            $events[1] = 'OnUserFormSave';
-            if (! $pluginObj) $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'cannot get object: MyPlugin1');
-            if (empty($events)) $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Cannot get System Events');
-            if (!empty($events) && $pluginObj) {
-                $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Assigning Events to Plugins');
+            foreach($plugins as $k => $plugin) {
+                $pluginObj = $object->xpdo->getObject('modPlugin',array('name'=>$plugin));
+                //$events[0] = 'OnBeforeUserFormSave';
+                //$events[1] = 'OnUserFormSave';
+                if (! $pluginObj) $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'cannot get object: ' . $plugin);
+                if (empty($pluginEvents)) $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Cannot get System Events');
+                if (!empty ($pluginEvents) && $pluginObj) {
 
-                foreach($events as $event => $eventName) {
-                    $intersect = $object->xpdo->newObject('modPluginEvent');
-                    $intersect->set('event',$eventName);
-                    $intersect->set('pluginid',$pluginObj->get('id'));
-                    $intersect->save();
+                    $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Assigning Events to Plugin ' . $plugin);
+
+                    foreach($pluginEvents as $k => $event) {
+                        $intersect = $object->xpdo->newObject('modPluginEvent');
+                        $intersect->set('event',$event);
+                        $intersect->set('pluginid',$pluginObj->get('id'));
+                        $intersect->save();
+                    }
                 }
             }
         }
