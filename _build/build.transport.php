@@ -192,6 +192,11 @@ $attr = array(xPDOTransport::UNIQUE_KEY => 'category',
     xPDOTransport::RELATED_OBJECTS => true,
 );
 
+if ($hasValidator) {
+      $attr[xPDOTransport::ABORT_INSTALL_ON_VEHICLE_FAIL] = true;
+}
+
+
 
 if ($hasSnippets) {
     $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Snippets'] = array(
@@ -267,53 +272,6 @@ if ($hasTemplateVariables) {
                 ));*/
 }
 
-if (false) {
-    $attr = array(
-
-        xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
-            'Children' => array(
-                xPDOTransport::PRESERVE_KEYS => false,
-                xPDOTransport::UPDATE_OBJECT => true,
-                xPDOTransport::UNIQUE_KEY => 'category',
-                xPDOTransport::RELATED_OBJECTS => true,
-                xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
-                    'Snippets' => array(
-                        xPDOTransport::PRESERVE_KEYS => false,
-                        xPDOTransport::UPDATE_OBJECT => true,
-                        xPDOTransport::UNIQUE_KEY => 'name',
-                    ),
-                    'Chunks' => array(
-                        xPDOTransport::PRESERVE_KEYS => false,
-                        xPDOTransport::UPDATE_OBJECT => true,
-                        xPDOTransport::UNIQUE_KEY => 'name',
-                    ),
-                    'Plugins' => array(
-                        xPDOTransport::UNIQUE_KEY => 'name',
-                        xPDOTransport::PRESERVE_KEYS => false,
-                        xPDOTransport::UPDATE_OBJECT => true,
-                        ),
-                )
-            ),
-            'Snippets' => array(
-                xPDOTransport::PRESERVE_KEYS => false,
-                xPDOTransport::UPDATE_OBJECT => true,
-                xPDOTransport::UNIQUE_KEY => 'name',
-            ),
-            'Chunks' => array(
-                xPDOTransport::PRESERVE_KEYS => false,
-                xPDOTransport::UPDATE_OBJECT => true,
-                xPDOTransport::UNIQUE_KEY => 'name',
-            ),
-            'Plugins' => array(
-                        xPDOTransport::UNIQUE_KEY => 'name',
-                        xPDOTransport::PRESERVE_KEYS => false,
-                        xPDOTransport::UPDATE_OBJECT => true,
-            ),
-
-        )
-
-    );
-}
 /* create a vehicle for the category and all the things
  * we've added to it.
  */
