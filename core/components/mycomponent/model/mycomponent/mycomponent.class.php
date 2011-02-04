@@ -34,7 +34,7 @@
  */
 
 /* Example Class File */
-class Mycomponent {
+class MyComponent {
 
    /**
     * @var modx object Reference pointer to modx object

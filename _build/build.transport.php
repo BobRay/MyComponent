@@ -29,6 +29,7 @@
  */
 
 /* ToDo: Add Menu Items */
+/* ToDo: use $modx =& $object->xpdo in resolver &validator */
 /* ToDo: Add Validator (check for getResources) */
 /* ToDo: Create MetaPackage with just a file resolver */
 /* ToDo: Do tutorial */
@@ -504,20 +505,22 @@ if ($hasMenu) {
         $modx->log(modX::LOG_LEVEL_ERROR,'Could not package in menu.');
     } else {
         $vehicle= $builder->createVehicle($menu,array (
-            xPDOTransport::PRESERVE_KEYS => true,
-            xPDOTransport::UPDATE_OBJECT => true,
-            xPDOTransport::UNIQUE_KEY => 'text',
-            xPDOTransport::RELATED_OBJECTS => true,
-            xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
-                'Action' => array (
-                    xPDOTransport::PRESERVE_KEYS => false,
-                    xPDOTransport::UPDATE_OBJECT => true,
-                    xPDOTransport::UNIQUE_KEY => array ('namespace','controller'),
-                ),
+        xPDOTransport::PRESERVE_KEYS => true,
+        xPDOTransport::UPDATE_OBJECT => true,
+        xPDOTransport::UNIQUE_KEY => 'text',
+        xPDOTransport::RELATED_OBJECTS => true,
+        xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
+            'Action' => array (
+                xPDOTransport::PRESERVE_KEYS => false,
+                xPDOTransport::UPDATE_OBJECT => true,
+                xPDOTransport::UNIQUE_KEY => array ('namespace','controller'),
             ),
-        ));
+        ),
+));
+        $builder->putVehicle($vehicle);
+
         $modx->log(modX::LOG_LEVEL_INFO,'Packaged in '.count($menu).' menu items.');
-        unset($menu);
+        unset($vehicle,$menu);
     }
 }
 

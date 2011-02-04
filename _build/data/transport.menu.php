@@ -12,21 +12,21 @@ $action->fromArray(array(
     'parent' => 0,
     'controller' => 'index',
     'haslayout' => true,
-    'lang_topics' => 'mycomponent:default',
+    'lang_topics' => 'mycomponent.:default,lexicon',
     'assets' => '',
 ),'',true,true);
 
+/* load action into menu */
 $menu= $modx->newObject('modMenu');
 $menu->fromArray(array(
-    'text' => 'MyComponent',
+    'text' => 'mycomponent',
     'parent' => 'components',
-    'description' => 'mycomponent_desc',
+    'description' => 'mycomponent.menu_desc',
     'icon' => 'images/icons/plugin.gif',
     'menuindex' => 0,
     'params' => '',
     'handler' => '',
 ),'',true,true);
 $menu->addOne($action);
-unset($menus);
 
 return $menu;
