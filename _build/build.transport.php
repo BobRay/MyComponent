@@ -28,8 +28,6 @@
  * @subpackage build
  */
 
-/* ToDo: Add Templates */
-/* ToDo: Add TVs */
 /* ToDo: Attach TVs to Templates in script resolver */
 /* ToDo: Add System Settings */
 /* ToDo: Add Menu Items */
