@@ -28,8 +28,6 @@
  * @subpackage build
  */
 
-/* ToDo: use $modx =& $object->xpdo in resolver &validator */
-/* ToDo: Add Validator (check for getResources) */
 /* ToDo: Create MetaPackage with just a file resolver */
 /* ToDo: Do tutorial */
 
@@ -60,38 +58,33 @@ define('PKG_RELEASE','beta1');
 define('PKG_CATEGORY','MyComponent');
 
 /* Set package options - you can turn these on one-by-one
- * as you build the package
+ * as you create the transport package
  * */
 $hasAssets = true;
 $hasCore = true;
 $hasSnippets = true;
 $hasChunks = true;
-$hasPlugins = true;
-$hasPluginEvents = true;
 $hasTemplates = true;
 $hasResources = true;
 $hasValidator = true;
 $hasResolver = true;
 $hasSetupOptions = true; /* HTML/PHP script to interact with user */
-$hasTemplateVariables = true;
-$hasTemplates = true;
 $hasMenu = true;
 $hasSettings = true;
-
-/* ToDo: Put these in the resolver */
- /* If the template has TVs, set this to false and
-  * create the Template with its attached TVs in
-  * _build/resolvers/install.script.php. If there are no
-  * TVs, set it to true and comment out the section in
-  * the install script.
-  */
-//$hasTemplates = false;
-
-/* If you want to create stand-alone TVs that won't be attached
- * to any template, set this to true. Otherwise, see the
- * comment above.
+/* Note: TVs are connected to their templates in the script resolver
+ * (see _build/data/resolvers/install.script.php)
  */
-//$hasTemplateVariables = false;
+$hasTemplateVariables = true;
+$hasTemplates = true;
+/* Note: plugin events are connected to their plugins in the script
+ * resolver (see _build/data/resolvers/install.script.php)
+ */
+$hasPlugins = true;
+$hasPluginEvents = true;
+
+/******************************************
+ * Work begins here
+ * ****************************************/
 
 /* set start time */
 $mtime = microtime();
@@ -109,6 +102,7 @@ $sources= array (
     'source_core' => $root.'core/components/'.PKG_NAME_LOWER,
     'source_assets' => $root.'assets/components/'.PKG_NAME_LOWER,
     'resolvers' => $root . '_build/resolvers/',
+    'validators'=> $root . '_build/validators/',
     'data' => $root . '_build/data/',
     'docs' => $root . 'core/components/mycomponent/docs/',
 );
@@ -325,12 +319,21 @@ if (false) {
  */
 $vehicle = $builder->createVehicle($category,$attr);
 
+if ($hasValidator) {
+    $modx->log(modX::LOG_LEVEL_INFO,'Adding in Script Validator.');
+    $vehicle->validate('php',array(
+        'source' => $sources['validators'] . 'preinstall.script.php',
+    ));
+}
+
+
+
 /* package in script resolver if any */
 if ($hasResolver) {
     $modx->log(modX::LOG_LEVEL_INFO,'Adding in Script Resolver.');
     $vehicle->resolve('php',array(
         'source' => $sources['resolvers'] . 'install.script.php',
-));
+    ));
 }
 /* This section transfers every file in the local
  mycomponents/mycomponent/assets directory to the

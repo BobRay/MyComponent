@@ -22,60 +22,42 @@
  * @package mycomponent
  */
 /**
- * Description: Checks for Necessary GD and FreeType functions
+ * Description: Example validator checks for existence of getResources
  * @package mycomponent
  * @subpackage build
  */
 /**
  * @package mycomponent
- * Validator -- checks for GD and FreeType
+ * Validators execute before the package is installed. If they return
+ * false, the package install is aborted. This example checks for
+ * the installation of getResources and aborts the install if
+ * it is not found.
  */
 
 /* The $modx object is not available here. In its place we
  * use $object->xpdo
  */
-
 $modx =& $object->xpdo;
 
-$object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Running PHP Validator.');
+
+$modx->log(xPDO::LOG_LEVEL_INFO,'Running PHP Validator.');
 switch($options[xPDOTransport::PACKAGE_ACTION]) {
     case xPDOTransport::ACTION_INSTALL:
 
-        $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Checking for GD and FreeType: ');
+        $modx->log(xPDO::LOG_LEVEL_INFO,'Checking for installed getResources snippet ');
         $success = true;
-        /* Check for GD library */
-        if (function_exists('imagegd2')) {
-            $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'GD lib found');
+        /* Check for getResources */
+        $gr = $modx->getObject('modSnippet',array('name'=>'getResources'));
+        if ($gr) {
+            $modx->log(xPDO::LOG_LEVEL_INFO,'getResources found - install will continue');
+            unset($gr);
         } else {
-            $object->xpdo->log(xPDO::LOG_LEVEL_ERROR,'GD lib not found -- install canceled');
-            return false;
-        }
-        /* GD is ok, check for necessary functions */
-
-        $fs = array('imagettfbbox', 'imagecreate', 'imagecolorallocate', 'imagettftext',
-        'imagecolortransparent', 'imagedestroy', 'imagecreatefromjpeg', 'imagesx',
-        'imagesy', 'imagecreatetruecolor', 'imagecopyresampled', 'imagecopymerge'
-        );
-        $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Checking for necessary functions');
-
-
-        foreach($fs as $f) {
-            $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Checking for ' . $f . ' function: ');
-            if (function_exists($f)) {
-                $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'OK');
-            } else {
-                $object->xpdo->log(xPDO::LOG_LEVEL_ERROR,'Not found');
-                $success =  false;
-            }
-        }
-        if ($success == false) {
-            $object->xpdo->log(xPDO::LOG_LEVEL_ERROR,'Configuration problem - install canceled');
-            return false;
-        } else {
-            $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'No Problems -- installing MYCOMPONENT plugin');
+            $modx->log(xPDO::LOG_LEVEL_ERROR,'This package requires the getResources package. Please install it and reinstall MyComponent');
+            $success = false;
         }
 
         break;
+   /* These cases must return true or the upgrade/uninstall will be cancelled */
    case xPDOTransport::ACTION_UPGRADE:
         $success = true;
         break;
@@ -84,8 +66,5 @@ switch($options[xPDOTransport::PACKAGE_ACTION]) {
         $success = true;
         break;
 }
-
-/*$object->xpdo->setLogLevel($oldLogLevel);
-$object->xpdo->setLogTarget($oldLogTarget); */
 
 return $success;
