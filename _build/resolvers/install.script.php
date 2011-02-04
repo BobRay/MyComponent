@@ -37,20 +37,24 @@
 /* Connecting plugins to the appropriate system events and
  * connecting TVs to their templates is done here.
  *
+ * Be sure to set the name of the category in $category.
+ *
  * You will have to hand-code the names of the elements and events
  * in the arrays below.
  */
 
 $pluginEvents = array('OnBeforeUserFormSave','OnUserFormSave');
 $plugins = array('MyPlugin1', 'MyPlugin2');
-$templates = array('myTemplate1','myTemplate2');
-$tvs = array('MyTv1','MyTv2');
+//$templates = array('myTemplate1','myTemplate2');
+//$tvs = array('MyTv1','MyTv2');
 $category = 'MyComponent';
 
 $hasPlugins = true;
-$hasTemplates = false;
+$hasTemplates = true;
+$hasTemplateVariables = true;
 
 $success = true;
+
 $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Running PHP Resolver.');
 switch($options[xPDOTransport::PACKAGE_ACTION]) {
     /* This code will execute during an install */
@@ -74,37 +78,60 @@ switch($options[xPDOTransport::PACKAGE_ACTION]) {
                 }
             }
         }
-        /* For some reason, adding the templates to the category doesn't
-         * work, so we'll add them again here
+        /* Connect TVs to Templates. It's assumed that all TVs
+         * will be connected to all package templates. If you
+         * want to connect different TVs to different templates
+         * you need to rewrite this.
          */
 
-        if ($hasTemplates) {
-            if (!empty($templates)) {
-                $ok = true;
-                foreach ($templates as $template) {
-                    $template = $object->xpdo->getObject('modTemplate',array('templatename'=>$template));
-                    $categoryObj = $object->xpdo->getObject('modCategory', array ('category'=>$category));
-                    if ($categoryObj) {
-                        $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Failed to retrieve category: ' . $category);
-
-                    } else {
-                        $categoryId = $categoryObj->get('id');
-                    }
-
-                    if (! $template->set('category',$categoryId)){
-                        $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Failed to set category for template: ' . $template);
-                        $ok = false;
-                    };
-                    if (! $template->save()) {
-                        $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Failed to save template: ' . $template);
-                        $ok = false;
-                    }
-                }
-                if ($ok) {
-                    $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Template categories set successfully');
-                }
+        if ($hasTemplates && $hasTemplateVariables) {
+            $categoryObj = $object->xpdo->getObject('modCategory',array('category'=> $category));
+            if (! $categoryObj) {
+                $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Coult not retrieve category object: ' . $category);
             } else {
-                $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'No templates to operate on');
+                $categoryId = $categoryObj->get('id');
+            }
+
+            $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Attempting to attach TVs to Templates');
+            $ok = true;
+            $templates = $object->xpdo->getCollection('modTemplate', array('category'=> $categoryId));
+            if (!empty($templates)) {
+
+                $tvs = $object->xpdo->getCollection('modTemplateVar', array('category'=> $categoryId));
+
+                if (!empty($tvs)) {
+                    foreach ($templates as $template) {
+                        foreach($tvs as $tv) {
+                            $tvt = $object->xpdo->newObject('modTemplateVarTemplate');
+                            if ($tvt) {
+                                $r1 = $tvt->set('templateid', $template->get('id'));
+                                $r2 = $tvt->set('tmplvarid', $tv->get('id'));
+                                if ($r1 && $r2) {
+                                    $tvt->save();
+                                } else {
+                                    $ok = false;
+                                    $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Could not set TemplateVarTemplate fields');
+                                }
+                            } else {
+                                $ok = false;
+                                $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Could not create TemplateVarTemplate');
+                            }
+                        }
+                    }
+                } else {
+                    $ok = false;
+                    $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Could not retrieve TVs in category: ' . $category);
+                }
+
+            } else {
+                $ok = false;
+                $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Could not retrieve Templates in category: ' . $category);
+            }
+
+            if ($ok) {
+                $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'TVs attached to Templates successfully');
+            } else {
+                $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Failed to attach TVs to Templates');
             }
         }
         break;

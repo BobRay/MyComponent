@@ -28,7 +28,6 @@
  * @subpackage build
  */
 
-/* ToDo: Attach TVs to Templates in script resolver */
 /* ToDo: Add System Settings */
 /* ToDo: Add Menu Items */
 /* ToDo: Add Validator (check for getResources) */
