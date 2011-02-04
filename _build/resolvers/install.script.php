@@ -52,7 +52,13 @@ $category = 'MyComponent';
 $hasPlugins = true;
 $hasTemplates = true;
 $hasTemplateVariables = true;
+$hasExistingSettings = true;
 
+$settings = array(
+    'site_name'=>'Your Site',
+);
+
+/* You shouldn't have to change any code beyond this point */
 $success = true;
 
 $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Running PHP Resolver.');
@@ -132,6 +138,21 @@ switch($options[xPDOTransport::PACKAGE_ACTION]) {
                 $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'TVs attached to Templates successfully');
             } else {
                 $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Failed to attach TVs to Templates');
+            }
+        }
+
+        if ($hasExistingSettings) {
+            $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Attempting so set existing System Settings');
+            foreach($settings as $key=>$value) {
+                $setting = $object->xpdo->getObject('modSystemSetting',array('key'=>$key));
+                if ($setting) {
+                    $setting->set('value',$value);
+                    if ($setting->save()){
+                        $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Updated System Setting: ' . $key . ' to ' . $value );
+                    }
+                } else {
+                    $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Could not retrieve setting: ' . $key);
+                }
             }
         }
         break;

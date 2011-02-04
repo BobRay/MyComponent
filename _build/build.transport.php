@@ -28,7 +28,6 @@
  * @subpackage build
  */
 
-/* ToDo: Add System Settings */
 /* ToDo: Add Menu Items */
 /* ToDo: Add Validator (check for getResources) */
 /* ToDo: Create MetaPackage with just a file resolver */
@@ -77,7 +76,7 @@ $hasSetupOptions = true; /* HTML/PHP script to interact with user */
 $hasTemplateVariables = true;
 $hasTemplates = true;
 $hasMenu = true;
-$hasSettings = false;
+$hasSettings = true;
 
 /* ToDo: Put these in the resolver */
  /* If the template has TVs, set this to false and

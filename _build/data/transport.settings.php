@@ -3,49 +3,38 @@
  * @package mycomponent
  * @subpackage build
  */
+
+
+/* This section is ONLY for new System Settings to be added to
+ * The System Settings grid. If you include existing settings,
+ * they will be removed on uninstall. Existing setting can be
+ * set in a script resolver (see install.script.php).
+ */
 $settings = array();
 
-$settings['mycomponent.words']= $modx->newObject('modSystemSetting');
-$settings['mycomponent.words']->fromArray(array (
-    'key' => 'mycomponent.words',
-    'value' => 'Ack,Arps,Alag,Atex,Bek,Bux,Chux,Caxt,Depp,Dex,Ext,Enya,Fet,Fets,Tek,Text,Gurk,Gex,Het,Heft,Unet,Ibex,Jax,Jerp,Jenk,Lak,Lest,Lev,Mars,Mamp,Nex,Nelp,Paxt,Pex,Reks,Rux,Snix,Sept,Turp,Thix,Elps,Vux,Veks,Wect,Wex,Yap,Yef,Yeff,Zub,Zeks',
-    'xtype' => 'textarea',
+/* The first three are new settings */
+$settings['mycomponent_setting1']= $modx->newObject('modSystemSetting');
+$settings['mycomponent_setting1']->fromArray(array (
+    'key' => 'mycomponent_setting1',
+    'value' => 'Value for setting 1',
     'namespace' => 'mycomponent',
     'area' => 'mycomponent',
 ), '', true, true);
 
-$settings['mycomponent.enabled']= $modx->newObject('modSystemSetting');
-$settings['mycomponent.enabled']->fromArray(array (
-    'key' => 'mycomponent.enabled',
-    'value' => '0',
-    'xtype' => 'combo-boolean',
-    'namespace' => 'mycomponent',
-    'area' => 'mycomponent',
-), '', true, true);
-
-$settings['mycomponent.use_mathstring']= $modx->newObject('modSystemSetting');
-$settings['mycomponent.use_mathstring']->fromArray(array (
-    'key' => 'mycomponent.use_mathstring',
+$settings['mycomponent_setting2']= $modx->newObject('modSystemSetting');
+$settings['mycomponent_setting2']->fromArray(array (
+    'key' => 'mycomponent_setting2',
     'value' => '1',
     'xtype' => 'combo-boolean',
     'namespace' => 'mycomponent',
     'area' => 'mycomponent',
 ), '', true, true);
 
-$settings['mycomponent.height']= $modx->newObject('modSystemSetting');
-$settings['mycomponent.height']->fromArray(array (
-    'key' => 'mycomponent.height',
-    'value' => '80',
-    'xtype' => 'textfield',
-    'namespace' => 'mycomponent',
-    'area' => 'mycomponent',
-), '', true, true);
-
-$settings['mycomponent.width']= $modx->newObject('modSystemSetting');
-$settings['mycomponent.width']->fromArray(array (
-    'key' => 'mycomponent.width',
-    'value' => '200',
-    'xtype' => 'textfield',
+$settings['mycomponent_setting3']= $modx->newObject('modSystemSetting');
+$settings['mycomponent_setting3']->fromArray(array (
+    'key' => 'mycomponent_setting3',
+    'value' => '0',
+    'xtype' => 'combo-boolean',
     'namespace' => 'mycomponent',
     'area' => 'mycomponent',
 ), '', true, true);
