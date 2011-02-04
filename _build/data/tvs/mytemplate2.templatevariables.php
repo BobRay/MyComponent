@@ -40,6 +40,9 @@ $templateVariables[1]->fromArray(array(
     'description' => 'My template variable 1',
     'display' => 'default',
     'elements' => '',  /* input option values */
+    'locked' => 0,
+    'rank' => 0,
+    'display_params' => '',
     'default_text' => 'Tv1 Default value',
     'properties' => '',
 ),'',true,true);
@@ -53,6 +56,9 @@ $templateVariables[2]->fromArray(array(
     'description' => 'My template variable 2',
     'display' => 'default',
     'elements' => 'red||blue||green',  /* input option values */
+    'locked' => 0,
+    'rank' => 0,
+    'display_params' => '',
     'default_text' => 'blue',
     'properties' => '',
 ),'',true,true);
@@ -66,6 +72,9 @@ $templateVariables[3]->fromArray(array(
     'description' => 'My template variable 3',
     'display' => 'default',
     'elements' => 'red||blue||green',  /* input option values */
+    'locked' => 0,
+    'rank' => 0,
+    'display_params' => '',
     'default_text' => 'green',
     'properties' => '',
 ),'',true,true);
