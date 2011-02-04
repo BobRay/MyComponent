@@ -480,7 +480,7 @@ if ($hasResources) {
         $attributes= array(
     xPDOTransport::PRESERVE_KEYS => false,
     xPDOTransport::UPDATE_OBJECT => true,
-    xPDOTransport::UNIQUE_KEY => 'id',
+    xPDOTransport::UNIQUE_KEY => 'pagetitle',
     xPDOTransport::RELATED_OBJECTS => true,
     xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
         'ContentType' => array(
