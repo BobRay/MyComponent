@@ -34,6 +34,8 @@
  * use $object->xpdo
  */
 
+$modx =& $object->xpdo;
+
 /* Connecting plugins to the appropriate system events and
  * connecting TVs to their templates is done here.
  *
@@ -61,22 +63,22 @@ $settings = array(
 /* You shouldn't have to change any code beyond this point */
 $success = true;
 
-$object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Running PHP Resolver.');
+$modx->log(xPDO::LOG_LEVEL_INFO,'Running PHP Resolver.');
 switch($options[xPDOTransport::PACKAGE_ACTION]) {
     /* This code will execute during an install */
     case xPDOTransport::ACTION_INSTALL:
         /* Assign plugins to System events */
         if ($hasPlugins) {
             foreach($plugins as $k => $plugin) {
-                $pluginObj = $object->xpdo->getObject('modPlugin',array('name'=>$plugin));
-                if (! $pluginObj) $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'cannot get object: ' . $plugin);
-                if (empty($pluginEvents)) $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Cannot get System Events');
+                $pluginObj = $modx->getObject('modPlugin',array('name'=>$plugin));
+                if (! $pluginObj) $modx->log(xPDO::LOG_LEVEL_INFO,'cannot get object: ' . $plugin);
+                if (empty($pluginEvents)) $modx->log(xPDO::LOG_LEVEL_INFO,'Cannot get System Events');
                 if (!empty ($pluginEvents) && $pluginObj) {
 
-                    $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Assigning Events to Plugin ' . $plugin);
+                    $modx->log(xPDO::LOG_LEVEL_INFO,'Assigning Events to Plugin ' . $plugin);
 
                     foreach($pluginEvents as $k => $event) {
-                        $intersect = $object->xpdo->newObject('modPluginEvent');
+                        $intersect = $modx->newObject('modPluginEvent');
                         $intersect->set('event',$event);
                         $intersect->set('pluginid',$pluginObj->get('id'));
                         $intersect->save();
@@ -91,24 +93,24 @@ switch($options[xPDOTransport::PACKAGE_ACTION]) {
          */
 
         if ($hasTemplates && $hasTemplateVariables) {
-            $categoryObj = $object->xpdo->getObject('modCategory',array('category'=> $category));
+            $categoryObj = $modx->getObject('modCategory',array('category'=> $category));
             if (! $categoryObj) {
-                $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Coult not retrieve category object: ' . $category);
+                $modx->log(xPDO::LOG_LEVEL_INFO,'Coult not retrieve category object: ' . $category);
             } else {
                 $categoryId = $categoryObj->get('id');
             }
 
-            $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Attempting to attach TVs to Templates');
+            $modx->log(xPDO::LOG_LEVEL_INFO,'Attempting to attach TVs to Templates');
             $ok = true;
-            $templates = $object->xpdo->getCollection('modTemplate', array('category'=> $categoryId));
+            $templates = $modx->getCollection('modTemplate', array('category'=> $categoryId));
             if (!empty($templates)) {
 
-                $tvs = $object->xpdo->getCollection('modTemplateVar', array('category'=> $categoryId));
+                $tvs = $modx->getCollection('modTemplateVar', array('category'=> $categoryId));
 
                 if (!empty($tvs)) {
                     foreach ($templates as $template) {
                         foreach($tvs as $tv) {
-                            $tvt = $object->xpdo->newObject('modTemplateVarTemplate');
+                            $tvt = $modx->newObject('modTemplateVarTemplate');
                             if ($tvt) {
                                 $r1 = $tvt->set('templateid', $template->get('id'));
                                 $r2 = $tvt->set('tmplvarid', $tv->get('id'));
@@ -116,42 +118,42 @@ switch($options[xPDOTransport::PACKAGE_ACTION]) {
                                     $tvt->save();
                                 } else {
                                     $ok = false;
-                                    $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Could not set TemplateVarTemplate fields');
+                                    $modx->log(xPDO::LOG_LEVEL_INFO,'Could not set TemplateVarTemplate fields');
                                 }
                             } else {
                                 $ok = false;
-                                $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Could not create TemplateVarTemplate');
+                                $modx->log(xPDO::LOG_LEVEL_INFO,'Could not create TemplateVarTemplate');
                             }
                         }
                     }
                 } else {
                     $ok = false;
-                    $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Could not retrieve TVs in category: ' . $category);
+                    $modx->log(xPDO::LOG_LEVEL_INFO,'Could not retrieve TVs in category: ' . $category);
                 }
 
             } else {
                 $ok = false;
-                $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Could not retrieve Templates in category: ' . $category);
+                $modx->log(xPDO::LOG_LEVEL_INFO,'Could not retrieve Templates in category: ' . $category);
             }
 
             if ($ok) {
-                $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'TVs attached to Templates successfully');
+                $modx->log(xPDO::LOG_LEVEL_INFO,'TVs attached to Templates successfully');
             } else {
-                $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Failed to attach TVs to Templates');
+                $modx->log(xPDO::LOG_LEVEL_INFO,'Failed to attach TVs to Templates');
             }
         }
 
         if ($hasExistingSettings) {
-            $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Attempting so set existing System Settings');
+            $modx->log(xPDO::LOG_LEVEL_INFO,'Attempting so set existing System Settings');
             foreach($settings as $key=>$value) {
-                $setting = $object->xpdo->getObject('modSystemSetting',array('key'=>$key));
+                $setting = $modx->getObject('modSystemSetting',array('key'=>$key));
                 if ($setting) {
                     $setting->set('value',$value);
                     if ($setting->save()){
-                        $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Updated System Setting: ' . $key . ' to ' . $value );
+                        $modx->log(xPDO::LOG_LEVEL_INFO,'Updated System Setting: ' . $key . ' to ' . $value );
                     }
                 } else {
-                    $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Could not retrieve setting: ' . $key);
+                    $modx->log(xPDO::LOG_LEVEL_INFO,'Could not retrieve setting: ' . $key);
                 }
             }
         }
@@ -169,10 +171,10 @@ switch($options[xPDOTransport::PACKAGE_ACTION]) {
 
     /* This code will execute during an uninstall */
     case xPDOTransport::ACTION_UNINSTALL:
-        $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Uninstalling . . .');
+        $modx->log(xPDO::LOG_LEVEL_INFO,'Uninstalling . . .');
         $success = true;
         break;
 
 }
-$object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Script resolver actions completed');
+$modx->log(xPDO::LOG_LEVEL_INFO,'Script resolver actions completed');
 return $success;

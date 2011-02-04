@@ -30,8 +30,12 @@
  * @package mycomponent
  * Validator -- checks for GD and FreeType
  */
-/* $oldLogLevel = $object->xpdo->setLogLevel(xPDO::LOG_LEVEL_INFO);
-$oldLogTarget = $object->xpdo->setLogTarget(XPDO_CLI_MODE ? 'ECHO' : 'HTML');  */
+
+/* The $modx object is not available here. In its place we
+ * use $object->xpdo
+ */
+
+$modx =& $object->xpdo;
 
 $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Running PHP Validator.');
 switch($options[xPDOTransport::PACKAGE_ACTION]) {
