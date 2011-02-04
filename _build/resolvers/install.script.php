@@ -30,6 +30,10 @@
 
 /* Example Resolver script */
 
+/* The $modx object is not available here. In its place we
+ * use $object->xpdo
+ */
+
 /* Connecting plugins to the appropriate system events and
  * connecting TVs to their templates is done here.
  *
@@ -39,10 +43,12 @@
 
 $pluginEvents = array('OnBeforeUserFormSave','OnUserFormSave');
 $plugins = array('MyPlugin1', 'MyPlugin2');
+$templates = array('myTemplate1','myTemplate2');
+$tvs = array('MyTv1','MyTv2');
+$category = 'MyComponent';
 
 $hasPlugins = true;
 $hasTemplates = false;
-// $category = 'MyComponent';
 
 $success = true;
 $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Running PHP Resolver.');
@@ -53,8 +59,6 @@ switch($options[xPDOTransport::PACKAGE_ACTION]) {
         if ($hasPlugins) {
             foreach($plugins as $k => $plugin) {
                 $pluginObj = $object->xpdo->getObject('modPlugin',array('name'=>$plugin));
-                //$events[0] = 'OnBeforeUserFormSave';
-                //$events[1] = 'OnUserFormSave';
                 if (! $pluginObj) $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'cannot get object: ' . $plugin);
                 if (empty($pluginEvents)) $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Cannot get System Events');
                 if (!empty ($pluginEvents) && $pluginObj) {
@@ -69,6 +73,39 @@ switch($options[xPDOTransport::PACKAGE_ACTION]) {
                     }
                 }
             }
+        }
+        /* For some reason, adding the templates to the category doesn't
+         * work, so we'll add them again here
+         */
+
+        if ($hasTemplates) {
+            if (!empty($templates)) {
+                $ok = true;
+                foreach ($templates as $template) {
+                    $template = $object->xpdo->getObject('modTemplate',array('templatename'=>$template));
+                    $categoryObj = $object->xpdo->getObject('modCategory', array ('category'=>$category));
+                    if ($categoryObj) {
+                        $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Failed to retrieve category: ' . $category);
+
+                    } else {
+                        $categoryId = $categoryObj->get('id');
+                    }
+
+                    if (! $template->set('category',$categoryId)){
+                        $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Failed to set category for template: ' . $template);
+                        $ok = false;
+                    };
+                    if (! $template->save()) {
+                        $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Failed to save template: ' . $template);
+                        $ok = false;
+                    }
+                }
+                if ($ok) {
+                    $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Template categories set successfully');
+                }
+            }
+        } else {
+            $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'No templates to operate on');
         }
         break;
 

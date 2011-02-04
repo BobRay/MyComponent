@@ -27,11 +27,11 @@
  * @package mycomponent
  * @subpackage build
  */
-/* ToDo: Refactor attributes array */
+
 /* ToDo: Add Templates */
 /* ToDo: Add TVs */
 /* ToDo: Attach TVs to Templates in script resolver */
-/* ToDo: Add System Setings */
+/* ToDo: Add System Settings */
 /* ToDo: Add Menu Items */
 /* ToDo: Add Validator (check for getResources) */
 /* ToDo: Create MetaPackage with just a file resolver */
@@ -60,7 +60,7 @@
 define('PKG_NAME','MyComponent');
 define('PKG_NAME_LOWER','mycomponent');
 define('PKG_VERSION','1.0.0');
-define('PKG_RELEASE','Beta1');
+define('PKG_RELEASE','beta1');
 define('PKG_CATEGORY','MyComponent');
 
 /* Set package options - you can turn these on one-by-one
@@ -77,7 +77,7 @@ $hasResources = true;
 $hasValidator = true;
 $hasResolver = true;
 $hasSetupOptions = true; /* HTML/PHP script to interact with user */
-$hasTemplateVariables = false;
+$hasTemplateVariables = true;
 $hasTemplates = true;
 $hasMenu = true;
 $hasSettings = false;
@@ -118,8 +118,8 @@ $sources= array (
 );
 unset($root);
 
-/* instantiate MODx -- if this require fails, check your
- *_build/build.config.php file
+/* Instantiate MODx -- if this require fails, check your
+ * _build/build.config.php file
  */
 require_once $sources['build'].'build.config.php';
 require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
@@ -135,7 +135,10 @@ $builder->createPackage(PKG_NAME_LOWER, PKG_VERSION, PKG_RELEASE);
 $builder->registerNamespace(PKG_NAME_LOWER,false,true,'{core_path}components/'.PKG_NAME_LOWER.'/');
 
 
-/* create category  Important: The category is required!*/
+/* create category  The category is required and will automatically
+ * have the name of your package
+ */
+
 $category= $modx->newObject('modCategory');
 $category->set('id',1);
 $category->set('category',PKG_CATEGORY);
@@ -146,7 +149,7 @@ if ($hasSnippets) {
     $snippets = include $sources['data'].'transport.snippets.php';
     /* note: Snippets' default properties are set in transport.snippets.php */
     if (is_array($snippets)) {
-        $category->addMany($snippets);
+        $category->addMany($snippets, 'Snippets');
     } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding snippets failed.'); }
 }
 
@@ -155,29 +158,31 @@ if ($hasChunks) { /* add chunks  */
     /* note: Chunks' default properties are set in transport.chunks.php */    
     $chunks = include $sources['data'].'transport.chunks.php';
     if (is_array($chunks)) {
-        $category->addMany($chunks);
+        $category->addMany($chunks, 'Chunks');
     } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding chunks failed.'); }
 }
 
-if (false) {
-    if ($hasTemplates) { /* add templates  */
-        $modx->log(modX::LOG_LEVEL_INFO,'Adding in templates.');
-        /* note: Templates' default properties are set in transport.templates.php */
-        $templates = include $sources['data'].'transport.templates.php';
-        if (is_array($templates)) {
-            $category->addMany($templates);
-        } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding templates failed.'); }
-    }
 
-    if ($hasTemplateVariables) { /* add templatevariables  */
-        $modx->log(modX::LOG_LEVEL_INFO,'Adding in Template Variables.');
-        /* note: Template Variables' default properties are set in mytemplate1.templatevariables.php */
-        $templatevariables = include $sources['data'].'mytemplate1.templatevariables.php';
-        if (is_array($templatevariables)) {
-            $category->addMany($templatevariables);
-        } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding templatevariables failed.'); }
-    }
+if ($hasTemplates) { /* add templates  */
+    $modx->log(modX::LOG_LEVEL_INFO,'Adding in templates.');
+    /* note: Templates' default properties are set in transport.templates.php */
+    $templates = include $sources['data'].'transport.templates.php';
+    if (is_array($templates)) {
+        if (! $category->addMany($templates,'Templates')) {
+            $modx->log(modX::LOG_LEVEL_INFO,'addMany failed with templates.');
+        };
+    } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding templates failed.'); }
 }
+
+if ($hasTemplateVariables) { /* add templatevariables  */
+    $modx->log(modX::LOG_LEVEL_INFO,'Adding in Template Variables.');
+    /* note: Template Variables' default properties are set in mytemplate1.templatevariables.php */
+    $templatevariables = include $sources['data'].'tvs/mytemplate1.templatevariables.php';
+    if (is_array($templatevariables)) {
+        $category->addMany($templatevariables, 'TemplateVars');
+    } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding templatevariables failed.'); }
+}
+
 
 if ($hasPlugins) {
     $modx->log(modX::LOG_LEVEL_INFO,'Adding in Plugins.');
@@ -205,12 +210,12 @@ if ($hasSnippets) {
             xPDOTransport::UNIQUE_KEY => 'name',
         );
 
-    $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Children'][xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Snippets'] = array (
+/*    $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Children'][xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Snippets'] = array (
                 'Snippets' => array(
                     xPDOTransport::PRESERVE_KEYS => false,
                     xPDOTransport::UPDATE_OBJECT => true,
                     xPDOTransport::UNIQUE_KEY => 'name',
-                ));
+                ));*/
 }
 
 if ($hasChunks) {
@@ -220,12 +225,12 @@ if ($hasChunks) {
             xPDOTransport::UNIQUE_KEY => 'name',
         );
 
-    $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Children'][xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Chunks'] = array (
+/*    $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Children'][xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Chunks'] = array (
                 'Chunks' => array(
                     xPDOTransport::PRESERVE_KEYS => false,
                     xPDOTransport::UPDATE_OBJECT => true,
                     xPDOTransport::UNIQUE_KEY => 'name',
-                ));
+                ));*/
 }
 
 if ($hasPlugins) {
@@ -235,12 +240,41 @@ if ($hasPlugins) {
         xPDOTransport::UNIQUE_KEY => 'name',
     );
 
-    $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Children'][xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Plugins'] = array (
+/*    $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Children'][xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Plugins'] = array (
                 'Plugins' => array(
                     xPDOTransport::PRESERVE_KEYS => false,
                     xPDOTransport::UPDATE_OBJECT => true,
                     xPDOTransport::UNIQUE_KEY => 'name',
-                ));
+                ));*/
+}
+
+if ($hasTemplates) {
+    $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Templates'] = array(
+        xPDOTransport::PRESERVE_KEYS => false,
+        xPDOTransport::UPDATE_OBJECT => true,
+        xPDOTransport::UNIQUE_KEY => 'templatename',
+    );
+
+    /*$attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Children'][xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Templates'] = array (
+                'Templates' => array(
+                    xPDOTransport::PRESERVE_KEYS => false,
+                    xPDOTransport::UPDATE_OBJECT => true,
+                    xPDOTransport::UNIQUE_KEY => 'templatename',
+                ));*/
+}
+if ($hasTemplateVariables) {
+    $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['TemplateVars'] = array(
+        xPDOTransport::PRESERVE_KEYS => false,
+        xPDOTransport::UPDATE_OBJECT => true,
+        xPDOTransport::UNIQUE_KEY => 'name',
+    );
+
+    /*$attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Children'][xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['TemplateVars'] = array (
+                'TemplateVars' => array(
+                    xPDOTransport::PRESERVE_KEYS => false,
+                    xPDOTransport::UPDATE_OBJECT => true,
+                    xPDOTransport::UNIQUE_KEY => 'name',
+                ));*/
 }
 
 if (false) {
@@ -388,7 +422,8 @@ $builder->putVehicle($vehicle);
 /* Because templates have their own related TVs, it doesn't
  * work to add them to the category. We'll add them here
  * and set the plugin category in the resolver script */
-if ($hasTemplates) {
+// if ($hasTemplates) {
+if (false) {
     $attributes = array (
         xPDOTransport::PRESERVE_KEYS => false,
         xPDOTransport::UPDATE_OBJECT => true,
@@ -443,14 +478,22 @@ if ($hasResources) {
         $modx->log(modX::LOG_LEVEL_ERROR,'Could not package in resources.');
     } else {
         $attributes= array(
-            xPDOTransport::UNIQUE_KEY => 'pagetitle',
-            xPDOTransport::PRESERVE_KEYS => true,
-            xPDOTransport::UPDATE_OBJECT => false,
-        );
-        foreach ($resources as $resource) {
-            $vehicle = $builder->createVehicle($resource,$attributes);
-            $builder->putVehicle($vehicle);
-        }
+    xPDOTransport::PRESERVE_KEYS => false,
+    xPDOTransport::UPDATE_OBJECT => true,
+    xPDOTransport::UNIQUE_KEY => 'id',
+    xPDOTransport::RELATED_OBJECTS => true,
+    xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
+        'ContentType' => array(
+            xPDOTransport::PRESERVE_KEYS => false,
+            xPDOTransport::UPDATE_OBJECT => true,
+            xPDOTransport::UNIQUE_KEY => 'name',
+        ),
+    ),
+);
+foreach ($resources as $resource) {
+    $vehicle = $builder->createVehicle($resource,$attributes);
+    $builder->putVehicle($vehicle);
+}
         $modx->log(modX::LOG_LEVEL_INFO,'Packaged in '.count($resources).' resources.');
     }
     unset($resources,$resource,$attributes);
