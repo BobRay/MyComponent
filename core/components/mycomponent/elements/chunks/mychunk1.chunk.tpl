@@ -27,4 +27,4 @@
 <tr><td>Allow Users to Create Docs in Root</td><td>udperms_allowroot</td></tr>
 </table>
 <br />
-<a href="[[++manager_url]]?a=12&page=2">Page 2 >></a><br />
+<a href="[[++manager_url]]?a=[[MySnippet1]]&page=2">Page 2 >></a><br /><br /><br />

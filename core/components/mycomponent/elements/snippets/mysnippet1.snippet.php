@@ -46,4 +46,11 @@ require_once $modx->getOption('np.core_path', null, $modx->getOption('core_path'
 
 /* Your snippet code here */
 
+/* This example calculates the action page for the cheatsheet,
+ * which appears in the page links of the two chunks.
+ */
+
+$action = $modx->getObject('modAction', array('namespace'=>'mycomponent'));
+return ($action->get('id'));
+
 ?>
