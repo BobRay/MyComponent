@@ -176,8 +176,8 @@ if ($hasTemplates) { /* add templates  */
 
 if ($hasTemplateVariables) { /* add templatevariables  */
     $modx->log(modX::LOG_LEVEL_INFO,'Adding in Template Variables.');
-    /* note: Template Variables' default properties are set in mytemplate1.templatevariables.php */
-    $templatevariables = include $sources['data'].'tvs/mytemplate1.templatevariables.php';
+    /* note: Template Variables' default properties are set in transport.tvs.php */
+    $templatevariables = include $sources['data'].'transport.tvs.php';
     if (is_array($templatevariables)) {
         $category->addMany($templatevariables, 'TemplateVars');
     } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding templatevariables failed.'); }
