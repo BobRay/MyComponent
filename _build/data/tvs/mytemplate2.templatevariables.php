@@ -44,7 +44,7 @@ $templateVariables[1]->fromArray(array(
     'rank' => 0,
     'display_params' => '',
     'default_text' => 'Tv1 Default value',
-    'properties' => '',
+    'properties' => array(),
 ),'',true,true);
 
 $templateVariables[2]= $modx->newObject('modTemplateVar');
@@ -60,7 +60,7 @@ $templateVariables[2]->fromArray(array(
     'rank' => 0,
     'display_params' => '',
     'default_text' => 'blue',
-    'properties' => '',
+    'properties' => array(),
 ),'',true,true);
 
 $templateVariables[3]= $modx->newObject('modTemplateVar');
@@ -76,7 +76,7 @@ $templateVariables[3]->fromArray(array(
     'rank' => 0,
     'display_params' => '',
     'default_text' => 'green',
-    'properties' => '',
+    'properties' => array(),
 ),'',true,true);
 
 return $templateVariables;
