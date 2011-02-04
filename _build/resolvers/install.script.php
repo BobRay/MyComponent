@@ -103,9 +103,9 @@ switch($options[xPDOTransport::PACKAGE_ACTION]) {
                 if ($ok) {
                     $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'Template categories set successfully');
                 }
+            } else {
+                $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'No templates to operate on');
             }
-        } else {
-            $object->xpdo->log(xPDO::LOG_LEVEL_INFO,'No templates to operate on');
         }
         break;
 
