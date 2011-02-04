@@ -28,7 +28,6 @@
  * @subpackage build
  */
 
-/* ToDo: Add Menu Items */
 /* ToDo: use $modx =& $object->xpdo in resolver &validator */
 /* ToDo: Add Validator (check for getResources) */
 /* ToDo: Create MetaPackage with just a file resolver */
