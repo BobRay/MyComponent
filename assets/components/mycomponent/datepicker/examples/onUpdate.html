@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+        <title>frequency decoder ~ Unobtrusive JavaScript datePicker widgit demo</title>
+        <script type="text/javascript" src="./js/datepicker.js"></script>
+        <link href="./css/demo.css"       rel="stylesheet" type="text/css" />
+        <link href="./css/datepicker.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+//<![CDATA[
+
+// The following function calculates the date of the julien easter
+// and then uses this to set the disabled dates for the datePicker
+datePickerController.onupdate = function(dp) {
+        // dp = the datePicker object
+        // dp.date = the datePickers date object
+        
+        x = dp.date.getFullYear();
+        a=x%4;
+        b=x%7;
+        c=x%19;
+        d=(19*c+15)%30;
+        e=(2*a+4*b-d+34)%7;
+        f=Math.floor((d+e+114)/31);
+        g=(d+e+114)%31+1;
+        if (f==3) {month=3};
+        if (f==4) {month=4};
+        var dt = datePickerController.dateFormat(x + "/" + month + "/" + g);
+
+        dp.setDisabledDates([dt]);
+
+        // Create a dynamic style for easter (for demo purposes, it just colours the background red and the text white)
+        var def = "div.datePicker table tbody tr td.dmy-" + g + "-" + (month) + "-" + x + " { background:#880000 !important; color:#fff !important; }";
+
+        var es = document.getElementById("easterStyle");
+        
+        if (es.styleSheet) {   // IE
+                es.styleSheet.cssText = def;
+        } else {               // the world
+                var tt1 = document.createTextNode(def);
+                while(es.firstChild) es.removeChild(es.firstChild);
+                es.appendChild(tt1);
+        };
+};
+
+//]]>
+</script>
+<style type="text/css" id="easterStyle">
+
+</style>
+</head>
+<body>
+<form id="testform" method="post" action="">
+  <h1>Unobtrusive JavaScript date-picker widgit</h1>
+  <h2>onupdate Demo</h2>
+  <fieldset>
+    <legend>onupdate callback demo</legend>
+    <p>The following datePicker has Easter Monday dynamically calculated by the <code>datePickerController.onupdate</code> method and the result used to disable the date in question using the datePickers&#8217; <code>setDisabledDates</code> method. Additionally, I&#8217;ve dynamically updated a stylesheet that displays the calculated Easter Monday date with a red background.</p>
+    <p><code>class=&#8220;format-d-m-y divider-dash highlight-days-12 range-low-today no-transparency&#8221;</code></p>
+    <label for="dp-1">Date :</label>
+    <p class="lastup"><input type="text" class="w8em format-d-m-y divider-dash highlight-days-12 range-low-today" id="dp-1" name="dp-1" value="" maxlength="10" /></p>
+  </fieldset>
+  <p class="al-center">View the related &#8220;<a href="http://www.frequency-decoder.com/2006/10/02/unobtrusive-date-picker-widgit-update/">language in the lab</a>&#8221; post for this demo.</p>
+</form>
+</body>
+</html>
+

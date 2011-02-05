@@ -1,0 +1,22 @@
+/* edit for your css */
+
+div.mycomponent table {
+    border: 3px solid #5E5E5E;
+    margin: 0;
+    padding: 20;
+    text-align: left;
+    width: 50%
+}
+
+div.mycomponent th {
+    background-color: #ccc;
+    padding: 10px;
+    border: 1px solid #ccc;
+    font-weight: bold
+}
+
+div.mycomponent td {
+    background-color: #FFFFFF;
+    padding: 10px;
+    border: 1px solid #ccc
+}

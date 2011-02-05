@@ -14,10 +14,6 @@ config.core.php
 # ignore concatenated js
 modext.js
 
-# ignore common root paths for docs and assets
-/docs/
-/assets/
-
 # ignore various IDE project files and folders
 .idea/
 

@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<title>frequency decoder ~ Unicode &amp; HTML entity conversion service</title>
+<style type="text/css">
+body
+        {
+        padding:2em 0;
+        border:0;
+        margin:0;
+        text-align:center;
+        font-size:12px;
+        font-family: verdana,arial,sans-serif;
+        color:#545454;
+        min-width: 800px;
+        }
+p
+        {
+        line-height:1.6em;
+        margin:0 0 1em 0;
+        }
+h1
+        {
+        font-weight:lighter;
+        font-family:georgia, times new roman, times, georgia, palatino, serif;
+        text-align:center;
+        margin-top:0.6em;
+        color:#000;
+        font-size:2em;
+        }
+h2
+        {
+        font-weight:lighter;
+        font-family:verdana,arial,sans-serif;
+        text-align:center;
+        margin-top:1em;
+        color:#333;
+        text-transform:uppercase;
+        letter-spacing:1px;
+        font-size:1.2em;
+        }
+a
+        {
+        font-weight:normal;
+        outline:none;
+        }
+a:link,
+a:visited
+        {
+        color:#333;
+        text-decoration:underline;
+        }
+a:hover
+        {
+        color:#fff;
+        text-decoration:none;
+        background:#000;
+        }
+a:active
+        {
+        color:#000;
+        text-decoration:underline;
+        }
+form
+        {
+        width:740px;
+        background:#fcfcfc;
+        border:3px double #ccc;
+        text-align:left;
+        padding:10px;
+        margin:0 auto 1.5em auto;
+        }
+.saf
+        {
+        width:746px;
+        margin:0 auto;
+        }
+fieldset
+        {
+        margin-bottom:1.6em;
+        padding:1em;
+        border:1px solid #ccc;
+        }
+legend
+        {
+        color:#343434;
+        font-weight:bold;
+        _margin-bottom:1em;
+        font-style:oblique;
+        }
+label
+        {
+        line-height:1.4em;
+        margin:0;
+        font-weight:bold;
+        color:#545454;
+        }
+input
+        {
+        margin:0;
+        padding:2px;
+        border:1px solid #ccc;
+        border-top-color:#aaa;
+        border-left-color:#aaa;
+        position:relative;
+        line-height:1.2em;
+        width:100%;
+        }
+#translate
+        {
+        background:#9cd001;
+        border:1px solid #bce058;
+        border-bottom-color:#80a300;
+        border-right-color:#80a300;
+        color:#fff;
+        padding:4px;
+        line-height:1;
+        font-weight:normal;
+        text-transform:uppercase;
+        width:auto;
+        }
+</style>
+
+<script type="text/javascript">
+//<![CDATA[
+
+/**********
+
+Unicode Hex Value Lookup
+version 1.0
+last revision: 02.23.2006
+steve@slayeroffice.com
+
+Should you modify or improve upon this code,
+please let me know so that I can update the version
+hosted at slayeroffice.
+
+Please leave this notice intact.
+
+**********/
+
+window.onload = init;
+var d = document;
+
+function init() {
+
+        d.getElementById("translate").onclick = function() {
+                fieldValue = d.getElementById("phrase").value;
+                if(!fieldValue) return;
+                
+                d.getElementById("ophrase").value = "";
+                d.getElementById("uphrase").value = "";
+                d.getElementById("hphrase").value = "";
+                
+                var ncode;
+
+                for(var i = 0, c; c = fieldValue.charAt(i); i++) {
+                        if(c.search(/^[0-9a-z\s]/i) != -1) {
+                                d.getElementById("ophrase").value += c;
+                                d.getElementById("uphrase").value += c;
+                                d.getElementById("hphrase").value += c;
+                        } else {
+                                nCode = c.charCodeAt(0);
+                                d.getElementById("ophrase").value += String.fromCharCode(nCode);
+                                d.getElementById("uphrase").value += so_asciiToUniHex(parseInt(nCode));
+                                d.getElementById("hphrase").value += "&#" + nCode +";"
+                        }
+                }
+        }
+}
+
+function so_asciiToUniHex(asciiCode) {
+        un = asciiCode.toString(16);
+        while(un.length<4) un = "0" + un;
+        return "\\u" + un;
+}
+
+//]]>
+</script>
+</head>
+<body>
+<h1>frequency decoder</h1>
+<h2>Unicode &amp; HTML entity conversion service</h2>
+<form action="" method="post">
+  <fieldset>
+    <legend>Phrase</legend>
+    <label for="phrase">Phrase to be converted:</label>
+    <p><input type="text" name="phrase" value="" id="phrase" tabindex="1" maxlength="200" /></p>
+  </fieldset>
+  <fieldset>
+    <legend>Converted Versions</legend>
+    <label for="ophrase">Original Phrase:</label>
+    <p><input type="text" name="ophrase" value="" id="ophrase" tabindex="2" /></p>
+    <label for="uphrase">Unicode entity conversion:</label>
+    <p><input type="text" name="uphrase" value="" id="uphrase" tabindex="3" /></p>
+    <label for="hphrase">HTML entity conversion:</label>
+    <p><input type="text" name="hphrase" value="" id="hphrase" tabindex="4" /></p>
+  </fieldset>
+  <input type="button" name="translate" id="translate" value="Convert" tabindex="5" />
+</form>
+<p class="saf">This page is nothing but a slight modification of the Slayer Office &#8220;<a href="http://slayeroffice.com/tools/unicode_lookup/">Unicode Hex Value Lookup</a>&#8221; and I can&#8217;t take <em>any</em> credit for the javascript that drives the conversions.</p>
+</body>
+</html>
+

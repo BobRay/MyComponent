@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+        <title>frequency decoder ~ datePicker disable dates &amp; days demo</title>
+        <script type="text/javascript" src="./js/datepicker.js"></script>
+        <link href="./css/demo.css"       rel="stylesheet" type="text/css" />
+        <link href="./css/datepicker.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+//<![CDATA[
+
+/*
+        The following function dynamically disables dates depending on the
+        select list choice
+*/
+
+var initAttempts = 0;
+
+function disableDates() {
+        try {
+                var dp = datePickerController.getDatePicker("finalDate");
+        } catch(err) {
+                if(initAttempts++ < 10) setTimeout("disableDates()", 200);
+                return;
+        };
+
+        var dayArr = [ document.getElementById("datesTest").options[document.getElementById("datesTest").selectedIndex].value ];
+        dp.setDisabledDates(dayArr);
+}
+
+// Use the inBuilt addEvent method to call the above function on page load
+datePickerController.addEvent(window, 'load', disableDates);
+
+/*
+        The following function dynamically disables days of the week depending on the
+        select list choice
+*/
+function disableDays() {
+        try {
+                var dp = datePickerController.getDatePicker("finalDate");
+        } catch(err) {
+                if(initAttempts++ < 10) setTimeout("disableDays()", 200);
+                return;
+        };
+
+        var dayArr = [
+                [0,0,0,0,0,0,0], // No disabled days of the week
+                [1,1,0,0,0,0,0], // Monday, Tuesday
+                [0,0,1,1,0,0,0], // Wednesday, Thursday
+                [0,0,0,0,1,1,0], // Friday, Saturday
+                [0,0,0,0,0,0,1]  // Sunday
+        ];
+
+        dp.setDisabledDays(dayArr[document.getElementById("daysTest").selectedIndex]);
+}
+
+// Use the inBuilt addEvent method to call the above function on page load
+datePickerController.addEvent(window, "load", disableDays);
+
+//]]>
+</script>
+</head>
+<body>
+  <form id="testform" method="post" action="">
+    <h1>Unobtrusive JavaScript datePicker widget</h1>
+    <h2>Disable Days &amp; Dates Demo</h2>
+    <fieldset>
+      <label for="datesTest">Disable Dates:</label>
+      <p>
+      <select name="datesTest" id="datesTest" onchange="disableDates();">
+        <option value="20061225">20061225 i.e. December 25th, 2006</option>
+        <option value="****1225" class="alt">****1225 i.e. December 25th for all years</option>
+        <option value="******25">******25 i.e. The 25th of every month for all years</option>
+      </select>
+      </p>
+      <label for="daysTest">Disable Days:</label>
+      <p>
+      <select name="daysTest" id="daysTest" onchange="disableDays();">
+        <option value="1">No days</option>
+        <option value="2" class="alt">Monday and Tuesday</option>
+        <option value="3">Wednesday and Thursday</option>
+        <option value="4" class="alt">Friday and Saturday</option>
+        <option value="5">Sunday</option>
+      </select>
+      </p>
+      <label id="label-1" for="finalDate">Date :</label>
+      <p class="lastup"><input type="text" class="w8em format-d-m-y" id="finalDate" name="finalDate" value="" maxlength="10" /></p>
+    </fieldset>
+    <p class="al-center">View the related &#8220;<a href="http://www.frequency-decoder.com/2006/10/02/unobtrusive-date-picker-widgit-update/">language in the lab</a>&#8221; post for this demo.</p>
+  </form>
+</body>
+</html>
+
