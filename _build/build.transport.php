@@ -27,7 +27,7 @@
  * @package mycomponent
  * @subpackage build
  */
-
+/* ToDo: Add setup options */
 /* ToDo: Create MetaPackage with just a file resolver */
 /* ToDo: Do tutorial */
 
@@ -50,7 +50,7 @@
  * 2011 -> Current Year
  */
 
-/* Set package info */
+/* Set package info be sure to set all of these */
 define('PKG_NAME','MyComponent');
 define('PKG_NAME_LOWER','mycomponent');
 define('PKG_VERSION','1.0.0');
@@ -196,21 +196,12 @@ if ($hasValidator) {
       $attr[xPDOTransport::ABORT_INSTALL_ON_VEHICLE_FAIL] = true;
 }
 
-
-
 if ($hasSnippets) {
     $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Snippets'] = array(
             xPDOTransport::PRESERVE_KEYS => false,
             xPDOTransport::UPDATE_OBJECT => true,
             xPDOTransport::UNIQUE_KEY => 'name',
         );
-
-/*    $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Children'][xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Snippets'] = array (
-                'Snippets' => array(
-                    xPDOTransport::PRESERVE_KEYS => false,
-                    xPDOTransport::UPDATE_OBJECT => true,
-                    xPDOTransport::UNIQUE_KEY => 'name',
-                ));*/
 }
 
 if ($hasChunks) {
@@ -219,13 +210,6 @@ if ($hasChunks) {
             xPDOTransport::UPDATE_OBJECT => true,
             xPDOTransport::UNIQUE_KEY => 'name',
         );
-
-/*    $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Children'][xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Chunks'] = array (
-                'Chunks' => array(
-                    xPDOTransport::PRESERVE_KEYS => false,
-                    xPDOTransport::UPDATE_OBJECT => true,
-                    xPDOTransport::UNIQUE_KEY => 'name',
-                ));*/
 }
 
 if ($hasPlugins) {
@@ -234,13 +218,6 @@ if ($hasPlugins) {
         xPDOTransport::UPDATE_OBJECT => true,
         xPDOTransport::UNIQUE_KEY => 'name',
     );
-
-/*    $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Children'][xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Plugins'] = array (
-                'Plugins' => array(
-                    xPDOTransport::PRESERVE_KEYS => false,
-                    xPDOTransport::UPDATE_OBJECT => true,
-                    xPDOTransport::UNIQUE_KEY => 'name',
-                ));*/
 }
 
 if ($hasTemplates) {
@@ -249,27 +226,14 @@ if ($hasTemplates) {
         xPDOTransport::UPDATE_OBJECT => true,
         xPDOTransport::UNIQUE_KEY => 'templatename',
     );
-
-    /*$attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Children'][xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Templates'] = array (
-                'Templates' => array(
-                    xPDOTransport::PRESERVE_KEYS => false,
-                    xPDOTransport::UPDATE_OBJECT => true,
-                    xPDOTransport::UNIQUE_KEY => 'templatename',
-                ));*/
 }
+
 if ($hasTemplateVariables) {
     $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['TemplateVars'] = array(
         xPDOTransport::PRESERVE_KEYS => false,
         xPDOTransport::UPDATE_OBJECT => true,
         xPDOTransport::UNIQUE_KEY => 'name',
     );
-
-    /*$attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Children'][xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['TemplateVars'] = array (
-                'TemplateVars' => array(
-                    xPDOTransport::PRESERVE_KEYS => false,
-                    xPDOTransport::UPDATE_OBJECT => true,
-                    xPDOTransport::UNIQUE_KEY => 'name',
-                ));*/
 }
 
 /* create a vehicle for the category and all the things
@@ -296,7 +260,7 @@ if ($hasResolver) {
 /* This section transfers every file in the local
  mycomponents/mycomponent/assets directory to the
  target site's assets/mycomponent directory on install.
- It the assets dir. has been renamed or moved, they will still
+ If the assets dir. has been renamed or moved, they will still
  go to the right place.
  */
 
@@ -310,7 +274,7 @@ if ($hasCore) {
 /* This section transfers every file in the local 
  mycomponents/mycomponent/core directory to the
  target site's core/mycomponent directory on install.
- It the core has been renamed or moved, they will still
+ If the core has been renamed or moved, they will still
  go to the right place.
  */
 
@@ -324,108 +288,6 @@ if ($hasCore) {
  * category) into the package 
  */
 $builder->putVehicle($vehicle);
-
-/* Load Plugins */
-
- /* Because plugins have their own related events, it doesn't
- * work to add them to the category. We'll add them here
- * and set the plugin category in the resolver script */
-
-/* If your plugin has custom System Events, comment out the plugin
- * Sections above and use this code */
-
-/*
-    $attributes= array(
-        xPDOTransport::UNIQUE_KEY => 'name',
-        xPDOTransport::PRESERVE_KEYS => false,
-        xPDOTransport::UPDATE_OBJECT => true,
-
-        xPDOTransport::RELATED_OBJECTS => true,
-        xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
-
-            'PluginEvents' => array(
-                xPDOTransport::PRESERVE_KEYS => true,
-                xPDOTransport::UPDATE_OBJECT => false,
-                xPDOTransport::UNIQUE_KEY => array('pluginid','event'),
-            ),
-        ),
-    );
-
-    $plugins = include $sources['data'] . 'transport.plugins.php';
-
-    foreach ($plugins as $plugin) {
-
-        $name = strtolower($plugin->get('name'));
-
-        if (file_exists($sources['data']) . 'events/' . $name . 'events.php') {
-            $events = include $sources['data'] . 'events/' . $name . '.events.php';
-            if (is_array($events) && !empty($events)) {
-                $modx->log(modX::LOG_LEVEL_INFO,'Added '.count($events).' events to ' . $name);
-                $plugin->addMany($events);
-                unset($events);
-            }
-        }
-
-        $vehicle = $builder->createVehicle($plugin, $attributes);
-        $builder->putVehicle($vehicle);
-
-    }
-    unset($vehicle,$attributes,$plugins);
-    */
-
- /************************************************/
-
-/* Load Templates */
-/* Because templates have their own related TVs, it doesn't
- * work to add them to the category. We'll add them here
- * and set the plugin category in the resolver script */
-// if ($hasTemplates) {
-if (false) {
-    $attributes = array (
-        xPDOTransport::PRESERVE_KEYS => false,
-        xPDOTransport::UPDATE_OBJECT => true,
-        xPDOTransport::UNIQUE_KEY => 'templatename',
-    );
-    if ($hasTemplateVariables) {
-        $tvt = array(
-            xPDOTransport::RELATED_OBJECTS => true,
-            xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
-            'TemplateVarTemplates' => array(
-                xPDOTransport::PRESERVE_KEYS => true,
-                xPDOTransport::UPDATE_OBJECT => false,
-                xPDOTransport::UNIQUE_KEY => array('templateid','tmplvarid'),
-            ),
-        ));
-        $attributes = array_merge($attributes, $tvt);
-    }
-
-
-    if ($hasTemplates) {
-        $templates = include $sources['data'] . 'transport.templates.php';
-        if (!is_array($templates)) {
-            $modx->log(modX::LOG_LEVEL_ERROR,'Could not package in templates.');
-        } else {
-            foreach ($templates as $template) {
-                $name = strtolower($template->get('templatename'));
-                    if ($hasTemplateVariables) {
-                        $tvs = include $sources['data'] . 'tvs/' . $name . '.templatevariables.php';
-                        if (is_array($tvs) && !empty($tvs)) {
-                            $modx->log(modX::LOG_LEVEL_INFO,'Added '.count($tvs).' TVs to ' . $name);
-                            $template->addMany($tvs);
-                            unset($tvs);
-                        } else {
-                            $modx->log(modX::LOG_LEVEL_ERROR,'Could not package in template variables.');
-                        }
-                    }
-                    $vehicle = $builder->createVehicle($template, $attributes);
-                    $builder->putVehicle($vehicle);
-
-                    }
-
-        }
-        unset($vehicle,$attributes,$templates);
-        }
-    }
 
 /* Transport Resources */
 
@@ -503,8 +365,6 @@ if ($hasSettings) {
         unset($settings,$setting,$attributes);
     }
 }
-
-/* $vehicle = $builder->createVehicle($settings,$attr); */
 
 /* Next-to-last step - pack in the license file, readme.txt, changelog,
  * and setup options 
