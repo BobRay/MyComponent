@@ -28,11 +28,6 @@
  * @subpackage build
  */
 /* Use these if you would like to do different things depending on what's happening */
-switch ($options[XPDO_TRANSPORT_PACKAGE_ACTION]) {
-    case XPDO_TRANSPORT_ACTION_INSTALL: break;
-    case XPDO_TRANSPORT_ACTION_UPGRADE: break;
-    case XPDO_TRANSPORT_ACTION_UNINSTALL: break;
-}
 
 /* The return value from this script should be an HTML form (minus the
  * <form> tags and submit button) in a single string.
@@ -44,8 +39,7 @@ switch ($options[XPDO_TRANSPORT_PACKAGE_ACTION]) {
  * (you can have more).
  *
  * The user's entries in the form's input field(s) will be available
- * in any php resolvers as $option['field_name'].
- * In this example, it's $option['user_email'].
+ * in any php resolvers with $modx->getOption('field_name', $options, 'default_value').
  *
  * You can use the value(s) to set system settings, snippet properties,
  * chunk content, etc. One common use is to use a checkbox and ask the
@@ -54,14 +48,13 @@ switch ($options[XPDO_TRANSPORT_PACKAGE_ACTION]) {
  */
 
 $output = '<p>&nbsp;</p>
-<label for="user_email">Please enter the email address you would like MyComponent to send to.</label>
+<label for="sitename">The value here will be used to set the site_name system setting on install.</label>
+<p>&nbsp;</p>
+<input type="text" name="sitename" id="sitename" value="" align="left" size="40" maxlength="60" />
+<p>&nbsp;</p>
+<input type="checkbox" name="change_sitename" id="change_sitename" checked="checked" value="1" align="left" />&nbsp;&nbsp;
+<label for="change_sitename">Set site name on install</label>
+<p>&nbsp;</p>';
 
-<p>&nbsp;</p>
-<input type="text" name="user_email" id="user_email" value="" align="left" width="60" maxlength="60" />
-<p>&nbsp;</p>
-<p>
-Note: You can change this easily, or add multiple recipients, later<br />
-by going to the MyComponent snippet page, selecting the "properties" tab,<br />
-and changing the value of the recipientArray property.</p>';
 
 return $output;

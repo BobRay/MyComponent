@@ -56,9 +56,12 @@ $hasTemplates = true;
 $hasTemplateVariables = true;
 $hasExistingSettings = true;
 
-$settings = array(
-    'site_name'=>'Your Site',
-);
+/* These system settings will always be set during the install */
+if ($hasExistingSettings) {
+    $settings = array(
+        'emailsender'=>'your@yoursite.com',
+    );
+}
 
 /* You shouldn't have to change any code beyond this point */
 $success = true;
@@ -142,7 +145,19 @@ switch($options[xPDOTransport::PACKAGE_ACTION]) {
                 $modx->log(xPDO::LOG_LEVEL_INFO,'Failed to attach TVs to Templates');
             }
         }
+        /* This section will set the site_name system setting based on the checkbox and
+         * input field in the user.input.php form presented during the install.
+         */
+        $setSiteName = $modx->getOption('change_sitename', $options, false);
+        if ($setSiteName) {
+            $siteName = $modx->getOption('sitename', $options);
+            $modx->log(xPDO::LOG_LEVEL_INFO,'Setting site name to: ' . $siteName);
+            $setting = $modx->getObject('modSystemSetting','site_name');
+            $setting->set('value', $siteName);
+            $setting->save();
+        }
 
+        /* This section will set any system settings in the variables at the top of this file. */
         if ($hasExistingSettings) {
             $modx->log(xPDO::LOG_LEVEL_INFO,'Attempting so set existing System Settings');
             foreach($settings as $key=>$value) {
