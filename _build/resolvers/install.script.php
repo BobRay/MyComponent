@@ -56,7 +56,7 @@ $hasTemplates = true;
 $hasTemplateVariables = true;
 $hasExistingSettings = true;
 
-/* These system settings will always be set during the install */
+/* These existing system settings will always be set during the install */
 if ($hasExistingSettings) {
     $settings = array(
         'emailsender'=>'your@yoursite.com',

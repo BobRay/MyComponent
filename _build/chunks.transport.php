@@ -24,7 +24,9 @@
 
 /**
  * Utility snippet for development - just installs the
- * Tpl chunks into MODx.
+ * Tpl chunks into MODx. Not used by the package.
+ * It can also install the snippets if you uncomment
+ * the snippet section.
  *
  * @package mycomponent
  * @subpackage build

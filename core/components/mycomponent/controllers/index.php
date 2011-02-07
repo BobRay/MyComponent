@@ -2,7 +2,7 @@
 
 /**
  * Controller index.php for the MyComponent package
- * @author Bob Ray
+ * @author Your Name
  * 2/4/11
  *
  * @package mycomponent

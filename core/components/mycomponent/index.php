@@ -1,7 +1,7 @@
 <?php
 /**
  * Action file for the components menu item of the MyComponent package
- * @author Bob Ray
+ * @author Your Name
  * 2/4/11
  *
  * @package mycomponent
