@@ -38,8 +38,13 @@ and directories you don't need.
 Getting Started
 ---------------
 
-Install the MyComponent package in Package Manager. It will create
-the assets/mycomponents directory (a good place for all your
+Because the MyComponent package builds a package, it can't be
+installed directly. It would be missing the _build directory and
+it would actually install a number of objects on your site that you
+don't want.
+
+Instead, install the GetMyComponent package in Package Manager.
+It will create the the assets/mycomponents directory (a good place for all your
 components) and put the mycomponent directory below that. When you
 execute the mycomponent/_build/build.transport.php file, it will
 create a transport package called MyComponent and place it in your
@@ -116,21 +121,22 @@ is changed. If you're using PhpStorm, be sure to check the options
 to search for references and to look in comments and strings. Change
 any property file names.
 
-4. Do a case-sensitive global search-and-replace to change mycomponent
-to the lowercase name of your package. Then do another case-sensitive
-search-and-replace to change MyComponent to the camel-case name of
-your component. If your editor has the capability, you can do both
-at once using MyComponent->YourComponentName and the "preserve case"
-option set. Search for 1/1/11 and change it to the current date.
-Search for 2011 and replace it with the current year. Search for
-yoursite.com an change it to the URL of your site. Search for Your Site
-and change it to the name of your web site. Check the file paths in
-the _build/data/transport.*.php files. Search for Description and add
-a description for each file.
+4. Search-and-replace Operations
+
+ - Do a case-sensitive global search-and-replace to change mycomponent
+to the lowercase name of your package.
+ - Do another case-sensitive search-and-replace to change MyComponent to the camel-case name of
+your component.
+ - Search for 1/1/11 and change it to the current date.
+ - Search for 2011 and replace it with the current year.
+ - Search for yoursite.com and change it to the domain name of your site.
+ - Search for Your Site and change it to the name of your web site.
+ - Check the file paths in the _build/data/transport.*.php files.
+ - Search for Description and add a description for each file.
 
 5. Look through the files to see if anything was missed. In most cases,
-you'll get a warning during the build for any references that are not
-correct.
+you'll get a warning during the build for any path or filename references
+that are not correct.
 
 6. Rewrite the readme.txt file. If you use GitHub, rewrite the
 readme.md file. It's in MarkDown format, use the tool at
@@ -145,8 +151,9 @@ set the package name and version and to eliminate the components
 that your package doesn't have. You can delete the unwanted files
 and directories, or you can leave them there in case your package
 gets more complicated in the future. As long as the variables
-are set to false, the script will ignore them. Edit the variables
-at the top of _build/resolvers/install.script.php.
+are set to false, the script will ignore them and they won't be
+placed in the package. Edit the variables
+at the top of _build/resolvers/install.script.php to meet your needs.
 
 Plugin Your Code
 ----------------
@@ -158,14 +165,14 @@ edit the related _build/data file(s) and lexicon files to match.
 After pasting your snippet code into the *.snippet.php file, for
 example, edit the _build/transport.snippets/php file to set
 the snippet name and the other snippet fields. Put the appropriate
-language strings into the core/lexicion/en/default.inc.php file.
-If your snippet has default properties, edit the appropriate
-_build/properties file and add the property strings to the the
+language strings into the core/lexicon/en/default.inc.php file.
+If your snippet (or other element) has default properties, edit the
+appropriate _build/properties file and add the property strings to the the
 core/lexicon/en/properties.inc.php file.
 
 Put any class files in the core/model/mycomponent/ directory and
 make sure the references to them in any plugin or snippet code
-is correct. The correct reference would be something like:
+are correct. The correct reference would be something like:
 MODX_CORE_PATH . components/mycomponents/model/mycomponents/myclass.class.php
 
 Edit the transport scripts in the _build/data directory to remove
@@ -173,6 +180,19 @@ the sections for items you don't need, correct the fields for
 your elements and resources (if any), and correct the paths to
 the elements.
 
+Validators run before the package components have been installed.
+They're often used to test for necessary items for your package
+to run (e.g., a graphics library or another installed element
+your package uses, such as getResources).
+If you need a validator, Edit the code in
+_build/validators/preinstall.script.php to meet your needs.
+
+Resolvers run after the package components have been installed. They
+perform operations that aren't done in the install, such as
+connecting TVs to their templates, connecting plugin events to
+their plugins, setting the values of existing System Settings, setting
+System Settings or properties that depend on the the IDs of installed
+elements or resources (which aren't available during the install), etc.
 If you need a script resolver, Edit the code in
 _build/resolvers/install.script.php to meet your needs.
 
@@ -192,15 +212,35 @@ Install the Package
 The package will be placed in the core/packages directory (the one
 for the main MODx install, not the one in your package).
 
-Go to Package Manager and click on "Add Package" and "Search
+There is a potential source of confusion here. Let's say your package
+is called yourcomponent. If you install your package in the same install
+of MODx that contains your _build directory, you'll have duplicate files in
+
+assets/mycomponents/yourcomponent/assets/yourcomponent
+and
+assets/yourcomponent
+
+as well as
+core/mycomponents/yourcomponent/core/yourcomponent
+and
+core/yourcomponent
+
+There's no harm in this, but it's easy to get confused and edit
+the wrong file when you're working on the package. One solution
+is to install the package a completely separate MODx installation.
+The other solution is to be really careful about where you are when
+working on the package.
+
+To install the package, once the transport .zip file has been copied
+to the core/packages directory, go to Package Manager and click on "Add Package" and "Search
 Locally for Packages." You should see your package in the grid.
 Install it and then check to make sure it's all there. Check the
 assets/components/yourcomponent and core/components/yourcomponent
 directories to make sure the files were transferred.
 
-If you have to modify the build script, uninstall and remove
-(force removal) your package. Then you can run the build again
-and try reinstalling.
+If you have to modify the build script or any files in the package,
+uninstall and remove (force removal) your package. Then you can run
+the build again, copy the .zip file, and try reinstalling.
 
 Running Your Component
 ----------------------
@@ -211,18 +251,19 @@ won't show up when you run it until you uninstall, rebuild, and
 reinstall because MODx is running the version you installed,
 not the version you are building.
 
-There's a way around that, thanks to Shaun McCormick, but you have
-to remember what you're doing or it's easy to get confused.
+There's a way around that, thanks to a method developed by
+Shaun McCormick, but you have to remember what you're doing or
+it's easy to get confused.
 
 If you would like to actually run the code for plugins and snippets
-that your build script is packaging, you can create new system
-settings with the paths and URLs for that version. Then in the code
+that your build script is packaging, you can create new System
+Settings with the paths and URLs for that version. Then in the code
 of your snippets and plugins, get that path with a line like this:
 
 $path = $modx->getOption('mc.core_path',null,
     $modx->getOption('core_path').'components/yourcomponent/');
 
-If you set the mc.core_path system setting to:
+If, for example, you set the mc.core_path system setting to:
 
 {assets_path}components/yourcomponent/core/components/yourcomponent/
 
