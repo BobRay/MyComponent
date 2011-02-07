@@ -371,8 +371,8 @@ if ($hasSettings) {
  * and setup options 
  */
 $builder->setPackageAttributes(array(
-    'license' => file_get_contents($sources['source_core'] . '/docs/license.txt'),
-    'readme' => file_get_contents($sources['source_core'] . '/docs/readme.txt'),
+    'license' => file_get_contents($sources['docs'] . 'license.txt'),
+    'readme' => file_get_contents($sources['docs'] . 'readme.txt'),
     'changelog' => file_get_contents($sources['docs'] . 'changelog.txt'),
     'setup-options' => array(
         'source' => $sources['install_options'].'user.input.php',
