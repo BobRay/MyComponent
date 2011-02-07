@@ -54,12 +54,25 @@ $category = 'MyComponent';
 $hasPlugins = true;
 $hasTemplates = true;
 $hasTemplateVariables = true;
-$hasExistingSettings = true;
+
+ /* If the following variable is set to true, this script will set
+  * the existing system settings below. I like these setting, which
+  * improve the Manager speed and usability (IMO), but you should
+  * generally avoid setting existing system settings for another
+  * user unless absolutely necessary for your component. Note that
+  *  the changes will remain even if the component is uninstalled
+  */
+
+ $hasExistingSettings = false;
 
 /* These existing system settings will always be set during the install */
 if ($hasExistingSettings) {
     $settings = array(
-        'emailsender'=>'your@yoursite.com',
+        'feed_modx_news_enabled'=> false,
+        'feed_modx_security_enabled'=> false,
+        'auto_check_pkg_updates' => false,
+        'default_per_page' => '100',
+        'automatic_alias' => true,
     );
 }
 
@@ -165,6 +178,7 @@ switch($options[xPDOTransport::PACKAGE_ACTION]) {
                 if ($setting) {
                     $setting->set('value',$value);
                     if ($setting->save()){
+                        $value = $value? $value : '0'; /* make false values show in msg */
                         $modx->log(xPDO::LOG_LEVEL_INFO,'Updated System Setting: ' . $key . ' to ' . $value );
                     }
                 } else {
