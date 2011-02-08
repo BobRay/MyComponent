@@ -27,11 +27,8 @@
  * @package mycomponent
  * @subpackage build
  */
-/* ToDo: Add setup options */
-/* ToDo: Create MetaPackage with just a file resolver */
-/* ToDo: Do tutorial */
 
-/* See the mycomponent/core/docs/notes.txt file for
+/* See the mycomponent/core/docs/tutorial.html file for
  * more detailed information about using the package
  *
  * Search and replace tasks:
@@ -60,17 +57,18 @@ define('PKG_CATEGORY','MyComponent');
 /* Set package options - you can turn these on one-by-one
  * as you create the transport package
  * */
-$hasAssets = true;
-$hasCore = true;
+$hasAssets = true; /* Transfer the files in the assets dir. */
+$hasCore = true;   /* Transfer the files in the core dir. */
 $hasSnippets = true;
 $hasChunks = true;
 $hasTemplates = true;
 $hasResources = true;
-$hasValidator = true;
-$hasResolver = true;
+$hasValidator = true; /* Run a validator before installing anything */
+$hasResolver = true; /* Run a resolver after installing everything */
 $hasSetupOptions = true; /* HTML/PHP script to interact with user */
-$hasMenu = true;
-$hasSettings = true;
+$hasMenu = true; /* Add items to the MODx Top Menu */
+$hasSettings = true; /* Add new MODx System Settings */
+
 /* Note: TVs are connected to their templates in the script resolver
  * (see _build/data/resolvers/install.script.php)
  */
