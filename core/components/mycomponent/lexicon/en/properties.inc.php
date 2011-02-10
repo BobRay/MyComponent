@@ -50,3 +50,14 @@ $_lang['mc_plugin1_property3_desc'] = '(required) This is the plugin1 property3 
 $_lang['mc_plugin2_property1_desc'] = '(required) This is the plugin2 property1 description';
 $_lang['mc_plugin2_property2_desc'] = '(required) This is the plugin2 property2 description';
 $_lang['mc_plugin2_property3_desc'] = '(required) This is the plugin2 property3 description';
+
+/* Propertyset1 properties */
+
+$_lang['mc_propertyset1_property1_desc'] = '(required) This is the propertyset1 property1 description (overrides default property1)';
+$_lang['mc_propertyset1_property2_desc'] = '(optional) This is the propertyset1 property2 description (overrides default property2)';
+$_lang['mc_propertyset1_property4_desc'] = '(optional) This is the propertyset1 property4 description (not in the default properties)';
+
+/* Propertyset2 properties */
+
+$_lang['mc_propertyset2_property1_desc'] = '(required) This is the propertyset2 property1 description (overrides default property1)';
+$_lang['mc_propertyset2_property2_desc'] = '(optional) This is the propertyset2 property2 description (overrides default property2)';

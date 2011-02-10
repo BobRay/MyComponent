@@ -80,6 +80,11 @@ $hasTemplates = true;
 $hasPlugins = true;
 $hasPluginEvents = true;
 
+$hasPropertySets = true;
+/* Note: property sets are connected to elements in the script
+ * resolver (see _build/data/resolvers/install.script.php)
+ */
+
 /******************************************
  * Work begins here
  * ****************************************/
@@ -142,6 +147,14 @@ if ($hasSnippets) {
     } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding snippets failed.'); }
 }
 
+if ($hasPropertySets) { /* add property sets */
+    $modx->log(modX::LOG_LEVEL_INFO,'Adding in property sets.');
+    $propertysets = include $sources['data'].'transport.propertysets.php';
+    /* note: property set' properties are set in transport.propertysets.php */
+    if (is_array($snippets)) {
+        $category->addMany($propertysets, 'PropertySets');
+    } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding property sets failed.'); }
+}
 if ($hasChunks) { /* add chunks  */
     $modx->log(modX::LOG_LEVEL_INFO,'Adding in chunks.');
     /* note: Chunks' default properties are set in transport.chunks.php */    
@@ -197,6 +210,14 @@ if ($hasValidator) {
 
 if ($hasSnippets) {
     $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Snippets'] = array(
+            xPDOTransport::PRESERVE_KEYS => false,
+            xPDOTransport::UPDATE_OBJECT => true,
+            xPDOTransport::UNIQUE_KEY => 'name',
+        );
+}
+
+if ($hasPropertySets) {
+    $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['PropertySets'] = array(
             xPDOTransport::PRESERVE_KEYS => false,
             xPDOTransport::UPDATE_OBJECT => true,
             xPDOTransport::UNIQUE_KEY => 'name',
