@@ -84,6 +84,14 @@ $hasPropertySets = true;
 /* Note: property sets are connected to elements in the script
  * resolver (see _build/data/resolvers/install.script.php)
  */
+$hasSubPackages = true; /* add in other component packages (transport.zip files)*/
+/* Note: The package files will be copied to core/packages but will
+ * have to be installed manually with "Add New Package" and "Search
+ * Locally for Packages" in Package Manager. Be aware that the
+ * copied packages may be older versions than ones already
+ * installed. This is necessary because Package Manager's
+ * autoinstall of the packages is unreliable at this point. 
+ */
 
 /******************************************
  * Work begins here
@@ -109,6 +117,7 @@ $sources= array (
     'data' => $root . '_build/data/',
     'docs' => $root . 'core/components/mycomponent/docs/',
     'install_options' => $root . '_build/install.options/',
+    'packages'=> $root . 'core/packages',
 );
 unset($root);
 
@@ -268,8 +277,6 @@ if ($hasValidator) {
     ));
 }
 
-
-
 /* package in script resolver if any */
 if ($hasResolver) {
     $modx->log(modX::LOG_LEVEL_INFO,'Adding in Script Resolver.');
@@ -304,10 +311,27 @@ if ($hasCore) {
             'target' => "return MODX_ASSETS_PATH . 'components/';",
         ));
     }
+
+/* Add subpackages */
+/* The transport.zip files will be copied to core/packages
+ * but will have to be installed manually with "Add New Package and
+ *  "Search Locally for Packages" in Package Manager
+ */
+
+if ($hasSubPackages) {
+    $modx->log(modX::LOG_LEVEL_INFO, 'Adding in subpackages.');
+     $vehicle->resolve('file',array(
+        'source' => $sources['packages'],
+        'target' => "return MODX_CORE_PATH;",
+        ));
+}
+
 /* Put the category vehicle (with all the stuff we added to the
  * category) into the package 
  */
 $builder->putVehicle($vehicle);
+
+
 
 /* Transport Resources */
 
