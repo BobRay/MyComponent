@@ -115,7 +115,7 @@ $sources= array (
     'resolvers' => $root . '_build/resolvers/',
     'validators'=> $root . '_build/validators/',
     'data' => $root . '_build/data/',
-    'docs' => $root . 'core/components/mycomponent/docs/',
+    'docs' => $root . 'core/components/' . PKG_NAME_LOWER . '/docs/',
     'install_options' => $root . '_build/install.options/',
     'packages'=> $root . 'core/packages',
 );
