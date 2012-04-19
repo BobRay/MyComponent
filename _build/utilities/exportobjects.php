@@ -49,10 +49,10 @@
  * Typical snippet call (use your package name instead of MyComponent):
  *
     [[!ExportObjects?
-        &category=`MyCategory`
+        &category=`MyComponent`
+        &packageName=`MyComponent`
         &authorName=`Bob Ray`
         &authorEmail=`<bobray@softville.com>`
-        &packageName=`MyComponent`
         &dryRun=`1`
         &createTransportFiles=`1`
         &createObjectFiles=`1`
@@ -71,16 +71,7 @@
  *
 */
 
-$scriptProperties = array(
-    'authorName' => 'Bob Ray',
-    'authorEmail' => '<http://bobsguides.com>',
-    'category' => 'newspublisher',
-    'packageName' => 'newspublisher',
-    'dryRun' => '1',
-    'createTransportFiles' => '1',
-    'createObjectFiles' => '1',
-    'process' => 'menus,templates,templateVars,chunks,snippets,systemSettings',
-);
+
 
 $props =& $scriptProperties;
 
@@ -94,7 +85,18 @@ if (!defined(MODX_CORE_PATH)) {
     $modx->setLogLevel(modX::LOG_LEVEL_INFO);
     $modx->setLogTarget('ECHO');
 }
+$scriptProperties = array(
+    'basePath' => MODX_ASSETS_PATH . 'mycomponents/test/',
+    'authorName' => 'Bob Ray',
+    'authorEmail' => '<http://bobsguides.com>',
+    'category' => 'MyComponent',
+    'packageName' => 'Test',
+    'dryRun' => '0',
+    'createTransportFiles' => '1',
+    'createObjectFiles' => '1',
+    'process' => 'chunks,snippets,plugins,templates,systemSettings,templateVars',
 
+);
 require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/export.class.php';
 
 $export = new Export($modx,$props);
