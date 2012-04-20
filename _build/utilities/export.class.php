@@ -196,6 +196,8 @@ class Export
         if (!empty($properties)) {
             /* handled below */
             unset($fields['properties']);
+        } else {
+            ($fields['properties'] ='');
         }
         unset($fields['id'],
             $fields['snippet'],
@@ -207,7 +209,8 @@ class Export
             $fields['static_file'],
             $fields['moduleguid'],
             $fields['locked'],
-            $fields['source']
+            $fields['source'],
+            $fields['cache_type']
         );
 
         foreach ($fields as $field => $value) {
