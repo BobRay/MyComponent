@@ -30,3 +30,26 @@ $menu->fromArray(array(
 $menu->addOne($action);
 
 return $menu;
+
+/* As of MODX 2.3, all of the above will be replaced by this: */
+/* Note: will route to the first found of the following:
+ [namespace-path]controllers/[manager-theme]/index.class.php
+ [namespace-path]controllers/default/index.class.php
+ [namespace-path]controllers/index.class.php
+*/
+
+/*
+$menu= $modx->newObject('modMenu');
+$menu->fromArray(array(
+    'text' => 'mycomponent',
+    'parent' => 'components',
+    'description' => 'mycomponent.menu_desc',
+    'icon' => 'images/icons/plugin.gif',
+    'menuindex' => 0,
+    'params' => '',
+    'handler' => '',
+    'action' => 'index',
+    'namespace' => 'mycomponent',
+),'',true,true);
+return $menu;
+*/
