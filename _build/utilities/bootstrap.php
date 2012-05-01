@@ -16,13 +16,12 @@ if (!defined(MODX_CORE_PATH)) {
     $scriptProperties = array(
       'ignoreDirs' => array(),
       'noProcess' => array(),
-      'componentName' => 'test2',
+      'componentName' => 'CollapsibleList',
     );
     $props =& $scriptProperties;
     require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/bootstrap.class.php';
     $bootStrap = new Bootstrap($modx,$props);
     $bootStrap->init();
-    $componentName = $props['componentName'];
 
     /*$source = MODX_ASSETS_PATH . 'mycomponents/mycomponent';
     $dest = MODX_ASSETS_PATH . 'mycomponents/' . $componentName;*/
@@ -37,7 +36,7 @@ if (!defined(MODX_CORE_PATH)) {
 
     /*$old = MODX_ASSETS_PATH . 'mycomponents/' . $componentName . '/core/components/mycomponent';
     $new = MODX_ASSETS_PATH . 'mycomponents/' . $componentName . '/core/components/' . $componentName;*/
-    $bootStrap->renameDirs();
+    //$bootStrap->renameDirs();
 
     $modx->log(MODX::LOG_LEVEL_INFO,'Finished renaming. Doing Search and Replace');
 

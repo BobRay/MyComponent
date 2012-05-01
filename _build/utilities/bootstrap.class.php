@@ -46,7 +46,7 @@ class Bootstrap {
         $this->componentName = $this->props['componentName'];
         $this->componentNameLower = strtolower($this->componentName);
         $this->source = MODX_ASSETS_PATH . 'mycomponents/mycomponent';
-        $this->dest = MODX_ASSETS_PATH . 'mycomponents/' . $this->componentName;
+        $this->dest = MODX_ASSETS_PATH . 'mycomponents/' . $this->componentNameLower;
 
     }
     public function copy() {
