@@ -28,9 +28,13 @@ class Export
     var $elements;
     var $category;
     var $categoryId;
+    var $parents; //array of parents
+    var $includeParents; // should parent resources be included
+    var $pagetitles; // array of pagetitles
     var $basePath;
     var $corePath;
     var $elementPath;
+    var $resourcePath;
     var $packageName;
     var $filePath;
     var $transportPath;
@@ -62,7 +66,13 @@ class Export
         $this->packageName = ! empty($packageName)
             ?strtolower($packageName)
             :strtolower($category);
-        $this->category = $category;
+        $this->category = $category; 
+        $parents = $this->modx->getOption('parents', $this->props,null);
+        $this->parents =  $parents ? explode(',',$parents): array();
+        $this->includeParents = $this->modx->getOption('includeParents', $this->props,false);
+
+        $pagetitles = $this->modx->getOption('pagetitles', $this->props,null);
+        $this->pagetitles =  $pagetitles ? explode(',',$pagetitles): array();
 
         $this->createObjectFiles = $this->modx->getOption('createObjectFiles',$this->props,false);
         $this->createTransportFiles = $this->modx->getOption('createTransportFiles',$this->props,false);
@@ -76,8 +86,10 @@ class Export
         if(substr($this->basePath, -1) != "/") $this->basePath .= "/";
         
         $this->corePath = $this->modx->getOption('corePath', $this->props,$this->basePath . 'core/components/' . $this->packageName . '/');
-        
-        $this->elementPath = $this->corePath . 'elements/';
+
+            $this->resourcePath = $this->basePath . '_build/data/resources/';
+            $this->elementPath = $this->corePath . 'elements/';
+
         if (!is_dir($this->elementPath)) {
             if (!$this->dryRun) {
                 if (!mkDir($this->elementPath, 0, true)) {
@@ -127,7 +139,7 @@ class Export
 
     function process($element)
     {
-        if (stristr($element,'menu')) {
+        if (stristr($element,'menu')) { /* note: may change in Revo 2.3 */
             $element='Actions';
         }
 
@@ -137,13 +149,18 @@ class Export
         /* convert 'chunks' to 'modChunk' etc. */
         $this->elementType = 'mod' . substr(ucFirst($element),0,-1);
         $this->modx->log(modX::LOG_LEVEL_INFO, 'Element Type: ' . $this->elementType);
-        $key = $this->elementType == 'modSystemSetting' || $this->elementType =='modAction' ? 'namespace' : 'category';
-        $value = $this->elementType == 'modSystemSetting' || $this->elementType =='modAction'  ? strtolower($this->category) : $this->categoryId;
-        $this->elements = $this->modx->getCollection($this->elementType, array($key => $value));
-        if (empty($this->elements) && $this->elementType == 'modSystemSetting') {
-            /* try again with actual category for system settings*/
-            $value = $this->category;
+
+        if ($this->elementType == 'modResource') {
+            $this->pullResources();
+        } else {
+            $key = $this->elementType == 'modSystemSetting' || $this->elementType =='modAction' ? 'namespace' : 'category';
+            $value = $this->elementType == 'modSystemSetting' || $this->elementType =='modAction'  ? strtolower($this->category) : $this->categoryId;
             $this->elements = $this->modx->getCollection($this->elementType, array($key => $value));
+            if (empty($this->elements) && $this->elementType == 'modSystemSetting') {
+                /* try again with actual category for system settings*/
+                $value = $this->category;
+                $this->elements = $this->modx->getCollection($this->elementType, array($key => $value));
+            }
         }
 
         if (empty($this->elements)) {
@@ -180,7 +197,37 @@ class Export
         fclose($transportFp);
         $this->modx->log(modX::LOG_LEVEL_INFO, 'Finished processing: ' . $element);
     }
+    /** populates $this->elements with an array of resources based on pagetitles and/or parents */
+    protected function pullResources() {
+        /* @var $parent modResource */
+        $this->elements = array();
 
+        /* add resources from pagetitle array to $this->elements */
+        if (!empty($this->pagetitles)) {
+            foreach ($this->pagetitles as $pagetitle) {
+                $resObject = $this->modx->getObject('modResource', array('pagetitle' => trim($pagetitle)));
+                if ($resObject) {
+                    $this->elements[] = $resObject;
+                }
+            }
+        }
+        /* add children of  from pagetitle array to $this->elements */
+        if (!empty($this->parents)) {
+            foreach($this->parents as $parentId) {
+                $parent = $this->modx->getObject('modResource', $parentId);
+                if ($parent) {
+                    if ($this->includeParents) {
+                        $this->elements[] = $parent;
+                    }
+                    $children = $parent->getMany('Children');
+                    if (!empty ($children)) {
+                        $this->elements = array_merge($this->elements,$children);
+                    }
+                }
+            }
+
+        }
+    }
     /* Writes individual object to transport file */
 
     protected function writeObject($transportFp, $elementObj, $element, $i) {
@@ -210,7 +257,16 @@ class Export
             $fields['moduleguid'],
             $fields['locked'],
             $fields['source'],
-            $fields['cache_type']
+            $fields['cache_type'],
+            $fields['parent'],
+            $fields['pub_date'],
+            $fields['unpub_date'],
+            $fields['createdon'],
+            $fields['publishedon'],
+            $fields['publishedby'],
+            $fields['uri'],
+            $fields['uri_override'],
+            $fields['editedon']
         );
 
         foreach ($fields as $field => $value) {
@@ -226,22 +282,27 @@ class Export
                 fwrite($transportFp, "    'snippet' => getSnippetContent(\$sources['source_core']." . "'/elements/snippets/" . $this->makeFileName($elementObj) . "'),\n");
                 break;
             case 'modPlugin':
-                fwrite($transportFp, "    'plugin' => fgetSnippetContent(\$sources['source_core']." . "'/elements/plugins/" . $this->makeFileName($elementObj) . "'),\n");
+                fwrite($transportFp, "    'plugin' => getSnippetContent(\$sources['source_core']." . "'/elements/plugins/" . $this->makeFileName($elementObj) . "'),\n");
 
             case 'modTemplate':
-                //fwrite($transportFp, "    'template_type' => '" . $elementObj->get('template_type') . "',\n");
+
                 fwrite($transportFp, "    'content' => file_get_contents(\$sources['source_core']." . "'/elements/templates/" . $this->makeFileName($elementObj) . "'),\n");
                 break;
+
+
             default:
                 break;
         }
         /* finish up */
-        fwrite($transportFp, "),'',true,true);\n\n");
+        fwrite($transportFp, "),'',true,true);\n");
 
-        //$properties =  $elementObj->get('properties');//$fields['properties'];
+        if ($this->elementType == 'modResource') {
+            fwrite($transportFp, "\$resources[" . $i . "]->setContent(file_get_contents(\$sources['data']." . "'resources/" . $this->makeFileName($elementObj) . "'));\n\n");
+        }
+
         /* handle properties */
         if (! empty($properties)) {
-            fwrite($transportFp,"\$properties = include \$sources['data'].'properties/properties." . strtolower($elementObj->get('name')) .".php';\n");
+            fwrite($transportFp,"\n\$properties = include \$sources['data'].'properties/properties." . strtolower($elementObj->get('name')) .".php';\n");
             fwrite($transportFp,"\$plugins[" . $i . "]->setProperties(\$properties);\n");
             fwrite($transportFp,"unset(\$properties);\n");
             $this->writePropertyFile($properties, 'properties.' . strtolower($elementObj->get('name')) . '.php');
@@ -339,8 +400,11 @@ class Export
             $this->modx->log(modX::LOG_LEVEL_INFO, 'Skipping object file for: ' . $this->elementType . '; object (does not need source file)');
             return;
         }
-
-        $path = $this->elementPath . $element . '/';
+        if ($this->elementType == 'modResource') {
+            $path = $this->resourcePath;
+        } else {
+            $path = $this->elementPath . $element . '/';
+        }
         if (! is_dir($path))
             if( !$this->dryRun) {
                 if (!mkdir($path,0,true)) {
@@ -385,6 +449,7 @@ class Export
     protected function makeFileName($elementObj) {
         /* $element is now in the form 'chunk', 'templatevar Chunks to chunk, etc. */
         /* set default suffix to 'chunk', 'snippet', etc. */
+        /* @var $elementObj modElement */
         $suffix = substr(strtolower($this->elementType),3);
 
         $extension = 'php';
@@ -399,6 +464,11 @@ class Export
             case 'modSnippet':
             case 'modPlugin':
                 $name = $elementObj->get('name');
+                break;
+            case 'modResource':
+                $name = $elementObj->get('pagetitle');
+                $extension = 'html';
+                $suffix = 'content';
                 break;
             default:
                $name = '';

@@ -7,7 +7,7 @@
  * @package mycomponent
  * @subpackage build
  */
-
+/* @var $modx modX */
 $resources = array();
 
 $modx->log(modX::LOG_LEVEL_INFO,'Packaging resource: resource1<br />');

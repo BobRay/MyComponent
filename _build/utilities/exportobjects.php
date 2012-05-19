@@ -73,7 +73,6 @@
 
 
 
-$props =& $scriptProperties;
 
 /* @var $modx modX */
 if (!defined(MODX_CORE_PATH)) {
@@ -85,18 +84,25 @@ if (!defined(MODX_CORE_PATH)) {
     $modx->setLogLevel(modX::LOG_LEVEL_INFO);
     $modx->setLogTarget('ECHO');
 }
-$scriptProperties = array(
-    'basePath' => MODX_ASSETS_PATH . 'mycomponents/test/',
+/* for debugging */
+/*$scriptProperties = array(
+    'basePath' => MODX_ASSETS_PATH . 'mycomponents/subscribe/',
     'authorName' => 'Bob Ray',
     'authorEmail' => '<http://bobsguides.com>',
-    'category' => 'MyComponent',
-    'packageName' => 'Test',
+    'category' => 'Subscribe',
+    'packageName' => 'Subscribe',
     'dryRun' => '0',
     'createTransportFiles' => '1',
     'createObjectFiles' => '1',
-    'process' => 'chunks,snippets,plugins,templates,systemSettings,templateVars',
+    'process' => 'resources',
+    'pagetitles' => '', // pagetitles of resources to process
+    'parents' => '328', //parents of resources to process
+    'includeParents' => 1,
 
-);
+);*/
+
+$props =& $scriptProperties;
+
 require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/export.class.php';
 
 $export = new Export($modx,$props);
