@@ -130,7 +130,7 @@ class Export
             return false;
         }
         $this->categoryId = $this->categoryObj->get('id');
-
+        $this->modx->log(modX::LOG_LEVEL_INFO, 'Category ID: ' . $this->categoryId);
         /* dry run if user has set &dryRun=`1` or has not set either create option */
 
 
@@ -211,7 +211,7 @@ class Export
                 }
             }
         }
-        /* add children of  from pagetitle array to $this->elements */
+        /* add children of pagetitle array objects to $this->elements */
         if (!empty($this->parents)) {
             foreach($this->parents as $parentId) {
                 $parent = $this->modx->getObject('modResource', $parentId);
@@ -239,6 +239,9 @@ class Export
         fwrite($transportFp, '$' . $element . 's[' . $i . '] ->fromArray(array(' . "\n");
         fwrite($transportFp, "    'id' => " . $i . ",\n");
         $fields = $elementObj->toArray('',true);  // true gets raw values - check this
+
+        /* This may not be necessary */
+        /* *********** */
         $properties = $elementObj->get('properties');
         if (!empty($properties)) {
             /* handled below */
@@ -246,6 +249,7 @@ class Export
         } else {
             ($fields['properties'] ='');
         }
+        /* ************  */
         unset($fields['id'],
             $fields['snippet'],
             $fields['content'],
@@ -266,7 +270,10 @@ class Export
             $fields['publishedby'],
             $fields['uri'],
             $fields['uri_override'],
-            $fields['editedon']
+            $fields['editedon'],
+            $fields['desc_trans'],
+            $fields['text'],
+            $fields['menu']
         );
 
         foreach ($fields as $field => $value) {
@@ -275,6 +282,7 @@ class Export
         /* ToDo: Property Sets */
         /* write object-specific stuff */
         switch ($this->elementType) {
+
             case 'modChunk':
                 fwrite($transportFp, "    'snippet' => file_get_contents(\$sources['source_core']." . "'/elements/chunks/" . $this->makeFileName($elementObj) . "'),\n");
                 break;
@@ -303,7 +311,7 @@ class Export
         /* handle properties */
         if (! empty($properties)) {
             fwrite($transportFp,"\n\$properties = include \$sources['data'].'properties/properties." . strtolower($elementObj->get('name')) .".php';\n");
-            fwrite($transportFp,"\$plugins[" . $i . "]->setProperties(\$properties);\n");
+            fwrite($transportFp, '$' . $element . "s[" . $i . "]->setProperties(\$properties);\n");
             fwrite($transportFp,"unset(\$properties);\n");
             $this->writePropertyFile($properties, 'properties.' . strtolower($elementObj->get('name')) . '.php');
         }
@@ -428,19 +436,21 @@ class Export
             $this->modx->log(modX::LOG_LEVEL_ERROR, 'Could not open transport file: ' . $path);
         }
         $this->modx->log(modX::LOG_LEVEL_INFO, "\n\n --- Begin File Content --- ");
+        flush();
         if ($this->elementType == 'modSnippet' || $this->elementType == 'modPlugin') {
             if (! strstr($content, '<?')) {
                 fwrite($fileFp,"<?php\n\n");
             }
 
 
-            if (strstr($content,'GNU') && ! stristr($content,'License') ) {
+            if ( (!strstr($content,'GNU')) && (!stristr($content,'License')) ) {
                 $this->writeLicense($fileFp);
             }
         }
 
         fwrite($fileFp,$content);
         fclose($fileFp);
+        flush();
         $this->modx->log(modX::LOG_LEVEL_INFO, "\n --- End File Content --- \n");
 
 
@@ -475,6 +485,8 @@ class Export
                 break;
 
         }
+        /* replace spaces with underscore */
+        $name = str_replace(' ', '_', $name);
         return $name? strtolower($name) . '.' . $suffix . '.' . $extension : '';
 
     }

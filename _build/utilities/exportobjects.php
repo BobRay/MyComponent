@@ -85,21 +85,21 @@ if (!defined(MODX_CORE_PATH)) {
     $modx->setLogTarget('ECHO');
 }
 /* for debugging */
-/*$scriptProperties = array(
-    'basePath' => MODX_ASSETS_PATH . 'mycomponents/subscribe/',
+$scriptProperties = array(
+    'basePath' => MODX_ASSETS_PATH . 'mycomponents/notify/',
     'authorName' => 'Bob Ray',
     'authorEmail' => '<http://bobsguides.com>',
-    'category' => 'Subscribe',
-    'packageName' => 'Subscribe',
+    'category' => 'notify',
+    'packageName' => 'Notify',
     'dryRun' => '0',
     'createTransportFiles' => '1',
     'createObjectFiles' => '1',
-    'process' => 'resources',
-    'pagetitles' => '', // pagetitles of resources to process
-    'parents' => '328', //parents of resources to process
-    'includeParents' => 1,
+    'process' => 'propertySets',
+    'pagetitles' => 'Notify,NotifyPreview', // pagetitles of resources to process
+    'parents' => '', //parents of resources to process
+    'includeParents' => 0,
 
-);*/
+);
 
 $props =& $scriptProperties;
 
