@@ -7,7 +7,9 @@
  * To change this template use File | Settings | File Templates.
  */
 
-define('DS', DIRECTORY_SEPARATOR);
+if (!defined('DS')) {
+    define('DS', DIRECTORY_SEPARATOR);
+}
 
 
 
@@ -101,7 +103,7 @@ class Bootstrap {
                 if ($f == ".." || $f == "." || strstr ($f,'.git' )) {
                     continue;
                 }
-                $this->_doSearchReplace($path.DS.$f, &$name);
+                $this->_doSearchReplace($path.DS.$f, $name);
               } else {
                   if (! $this->ignore($f) ) {
                       $names[] = $path.DS.$f;
