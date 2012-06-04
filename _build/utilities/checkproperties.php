@@ -1,11 +1,36 @@
 <?php
 /**
- * Created by JetBrains PhpStorm.
- * User: Bob Ray
- * Date: 6/2/12
- * Time: 11:47 PM
- * To change this template use File | Settings | File Templates.
- */
+ * CheckProperties
+ * Copyright 2012 Bob Ray
+ *
+ * CheckProperties is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option) any
+ * later version.
+ *
+ * CheckProperties is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * CheckProperties; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
+ * Suite 330, Boston, MA 02111-1307 USA
+ *
+ * @package mycomponent
+ * @author Bob Ray <http://bobsguides.com>
+
+ *
+ * Description: The CheckProperties snippet identifies properties
+ * used in code with $modx->getOption() and checks them against properties.
+ * in the properties file.
+ *
+ * Output can be pasted into the properties file.
+ * /
+
+/*
+
+  Modified: June, 2012
+
 
 $packageName = 'Notify';
 $packageNameLower = strtolower($packageName);
