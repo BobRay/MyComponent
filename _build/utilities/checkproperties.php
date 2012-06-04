@@ -31,7 +31,7 @@
 
   Modified: June, 2012
 
-
+*/
 $packageName = 'Notify';
 $packageNameLower = strtolower($packageName);
 $base = 'c:/xampp/htdocs/addons/assets/mycomponents/notify/';
