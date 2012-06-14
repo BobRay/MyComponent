@@ -76,6 +76,7 @@
 
 /* @var $modx modX */
 if (!defined(MODX_CORE_PATH)) {
+    $outsideModx = true;
     require_once dirname(dirname(__FILE__)).'/build.config.php';
     require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
     $modx= new modX();
@@ -83,23 +84,27 @@ if (!defined(MODX_CORE_PATH)) {
     echo '<pre>'; /* used for nice formatting for log messages  */
     $modx->setLogLevel(modX::LOG_LEVEL_INFO);
     $modx->setLogTarget('ECHO');
+} else {
+    $outsideModx = false;
 }
-/* for debugging */
-$scriptProperties = array(
-    'basePath' => MODX_ASSETS_PATH . 'mycomponents/notify/',
-    'authorName' => 'Bob Ray',
-    'authorEmail' => '<http://bobsguides.com>',
-    'category' => 'notify',
-    'packageName' => 'Notify',
-    'dryRun' => '0',
-    'createTransportFiles' => '1',
-    'createObjectFiles' => '1',
-    'process' => 'propertySets',
-    'pagetitles' => 'Notify,NotifyPreview', // pagetitles of resources to process
-    'parents' => '', //parents of resources to process
-    'includeParents' => 0,
+/* for debugging or running outside of MODX */
 
-);
+if ($outsideModx) {
+    $scriptProperties = array(
+        'basePath' => MODX_ASSETS_PATH . 'mycomponents/notify/',
+        'authorName' => 'Bob Ray',
+        'authorEmail' => '<http://bobsguides.com>',
+        'category' => 'notify',
+        'packageName' => 'Notify',
+        'dryRun' => '1',
+        'createTransportFiles' => '1',
+        'createObjectFiles' => '1',
+        'process' => 'templateVars',
+        'pagetitles' => 'Notify,NotifyPreview', // pagetitles of resources to process
+        'parents' => '', //parents of resources to process
+        'includeParents' => 0,
+    );
+}
 
 $props =& $scriptProperties;
 
