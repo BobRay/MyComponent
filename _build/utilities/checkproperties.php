@@ -107,7 +107,7 @@ if (empty($missing)) {
     }
 }
 
-echo "\nOrphans in properties file (may be used in another file)\n********************\n";
+echo "\nOrphans in properties file (may be used in another file or generated dynamically)\n********************\n";
 
 if (empty($orphans)) {
     echo "None\n";
