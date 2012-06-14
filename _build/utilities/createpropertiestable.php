@@ -114,14 +114,15 @@ function parseDesc($text, &$fields) {
         $fields['desc'] = $text;
     }
     $fields['desc'] = trim($fields['desc'],"\.\'\"\;\: ");
-    $fields['default'] = rtrim($fields['default'],"\.\'\"\;\: ");
-    $fields['default'] = ltrim($fields['default'],"\'\"\;\: ");
+
+    if (isset($fields['default'])) {
+        $fields['default'] = rtrim($fields['default'],"\.\'\"\;\: ");
+        $fields['default'] = ltrim($fields['default'],"\'\"\;\: ");
+    }
     //echo "DESCRIPTION: " . $fields['desc'] . "\n";
     //echo "DEFAULT: " . $fields['default'] . "\n";
-
-
-
 }
+
 //echo "COUNT: " . count($properties) . "\n";
 $propertiesComment = '';
 foreach($properties as $property) {
@@ -156,11 +157,8 @@ foreach($properties as $property) {
 
 }
 
-
 $output = str_replace('[[+rows]]', $rows, $tableTpl);
 if ($rewriteCodeFile && !empty($codeFile) ) {
-
-
     $content = file_get_contents($codeFile);
     $count = 0;
     if (!empty($content) && !empty($propertiesComment)) {
