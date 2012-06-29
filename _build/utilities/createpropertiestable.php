@@ -36,9 +36,11 @@ $propertiesFile = '_build/data/properties/properties.notify.php';
 $propertiesFile = $base . $propertiesFile;
 $languageFile = 'core/components/notify/lexicon/en/properties.inc.php';
 $languageFile = $base . $languageFile;
-$rewriteCodeFile = true;
-$propertiesInjected = false;
+$rewriteCodeFile = false;
 $codeFile = $base . 'core/components/notify/elements/snippets/notify.snippet.php';
+
+
+$propertiesInjected = false; /* This will be set automatically if properties are injected */
 
 
 
