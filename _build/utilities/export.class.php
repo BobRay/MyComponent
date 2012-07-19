@@ -1,6 +1,7 @@
 <?php
 /**
- * MyComponent
+ * MyComponent exportobjects.php
+ * @author Bob Ray
  *
  * Copyright 2012 by Bob Ray <http://bobsguides.com>
  *
@@ -20,6 +21,9 @@
  * @package MyComponent
  */
 
+/** Description:
+ * Class for MyComponent exportobjects utility
+ */
 class Export
 {
     /* @var modx modX */
