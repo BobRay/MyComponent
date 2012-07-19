@@ -1,7 +1,9 @@
 <?php
 /**
- * CheckProperties
+ * CheckProperties Utility Script for My Component
+ * @author Bob Ray
  * Copyright 2012 Bob Ray
+ * Modified: July, 2012
  *
  * CheckProperties is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -20,46 +22,87 @@
  * @author Bob Ray <http://bobsguides.com>
 
  *
- * Description: The CheckProperties snippet identifies properties
- * used in code with $modx->getOption() and checks them against properties.
- * in the properties file.
+ * Description: The CheckProperties script identifies properties
+ * used in code with $modx->getOption() or some version of $scriptProperties and checks 
+ * them against properties in the properties file.
  *
  * Output can be pasted into the properties file.
- * /
+ *
+ * No files are altered.
+ */
 
-/*
 
-  Modified: June, 2012
+$prefix = 'np_'; /* prefix for Lexicon entries */
+$packageName = 'newspublisher'; /* Important: match directory case */
+$packageNameLower = strtolower(($packageName));
+$elementName = 'newspublisher'; /* Match file/directory case */
+$elementName = empty($elementName)? $packageName: $elementName;
+$elementName = strtolower($elementName);
 
-*/
-$packageName = 'Notify';
-$packageNameLower = strtolower($packageName);
-$base = 'c:/xampp/htdocs/addons/assets/mycomponents/notify/';
-$codeFile = 'core/components/notify/model/notify/notify.class.php';
-$codeFile = $base . $codeFile;
-$propertiesFile = '_build/data/properties/properties.notify.php';
-$propertiesFile = $base . $propertiesFile;
-/* set name of properties array so we skip system setting requests and
+/* set name of properties array alias so we skip system setting requests and
  * local array searches. Could be $scriptProperties
 */
-$propsName = '$this->props';
-
+$propsAlias = '$this->props';
 /* escape the $ */
-$propsName = str_replace('$','\$',$propsName);
+$propsAlias = str_replace('$','\$',$propsAlias);
 
-if (!file_exists($propertiesFile)) {
-    echo 'Could not find properties file';
+
+$base = 'c:/xampp/htdocs/addons/assets/mycomponents/' . $packageName .  '/';
+
+/* array of possible code files. Add your own if necessary */
+$codeFiles = array(
+    $base . 'core/components/' . $packageName . '/model/' . $packageName . '/' . $elementName . '.class.php',
+    $base . 'core/components/' . $packageName . '/elements/snippets/' . $elementName . '.snippet.php',
+    $base . 'core/components/' . $packageName . '/elements/plugins/' . $elementName . '.plugin.php',
+);
+
+$code = '';
+
+foreach ($codeFiles as $codeFile) {
+    if (file_exists($codeFile) ) {
+        $code .= file_get_contents($codeFile) . "\n\n";
+    }
 }
-if (!file_exists($codeFile)) {
-    echo 'Could not get code file';
+if (empty($code)) {
+    die ('Could not find any code files');
 }
+
+
+/* Places to look for Properties file */
+$propsBase = $base . '_build/';
+$locations = array(
+    $propsBase . 'data/properties/properties.' . $elementName . '.php',
+    $propsBase . 'data/properties/properties.inc.php',
+    $propsBase . 'data/properties.' . $elementName . '.php',
+    $propsBase . 'data/properties.inc.php',
+    $propsBase . 'properties.' . $elementName . 'inc.php',
+    $propsBase . 'properties.inc.php',
+);
+
+$found = 0;
+$propertiesFile = '';
+foreach ($locations as $location) {
+    if (file_exists($location)) {
+        $found++;
+        $propertiesFile = $location;
+    }
+}
+
+if ($found == 0) {
+    die('Could Not find Properties file');
+}
+
+if ($found > 1) {
+    die('Found more than one Properties file');
+}
+
 $properties = require $propertiesFile;
-$code = file_get_contents($codeFile);
+
 //echo "\nCOUNT: " . count($properties) . " properties in properties file\n";
 $propertyTpl = "
     array(
         'name' => '[[+name]]',
-        'desc' => '[[+name]]_desc~~(optional)Add description here for LexiconHelper',
+        'desc' => '{$prefix}[[+name]]_desc~~(optional)Add description here for LexiconHelper',
         'type' => 'textfield',
         'options' => '',
         'value' => '',
@@ -71,16 +114,31 @@ $propertyTpl = "
 
 $matches = array();
 
-$pattern = "/getOption\(\'([^\\']+)\'.+" . $propsName . "/";
-
+//$pattern = "/getOption\(\'([^\\']+)\'.+" . $propsAlias . "/";
+    $pattern = "/" . $propsAlias . "\[[\"\']([^\"\']+)/";
 //echo 'PATTERN: ' . $pattern . "\n";
+/* get properties used with $scriptProperties['propertyName'] */
 preg_match_all($pattern, $code, $matches);
-//echo "\nCOUNT: " . count($maches[1]) . " properties in code file\n";
+
+$codeMatches = $matches[1];
+
+$matches = array();
+/* get properties accessed with getOption() */
+$pattern = "/getOption\(\'([^\\']+)\'.+" . $propsAlias . "/";
+preg_match_all($pattern, $code, $matches);
+
+$codeMatches = array_merge($codeMatches, $matches[1]);
+
+$codeMatches = array_unique($codeMatches);
+
+echo "\nCOUNT: " . count($codeMatches) . " properties in code file\n";
 echo "Properties in code file\n********************\n";
-foreach($matches[1] as $prop) {
+foreach($codeMatches as $prop) {
     echo $prop . "\n";
 }
 
+/* $pattern = "/\" . $sp . "\[[\"\'](.+)[\'\"]\]/";
+*/
 $names = array();
 $missing = array();
 foreach($properties as $property) {
@@ -88,11 +146,11 @@ foreach($properties as $property) {
 }
 $orphans = array();
 foreach( $names as $name) {
-    if (! in_array($name, $matches[1])) {
+    if (! in_array($name, $codeMatches)) {
         $orphans[] = $name;
     }
 }
-foreach($matches[1] as $k => $v) {
+foreach($codeMatches as $k => $v) {
     if (! in_array($v, $names)) {
         $missing[] = $v;
     }
