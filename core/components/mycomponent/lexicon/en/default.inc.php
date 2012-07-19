@@ -46,3 +46,7 @@ $_lang['setting_mycomponent_setting2_desc'] = 'Setting Two Description';
 
 $_lang['setting_mycomponent_setting3'] = 'Setting Three Name';
 $_lang['setting_mycomponent_setting3_desc'] = 'Setting Three Description';
+
+$_lang['lh.code_all_present_in_language_file'] = 'Code strings in code file all present in language file';
+
+$lang['lh.orphans'] = 'Orphans in language file (may be used by another code file)';
