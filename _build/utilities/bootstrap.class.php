@@ -42,7 +42,7 @@ class Bootstrap {
 
 
     public function init() {
-
+        clearstatcache(); /*  make sure is_dir() is current */
         $configFile = include 'bootstrap.config.php';
         $this->config = '';
         $this->config = @include $configFile;
