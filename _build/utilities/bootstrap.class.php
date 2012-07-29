@@ -28,7 +28,6 @@ class Bootstrap {
     var $assetsPath;
     var $tplPath; /* path to element Tpl files */
     var $replaceFields; /* replacements for placeholders in element tpl files */
-    var $license; /* GPL or whatever license with placeholders for element name and package name */
     var $categoryId;
     var $makeStatic; /* array of objects to make static (comma,separated list in config) */
     var $dirPermission;
@@ -176,9 +175,13 @@ class Bootstrap {
      * @param $type
      */
     public function createCodeFile($name, $codePath, $type) {
-        $tpl = '';
+
         if ($type == 'plugin' || $type == 'snippet') {
             $tpl = file_get_contents($this->tplPath . 'phpfile.tpl');
+            $tpl = str_replace('[[+license]]', file_get_contents($this->source . '_build/utilities/buildtpls/licensetpl.php'), $tpl);
+        }
+        if (empty($tpl)) {
+            $tpl = '';
         }
         $fp = null;
         if (! file_exists($codePath)) {
