@@ -9,7 +9,7 @@
  *
  * @package [[+packageNameLower]]
  */
- 
+
 /**
  * Description
  * -----------
