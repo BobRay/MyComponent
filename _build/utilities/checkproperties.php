@@ -60,6 +60,7 @@ $code = '';
 
 foreach ($codeFiles as $codeFile) {
     if (file_exists($codeFile) ) {
+        echo "\nChecking " . $codeFile;
         $code .= file_get_contents($codeFile) . "\n\n";
     }
 }
@@ -98,7 +99,8 @@ if ($found > 1) {
 
 $properties = require $propertiesFile;
 
-//echo "\nCOUNT: " . count($properties) . " properties in properties file\n";
+echo "\nCOUNT: " . count($properties) . " properties in properties file\n";
+// echo "\n" . print_r($properties,true) . "\n";
 $propertyTpl = "
     array(
         'name' => '[[+name]]',
@@ -119,30 +121,42 @@ $matches = array();
 //echo 'PATTERN: ' . $pattern . "\n";
 /* get properties used with $scriptProperties['propertyName'] */
 preg_match_all($pattern, $code, $matches);
-
+//echo "\nSp-alias\n" . print_r($matches[1], true);
 $codeMatches = $matches[1];
 
+/* get properties used with plain old $scriptProperties */
+if ($propsAlias != "\$scriptProperties") {
+    $matches = array();
+    $pattern = "/" . "scriptProperties\[[\"\']([^\"\']+)/";
+    preg_match_all($pattern, $code, $matches);
+
+    // echo "\nSCRIPRPROPERTIES\n" . print_r($matches[1], true);
+
+    $codeMatches = array_merge($codeMatches, $matches[1]);
+}
 $matches = array();
 /* get properties accessed with getOption() */
-$pattern = "/getOption\(\'([^\\']+)\'.+" . $propsAlias . "/";
+$pattern = "/getOption\(\'([^\']+)'.+" . $propsAlias . "/";
 preg_match_all($pattern, $code, $matches);
-
+//echo "\n PropsAlias " . $propsAlias . "\n";
+//echo "\n getOption\n" . print_r($matches[1], true);
 $codeMatches = array_merge($codeMatches, $matches[1]);
 
 $codeMatches = array_unique($codeMatches);
 
-echo "\nCOUNT: " . count($codeMatches) . " properties in code file\n";
-echo "Properties in code file\n********************\n";
+echo "\nCOUNT: " . count($codeMatches) . " properties in code file(s)\n";
+
+echo "\nProperties in code file(s)\n********************\n";
 foreach($codeMatches as $prop) {
     echo $prop . "\n";
 }
 
-/* $pattern = "/\" . $sp . "\[[\"\'](.+)[\'\"]\]/";
-*/
 $names = array();
 $missing = array();
+echo "\nProperties in properties file\n********************\n\n";
 foreach($properties as $property) {
   $names[] = $property['name'];
+  echo "\n" . $property['name'];
 }
 $orphans = array();
 foreach( $names as $name) {
