@@ -31,7 +31,7 @@ $menu->addOne($action);
 
 return $menu;
 
-/* As of MODX 2.3, all of the above will be replaced by this: */
+/* As of MODX 2.3, all of the above will be replaced by something like this: */
 /* Note: will route to the first found of the following:
  [namespace-path]controllers/[manager-theme]/index.class.php
  [namespace-path]controllers/default/index.class.php
