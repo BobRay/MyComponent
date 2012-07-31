@@ -49,6 +49,7 @@ class Export
     /* @var $categoryObj modCategory */
     var $categoryObj;
     var $dryRun;
+    var $replaceFields;
 
 
 
@@ -137,6 +138,15 @@ class Export
         $this->modx->log(modX::LOG_LEVEL_INFO, 'Category ID: ' . $this->categoryId);
         /* dry run if user has set &dryRun=`1` or has not set either create option */
 
+        /* replacement array for placeholders */
+        $this->replaceFields = array(
+            '[[+packageName]]' => $this->props['packageName'],
+            '[[+packageNameLower]]' => $this->props['packageNameLower'],
+            '[[+author]]' => $this->props['author'],
+            '[[+email]]' => $this->props['email'],
+            '[[+copyright]]' => $this->props['copyright'],
+            '[[+createdon]]' => $this->props['createdon'],
+        );
 
         return true;
     }
