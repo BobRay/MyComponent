@@ -175,15 +175,16 @@ class Bootstrap {
      * @param $type string - plugin, snippet, css, js, etc.
      */
     public function createCodeFile($name, $codePath, $type) {
-        if (strstr($codePath, 'php')) {
+
+        $tpl = $this->getTpl($type);
+
+        /* use 'phpfile.tpl' as default for .php files */
+        if ( empty($tpl) && strstr($codePath, 'php')) {
             $tpl = $this->getTpl('phpfile');
-        } else {
-            $tpl = $this->getTpl($type);
         }
 
-        if (empty($tpl)) {
-            $tpl = '';
-        } else {
+        /* add license if necessary */
+        if (! empty($tpl) && strstr($tpl, '[[+license]]')) {
             $license = $this->getTpl('license');
             $tpl = str_replace('[[+license]]', $license, $tpl);
         }
