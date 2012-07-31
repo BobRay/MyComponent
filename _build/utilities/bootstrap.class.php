@@ -280,6 +280,16 @@ class Bootstrap {
                 }
             }
         }
+        if (isset ($defaults['utilities']) && $defaults['utilities']) {
+            $fromDir = $this->source . '_build/utilities/';
+            $toDir = $this->targetBase . '_build/utilities/';
+            if (! is_dir($toDir)) {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, 'Copying Utilities directory');
+                $this->_copy($fromDir, $toDir);
+            } else {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, '    Utilities directory already exists');
+            }
+        }
 
 
         if (isset ($defaults['lexicon']) && $defaults['lexicon']) {

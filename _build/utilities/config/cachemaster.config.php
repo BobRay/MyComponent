@@ -25,6 +25,7 @@ $components = array (
     'initialize' => true,
     'defaultStuff' => array(
         '_build' => true, /* build directory for transport package */
+        'utilities' => true, /* copy utilities to target dir -- Usually unnecessary */
         'lexicon' => true, /* create lexicon directory */
         'docs' => true, /* readme.txt, license, changelog, and/or tutorial(s) */
         'readme.md' => true, /* Description file for GitHub project home page */
