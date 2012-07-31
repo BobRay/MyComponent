@@ -495,7 +495,7 @@ class Export
 
     }
     protected function writeLicense($fp) {
-        $tpl = file_get_contents(MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/licensetpl.php');
+        $tpl = file_get_contents(MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/license.tpl');
         if (empty($tpl)) {
             $this->modx->log(modX::LOG_LEVEL_ERROR, "License Tpl is empty");
             return;
