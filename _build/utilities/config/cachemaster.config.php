@@ -10,6 +10,8 @@ $components = array (
     'copyright' => '2012',
     'createdon' => strftime('%m-%d-%Y'),
     'offerAbort' => false, /* Show package name and ask user to confirm before running */
+    /* Change this if you need to alter any tpl files. User new dir. under _build/utilities */
+    'tplDir' => 'buildtpls',
 
 /* Set directory permissions for project directories */
     'dirPermission' => 0755,  /* No quotes!! */
@@ -72,6 +74,7 @@ $components = array (
     'createResourceObjects' => false,
     'createResourceFiles' => false,
     'allStatic' => true, /* will make all element objects static - makeStatic will be ignored */
+
 
     /* comma-separated lists of the actual Element Names */
     'elements' => array(

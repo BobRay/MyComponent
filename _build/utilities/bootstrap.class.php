@@ -74,7 +74,7 @@ class Bootstrap {
         $this->sourceCore = $this->source . 'core/components/mycomponent/';
         $this->targetAssets = $this->targetBase . 'assets/components/'. $this->packageNameLower . '/';
 
-        $this->tplPath = $this->source .  '/_build/utilities/buildtpls/' .'/';
+        $this->tplPath = $this->source .  '/_build/utilities/' . $this->config['tplDir'] .'/';
 
         $this->replaceFields = array(
             '[[+packageName]]' => $this->config['packageName'],
