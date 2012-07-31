@@ -15,10 +15,8 @@ class Bootstrap {
     var $modx;
     /* @var $props array  - $scriptProperties array */
     var $props;
-
     var $packageName;
     var $packageNameLower;
-    var $config;
     var $source;
     var $sourceCore;
     var $targetBase;
@@ -44,24 +42,25 @@ class Bootstrap {
     public function init() {
         clearstatcache(); /*  make sure is_dir() is current */
         $configFile = include 'bootstrap.config.php';
-        $this->config = '';
-        $this->config = @include $configFile;
-        if (empty($this->config)) {
-            die('Could not find config file');
+        if (empty($this->props)) { /* running outside of MODX */
+            $this->props = @include $configFile;
+            if (empty($this->props)) {
+                die('Could not find config file');
+            }
         }
-        $this->source = $this->config['source'];
+        $this->source = $this->props['source'];
 
-        $this->packageName = $this->config['packageName'];
-        $this->packageNameLower = $this->config['packageNameLower'];
+        $this->packageName = $this->props['packageName'];
+        $this->packageNameLower = $this->props['packageNameLower'];
 
 
 
-        if (empty($this->config)) {
+        if (empty($this->props)) {
             die('Config file not found: ' . $configFile);
         }
         unset($configFile);
 
-        if (isset($this->config['offerAbort']) && $this->config['offerAbort']) {
+        if (isset($this->props['offerAbort']) && $this->props['offerAbort']) {
             echo 'Processing ' . $this->packageName . 'Continue? (y/n - Enter) ';
             $input = fgetc(STDIN);
             if ($input != 'y' && $input != 'Y') {
@@ -74,24 +73,24 @@ class Bootstrap {
         $this->sourceCore = $this->source . 'core/components/mycomponent/';
         $this->targetAssets = $this->targetBase . 'assets/components/'. $this->packageNameLower . '/';
 
-        $this->tplPath = $this->source .  '/_build/utilities/' . $this->config['tplDir'] .'/';
+        $this->tplPath = $this->source .  '/_build/utilities/' . $this->props['tplDir'] .'/';
 
         $this->replaceFields = array(
-            '[[+packageName]]' => $this->config['packageName'],
-            '[[+packageNameLower]]' => $this->config['packageNameLower'],
-            '[[+author]]' => $this->config['author'],
-            '[[+email]]' => $this->config['email'],
-            '[[+copyright]]' => $this->config['copyright'],
-            '[[+createdon]]' => $this->config['createdon'],
+            '[[+packageName]]' => $this->props['packageName'],
+            '[[+packageNameLower]]' => $this->props['packageNameLower'],
+            '[[+author]]' => $this->props['author'],
+            '[[+email]]' => $this->props['email'],
+            '[[+copyright]]' => $this->props['copyright'],
+            '[[+createdon]]' => $this->props['createdon'],
         );
 
-        $this->dirPermission = $this->config['dirPermission'];
-        $this->filePermission = $this->config['filePermission'];
+        $this->dirPermission = $this->props['dirPermission'];
+        $this->filePermission = $this->props['filePermission'];
 
-        $this->makeStatic = explode(',', $this->config['makeStatic']);
+        $this->makeStatic = explode(',', $this->props['makeStatic']);
 
         /* show basic info */
-        $this->modx->log(MODX::LOG_LEVEL_INFO, 'Component: ' . $this->config['packageName']);
+        $this->modx->log(MODX::LOG_LEVEL_INFO, 'Component: ' . $this->props['packageName']);
         $this->modx->log(MODX::LOG_LEVEL_INFO, 'Target Base: ' . $this->targetBase);
         $this->modx->log(MODX::LOG_LEVEL_INFO, 'Target Core: ' . $this->targetCore);
         $this->modx->log(MODX::LOG_LEVEL_INFO, 'Source: ' . $this->source);
@@ -120,7 +119,7 @@ class Bootstrap {
 
 
 
-        foreach ($this->config['elements'] as $elementName => $elements) {
+        foreach ($this->props['elements'] as $elementName => $elements) {
             $elements = explode(',', $elements);
             foreach ($elements as $name) {
                 if (! empty ($name)) {
@@ -145,13 +144,13 @@ class Bootstrap {
         $lName = strToLower($name);
         /* fileNameType is type without the final s */
         $fileNameType = substr(strtolower($type),0,-1);
-        $suffix = $this->config['suffixes'][$fileNameType];
+        $suffix = $this->props['suffixes'][$fileNameType];
 
         //echo "\nDIRNAME: " . $fileNameType;
 
         $this->modx->log(MODX::LOG_LEVEL_INFO,'Creating ' . $name . ' ' . $fileNameType);
 
-        if ($this->config['createElementFiles']) {
+        if ($this->props['createElementFiles']) {
             $codeDir = $this->targetCore . 'elements/' . $type;
             // echo "\nCODE DIR: " . $codeDir;
             if (! is_dir($codeDir)) {
@@ -161,7 +160,7 @@ class Bootstrap {
             $this->createCodeFile($name, $codePath, $fileNameType);
             // echo "\nCODE_PATH: " . $codePath . "\n";
         }
-        if ($this->config['createElementObjects']) {
+        if ($this->props['createElementObjects']) {
             $this->createElementObject($name, $fileNameType, $suffix);
         }
 
@@ -233,7 +232,7 @@ class Bootstrap {
                 'category' => $this->categoryId,
             );
             /* Make it static and connect to file if requested */
-            if  ($this->config['allStatic'] || in_array($name, $this->makeStatic)) {
+            if  ($this->props['allStatic'] || in_array($name, $this->makeStatic)) {
 
                 $fields['static'] = 1;
                 $fields['source'] = 1;
@@ -249,7 +248,7 @@ class Bootstrap {
     }
 
     public function createBasics() {
-        $defaults = $this->config['defaultStuff'];
+        $defaults = $this->props['defaultStuff'];
         $source = $this->source;
         $target = $this->targetBase;
         $core = $this->targetCore;
@@ -331,7 +330,7 @@ class Bootstrap {
         return true;
     }
     public function createAssetsDirs() {
-        $optionalDirs = $this->config['assetsDirs'];
+        $optionalDirs = $this->props['assetsDirs'];
         $this->modx->log(MODX::LOG_LEVEL_INFO,'Creating Assets directories');
         foreach($optionalDirs as $dir => $val) {
             $targetDir = $this->targetAssets . $dir;
