@@ -25,7 +25,7 @@ $components = array (
     'initialize' => true,
     'defaultStuff' => array(
         '_build' => true, /* build directory for transport package */
-        'utilities' => true, /* copy utilities to target dir -- Usually unnecessary */
+        'utilities' => false, /* copy utilities to target dir -- Usually unnecessary */
         'lexicon' => true, /* create lexicon directory */
         'docs' => true, /* readme.txt, license, changelog, and/or tutorial(s) */
         'readme.md' => true, /* Description file for GitHub project home page */
@@ -93,7 +93,7 @@ $components = array (
      * to create */
     'otherObjects' => array(
         'menus' => '',
-        'systemEvents' => '',
+        'systemEvents' => '', /* only *new* System Events to be created */
         'propertySets' => '',
         'systemSettings' => '',
 
