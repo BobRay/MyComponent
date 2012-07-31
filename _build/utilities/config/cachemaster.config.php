@@ -23,25 +23,37 @@ $components = array (
     'initialize' => true,
     'defaultStuff' => array(
         '_build' => true, /* build directory for transport package */
-        'lexicon' => true, /* location for lexicon files */
+        'lexicon' => true, /* create lexicon directory */
         'docs' => true, /* readme.txt, license, changelog, and/or tutorial(s) */
         'readme.md' => true, /* Description file for GitHub project home page */
         'languages' => 'en,fr', /* only list languages for which you have language files */
     ),
-    /* Define optional directories -- comment out ones you don't need */
-    'optionalDirs' => array(
-        'css',
-        'js',
-        'images',
-        'audio',
-        'video',
-        /* extra script resolver(s) to be run during install */
-        'resolvers',
-        /* validators can abort the install after checking conditions */
-        'validators',
-        /* needed if you will interact with user during the install */
-        'install.options',
+    /* Define optional directories to create under assets
+     * add your own if necessary
+     * set to true to create directory
+     * set to false to skip
+     * Empty js and css files will be created
+     */
+    'assetsDirs' => array(
+        'css' => true,
+        'js' => true,
+        'images' => true,
+        'audio' => true,
+        'video' => true,
+        'themes' => true,
     ),
+    /* extra script resolver(s) to be run during install
+    * comma-separated list of validator names or '' (no prefix of suffix) */
+    'resolvers' => '',
+
+    /* validators can abort the install after checking conditions
+     * comma-separated list of validator names or '' (no prefix of suffix) */
+    'validators' => '',
+
+    /* install.options is needed if you will interact with user during the install */
+    /* set to 'install.options' or '' */
+    'install.options' => 'install.options',
+
     /* suffixes for files */
     'suffixes' => array (
         'plugin' => '.php',
@@ -54,10 +66,12 @@ $components = array (
     ),
 
     /* These control the creation of elements */
-    'createFiles' => true,  /* create element files */
-    'createObjects' => true, /* also create objects in MODX */
-    'makeStatic' => 'CacheMaster', /* Comma-separated list of objects to set as static */
-    'allStatic' => true, /* will make all objects static - makeStatic will be ignored */
+    'createElementFiles' => true,  /* create element files */
+    'createElementObjects' => true, /* also create objects in MODX */
+    'makeStatic' => 'CacheMaster', /* Comma-separated list of elements to set as static */
+    'createResourceObjects' => false,
+    'createResourceFiles' => false,
+    'allStatic' => true, /* will make all element objects static - makeStatic will be ignored */
 
     /* comma-separated lists of the actual Element Names */
     'elements' => array(

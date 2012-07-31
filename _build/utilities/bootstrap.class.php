@@ -151,7 +151,7 @@ class Bootstrap {
 
         $this->modx->log(MODX::LOG_LEVEL_INFO,'Creating ' . $name . ' ' . $fileNameType);
 
-        if ($this->config['createFiles']) {
+        if ($this->config['createElementFiles']) {
             $codeDir = $this->targetCore . 'elements/' . $type;
             // echo "\nCODE DIR: " . $codeDir;
             if (! is_dir($codeDir)) {
@@ -161,7 +161,7 @@ class Bootstrap {
             $this->createCodeFile($name, $codePath, $fileNameType);
             // echo "\nCODE_PATH: " . $codePath . "\n";
         }
-        if ($this->config['createObjects']) {
+        if ($this->config['createElementObjects']) {
             $this->createElementObject($name, $fileNameType, $suffix);
         }
 
@@ -178,7 +178,7 @@ class Bootstrap {
 
         if ($type == 'plugin' || $type == 'snippet') {
             $tpl = file_get_contents($this->tplPath . 'phpfile.tpl');
-            $tpl = str_replace('[[+license]]', file_get_contents($this->source . '_build/utilities/buildtpls/licensetpl.php'), $tpl);
+            $tpl = str_replace('[[+license]]', file_get_contents($this->source . '_build/utilities/buildtpls/license.tpl'), $tpl);
         }
         if (empty($tpl)) {
             $tpl = '';
@@ -186,22 +186,25 @@ class Bootstrap {
         $fp = null;
         if (! file_exists($codePath)) {
             $fp = fopen($codePath, 'w');
-        }
-        if ($fp) {
-            $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating ' . $name . ' ' . $type . ' file');
-            $replace = $this->replaceFields;
-            $replace['[[+elementType]]'] = ucfirst($type);
-            $replace['[[+elementName]]'] = $name;
-            $fileContent = $tpl;
-            if (!empty ($tpl)) {
-                $fileContent = $this->strReplaceAssoc($replace, $fileContent);
+            if ($fp) {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating ' . $name . ' ' . $type . ' file');
+                $replace = $this->replaceFields;
+                $replace['[[+elementType]]'] = ucfirst($type);
+                $replace['[[+elementName]]'] = $name;
+                $fileContent = $tpl;
+                if (!empty ($tpl)) {
+                    $fileContent = $this->strReplaceAssoc($replace, $fileContent);
+                }
+                fwrite($fp,$fileContent);
+                fclose($fp);
+                chmod($codePath, $this->filePermission);
+            } else {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, '    Could not write code file ' . $codePath);
             }
-            fwrite($fp,$fileContent);
-            fclose($fp);
-            chmod($codePath, $this->filePermission);
         } else {
-            $this->modx->log(MODX::LOG_LEVEL_INFO, '    Could not write code file or file exists: ' . $codePath);
+            $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $codePath . ' already exists');
         }
+
     }
 
     /**
@@ -249,8 +252,8 @@ class Bootstrap {
 
         if (isset ($defaults['_build']) && $defaults['_build']) {
             $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating directory: ' . $this->targetBase);
-            //mkdir($this->targetBase, $this->dirPermission, true);
-            //mkdir($this->targetBase . '_build', $this->dirPermission, true);
+            // mkdir($this->targetBase, $this->dirPermission, true);
+            // mkdir($this->targetBase . '_build', $this->dirPermission, true);
             if (! is_dir($this->targetBase . '_build/data')) {
                 $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating directory: ' . $this->targetBase);
                 mkdir($this->targetBase . '_build/data', $this->dirPermission, true);
@@ -285,8 +288,8 @@ class Bootstrap {
                 $this->modx->log(MODX::LOG_LEVEL_INFO,'    Lexicon directory already exists');
             }
             if (!empty($defaults['languages'])) {
-                $langs = explode(',', $defaults['languages']);
-                foreach($langs as $lang) {
+                $languages = explode(',', $defaults['languages']);
+                foreach($languages as $lang) {
                     if (!is_dir($toDir . '/' . $lang)) {
                         $this->modx->log(MODX::LOG_LEVEL_INFO,'        creating ' . $lang . ' directory');
                         mkdir($toDir . '/' . $lang, $this->dirPermission, true);
@@ -312,6 +315,21 @@ class Bootstrap {
 
         return true;
     }
+    public function createAssetsDirs() {
+        $optionalDirs = $this->config['assetsDirs'];
+        $this->modx->log(MODX::LOG_LEVEL_INFO,'Creating Assets directories');
+        foreach($optionalDirs as $dir => $val) {
+            $targetDir = $this->targetAssets . $dir;
+            if ($val && (! is_dir($targetDir)) ) {
+                if (mkdir($targetDir, $this->dirPermission, true)) {
+                    $this->modx->log(MODX::LOG_LEVEL_INFO,'    Created ' . $targetDir . ' directory');
+                }
+            } else {
+                $this->modx->log(MODX::LOG_LEVEL_INFO,'    ' . $targetDir . ' directory already exists');
+            }
+        }
+
+}
 
     /**
      * Copies an entire directory and its descendants 

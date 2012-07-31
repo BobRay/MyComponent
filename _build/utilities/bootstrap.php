@@ -30,8 +30,7 @@ $bootStrap->init();
 $bootStrap->createBasics();
 $bootStrap->createCategory();
 $bootStrap->createElements();
-
-
+$bootStrap->createAssetsDirs();
 
 $modx->log(MODX::LOG_LEVEL_INFO,'Finished!');
 
