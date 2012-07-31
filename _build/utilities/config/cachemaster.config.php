@@ -29,7 +29,7 @@ $components = array (
         'languages' => 'en,fr', /* only list languages for which you have language files */
     ),
     /* Define optional directories to create under assets
-     * add your own if necessary
+     * add your own as needed
      * set to true to create directory
      * set to false to skip
      * Empty js and css files will be created

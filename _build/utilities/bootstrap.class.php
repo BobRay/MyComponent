@@ -170,18 +170,22 @@ class Bootstrap {
     /**
      * Creates a code file for an element
      *
-     * @param $name
-     * @param $codePath
-     * @param $type
+     * @param $name string - filename (without extension or type - usually $this->packageNameLower)
+     * @param $codePath string - full path to file including filename
+     * @param $type string - plugin, snippet, css, js, etc.
      */
     public function createCodeFile($name, $codePath, $type) {
-
-        if ($type == 'plugin' || $type == 'snippet') {
-            $tpl = file_get_contents($this->tplPath . 'phpfile.tpl');
-            $tpl = str_replace('[[+license]]', file_get_contents($this->source . '_build/utilities/buildtpls/license.tpl'), $tpl);
+        if (strstr($codePath, 'php')) {
+            $tpl = $this->getTpl('phpfile');
+        } else {
+            $tpl = $this->getTpl($type);
         }
+
         if (empty($tpl)) {
             $tpl = '';
+        } else {
+            $license = $this->getTpl('license');
+            $tpl = str_replace('[[+license]]', $license, $tpl);
         }
         $fp = null;
         if (! file_exists($codePath)) {
@@ -327,10 +331,19 @@ class Bootstrap {
             } else {
                 $this->modx->log(MODX::LOG_LEVEL_INFO,'    ' . $targetDir . ' directory already exists');
             }
+            if ($dir == 'css' || $dir == 'js') {
+                $file = $this->packageNameLower . '.' . $dir;
+                $this->createCodeFile($file , $targetDir . '/' . $file, $dir);
+            }
         }
+
 
 }
 
+protected function getTpl($name) {
+    $text = @file_get_contents($this->tplPath . $name . '.tpl');
+    return $text !== false? $text : '';
+}
     /**
      * Copies an entire directory and its descendants 
      * 
