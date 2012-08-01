@@ -1,7 +1,7 @@
 <?php
 
 
-$components = array (
+$components = array(
     /* These are used to define the package and set values for placeholders */
     'packageName' => 'CacheMaster',
     'packageNameLower' => 'cachemaster',
@@ -13,9 +13,9 @@ $components = array (
     /* Change this if you need to alter any tpl files. User new dir. under _build/utilities */
     'tplDir' => 'buildtpls',
 
-/* Set directory permissions for project directories */
-    'dirPermission' => 0755,  /* No quotes!! */
-    'filePermission' => 0644,  /* No quotes!! */
+    /* Set directory permissions for project directories */
+    'dirPermission' => 0755, /* No quotes!! */
+    'filePermission' => 0644, /* No quotes!! */
 
     /* Define source directories (mycomponent root and core directories) */
     'source' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/', /* path to MyComponent source files */
@@ -46,8 +46,10 @@ $components = array (
         'themes' => true,
     ),
     /* extra script resolver(s) to be run during install
-    * comma-separated list of validator names or '' (no prefix of suffix) */
-    'resolvers' => '',
+     *  Creates a default resolver named after the package
+     *  (other resolvers may be created above for TVs and plugins)
+     */
+    'resolvers' => 'true',
 
     /* validators can abort the install after checking conditions
      * comma-separated list of validator names or '' (no prefix of suffix) */
@@ -58,7 +60,7 @@ $components = array (
     'install.options' => 'install.options',
 
     /* suffixes for files */
-    'suffixes' => array (
+    'suffixes' => array(
         'plugin' => '.php',
         'snippet' => '.php',
         'chunk' => '.html',
@@ -69,7 +71,7 @@ $components = array (
     ),
 
     /* These control the creation of elements */
-    'createElementFiles' => true,  /* create element files */
+    'createElementFiles' => true, /* create element files */
     'createElementObjects' => true, /* also create objects in MODX */
     'makeStatic' => 'CacheMaster', /* Comma-separated list of elements to set as static */
     'createResourceObjects' => false,
@@ -77,17 +79,51 @@ $components = array (
     'allStatic' => true, /* will make all element objects static - makeStatic will be ignored */
 
 
-    /* comma-separated lists of the actual Element Names */
+    /* array containing the actual Element Names */
     'elements' => array(
         'snippets' => '',
         'plugins' => 'CacheMaster',
         'tvs' => '',
         'templates' => '',
         'chunks' => '',
-        ),
+    ),
     /* comma-separated lists of the actual Resource Names */
     'resources' => array(
 
+    ),
+    /* array of plugin names and comma-separated list of their events
+     * automatically generates resolver
+     */
+    'pluginEvents' => array(
+        'CacheMaster' => 'OnDocFormSave',
+    ),
+
+    /* array of TV names and comma-separated list of templates to attach them to
+     * automatically generates resolver
+     */
+    'tvTemplates' => array(
+
+
+    ),
+
+    /* (NOT IMPLEMENTED) Array of new events to create, plugins to attach, and fields */
+    'newEvents' => array(
+        'OnEvent1' => array(
+            'plugins' => 'CacheMaster',
+            'fields' => array(
+                'event' => 'OnEvent1',
+                'priority' => 0,
+                'propertyset' => 0,
+            ),
+        ),
+        'OnEvent2' => array(
+            'plugins' => 'CacheMaster',
+            'fields' => array(
+                'event' => 'OnEvent2',
+                'priority' => 0,
+                'propertyset' => 0,
+            ),
+        )
     ),
     /* (NOT IMPLEMENTED) comma-separated lists naming other new objects
      * to create */
