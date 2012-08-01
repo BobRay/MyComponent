@@ -83,6 +83,12 @@ class Bootstrap {
             '[[+copyright]]' => $this->props['copyright'],
             '[[+createdon]]' => $this->props['createdon'],
         );
+        $license = $this->getTpl('license');
+        if (!empty($license)) {
+            $license = $this->strReplaceAssoc($this->replaceFields, $license);
+            $this->replaceFields['[[+license]]'] = $license;
+        }
+        unset($license);
 
         $this->dirPermission = $this->props['dirPermission'];
         $this->filePermission = $this->props['filePermission'];
@@ -238,7 +244,7 @@ class Bootstrap {
                 $fields['source'] = 1;
                 $fields['static_file'] = 'assets/mycomponents/' . $this->packageNameLower  . '/core/components/' . $this->packageNameLower .  '/elements/'  . $type . 's/' . $lName . "." . $type . $suffix;
             }
-            $object = $this->modx->newObject('modPlugin', $fields);
+            $object = $this->modx->newObject($objectType, $fields);
             if ($object) {
                 $object->save();
             }
@@ -349,9 +355,60 @@ class Bootstrap {
 
 
 }
+    /** creates resolver for attaching events to plugins */
+    public function createPluginEvents() {
+        $pluginEvents = $this->props['pluginEvents'];
+        if (! empty($pluginEvents)) {
+            $tpl = $this->getTpl('pluginresolver');
+            $tpl = $this->strReplaceAssoc($this->replaceFields, $tpl);
+            if (empty($tpl)) {
+                $this->modx->log(MODX::LOG_LEVEL_ERROR, 'pluginresolver tpl is empty');
+            }
+            $dir = $this->targetBase . '_build/resolvers';
+            if (! is_dir($dir)) {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating resolvers directory');
+                mkdir($dir, $this->filePermission, true);
+            } else {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, 'Resolvers directory already exists');
+            }
+            $filePath = $this->targetBase . '_build/resolvers/plugin.resolver.php';
+            $code = '';
+            if (! file_exists($filePath)) {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating file ' . $filePath);
+                $fp = fopen($filePath, 'w');
+                if ($fp) {
+                    $codeTpl = $this->getTpl('pluginresolvercode.php');
+                    if (empty($codeTpl)) {
+                        $this->modx->log(MODX::LOG_LEVEL_ERROR, 'pluginresolvercode tpl is empty');
+                    }
+                    $codeTpl = str_replace('<?php', '', $codeTpl);
+
+                    foreach($pluginEvents as $plugin => $events) {
+
+                        $tempCodeTpl = str_replace('[[+plugin]]', $plugin, $codeTpl);
+                        $tempCodeTpl = str_replace('[[+events]]', $events, $tempCodeTpl);
+                        $code .= "\n" . $tempCodeTpl;
+                    }
+                } else {
+                    $this->modx->log(MODX::LOG_LEVEL_ERROR, 'Could not open code file ' . $filePath);
+                }
+                $tpl = str_replace('[[+code]]', $code, $tpl);
+                fwrite($fp, $tpl);
+                fclose($fp);
+
+
+            } else {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $filePath . ' file already exists');
+            }
+        }
+    }
 
 protected function getTpl($name) {
-    $text = @file_get_contents($this->tplPath . $name . '.tpl');
+    if (strstr($name, '.php')) {  /* aleady has extension */
+        $text = @file_get_contents($this->tplPath . $name);
+    } else { /* use .tpl extension */
+        $text = @file_get_contents($this->tplPath . $name . '.tpl');
+    }
     return $text !== false? $text : '';
 }
     /**

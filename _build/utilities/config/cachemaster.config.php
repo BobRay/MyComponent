@@ -91,14 +91,14 @@ $components = array(
     'resources' => array(
 
     ),
-    /* array of plugin names and comma-separated list of their events
+    /* array of plugin names and comma-separated list of their events.
      * automatically generates resolver
      */
     'pluginEvents' => array(
         'CacheMaster' => 'OnDocFormSave',
     ),
 
-    /* array of TV names and comma-separated list of templates to attach them to
+    /* array of TV names and comma-separated list of templates to attach them to.
      * automatically generates resolver
      */
     'tvTemplates' => array(
