@@ -354,7 +354,7 @@ class Bootstrap {
     public function createPluginEvents() {
         $pluginEvents = $this->props['pluginEvents'];
         if (! empty($pluginEvents)) {
-            $tpl = $this->getTpl('pluginresolver');
+            $tpl = $this->getTpl('pluginresolver.php');
             $tpl = $this->strReplaceAssoc($this->replaceFields, $tpl);
             if (empty($tpl)) {
                 $this->modx->log(MODX::LOG_LEVEL_ERROR, 'pluginresolver tpl is empty');
@@ -387,7 +387,7 @@ class Bootstrap {
                 } else {
                     $this->modx->log(MODX::LOG_LEVEL_ERROR, 'Could not open code file ' . $filePath);
                 }
-                $tpl = str_replace('[[+code]]', $code, $tpl);
+                $tpl = str_replace('/* [[+code]] */', $code, $tpl);
                 fwrite($fp, $tpl);
                 fclose($fp);
 
