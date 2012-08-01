@@ -188,11 +188,6 @@ class Bootstrap {
             $tpl = $this->getTpl('phpfile');
         }
 
-        /* add license if necessary */
-        if (! empty($tpl) && strstr($tpl, '[[+license]]')) {
-            $license = $this->getTpl('license');
-            $tpl = str_replace('[[+license]]', $license, $tpl);
-        }
         $fp = null;
         if (! file_exists($codePath)) {
             $fp = fopen($codePath, 'w');
