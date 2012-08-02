@@ -18,10 +18,10 @@
 /* @var array $options */
 
 if ($object->xpdo) {
+    $modx =& $object->xpdo;
     switch ($options[xPDOTransport::PACKAGE_ACTION]) {
         case xPDOTransport::ACTION_INSTALL:
         case xPDOTransport::ACTION_UPGRADE:
-            $modx =& $object->xpdo;
             /* [[+code]] */
             break;
     }
