@@ -98,12 +98,13 @@ $components = array(
         'CacheMaster' => 'OnDocFormSave',
     ),
 
-    /* array of TV names and comma-separated list of templates to attach them to.
-     * automatically generates resolver
+    /* Array of Templates and comma-separated list of TVs to attach to them.
+     * Automatically generates resolver (use 'default' for default template).
+     * TV names and Template names are both case-sensitive
      */
-    'tvTemplates' => array(
-
-
+    'templateVarTemplates' => array(
+        'default' => 'MyTvOne,MyTvTwo',
+        'Collapsible' => 'MyTvOne,MyTvTwo,MyTvThree',
     ),
 
     /* (NOT IMPLEMENTED) Array of new events to create, plugins to attach, and fields */

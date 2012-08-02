@@ -32,6 +32,7 @@ $bootStrap->createCategory();
 $bootStrap->createElements();
 $bootStrap->createAssetsDirs();
 $bootStrap->createPluginEvents();
+$bootStrap->createTvResolver();
 
 $modx->log(MODX::LOG_LEVEL_INFO,'Finished!');
 

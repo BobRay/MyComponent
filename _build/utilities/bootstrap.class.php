@@ -398,6 +398,55 @@ class Bootstrap {
         }
     }
 
+    /** creates resolver for attaching TVs to Templates */
+    public function createTvResolver()
+    {
+        $templateVarTemplates = $this->props['templateVarTemplates'];
+        if (!empty($templateVarTemplates)) {
+            $tpl = $this->getTpl('tvresolver.php');
+            $tpl = $this->strReplaceAssoc($this->replaceFields, $tpl);
+            if (empty($tpl)) {
+                $this->modx->log(MODX::LOG_LEVEL_ERROR, 'tvresolver tpl is empty');
+            }
+            $dir = $this->targetBase . '_build/resolvers';
+            if (!is_dir($dir)) {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating resolvers directory');
+                mkdir($dir, $this->filePermission, true);
+            } else {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, 'Resolvers directory already exists');
+            }
+            $filePath = $this->targetBase . '_build/resolvers/tv.resolver.php';
+            $code = '';
+            if (!file_exists($filePath)) {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating file ' . $filePath);
+                $fp = fopen($filePath, 'w');
+                if ($fp) {
+                    $codeTpl = $this->getTpl('tvresolvercode.php');
+                    if (empty($codeTpl)) {
+                        $this->modx->log(MODX::LOG_LEVEL_ERROR, 'tvresolvercode tpl is empty');
+                    }
+                    $codeTpl = str_replace('<?php', '', $codeTpl);
+
+                    foreach ($templateVarTemplates as $template => $tvs) {
+
+                        $tempCodeTpl = str_replace('[[+template]]', $template, $codeTpl);
+                        $tempCodeTpl = str_replace('[[+tvs]]', $tvs, $tempCodeTpl);
+                        $code .= "\n" . $tempCodeTpl;
+                    }
+                } else {
+                    $this->modx->log(MODX::LOG_LEVEL_ERROR, 'Could not open code file ' . $filePath);
+                }
+                $tpl = str_replace('/* [[+code]] */', $code, $tpl);
+                fwrite($fp, $tpl);
+                fclose($fp);
+
+
+            } else {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $filePath . ' file already exists');
+            }
+        }
+    }    
+
 protected function getTpl($name) {
     if (strstr($name, '.php')) {  /* aleady has extension */
         $text = @file_get_contents($this->tplPath . $name);
