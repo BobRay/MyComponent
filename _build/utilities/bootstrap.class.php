@@ -351,7 +351,7 @@ class Bootstrap {
 
 }
     /** creates resolver for attaching events to plugins */
-    public function createPluginEvents() {
+    public function createPluginResolver() {
         $pluginEvents = $this->props['pluginEvents'];
         if (! empty($pluginEvents)) {
             $tpl = $this->getTpl('pluginresolver.php');
