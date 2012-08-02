@@ -9,9 +9,9 @@
 * @package [[+packageNameLower]]
 * @subpackage build
 */
-/* @var $modx modX */
+/* @var $object xPDOObject */
 /* @var $pluginObj modPlugin */
-/* @var $e modPluginEvent */
+/* @var $mpe modPluginEvent */
 /* @var xPDOObject $object */
 /* @var array $options */
 
@@ -19,7 +19,6 @@ if ($object->xpdo) {
     switch ($options[xPDOTransport::PACKAGE_ACTION]) {
         case xPDOTransport::ACTION_INSTALL:
         case xPDOTransport::ACTION_UPGRADE:
-            /** @var modX $modx */
             $modx =& $object->xpdo;
             /* [[+code]] */
             break;
