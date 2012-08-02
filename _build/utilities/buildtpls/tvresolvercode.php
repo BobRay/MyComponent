@@ -1,4 +1,8 @@
 <?php
+            $tvObj = null;
+            $templateObj = null;
+            $tvId = 0;
+            $templateId = 0;
             $template = '[[+template]]';
             $tvs = '[[+tvs]]';
             $tvs = explode(',', $tvs);

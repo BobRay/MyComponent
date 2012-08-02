@@ -22,10 +22,6 @@ if ($object->xpdo) {
         case xPDOTransport::ACTION_INSTALL:
         case xPDOTransport::ACTION_UPGRADE:
             $modx =& $object->xpdo;
-            $tvObj = null;
-            $templateObj = null;
-            $tvId = 0;
-            $templateId = 0;
             /* [[+code]] */
             break;
     }
