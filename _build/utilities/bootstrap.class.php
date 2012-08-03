@@ -15,6 +15,8 @@ class Bootstrap {
     var $modx;
     /* @var $props array  - $scriptProperties array */
     var $props;
+    /* @var $helpers Helpers  - class of helper functions */
+    var $helpers;
     var $packageName;
     var $packageNameLower;
     var $source;
@@ -48,7 +50,11 @@ class Bootstrap {
                 die('Could not find config file');
             }
         }
+
         $this->source = $this->props['source'];
+        require_once $this->source . '_build/utilities/helpers.class.php';
+        $this->helpers = new Helpers($this->modx, $this->props);
+        $this->helpers->init();
 
         $this->packageName = $this->props['packageName'];
         $this->packageNameLower = $this->props['packageNameLower'];
@@ -72,23 +78,6 @@ class Bootstrap {
         $this->targetCore = $this->targetBase . 'core/components/' . $this->packageNameLower . '/';
         $this->sourceCore = $this->source . 'core/components/mycomponent/';
         $this->targetAssets = $this->targetBase . 'assets/components/'. $this->packageNameLower . '/';
-
-        $this->tplPath = $this->source .  '/_build/utilities/' . $this->props['tplDir'] .'/';
-
-        $this->replaceFields = array(
-            '[[+packageName]]' => $this->props['packageName'],
-            '[[+packageNameLower]]' => $this->props['packageNameLower'],
-            '[[+author]]' => $this->props['author'],
-            '[[+email]]' => $this->props['email'],
-            '[[+copyright]]' => $this->props['copyright'],
-            '[[+createdon]]' => $this->props['createdon'],
-        );
-        $license = $this->getTpl('license');
-        if (!empty($license)) {
-            $license = $this->strReplaceAssoc($this->replaceFields, $license);
-            $this->replaceFields['[[+license]]'] = $license;
-        }
-        unset($license);
 
         $this->dirPermission = $this->props['dirPermission'];
         $this->filePermission = $this->props['filePermission'];
@@ -181,11 +170,11 @@ class Bootstrap {
      */
     public function createCodeFile($name, $codePath, $type) {
 
-        $tpl = $this->getTpl($type);
+        $tpl = $this->helpers->getTpl($type);
 
         /* use 'phpfile.tpl' as default for .php files */
         if ( empty($tpl) && strstr($codePath, 'php')) {
-            $tpl = $this->getTpl('phpfile');
+            $tpl = $this->helpers->getTpl('phpfile');
         }
 
         $fp = null;
@@ -193,12 +182,12 @@ class Bootstrap {
             $fp = fopen($codePath, 'w');
             if ($fp) {
                 $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating ' . $name . ' ' . $type . ' file');
-                $replace = $this->replaceFields;
+                $replace = $this->helpers->getReplaceFields();
                 $replace['[[+elementType]]'] = ucfirst($type);
                 $replace['[[+elementName]]'] = $name;
                 $fileContent = $tpl;
                 if (!empty ($tpl)) {
-                    $fileContent = $this->strReplaceAssoc($replace, $fileContent);
+                    $fileContent = $this->helpers->replaceFields($fileContent, $replace);
                 }
                 fwrite($fp,$fileContent);
                 fclose($fp);
@@ -257,8 +246,6 @@ class Bootstrap {
 
         if (isset ($defaults['_build']) && $defaults['_build']) {
             $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating directory: ' . $this->targetBase);
-            // mkdir($this->targetBase, $this->dirPermission, true);
-            // mkdir($this->targetBase . '_build', $this->dirPermission, true);
             if (! is_dir($this->targetBase . '_build/data')) {
                 $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating directory: ' . $this->targetBase);
                 mkdir($this->targetBase . '_build/data', $this->dirPermission, true);
@@ -285,7 +272,7 @@ class Bootstrap {
             $toDir = $this->targetBase . '_build/utilities/';
             if (! is_dir($toDir)) {
                 $this->modx->log(MODX::LOG_LEVEL_INFO, 'Copying Utilities directory');
-                $this->_copy($fromDir, $toDir);
+                $this->helpers->copyDir($fromDir, $toDir);
             } else {
                 $this->modx->log(MODX::LOG_LEVEL_INFO, '    Utilities directory already exists');
             }
@@ -321,7 +308,7 @@ class Bootstrap {
             if (! is_dir($toDir)) {
                 mkdir($toDir, $this->dirPermission, true);
                 $this->modx->log(MODX::LOG_LEVEL_INFO,'    copying doc files');
-                $this->_copy($fromDir,$toDir);
+                $this->helpers->copyDir($fromDir,$toDir);
             } else {
                 $this->modx->log(MODX::LOG_LEVEL_INFO,'    docs directory already exists -- no files copied');
             }
@@ -354,8 +341,8 @@ class Bootstrap {
     public function createPluginResolver() {
         $pluginEvents = $this->props['pluginEvents'];
         if (! empty($pluginEvents)) {
-            $tpl = $this->getTpl('pluginresolver.php');
-            $tpl = $this->strReplaceAssoc($this->replaceFields, $tpl);
+            $tpl = $this->helpers->getTpl(('pluginresolver.php'));
+            $this->helpers->replaceFields($tpl);
             if (empty($tpl)) {
                 $this->modx->log(MODX::LOG_LEVEL_ERROR, 'pluginresolver tpl is empty');
             }
@@ -372,7 +359,7 @@ class Bootstrap {
                 $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating file ' . $filePath);
                 $fp = fopen($filePath, 'w');
                 if ($fp) {
-                    $codeTpl = $this->getTpl('pluginresolvercode.php');
+                    $codeTpl = $this->helpers->getTpl('pluginresolvercode.php');
                     if (empty($codeTpl)) {
                         $this->modx->log(MODX::LOG_LEVEL_ERROR, 'pluginresolvercode tpl is empty');
                     }
@@ -403,8 +390,8 @@ class Bootstrap {
     {
         $templateVarTemplates = $this->props['templateVarTemplates'];
         if (!empty($templateVarTemplates)) {
-            $tpl = $this->getTpl('tvresolver.php');
-            $tpl = $this->strReplaceAssoc($this->replaceFields, $tpl);
+            $tpl = $this->helpers->getTpl('tvresolver.php');
+            $tpl = $this->helpers->replaceFields($tpl);
             if (empty($tpl)) {
                 $this->modx->log(MODX::LOG_LEVEL_ERROR, 'tvresolver tpl is empty');
             }
@@ -421,7 +408,8 @@ class Bootstrap {
                 $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating file ' . $filePath);
                 $fp = fopen($filePath, 'w');
                 if ($fp) {
-                    $codeTpl = $this->getTpl('tvresolvercode.php');
+
+                    $codeTpl = $this->helpers->getTpl('tvresolvercode.php');
                     if (empty($codeTpl)) {
                         $this->modx->log(MODX::LOG_LEVEL_ERROR, 'tvresolvercode tpl is empty');
                     }
@@ -447,52 +435,6 @@ class Bootstrap {
         }
     }    
 
-protected function getTpl($name) {
-    if (strstr($name, '.php')) {  /* aleady has extension */
-        $text = @file_get_contents($this->tplPath . $name);
-    } else { /* use .tpl extension */
-        $text = @file_get_contents($this->tplPath . $name . '.tpl');
-    }
-    return $text !== false? $text : '';
-}
-    /**
-     * Copies an entire directory and its descendants 
-     * 
-     * @param $source
-     * @param $destination
-     * @return bool
-     */
-    protected function _copy( $source, $destination) {
-        //echo "SOURCE: " . $source . "\nDESTINATION: " . $destination . "\n";
-        if( is_dir($source) ) {
-            if (! is_dir($destination)) {
-                mkdir( $destination, $this->dirPermission, true);
-            }
-            $objects = scandir($source);
-            if( sizeof($objects) > 0 ) {
-                foreach( $objects as $file ) {
-                    if( $file == "." || $file == ".." || $file == '.git' || $file == '.svn') {
-                        continue;
-                    }
-
-                    if(is_dir( $source. '/' . $file ) ) {
-                        $this->_copy( $source. '/'. $file, $destination. '/' .$file );
-                    } else {
-                        copy( $source. '/' . $file, $destination. '/' . $file );
-                    }
-                }
-            }
-            return true;
-        }
-        elseif( is_file($source) ) {
-            return copy($source, $destination);
-        } else {
-            return false;
-        }
-    }
-    function strReplaceAssoc(array $replace, $subject) {
-       return str_replace(array_keys($replace), array_values($replace), $subject);
-    }
 
     /* The next three function are not used, but can replace placeholders in files after the fact */
     public function doSearchReplace() {

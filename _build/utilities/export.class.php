@@ -147,6 +147,12 @@ class Export
             '[[+copyright]]' => $this->props['copyright'],
             '[[+createdon]]' => $this->props['createdon'],
         );
+        $license = $this->getTpl('license');
+        if (!empty($license)) {
+            $license = $this->strReplaceAssoc($this->replaceFields, $license);
+            $this->replaceFields['[[+license]]'] = $license;
+        }
+        unset($license);
 
         return true;
     }
