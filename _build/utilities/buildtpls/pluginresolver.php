@@ -22,7 +22,7 @@ if ($object->xpdo) {
         case xPDOTransport::ACTION_UPGRADE:
             /* [[+code]] */
             break;
-        
+
         case xPDOTransport::ACTION_UNINSTALL:
             break;
     }

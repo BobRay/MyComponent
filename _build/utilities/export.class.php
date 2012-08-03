@@ -471,8 +471,9 @@ class Export
     }
 
     protected function makeFileName($elementObj) {
-        /* $element is now in the form 'chunk', 'templatevar Chunks to chunk, etc. */
-        /* set default suffix to 'chunk', 'snippet', etc. */
+        /* $elementType is in the form 'modSnippet', 'modChunk'm etc.
+         * set default suffix to 'chunk', 'snippet', etc. */
+
         /* @var $elementObj modElement */
         $suffix = substr(strtolower($this->elementType),3);
 
