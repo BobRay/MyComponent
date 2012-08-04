@@ -13,6 +13,7 @@
 /**
  * Description
  * -----------
+ * [[+description]]
  *
  * Variables
  * ---------
