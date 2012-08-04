@@ -226,8 +226,13 @@ class Export
             $this->modx->log(modX::LOG_LEVEL_ERROR,'Could not open transport file: ' . $transportFile);
         }
         /* write transport header */
-        fwrite($transportFp, "<?php\n");
-        $this->writeLicense($transportFp);
+        $tpl = $this->helpers->getTpl('transportfile.php');
+        $replace = $this->replaceFields;
+        $replace['[[+elementType]]'] = $element;
+        $tpl = $this->helpers->replaceTags($tpl,$replace);
+        fwrite($transportFp, $tpl);
+        unset($tpl);
+
         fwrite($transportFp, "\n\$" . strtolower($element) . " = array();\n\n");
         $i=1;
         foreach($this->elements as $elementObj) {
@@ -332,10 +337,10 @@ class Export
                 fwrite($transportFp, "    'snippet' => file_get_contents(\$sources['source_core']." . "'/elements/chunks/" . $this->makeFileName($elementObj) . "'),\n");
                 break;
             case 'modSnippet':
-                fwrite($transportFp, "    'snippet' => getSnippetContent(\$sources['source_core']." . "'/elements/snippets/" . $this->makeFileName($elementObj) . "'),\n");
+                fwrite($transportFp, "    'snippet' => stripPhpTags(\$sources['source_core']." . "'/elements/snippets/" . $this->makeFileName($elementObj) . "'),\n");
                 break;
             case 'modPlugin':
-                fwrite($transportFp, "    'plugincode' => getSnippetContent(\$sources['source_core']." . "'/elements/plugins/" . $this->makeFileName($elementObj) . "'),\n");
+                fwrite($transportFp, "    'plugincode' => stripPhpTags(\$sources['source_core']." . "'/elements/plugins/" . $this->makeFileName($elementObj) . "'),\n");
                 break;
             case 'modTemplate':
 

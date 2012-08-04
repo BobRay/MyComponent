@@ -182,7 +182,7 @@ class Bootstrap {
             $fp = fopen($codePath, 'w');
             if ($fp) {
                 $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating ' . $name . ' ' . $type . ' file');
-                $replace = $this->helpers->getReplaceFields();
+                $replace = $this->replaceFields;
                 $replace['[[+elementType]]'] = ucfirst($type);
                 $replace['[[+elementName]]'] = $name;
                 $fileContent = $tpl;
