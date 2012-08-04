@@ -21,7 +21,10 @@ class Helpers
     }
     public function init() {
         $this->source = $this->props['source'];
-        $this->tplPath = $this->source . '_build/utilities/' . $this->props['tplDir'] . '/';
+        $this->tplPath = $this->source . '_build/utilities/' . $this->props['tplDir'];
+        if (substr($this->tplPath, -1) != "/") {
+            $this->tplPath .= "/";
+        }
         $this->dirPermission = $this->props['dirPermission'];
         $this->replaceFields = array(
             '[[+packageName]]' => $this->props['packageName'],
