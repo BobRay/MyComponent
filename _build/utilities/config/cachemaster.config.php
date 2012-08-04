@@ -88,10 +88,9 @@ $components = array(
         'templates' => '',
         'chunks' => '',
     ),
-    /* comma-separated lists of the actual Resource Names */
-    'resources' => array(
+    /* comma-separated lists of the actual Resource pagetitles */
+    'resources' => '',
 
-    ),
     /* array of plugin names and comma-separated list of their events.
      * automatically generates resolver
      */
@@ -107,6 +106,21 @@ $components = array(
         'default' => 'MyTvOne,MyTvTwo',
         'Collapsible' => 'MyTvOne,MyTvTwo,MyTvThree',
     ),
+
+    /* These properties control exportObjects.php */
+    'dryRun' => '1',
+    'createTransportFiles' => '1',
+    'createObjectFiles' => '1',
+    /* comma-separated list of elements to export. All elements in the category
+     * set above will be handled.
+     * 
+     * To export resources, add 'resources' to the list -- resources
+     * listed above will be processed
+    */
+    'process' => 'plugins',
+    'pagetitles' => 'Notify,NotifyPreview', // pagetitles of resources to process
+    'parents' => '', //parents of resources to process
+    'includeParents' => 0,
 
     /* (NOT IMPLEMENTED) Array of new events to create, plugins to attach, and fields */
     'newEvents' => array(
