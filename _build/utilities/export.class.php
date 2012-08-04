@@ -47,6 +47,7 @@ class Export
     var $transportPath;
     var $createTransportFiles;
     var $createObjectFiles;
+    var $dirPermission;
 
     var $elementType;
     /* @var $categoryObj modCategory */
@@ -86,7 +87,7 @@ class Export
         require_once $this->source . '_build/utilities/helpers.class.php';
         $this->helpers = new Helpers($this->modx, $this->props);
         $this->helpers->init();
-
+        $this->dirPermission = $this->props['dirPermission'];
         $this->dryRun = (isset($this->props['dryRun']) && $this->props['dryRun']) || (empty($this->props['createTransportFiles']) &&  empty($this->props['createObjectFiles']));
         if ($this->dryRun) {
             $this->modx->log(modX::LOG_LEVEL_INFO,'Dry Run');
@@ -122,7 +123,7 @@ class Export
 
         if (!is_dir($this->elementPath)) {
             if (!$this->dryRun) {
-                if (!mkDir($this->elementPath, 0, true)) {
+                if (!mkDir($this->elementPath, $this->dirPermission, true)) {
                     $this->modx->log(modX::LOG_LEVEL_ERROR, 'Failed to create element path: ' . $this->elementPath);
                     return false;
                 }
@@ -136,7 +137,7 @@ class Export
         
         if (! is_dir($this->transportPath)) {
             if (! $this->dryRun) {
-                if (! mkDir($this->transportPath, 0, true)) {
+                if (! mkDir($this->transportPath, $this->dirPermission, true)) {
                     $this->modx->log(modX::LOG_LEVEL_ERROR, 'Failed to create transport path: ' . $this->transportPath);
                     return false;
                 } else {
@@ -288,7 +289,7 @@ class Export
         fwrite($transportFp, '$' . $element . 's[' . $i . '] = $modx->newObject(' . "'" . $this->elementType . "');" . "\n");
         fwrite($transportFp, '$' . $element . 's[' . $i . '] ->fromArray(array(' . "\n");
         fwrite($transportFp, "    'id' => " . $i . ",\n");
-        $fields = $elementObj->toArray('',true);  // true gets raw values - check this
+        $fields = $elementObj->toArray('', true);  // true gets raw values - check this
 
         /* This may not be necessary */
         /* *********** */
@@ -352,7 +353,7 @@ class Export
                 break;
         }
         /* finish up */
-        fwrite($transportFp, "),'',true,true);\n");
+        fwrite($transportFp, "), '', true, true);\n");
 
         if ($this->elementType == 'modResource') {
             fwrite($transportFp, "\$resources[" . $i . "]->setContent(file_get_contents(\$sources['data']." . "'resources/" . $this->makeFileName($elementObj) . "'));\n\n");
@@ -371,7 +372,7 @@ class Export
         $path = $this->transportPath . 'properties/';
         if (!is_dir($path) ) {
             if (! $this->dryRun) {
-                if (! mkdir($path,0,true)) {
+                if (! mkdir($path, $this->dirPermission, true)) {
                     $this->modx->log(modX::LOG_LEVEL_ERROR, 'Failed to create directory: ' . $path);
                 } else {
                     $this->modx->log(modX::LOG_LEVEL_INFO, 'Created directory: ' . $path);
@@ -465,7 +466,7 @@ class Export
         }
         if (! is_dir($path))
             if( !$this->dryRun) {
-                if (!mkdir($path,0,true)) {
+                if (!mkdir($path, $this->dirPermission, true)) {
                     $this->modx->log(modX::LOG_LEVEL_ERROR, 'Failed to create directory: ' . $path);
                 } else {
                     $this->modx->log(modX::LOG_LEVEL_INFO, 'Created directory: ' . $path);
