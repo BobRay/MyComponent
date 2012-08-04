@@ -41,7 +41,7 @@ class Helpers
     public function getReplaceFields() {
         return $this->replaceFields;
     }
-    public function replaceFields($text, $replaceFields = array()) {
+    public function replaceTags($text, $replaceFields = array()) {
         $replaceFields = empty ($replaceFields)? $this->replaceFields : $replaceFields;
         return $this->strReplaceAssoc($replaceFields, $text);
     }

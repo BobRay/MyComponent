@@ -187,7 +187,7 @@ class Bootstrap {
                 $replace['[[+elementName]]'] = $name;
                 $fileContent = $tpl;
                 if (!empty ($tpl)) {
-                    $fileContent = $this->helpers->replaceFields($fileContent, $replace);
+                    $fileContent = $this->helpers->replaceTags($fileContent, $replace);
                 }
                 fwrite($fp,$fileContent);
                 fclose($fp);
@@ -342,7 +342,7 @@ class Bootstrap {
         $pluginEvents = $this->props['pluginEvents'];
         if (! empty($pluginEvents)) {
             $tpl = $this->helpers->getTpl(('pluginresolver.php'));
-            $this->helpers->replaceFields($tpl);
+            $this->helpers->replaceTags($tpl);
             if (empty($tpl)) {
                 $this->modx->log(MODX::LOG_LEVEL_ERROR, 'pluginresolver tpl is empty');
             }
@@ -391,7 +391,7 @@ class Bootstrap {
         $templateVarTemplates = $this->props['templateVarTemplates'];
         if (!empty($templateVarTemplates)) {
             $tpl = $this->helpers->getTpl('tvresolver.php');
-            $tpl = $this->helpers->replaceFields($tpl);
+            $tpl = $this->helpers->replaceTags($tpl);
             if (empty($tpl)) {
                 $this->modx->log(MODX::LOG_LEVEL_ERROR, 'tvresolver tpl is empty');
             }
