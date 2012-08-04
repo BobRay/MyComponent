@@ -185,7 +185,7 @@ class Export
 
     function process($element)
     {
-        if (stristr($element,'menu')) { /* note: may change in Revo 2.3 */
+        if (stristr($element,'menus')) { /* note: may change in Revo 2.3 */
             $element='Actions';
         }
 
