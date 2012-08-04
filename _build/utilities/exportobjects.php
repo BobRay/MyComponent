@@ -91,15 +91,15 @@ if (!defined(MODX_CORE_PATH)) {
 
 if ($outsideModx) {
     $scriptProperties = array(
-        'basePath' => MODX_ASSETS_PATH . 'mycomponents/notify/',
-        'authorName' => 'Bob Ray',
-        'authorEmail' => '<http://bobsguides.com>',
-        'category' => 'notify',
-        'packageName' => 'Notify',
+        //'basePath' => MODX_ASSETS_PATH . 'mycomponents/notify/',
+        //'authorName' => 'Bob Ray',
+        //'authorEmail' => '<http://bobsguides.com>',
+        //'category' => 'notify',
+        //'packageName' => 'Notify',
         'dryRun' => '1',
         'createTransportFiles' => '1',
         'createObjectFiles' => '1',
-        'process' => 'templateVars',
+        'process' => 'plugins',
         'pagetitles' => 'Notify,NotifyPreview', // pagetitles of resources to process
         'parents' => '', //parents of resources to process
         'includeParents' => 0,
@@ -113,7 +113,7 @@ require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/expor
 $export = new Export($modx,$props);
 
 
-if ($export->init($props['category'], $props['packageName'])) {
+if ($export->init()) {
     $objects = explode(',', $props['process']);
     foreach ($objects as $object) {
         $export->process(trim($object));

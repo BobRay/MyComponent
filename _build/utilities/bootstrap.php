@@ -5,13 +5,8 @@ $props =& $scriptProperties;
 
 /* @var $modx modX */
 if (!defined('MODX_CORE_PATH')) {
-    /* These four are not used. Defined here to avoid PHP notices */
-    define ('MODX_BASE_URL', '');
-    define ('MODX_MANAGER_URL', '');
-    define ('MODX_ASSETS_URL', '');
-    define ('MODX_CONNECTORS_URL', '');
 
-    require_once dirname(dirname(__FILE__)).'/build.config.php';
+    require_once dirname(dirname(__FILE__)) . '/build.config.php';
     require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
     $modx= new modX();
     $modx->initialize('mgr');

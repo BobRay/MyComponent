@@ -43,13 +43,20 @@ class Bootstrap {
 
     public function init() {
         clearstatcache(); /*  make sure is_dir() is current */
-        $configFile = include 'bootstrap.config.php';
-        if (empty($this->props)) { /* running outside of MODX */
-            $this->props = @include $configFile;
-            if (empty($this->props)) {
-                die('Could not find config file');
-            }
+        $config = dirname(dirname(__FILE__)) . '/build.config.php';
+        if (file_exists($config)) {
+            $configFile = include $config;
+        } else {
+            die('Could not find config file at ' . $config);
         }
+        $configProps = include $configFile;
+        if (empty($configProps)) {
+            die('Could not find config file at ' . $configFile);
+        }
+        $this->props = array_merge($configProps, $this->props);
+        unset($config, $configFile, $configProps);
+
+
 
         $this->source = $this->props['source'];
         require_once $this->source . '_build/utilities/helpers.class.php';
@@ -58,13 +65,6 @@ class Bootstrap {
 
         $this->packageName = $this->props['packageName'];
         $this->packageNameLower = $this->props['packageNameLower'];
-
-
-
-        if (empty($this->props)) {
-            die('Config file not found: ' . $configFile);
-        }
-        unset($configFile);
 
         if (isset($this->props['offerAbort']) && $this->props['offerAbort']) {
             echo 'Processing ' . $this->packageName . 'Continue? (y/n - Enter) ';

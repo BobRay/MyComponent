@@ -35,11 +35,14 @@ class Export
     var $parents; //array of parents
     var $includeParents; // should parent resources be included
     var $pagetitles; // array of pagetitles
-    var $basePath;
-    var $corePath;
+    var $source; // path to root of MyComponent
+    var $sourceCore; // path to MyComponent Core directory
+    var $targetBase; // base path to new component
+    var $targetCore; // path to new component core dir
     var $elementPath;
     var $resourcePath;
     var $packageName;
+    var $packageNameLower;
     var $filePath;
     var $transportPath;
     var $createTransportFiles;
@@ -50,6 +53,8 @@ class Export
     var $categoryObj;
     var $dryRun;
     var $replaceFields;
+    /* @var $helpers Helpers */
+    var $helpers; /* helpers class */
 
 
 
@@ -59,8 +64,29 @@ class Export
             $this->props =& $props;
     }
 
-    function init($category, $packageName = null) {
+    function init() {
         clearstatcache(); /*  make sure is_dir() is current */
+        $config = dirname(dirname(__FILE__)) . '/build.config.php';
+        if (file_exists($config)) {
+            $configFile = include $config;
+        } else {
+            die('Could not find config file at ' . $config);
+        }
+        $configProps = include $configFile;
+        if (empty($configProps)) {
+            die('Could not find config file at ' . $configFile);
+        }
+        $this->props = array_merge($configProps, $this->props);
+        unset($config, $configFile, $configProps);
+
+        $this->source = $this->props['source'];
+        if (empty ($this->source)) {
+            die('source directory must be set');
+        }
+        require_once $this->source . '_build/utilities/helpers.class.php';
+        $this->helpers = new Helpers($this->modx, $this->props);
+        $this->helpers->init();
+
         $this->dryRun = (isset($this->props['dryRun']) && $this->props['dryRun']) || (empty($this->props['createTransportFiles']) &&  empty($this->props['createObjectFiles']));
         if ($this->dryRun) {
             $this->modx->log(modX::LOG_LEVEL_INFO,'Dry Run');
@@ -68,10 +94,10 @@ class Export
             $this->modx->log(modX::LOG_LEVEL_INFO,'Not a Dry Run');
         }
 
-        $this->packageName = ! empty($packageName)
-            ?strtolower($packageName)
-            :strtolower($category);
-        $this->category = $category; 
+        $this->packageName = $this->modx->getOption('packageName', $this->props, '');
+        $this->packageNameLower = $this->modx->getOption('packageNameLower', $this->props, '');
+
+        $this->category = $this->modx->getOption('category', $this->props, '');
         $parents = $this->modx->getOption('parents', $this->props,null);
         $this->parents =  $parents ? explode(',',$parents): array();
         $this->includeParents = $this->modx->getOption('includeParents', $this->props,false);
@@ -82,18 +108,17 @@ class Export
         $this->createObjectFiles = $this->modx->getOption('createObjectFiles',$this->props,false);
         $this->createTransportFiles = $this->modx->getOption('createTransportFiles',$this->props,false);
 
-        $this->basePath = $this->modx->getOption('basePath',$this->props, null);
-        if (empty ($this->basePath) ) {
-            $this->modx->log(modX::LOG_LEVEL_ERROR, "&basePath must be set");
-            return false;
-        }
-        /* add trailing slash if missing */
-        if(substr($this->basePath, -1) != "/") $this->basePath .= "/";
-        
-        $this->corePath = $this->modx->getOption('corePath', $this->props,$this->basePath . 'core/components/' . $this->packageName . '/');
 
-            $this->resourcePath = $this->basePath . '_build/data/resources/';
-            $this->elementPath = $this->corePath . 'elements/';
+
+        /* add trailing slash if missing */
+        if(substr($this->source, -1) != "/") $this->source .= "/";
+        
+        // $this->sourceCore = $this->modx->getOption('sourceCore', $this->props,$this->basePath . 'core/components/' . $this->packageName . '/');
+        $this->targetBase = MODX_BASE_PATH . 'assets/mycomponents/' . $this->packageNameLower . '/';
+        $this->targetCore = $this->targetBase . 'core/components/' . $this->packageNameLower . '/';
+
+        $this->resourcePath = $this->targetBase . '_build/data/resources/';
+        $this->elementPath = $this->targetCore . 'elements/';
 
         if (!is_dir($this->elementPath)) {
             if (!$this->dryRun) {
@@ -107,7 +132,7 @@ class Export
         } else {
             $this->modx->log(modX::LOG_LEVEL_INFO, 'element path: ' . $this->elementPath);
         }
-        $this->transportPath = $this->basePath . '_build/data/';
+        $this->transportPath = $this->targetBase . '_build/data/';
         
         if (! is_dir($this->transportPath)) {
             if (! $this->dryRun) {
@@ -147,7 +172,7 @@ class Export
             '[[+copyright]]' => $this->props['copyright'],
             '[[+createdon]]' => $this->props['createdon'],
         );
-        $license = $this->getTpl('license');
+        $license = $this->helpers->getTpl('license');
         if (!empty($license)) {
             $license = $this->strReplaceAssoc($this->replaceFields, $license);
             $this->replaceFields['[[+license]]'] = $license;
@@ -273,7 +298,7 @@ class Export
         unset($fields['id'],
             $fields['snippet'],
             $fields['content'],
-            $fields['plugin'],
+            $fields['plugincode'],
             $fields['editor_type'],
             $fields['category'],
             $fields['static'],
@@ -310,8 +335,8 @@ class Export
                 fwrite($transportFp, "    'snippet' => getSnippetContent(\$sources['source_core']." . "'/elements/snippets/" . $this->makeFileName($elementObj) . "'),\n");
                 break;
             case 'modPlugin':
-                fwrite($transportFp, "    'plugin' => getSnippetContent(\$sources['source_core']." . "'/elements/plugins/" . $this->makeFileName($elementObj) . "'),\n");
-
+                fwrite($transportFp, "    'plugincode' => getSnippetContent(\$sources['source_core']." . "'/elements/plugins/" . $this->makeFileName($elementObj) . "'),\n");
+                break;
             case 'modTemplate':
 
                 fwrite($transportFp, "    'content' => file_get_contents(\$sources['source_core']." . "'/elements/templates/" . $this->makeFileName($elementObj) . "'),\n");
@@ -462,7 +487,6 @@ class Export
                 fwrite($fileFp,"<?php\n\n");
             }
 
-
             if ( (!strstr($content,'GNU')) && (!stristr($content,'License')) ) {
                 $this->writeLicense($fileFp);
             }
@@ -477,7 +501,7 @@ class Export
     }
 
     protected function makeFileName($elementObj) {
-        /* $elementType is in the form 'modSnippet', 'modChunk'm etc.
+        /* $elementType is in the form 'modSnippet', 'modChunk', etc.
          * set default suffix to 'chunk', 'snippet', etc. */
 
         /* @var $elementObj modElement */

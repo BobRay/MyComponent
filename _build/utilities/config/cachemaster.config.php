@@ -5,6 +5,7 @@ $components = array(
     /* These are used to define the package and set values for placeholders */
     'packageName' => 'CacheMaster',
     'packageNameLower' => 'cachemaster',
+    'category' => 'CacheMaster',
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
     'copyright' => '2012',
