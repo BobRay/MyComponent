@@ -59,6 +59,10 @@ class Bootstrap {
 
 
         $this->source = $this->props['source'];
+        /* add trailing slash if missing */
+        if (substr($this->source, -1) != "/") {
+            $this->source .= "/";
+        }
         require_once $this->source . '_build/utilities/helpers.class.php';
         $this->helpers = new Helpers($this->modx, $this->props);
         $this->helpers->init();

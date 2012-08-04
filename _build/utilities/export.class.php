@@ -108,10 +108,10 @@ class Export
         $this->createObjectFiles = $this->modx->getOption('createObjectFiles',$this->props,false);
         $this->createTransportFiles = $this->modx->getOption('createTransportFiles',$this->props,false);
 
-
-
         /* add trailing slash if missing */
-        if(substr($this->source, -1) != "/") $this->source .= "/";
+        if(substr($this->source, -1) != "/") {
+            $this->source .= "/";
+        }
         
         // $this->sourceCore = $this->modx->getOption('sourceCore', $this->props,$this->basePath . 'core/components/' . $this->packageName . '/');
         $this->targetBase = MODX_BASE_PATH . 'assets/mycomponents/' . $this->packageNameLower . '/';
