@@ -56,8 +56,6 @@ class Bootstrap {
         $this->props = array_merge($configProps, $this->props);
         unset($config, $configFile, $configProps);
 
-
-
         $this->source = $this->props['source'];
         /* add trailing slash if missing */
         if (substr($this->source, -1) != "/") {
