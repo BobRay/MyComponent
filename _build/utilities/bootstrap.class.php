@@ -435,7 +435,74 @@ class Bootstrap {
                 $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $filePath . ' file already exists');
             }
         }
-    }    
+    }
+    public function createValidators() {
+        $validators = $this->props['validators'];
+        if (!empty($validators)) {
+            $path = $this->targetBase . '_build/validators/';
+            if (!is_dir($path)) {
+                mkdir($path, $this->dirPermission, true);
+            }
+            $validators = explode(',', $validators);
+            foreach ($validators as $validator) {
+                if ($validator == 'default') {
+                    $fileName = $this->packageNameLower . '.' . 'validator.php';
+                } else {
+                    $fileName = $validator . '.' . 'validator.php';
+                }
+                $tpl = $this->helpers->getTpl('genericvalidator.php');
+                $tpl = $this->helpers->replaceTags($tpl);
+                $file = $path . $fileName;
+                if (!file_exists($file)) {
+                    $fp = fopen($file, 'w');
+                    if ($fp) {
+                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating ' . $file);
+                        fwrite($fp, $tpl);
+                        fclose($fp);
+                    } else {
+                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    Could not write file ' . $file);
+                    }
+                } else {
+                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $file . ' file already exists');
+                }
+            }
+
+
+        }
+
+    }
+    public function createExtraResolvers() {
+        $resolvers = $this->props['resolvers'];
+        if (!empty($resolvers)) {
+            $path = $this->targetBase . '_build/resolvers/';
+            if (!is_dir($path)) {
+                mkdir($path, $this->dirPermission, true);
+            }
+            $resolvers = explode(',', $resolvers);
+            foreach ($resolvers as $resolver) {
+                if ($resolver == 'default') {
+                    $fileName = $this->packageNameLower . '.' . 'resolver.php';
+                } else {
+                    $fileName = $resolver . '.' . 'resolver.php';
+                }
+                $tpl = $this->helpers->getTpl('genericresolver.php');
+                $tpl = $this->helpers->replaceTags($tpl);
+                $file = $path . $fileName;
+                if (!file_exists($file)) {
+                    $fp = fopen($file, 'w');
+                    if ($fp) {
+                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating ' . $file);
+                        fwrite($fp, $tpl);
+                        fclose($fp);
+                    } else {
+                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    Could not write file ' . $file);
+                    }
+                } else {
+                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $file . ' file already exists');
+                }
+            }
+        }
+    }
 
 
     /* The next three function are not used, but can replace placeholders in files after the fact */

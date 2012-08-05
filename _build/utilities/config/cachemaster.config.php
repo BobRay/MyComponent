@@ -22,6 +22,7 @@ $components = array(
     'source' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/', /* path to MyComponent source files */
     'sourceCore' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/',
 
+    /* ********************************************* */
     /* Define default directories and files to be created in project*/
     'initialize' => true,
     'defaultStuff' => array(
@@ -32,6 +33,7 @@ $components = array(
         'readme.md' => true, /* Description file for GitHub project home page */
         'languages' => 'en,fr', /* only list languages for which you have language files */
     ),
+    /* ********************************************* */
     /* Define optional directories to create under assets
      * add your own as needed
      * set to true to create directory
@@ -46,18 +48,28 @@ $components = array(
         'video' => true,
         'themes' => true,
     ),
-    /* extra script resolver(s) to be run during install
-     *  Creates a default resolver named after the package
+    /* ********************************************* */
+    /* comma-separated list of extra script resolver(s) to be run
+     * during install. Note that resolvers to connect plugins to events
+     * and TVs to templates will be created automatically -- don't list those here
+     *
+     *  'default' creates a default resolver named after the package
      *  (other resolvers may be created above for TVs and plugins)
+     * suffix 'resolver.php' will be added
      */
-    'resolvers' => 'true',
+    'resolvers' => 'default,extra',
 
-    /* validators can abort the install after checking conditions
-     * comma-separated list of validator names or '' (no prefix of suffix) */
-    'validators' => '',
+    /* validators can abort the install after checking conditions.
+     * comma-separated list of validator names (no prefix of suffix) or ''
+     * 'default' creates a default resolver named after the package
+     * suffix 'validator.php' will be added
+     */
+
+    'validators' => 'default,extra',
 
     /* install.options is needed if you will interact with user during the install */
-    /* set to 'install.options' or '' */
+    /* set to 'install.options' or ''
+     */
     'install.options' => 'install.options',
 
     /* suffixes for files */
@@ -70,7 +82,7 @@ $components = array(
         'resource' => '.html',
         'default' => '.php',
     ),
-
+    /* ********************************************* */
     /* These control the creation of elements */
     'createElementFiles' => true, /* create element files */
     'createElementObjects' => true, /* also create objects in MODX */
@@ -106,22 +118,23 @@ $components = array(
         'default' => 'MyTvOne,MyTvTwo',
         'Collapsible' => 'MyTvOne,MyTvTwo,MyTvThree',
     ),
-
+    /* ********************************************* */
     /* These properties control exportObjects.php */
     'dryRun' => '1',
     'createTransportFiles' => '1',
     'createObjectFiles' => '1',
     /* comma-separated list of elements to export. All elements in the category
      * set above will be handled.
-     * 
-     * To export resources, add 'resources' to the list -- resources
-     * listed above will be processed
+     *
+     * To export resources, list pagetitles and/or IDs of parents
+     * of desired resources (
     */
     'process' => 'plugins',
-    'pagetitles' => 'Notify,NotifyPreview', // pagetitles of resources to process
-    'parents' => '', //parents of resources to process
-    'includeParents' => 0,
+    'pagetitles' => 'Notify,NotifyPreview', // comma-separated list of pagetitles of resources to process
+    'parents' => '', // comma-separated list of parent IDs to get children of
+    'includeParents' => false,  // include listed parent resources
 
+    /* ********************************************* */
     /* (NOT IMPLEMENTED) Array of new events to create, plugins to attach, and fields */
     'newEvents' => array(
         'OnEvent1' => array(

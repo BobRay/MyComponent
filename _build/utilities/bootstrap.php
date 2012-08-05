@@ -22,12 +22,14 @@ require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/boots
 $bootStrap = new Bootstrap($modx,$props);
 
 $bootStrap->init();
-$bootStrap->createBasics();
-$bootStrap->createCategory();
-$bootStrap->createElements();
-$bootStrap->createAssetsDirs();
-$bootStrap->createPluginResolver();
-$bootStrap->createTvResolver();
+//$bootStrap->createBasics();
+//$bootStrap->createCategory();
+//$bootStrap->createElements();
+//$bootStrap->createAssetsDirs();
+//$bootStrap->createPluginResolver();
+//$bootStrap->createTvResolver();
+$bootStrap->createExtraResolvers();
+$bootStrap->createValidators();
 
 $modx->log(MODX::LOG_LEVEL_INFO,'Finished!');
 
