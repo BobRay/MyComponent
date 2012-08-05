@@ -9,13 +9,22 @@
 class Helpers
 
 {
+    /* @var $replaceFields array */
     var $replaceFields;
-    var $tplPath;  /* path to MyComponent tpl directory */
-    var $source;  /* path to root of MyComponent */
+    /* @var $tplPath string - path to MyComponent tpl directory */
+    var $tplPath;
+    /* @var $source string - path to root of MyComponent */
+    var $source;
+    /* @var $dirPermission - permission for new directories (from config file) */
     var $dirPermission;
+    /* @var $filePermission - permission for new files (from config file) */
+    var $filePermission;
+    /* @var $modx modX - $modx object */
+    var $modx;
+    /* @var $props array - $scriptProperties array */
+    var $props;
 
-    function  __construct(&$modx, &$props = array())
-    {
+    function  __construct(&$modx, &$props = array()) {
         $this->modx =& $modx;
         $this->props =& $props;
     }
@@ -26,6 +35,8 @@ class Helpers
             $this->tplPath .= "/";
         }
         $this->dirPermission = $this->props['dirPermission'];
+        $this->filePermission = $this->props['filePermission'];
+
         $this->replaceFields = array(
             '[[+packageName]]' => $this->props['packageName'],
             '[[+packageNameLower]]' => $this->props['packageNameLower'],
@@ -49,6 +60,12 @@ class Helpers
         return $this->strReplaceAssoc($replaceFields, $text);
     }
 
+    /**
+     * Get tpl file contents from MyComponent build tpl directory
+     *
+     * @param $name string  - Name of tpl file
+     * @return bool|string
+     */
     public function getTpl($name)
     {
         if (strstr($name, '.php')) { /* already has extension */
@@ -59,11 +76,10 @@ class Helpers
         return $text !== false ? $text : '';
     }
 
-    public function makeFileName($elementObj, $elementType)
-    {
-        /* $elementType is in the form 'modSnippet', 'modChunk'm etc.
+    public function makeFileName($elementObj, $elementType) {
+        /* $elementType is in the form 'modSnippet', 'modChunk', etc.
          * set default suffix to 'chunk', 'snippet', etc. */
-
+        /* ToDo: Get suffix from config file */
         /* @var $elementObj modElement */
         $suffix = substr(strtolower($elementType), 3);
 
@@ -75,7 +91,7 @@ class Helpers
                 break;
             case 'modChunk':
                 $extension = 'html';
-            /* intentional fallthrough */
+            /* intentional fall through */
             case 'modSnippet':
             case 'modPlugin':
                 $name = $elementObj->get('name');
@@ -96,10 +112,39 @@ class Helpers
 
     }
 
-    /*public function getReplaceFields() {
-        return $this-replaceFields();
+    /**
+     * Write a code file to disk - non-destructive -- will not overwrite existing files
+     * Creates dir if necessary
+     *
+     * @param $dir string - directory for file
+     * @param $fileName string - file name
+     * @param $content - file content
+     * @param string $mode string - file mode; default 'w'
+     */
+    public function writeFile ($dir, $fileName, $content, $mode='w') {
+        if (!is_dir($dir)) {
+            mkdir($dir, $this->dirPermission, true);
+        }
+        $file = $dir . $fileName;
+        if (empty($content)) {
+            $this->modx->log(MODX::LOG_LEVEL_ERROR, '    No content for file ' . $file);
+        }
 
-    }*/
+        if (!file_exists($file)) {
+            $fp = fopen($file, 'w');
+            if ($fp) {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating ' . $file);
+                fwrite($fp, $content);
+                fclose($fp);
+                chmod($file, $this->filePermission);
+            } else {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, '    Could not write file ' . $file);
+            }
+        } else {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $file . ' file already exists');
+        }
+
+    }
 
     public function strReplaceAssoc(array $replace, $subject)
     {

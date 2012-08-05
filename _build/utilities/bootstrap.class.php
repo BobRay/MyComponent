@@ -103,9 +103,12 @@ class Bootstrap {
         $category = $this->modx->getObject('modCategory', array('category' => $this->packageName));
         if (! $category) {
             $category = $this->modx->newObject('modCategory', array('category' => $this->packageName));
-            $category->save();
+             if ($category->save()) {
+                 $this->modx->log(MODX::LOG_LEVEL_INFO, 'Created category Object: ' . $category->get('category'));
+             };
             $this->categoryId = $category->get('id');
         } else {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Category Object already exists ' . $category->get('category'));
             $this->categoryId = $category->get('id');
         }
         unset($category);
@@ -132,7 +135,7 @@ class Bootstrap {
     /**
      * Creates an element (code file and or MODX object) based on config file
      *
-     * @param $name string - Name of Element
+     * @param $name string - Name of Element (e.g., 'MySnippet')
      * @param $type - Plural element type (e.g. 'plugins')
      */
     public function createElement ($name, $type) {
@@ -148,13 +151,10 @@ class Bootstrap {
         $this->modx->log(MODX::LOG_LEVEL_INFO,'Creating ' . $name . ' ' . $fileNameType);
 
         if ($this->props['createElementFiles']) {
-            $codeDir = $this->targetCore . 'elements/' . $type;
-            // echo "\nCODE DIR: " . $codeDir;
-            if (! is_dir($codeDir)) {
-                mkdir($codeDir, $this->dirPermission, true);
-            }
-            $codePath = $codeDir . '/' . $lName . '.' . $fileNameType . $suffix;
-            $this->createCodeFile($name, $codePath, $fileNameType);
+            $codeDir = $this->targetCore . 'elements/' . $type . '/';
+
+            $fileName =  $lName . '.' . $fileNameType . $suffix;
+            $this->createCodeFile($name, $fileName, $codeDir, $fileNameType);
             // echo "\nCODE_PATH: " . $codePath . "\n";
         }
         if ($this->props['createElementObjects']) {
@@ -166,41 +166,26 @@ class Bootstrap {
     /**
      * Creates a code file for an element
      *
-     * @param $name string - filename (without extension or type - usually $this->packageNameLower)
-     * @param $codePath string - full path to file including filename
+     * @param $name string - lowercase filename (without extension or type
+     * @param $codeDir string - directory for element file
      * @param $type string - plugin, snippet, css, js, etc.
      */
-    public function createCodeFile($name, $codePath, $type) {
+    public function createCodeFile($name, $fileName, $codeDir, $type) {
 
         $tpl = $this->helpers->getTpl($type);
 
         /* use 'phpfile.tpl' as default for .php files */
-        if ( empty($tpl) && strstr($codePath, 'php')) {
-            $tpl = $this->helpers->getTpl('phpfile');
+        if ( empty($tpl) && strstr($fileName, 'php')) {
+            $tpl = $this->helpers->getTpl('phpfile.php');
         }
-
-        $fp = null;
-        if (! file_exists($codePath)) {
-            $fp = fopen($codePath, 'w');
-            if ($fp) {
-                $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating ' . $name . ' ' . $type . ' file');
-                $replace = $this->replaceFields;
-                $replace['[[+elementType]]'] = ucfirst($type);
-                $replace['[[+elementName]]'] = $name;
-                $fileContent = $tpl;
-                if (!empty ($tpl)) {
-                    $fileContent = $this->helpers->replaceTags($fileContent, $replace);
-                }
-                fwrite($fp,$fileContent);
-                fclose($fp);
-                chmod($codePath, $this->filePermission);
-            } else {
-                $this->modx->log(MODX::LOG_LEVEL_INFO, '    Could not write code file ' . $codePath);
-            }
-        } else {
-            $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $codePath . ' already exists');
+        $replace = $this->helpers->getReplaceFields();
+        $replace['[[+elementType]]'] = ucfirst($type);
+        $replace['[[+elementName]]'] = $name;
+        $fileContent = $tpl;
+        if (!empty ($tpl)) {
+            $fileContent = $this->helpers->replaceTags($fileContent, $replace);
         }
-
+        $this->helpers->writeFile($codeDir, $fileName,$fileContent);
     }
 
     /**
@@ -247,12 +232,11 @@ class Bootstrap {
         $assets = $this->targetAssets;
 
         if (isset ($defaults['_build']) && $defaults['_build']) {
-            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating directory: ' . $this->targetBase);
             if (! is_dir($this->targetBase . '_build/data')) {
-                $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating directory: ' . $this->targetBase);
+                $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating directory: ' . $this->targetBase . '_build/data');
                 mkdir($this->targetBase . '_build/data', $this->dirPermission, true);
             } else {
-                $this->modx->log(MODX::LOG_LEVEL_INFO, 'Directory already exists: ' . $this->targetBase);
+                $this->modx->log(MODX::LOG_LEVEL_INFO, 'Directory already exists: ' . $this->targetBase . '_build/data');
             }
             $fromDir = $this->source . '_build/';
             $toDir = $this->targetBase . '_build/';
@@ -332,8 +316,9 @@ class Bootstrap {
                 $this->modx->log(MODX::LOG_LEVEL_INFO,'    ' . $targetDir . ' directory already exists');
             }
             if ($dir == 'css' || $dir == 'js') {
-                $file = $this->packageNameLower . '.' . $dir;
-                $this->createCodeFile($file , $targetDir . '/' . $file, $dir);
+                $fileName = $this->packageNameLower . '.' . $dir;
+                $this->createCodeFile($dir, $fileName, $targetDir . '/', $dir);
+                //$this->createCodeFile($file , $targetDir . '/' . $file, $dir);
             }
         }
 
@@ -348,42 +333,27 @@ class Bootstrap {
             if (empty($tpl)) {
                 $this->modx->log(MODX::LOG_LEVEL_ERROR, 'pluginresolver tpl is empty');
             }
-            $dir = $this->targetBase . '_build/resolvers';
-            if (! is_dir($dir)) {
-                $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating resolvers directory');
-                mkdir($dir, $this->filePermission, true);
-            } else {
-                $this->modx->log(MODX::LOG_LEVEL_INFO, 'Resolvers directory already exists');
-            }
-            $filePath = $this->targetBase . '_build/resolvers/plugin.resolver.php';
+            $dir = $this->targetBase . '_build/resolvers/';
+
+            $fileName = 'plugin.resolver.php';
             $code = '';
-            if (! file_exists($filePath)) {
-                $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating file ' . $filePath);
-                $fp = fopen($filePath, 'w');
-                if ($fp) {
-                    $codeTpl = $this->helpers->getTpl('pluginresolvercode.php');
-                    if (empty($codeTpl)) {
-                        $this->modx->log(MODX::LOG_LEVEL_ERROR, 'pluginresolvercode tpl is empty');
-                    }
-                    $codeTpl = str_replace('<?php', '', $codeTpl);
 
-                    foreach($pluginEvents as $plugin => $events) {
-
-                        $tempCodeTpl = str_replace('[[+plugin]]', $plugin, $codeTpl);
-                        $tempCodeTpl = str_replace('[[+events]]', $events, $tempCodeTpl);
-                        $code .= "\n" . $tempCodeTpl;
-                    }
-                } else {
-                    $this->modx->log(MODX::LOG_LEVEL_ERROR, 'Could not open code file ' . $filePath);
-                }
-                $tpl = str_replace('/* [[+code]] */', $code, $tpl);
-                fwrite($fp, $tpl);
-                fclose($fp);
-
-
-            } else {
-                $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $filePath . ' file already exists');
+            $codeTpl = $this->helpers->getTpl('pluginresolvercode.php');
+            if (empty($codeTpl)) {
+                $this->modx->log(MODX::LOG_LEVEL_ERROR, 'pluginresolvercode tpl is empty');
             }
+            $codeTpl = str_replace('<?php', '', $codeTpl);
+
+            foreach($pluginEvents as $plugin => $events) {
+
+                $tempCodeTpl = str_replace('[[+plugin]]', $plugin, $codeTpl);
+                $tempCodeTpl = str_replace('[[+events]]', $events, $tempCodeTpl);
+                $code .= "\n" . $tempCodeTpl;
+            }
+            $tpl = str_replace('/* [[+code]] */', $code, $tpl);
+            $this->helpers->writeFile($dir, $fileName, $tpl);
+
+
         }
     }
 
@@ -404,45 +374,31 @@ class Bootstrap {
             } else {
                 $this->modx->log(MODX::LOG_LEVEL_INFO, 'Resolvers directory already exists');
             }
-            $filePath = $this->targetBase . '_build/resolvers/tv.resolver.php';
+
             $code = '';
-            if (!file_exists($filePath)) {
-                $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating file ' . $filePath);
-                $fp = fopen($filePath, 'w');
-                if ($fp) {
 
-                    $codeTpl = $this->helpers->getTpl('tvresolvercode.php');
-                    if (empty($codeTpl)) {
-                        $this->modx->log(MODX::LOG_LEVEL_ERROR, 'tvresolvercode tpl is empty');
-                    }
-                    $codeTpl = str_replace('<?php', '', $codeTpl);
+            $codeTpl = $this->helpers->getTpl('tvresolvercode.php');
+            $codeTpl = str_replace('<?php', '', $codeTpl);
 
-                    foreach ($templateVarTemplates as $template => $tvs) {
+            foreach ($templateVarTemplates as $template => $tvs) {
 
-                        $tempCodeTpl = str_replace('[[+template]]', $template, $codeTpl);
-                        $tempCodeTpl = str_replace('[[+tvs]]', $tvs, $tempCodeTpl);
-                        $code .= "\n" . $tempCodeTpl;
-                    }
-                } else {
-                    $this->modx->log(MODX::LOG_LEVEL_ERROR, 'Could not open code file ' . $filePath);
-                }
-                $tpl = str_replace('/* [[+code]] */', $code, $tpl);
-                fwrite($fp, $tpl);
-                fclose($fp);
-
-
-            } else {
-                $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $filePath . ' file already exists');
+                $tempCodeTpl = str_replace('[[+template]]', $template, $codeTpl);
+                $tempCodeTpl = str_replace('[[+tvs]]', $tvs, $tempCodeTpl);
+                $code .= "\n" . $tempCodeTpl;
             }
+
+            $tpl = str_replace('/* [[+code]] */', $code, $tpl);
+            $dir = $this->targetBase . '_build/resolvers/';
+            $fileName = 'tv.resolver.php';
+            $this->helpers->writeFile($dir, $fileName, $tpl);
         }
     }
     public function createValidators() {
         $validators = $this->props['validators'];
         if (!empty($validators)) {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating validators');
             $path = $this->targetBase . '_build/validators/';
-            if (!is_dir($path)) {
-                mkdir($path, $this->dirPermission, true);
-            }
+
             $validators = explode(',', $validators);
             foreach ($validators as $validator) {
                 if ($validator == 'default') {
@@ -452,28 +408,14 @@ class Bootstrap {
                 }
                 $tpl = $this->helpers->getTpl('genericvalidator.php');
                 $tpl = $this->helpers->replaceTags($tpl);
-                $file = $path . $fileName;
-                if (!file_exists($file)) {
-                    $fp = fopen($file, 'w');
-                    if ($fp) {
-                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating ' . $file);
-                        fwrite($fp, $tpl);
-                        fclose($fp);
-                    } else {
-                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    Could not write file ' . $file);
-                    }
-                } else {
-                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $file . ' file already exists');
-                }
+                $this->helpers->writeFile($path, $fileName, $tpl);
             }
-
-
         }
-
     }
     public function createExtraResolvers() {
         $resolvers = $this->props['resolvers'];
         if (!empty($resolvers)) {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating extra resolvers');
             $path = $this->targetBase . '_build/resolvers/';
             if (!is_dir($path)) {
                 mkdir($path, $this->dirPermission, true);
@@ -487,19 +429,7 @@ class Bootstrap {
                 }
                 $tpl = $this->helpers->getTpl('genericresolver.php');
                 $tpl = $this->helpers->replaceTags($tpl);
-                $file = $path . $fileName;
-                if (!file_exists($file)) {
-                    $fp = fopen($file, 'w');
-                    if ($fp) {
-                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating ' . $file);
-                        fwrite($fp, $tpl);
-                        fclose($fp);
-                    } else {
-                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    Could not write file ' . $file);
-                    }
-                } else {
-                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $file . ' file already exists');
-                }
+                $this->helpers->writeFile($path, $fileName, $tpl);
             }
         }
     }

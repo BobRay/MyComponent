@@ -24,12 +24,12 @@ $bootStrap = new Bootstrap($modx,$props);
 $bootStrap->init();
 //$bootStrap->createBasics();
 //$bootStrap->createCategory();
-//$bootStrap->createElements();
-//$bootStrap->createAssetsDirs();
-//$bootStrap->createPluginResolver();
-//$bootStrap->createTvResolver();
-$bootStrap->createExtraResolvers();
+$bootStrap->createElements();
+$bootStrap->createAssetsDirs();
+$bootStrap->createPluginResolver();
+$bootStrap->createTvResolver();
 $bootStrap->createValidators();
+$bootStrap->createExtraResolvers();
 
 $modx->log(MODX::LOG_LEVEL_INFO,'Finished!');
 
