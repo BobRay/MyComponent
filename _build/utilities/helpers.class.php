@@ -116,33 +116,35 @@ class Helpers
      * Write a code file to disk - non-destructive -- will not overwrite existing files
      * Creates dir if necessary
      *
-     * @param $dir string - directory for file
+     * @param $dir string - directory for file (should not have trailing slash
      * @param $fileName string - file name
      * @param $content - file content
      * @param string $mode string - file mode; default 'w'
      */
     public function writeFile ($dir, $fileName, $content, $mode='w') {
+
         if (!is_dir($dir)) {
             mkdir($dir, $this->dirPermission, true);
+        }
+        /* add trailing slash if not there */
+        if (substr($dir, -1) != "/") {
+            $dir .= "/";
         }
         $file = $dir . $fileName;
         if (empty($content)) {
             $this->modx->log(MODX::LOG_LEVEL_ERROR, '    No content for file ' . $file);
         }
 
-        if (!file_exists($file)) {
-            $fp = fopen($file, 'w');
-            if ($fp) {
-                $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating ' . $file);
-                fwrite($fp, $content);
-                fclose($fp);
-                chmod($file, $this->filePermission);
-            } else {
-                $this->modx->log(MODX::LOG_LEVEL_INFO, '    Could not write file ' . $file);
-            }
+        $fp = fopen($file, 'w');
+        if ($fp) {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating ' . $file);
+            fwrite($fp, $content);
+            fclose($fp);
+            chmod($file, $this->filePermission);
         } else {
-            $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $file . ' file already exists');
+            $this->modx->log(MODX::LOG_LEVEL_INFO, '    Could not write file ' . $file);
         }
+
 
     }
 

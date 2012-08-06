@@ -22,8 +22,8 @@ require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/boots
 $bootStrap = new Bootstrap($modx,$props);
 
 $bootStrap->init();
-//$bootStrap->createBasics();
-//$bootStrap->createCategory();
+$bootStrap->createBasics();
+$bootStrap->createCategory();
 $bootStrap->createElements();
 $bootStrap->createAssetsDirs();
 $bootStrap->createPluginResolver();
