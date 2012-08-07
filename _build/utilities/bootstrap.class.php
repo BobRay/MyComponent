@@ -27,7 +27,6 @@ class Bootstrap {
     var $corePath;
     var $assetsPath;
     var $tplPath; /* path to element Tpl files */
-    var $replaceFields; /* replacements for placeholders in element tpl files */
     var $categoryId;
     var $makeStatic; /* array of objects to make static (comma,separated list in config) */
     var $dirPermission;
@@ -301,6 +300,16 @@ class Bootstrap {
                 $this->helpers->copyDir($fromDir,$toDir);
             } else {
                 $this->modx->log(MODX::LOG_LEVEL_INFO,'    docs directory already exists -- no files copied');
+            }
+
+        }
+        if (isset ($defaults['readme.md']) && $defaults['readme.md']) {
+            if (! file_exists($this->targetBase . 'readme.md')) {
+                $tpl = $this->helpers->getTpl('readme.md');
+                $tpl = $this->helpers->replaceTags($tpl);
+                $this->helpers->writeFile($this->targetBase, 'readme.md', $tpl);
+            } else {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, 'readme.md file already exists');
             }
 
         }

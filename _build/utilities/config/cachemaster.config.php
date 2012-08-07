@@ -8,10 +8,17 @@ $components = array(
     'category' => 'CacheMaster',
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
+    'authorUrl' => 'http://bobsguides.com',
+    'authorSiteName' => "Bob's Guides",
+    'packageUrl' => 'http://bobsguides.com/cachemaster-tutorial.html',
     'copyright' => '2012',
     'createdon' => strftime('%m-%d-%Y'),
     'offerAbort' => false, /* Show package name and ask user to confirm before running */
-    /* Change this if you need to alter any tpl files. User new dir. under _build/utilities.
+    'packageDescription' => 'CacheMaster allows you to clear the MODX cache for a single resource when saving it.',
+    'gitHubUsername' => 'BobRay',
+    'gitHubRepository' => 'CacheMaster',
+
+    /* Change this if you need to alter any tpl files. Use a new dir. under _build/utilities.
      * Be sure to copy all build tpls to the new directory */
     'tplDir' => 'buildtpls',
 

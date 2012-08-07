@@ -40,10 +40,15 @@ class Helpers
         $this->replaceFields = array(
             '[[+packageName]]' => $this->props['packageName'],
             '[[+packageNameLower]]' => $this->props['packageNameLower'],
+            '[[+packageDescription]]' => $this->props['packageDescription'],
             '[[+author]]' => $this->props['author'],
             '[[+email]]' => $this->props['email'],
             '[[+copyright]]' => $this->props['copyright'],
             '[[+createdon]]' => $this->props['createdon'],
+            '[[+authorSiteName]]' => $this->props['authorSiteName'],
+            '[[+authorUrl]]' => $this->props['authorUrl'],
+            '[[+packageUrl]]' => $this->props['packageUrl'],
+
         );
         $license = $this->getTpl('license');
         if (!empty($license)) {
