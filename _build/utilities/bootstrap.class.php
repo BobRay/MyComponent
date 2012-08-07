@@ -290,18 +290,19 @@ class Bootstrap {
                 }
             }
         }
-        if (isset ($defaults['docs']) && $defaults['docs']) {
+        if (isset ($defaults['docs']) && ! empty($defaults['docs'])) {
             $this->modx->log(MODX::LOG_LEVEL_INFO,'Creating doc files');
-            $fromDir = $this->sourceCore . 'docs';
             $toDir = $this->targetCore . 'docs';
-            if (! is_dir($toDir)) {
-                mkdir($toDir, $this->dirPermission, true);
-                $this->modx->log(MODX::LOG_LEVEL_INFO,'    copying doc files');
-                $this->helpers->copyDir($fromDir,$toDir);
-            } else {
-                $this->modx->log(MODX::LOG_LEVEL_INFO,'    docs directory already exists -- no files copied');
+            $docs = explode(',', $defaults['docs']);
+            foreach($docs as $doc) {
+                if (! file_exists($toDir . '/' . $doc )) {
+                    $tpl = $this->helpers->getTpl($doc);
+                    $tpl = $this->helpers->replaceTags($tpl);
+                    $this->helpers->writeFile($toDir, $doc, $tpl);
+                } else {
+                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $docs . ' file already exists');
+                }
             }
-
         }
         if (isset ($defaults['readme.md']) && $defaults['readme.md']) {
             if (! file_exists($this->targetBase . 'readme.md')) {

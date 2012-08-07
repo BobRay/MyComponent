@@ -48,6 +48,8 @@ class Helpers
             '[[+authorSiteName]]' => $this->props['authorSiteName'],
             '[[+authorUrl]]' => $this->props['authorUrl'],
             '[[+packageUrl]]' => $this->props['packageUrl'],
+            '[[+gitHubUsername]]' => 'BobRay',
+            '[[+gitHubRepository]]' => 'CacheMaster',
 
         );
         $license = $this->getTpl('license');

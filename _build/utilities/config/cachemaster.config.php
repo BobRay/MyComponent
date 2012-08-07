@@ -37,9 +37,9 @@ $components = array(
         '_build' => true, /* build directory for transport package */
         'utilities' => false, /* copy utilities to target dir -- Usually unnecessary */
         'lexicon' => true, /* create lexicon directory */
-        'docs' => true, /* readme.txt, license, changelog, and/or tutorial(s) */
+        'docs' => 'readme.txt,license.txt,changelog.txt,tutorial.html',
         'readme.md' => true, /* Description file for GitHub project home page */
-        'languages' => 'en,fr', /* only list languages for which you have language files */
+        'languages' => 'en', /* only list languages for which you have language files */
     ),
     /* ********************************************* */
     /* Define optional directories to create under assets
@@ -61,8 +61,8 @@ $components = array(
      * during install. Note that resolvers to connect plugins to events
      * and TVs to templates will be created automatically -- don't list those here
      *
-     *  'default' creates a default resolver named after the package
-     *  (other resolvers may be created above for TVs and plugins)
+     * 'default' creates a default resolver named after the package
+     * (other resolvers may be created above for TVs and plugins)
      * suffix 'resolver.php' will be added
      */
     'resolvers' => 'default,extra',
