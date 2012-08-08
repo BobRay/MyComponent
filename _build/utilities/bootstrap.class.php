@@ -20,7 +20,6 @@ class Bootstrap {
     var $packageName;
     var $packageNameLower;
     var $source;
-    var $sourceCore;
     var $targetBase;
     var $targetCore;
     var $targetAssets;
@@ -77,7 +76,6 @@ class Bootstrap {
 
         $this->targetBase = MODX_BASE_PATH . 'assets/mycomponents/' . $this->packageNameLower . '/';
         $this->targetCore = $this->targetBase . 'core/components/' . $this->packageNameLower . '/';
-        $this->sourceCore = $this->source . 'core/components/mycomponent/';
         $this->targetAssets = $this->targetBase . 'assets/components/'. $this->packageNameLower . '/';
 
         $this->dirPermission = $this->props['dirPermission'];
@@ -87,10 +85,11 @@ class Bootstrap {
 
         /* show basic info */
         $this->modx->log(MODX::LOG_LEVEL_INFO, 'Component: ' . $this->props['packageName']);
+        $this->modx->log(MODX::LOG_LEVEL_INFO, 'Source: ' . $this->source);
         $this->modx->log(MODX::LOG_LEVEL_INFO, 'Target Base: ' . $this->targetBase);
         $this->modx->log(MODX::LOG_LEVEL_INFO, 'Target Core: ' . $this->targetCore);
-        $this->modx->log(MODX::LOG_LEVEL_INFO, 'Source: ' . $this->source);
-        $this->modx->log(MODX::LOG_LEVEL_INFO, 'SourceCore: ' . $this->sourceCore);
+        $this->modx->log(MODX::LOG_LEVEL_INFO, 'Target Assets: ' . $this->targetAssets);
+
         $this->modx->log(MODX::LOG_LEVEL_INFO, '--------------------------------------------------');
 
 
@@ -107,7 +106,7 @@ class Bootstrap {
              };
             $this->categoryId = $category->get('id');
         } else {
-            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Category Object already exists ' . $category->get('category'));
+            $this->modx->log(MODX::LOG_LEVEL_INFO, $category->get('category') . ' category object already exists ');
             $this->categoryId = $category->get('id');
         }
         unset($category);
@@ -300,7 +299,7 @@ class Bootstrap {
                     $tpl = $this->helpers->replaceTags($tpl);
                     $this->helpers->writeFile($toDir, $doc, $tpl);
                 } else {
-                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $docs . ' file already exists');
+                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $doc . ' file already exists');
                 }
             }
         }
