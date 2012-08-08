@@ -141,7 +141,7 @@ class Bootstrap {
 
         // echo "\nNAME: " . $name .  "\nTYPE: " . $type;
         $lName = strToLower($name);
-        /* fileNameType is type without the final s */
+        /* fileNameType is lowercase type without the final s */
         $fileNameType = substr(strtolower($type),0,-1);
         $suffix = $this->props['suffixes'][$fileNameType];
 
@@ -342,6 +342,7 @@ class Bootstrap {
     public function createPluginResolver() {
         $pluginEvents = $this->props['pluginEvents'];
         if (! empty($pluginEvents)) {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating plugin resolver');
             $tpl = $this->helpers->getTpl(('pluginresolver.php'));
             $this->helpers->replaceTags($tpl);
             if (empty($tpl)) {
@@ -379,6 +380,7 @@ class Bootstrap {
     {
         $templateVarTemplates = $this->props['templateVarTemplates'];
         if (!empty($templateVarTemplates)) {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating tv resolver');
             $tpl = $this->helpers->getTpl('tvresolver.php');
             $tpl = $this->helpers->replaceTags($tpl);
             if (empty($tpl)) {
