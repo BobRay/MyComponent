@@ -126,9 +126,9 @@ class Helpers
      * @param $dir string - directory for file (should not have trailing slash
      * @param $fileName string - file name
      * @param $content - file content
-     * @param string $mode string - file mode; default 'w'
+     * @param string $dryRun string - if true, writes to stdout instead of file.
      */
-    public function writeFile ($dir, $fileName, $content, $mode='w') {
+    public function writeFile ($dir, $fileName, $content, $dryRun = false) {
 
         if (!is_dir($dir)) {
             mkdir($dir, $this->dirPermission, true);
@@ -137,17 +137,23 @@ class Helpers
         if (substr($dir, -1) != "/") {
             $dir .= "/";
         }
-        $file = $dir . $fileName;
+        /* write to stdout if dryRun is true */
+
+        $file = $dryRun? 'php://output' : $dir . $fileName;
         if (empty($content)) {
             $this->modx->log(MODX::LOG_LEVEL_ERROR, '    No content for file ' . $file);
         }
 
         $fp = fopen($file, 'w');
         if ($fp) {
-            $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating ' . $file);
+            if ( ! $dryRun) {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating ' . $file);
+            }
             fwrite($fp, $content);
             fclose($fp);
-            chmod($file, $this->filePermission);
+            if (! $dryRun) {
+                chmod($file, $this->filePermission);
+            }
         } else {
             $this->modx->log(MODX::LOG_LEVEL_INFO, '    Could not write file ' . $file);
         }

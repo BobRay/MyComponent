@@ -1,6 +1,6 @@
 <?php
 /**
- * [[+elementType]] transport file for [[+packageName]] extra
+ * Properties file for [[+element]] [[+elementType]]
  *
  * Copyright [[+copyright]] by [[+author]] [[+email]]
  * Created on [[+createdon]]

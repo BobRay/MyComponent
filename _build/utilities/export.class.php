@@ -53,7 +53,6 @@ class Export
     /* @var $categoryObj modCategory */
     var $categoryObj;
     var $dryRun;
-    var $replaceFields;
     /* @var $helpers Helpers */
     var $helpers; /* helpers class */
 
@@ -113,13 +112,12 @@ class Export
         if(substr($this->source, -1) != "/") {
             $this->source .= "/";
         }
-        
-        // $this->sourceCore = $this->modx->getOption('sourceCore', $this->props,$this->basePath . 'core/components/' . $this->packageName . '/');
+
         $this->targetBase = MODX_BASE_PATH . 'assets/mycomponents/' . $this->packageNameLower . '/';
         $this->targetCore = $this->targetBase . 'core/components/' . $this->packageNameLower . '/';
 
-        $this->resourcePath = $this->targetBase . '_build/data/resources/';
-        $this->elementPath = $this->targetCore . 'elements/';
+        $this->resourcePath = $this->targetBase . '_build/data/resources';
+        $this->elementPath = $this->targetCore . 'elements';
 
         if (!is_dir($this->elementPath)) {
             if (!$this->dryRun) {
@@ -164,22 +162,6 @@ class Export
         $this->modx->log(modX::LOG_LEVEL_INFO, 'Category ID: ' . $this->categoryId);
         /* dry run if user has set &dryRun=`1` or has not set either create option */
 
-        /* replacement array for placeholders */
-        $this->replaceFields = array(
-            '[[+packageName]]' => $this->props['packageName'],
-            '[[+packageNameLower]]' => $this->props['packageNameLower'],
-            '[[+author]]' => $this->props['author'],
-            '[[+email]]' => $this->props['email'],
-            '[[+copyright]]' => $this->props['copyright'],
-            '[[+createdon]]' => $this->props['createdon'],
-        );
-        $license = $this->helpers->getTpl('license');
-        if (!empty($license)) {
-            $license = $this->strReplaceAssoc($this->replaceFields, $license);
-            $this->replaceFields['[[+license]]'] = $license;
-        }
-        unset($license);
-
         return true;
     }
 
@@ -214,38 +196,38 @@ class Export
             return;
         }
 
-        $transportFile = $this->transportPath . 'transport.' . strtolower($element) . '.php';
-        $transportFile = str_replace('systemsettings','settings',$transportFile);
-        $transportFile = str_replace('templatevars','tvs',$transportFile);
-        if ($this->dryRun) {
-            $this->modx->log(modX::LOG_LEVEL_INFO, ' Would be writing to: ' . $transportFile);
-            $transportFp = fopen('php://output','w');
-        } else {
-            $transportFp = fopen($transportFile, 'w');
-        }
-        if (!$transportFp) {
-            $this->modx->log(modX::LOG_LEVEL_ERROR,'Could not open transport file: ' . $transportFile);
-        }
+
+        $transportFile = 'transport.' . strtolower($element) . '.php';
+        $transportDir = str_replace('systemsettings', 'settings', $this->transportPath);
+        $transportDir = str_replace('templatevars', 'tvs', $transportDir);
+
         /* write transport header */
         $tpl = $this->helpers->getTpl('transportfile.php');
-        $replace = $this->replaceFields;
-        $replace['[[+elementType]]'] = $element;
-        $tpl = $this->helpers->replaceTags($tpl,$replace);
-        fwrite($transportFp, $tpl);
-        unset($tpl);
+        $tpl = str_replace('[[+elementType]]', $element, $tpl);
+        $tpl = $this->helpers->replaceTags($tpl);
 
-        fwrite($transportFp, "\n\$" . strtolower($element) . " = array();\n\n");
+        $tpl .= "\n\$" . strtolower($element) . " = array();\n\n";
+
         $i=1;
         foreach($this->elements as $elementObj) {
-            $this->writeObject($transportFp,$elementObj,strtolower(substr($element,0,-1)),$i);
+            $tpl .= $this->writeObject($elementObj, strtolower(substr($element, 0, -1)), $i);
             if ($this->props['createObjectFiles']) {
                 $this->createObjectFile($elementObj, $element);
             }
             $i++;
         }
         /* write transport footer */
-        fwrite($transportFp, 'return $' . strtolower($element) . ";\n");
-        fclose($transportFp);
+        $tpl .= 'return $' . strtolower($element) . ";\n";
+
+        if ($this->dryRun) {
+            $this->modx->log(modX::LOG_LEVEL_INFO, '    Would be creating: ' . $transportFile . "\n");
+            $this->modx->log(modX::LOG_LEVEL_INFO, " --- Begin File Content --- ");
+        }
+        $this->helpers->writeFile($transportDir, $transportFile, $tpl, $this->dryRun);
+        if ($this->dryRun) {
+            $this->modx->log(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
+        }
+        unset($tpl);
         $this->modx->log(modX::LOG_LEVEL_INFO, 'Finished processing: ' . $element);
     }
     /** populates $this->elements with an array of resources based on pagetitles and/or parents */
@@ -281,21 +263,24 @@ class Export
     }
     /* Writes individual object to transport file */
 
-    protected function writeObject($transportFp, $elementObj, $element, $i) {
+    protected function writeObject($elementObj, $element, $i) {
         /* element is in the form 'chunk', 'snippet', etc. */
         /* @var $elementObj modElement */
 
         /* write generic stuff */
-        fwrite($transportFp, '$' . $element . 's[' . $i . '] = $modx->newObject(' . "'" . $this->elementType . "');" . "\n");
-        fwrite($transportFp, '$' . $element . 's[' . $i . '] ->fromArray(array(' . "\n");
-        fwrite($transportFp, "    'id' => " . $i . ",\n");
+        $tpl = '$' . $element . 's[' . $i . '] = $modx->newObject(' . "'" . $this->elementType . "');" . "\n";
+        $tpl .= '$' . $element . 's[' . $i . '] ->fromArray(array(' . "\n";
+        $tpl .= "    'id' => " . $i . ",\n";
+
         $fields = $elementObj->toArray('', true);  // true gets raw values - check this
 
         /* This may not be necessary */
         /* *********** */
         $properties = $elementObj->get('properties');
+        $hasProperties = false;
         if (!empty($properties)) {
             /* handled below */
+            $hasProperties = true;
             unset($fields['properties']);
         } else {
             ($fields['properties'] ='');
@@ -328,88 +313,73 @@ class Export
         );
 
         foreach ($fields as $field => $value) {
-            fwrite($transportFp, "    '" . $field . "'" . " => '" . $value . "',\n");
+            $tpl .= "    '" . $field . "'" . " => '" . $value . "',\n";
         }
         /* ToDo: Property Sets */
         /* write object-specific stuff */
         switch ($this->elementType) {
 
             case 'modChunk':
-                fwrite($transportFp, "    'snippet' => file_get_contents(\$sources['source_core']." . "'/elements/chunks/" . $this->makeFileName($elementObj) . "'),\n");
+                $tpl .= "    'snippet' => file_get_contents(\$sources['source_core']." . "'/elements/chunks/" . $this->makeFileName($elementObj) . "'),\n";
                 break;
+
             case 'modSnippet':
-                fwrite($transportFp, "    'snippet' => stripPhpTags(\$sources['source_core']." . "'/elements/snippets/" . $this->makeFileName($elementObj) . "'),\n");
+                $tpl .= "    'snippet' => stripPhpTags(\$sources['source_core']." . "'/elements/snippets/" . $this->makeFileName($elementObj) . "'),\n";
                 break;
+
             case 'modPlugin':
-                fwrite($transportFp, "    'plugincode' => stripPhpTags(\$sources['source_core']." . "'/elements/plugins/" . $this->makeFileName($elementObj) . "'),\n");
+                $tpl .= "    'plugincode' => stripPhpTags(\$sources['source_core']." . "'/elements/plugins/" . $this->makeFileName($elementObj) . "'),\n";
                 break;
+
             case 'modTemplate':
-
-                fwrite($transportFp, "    'content' => file_get_contents(\$sources['source_core']." . "'/elements/templates/" . $this->makeFileName($elementObj) . "'),\n");
+                $tpl .= "    'content' => file_get_contents(\$sources['source_core']." . "'/elements/templates/" . $this->makeFileName($elementObj) . "'),\n";
                 break;
-
 
             default:
                 break;
         }
         /* finish up */
-        fwrite($transportFp, "), '', true, true);\n");
+        $tpl .= "), '', true, true);\n";
 
         if ($this->elementType == 'modResource') {
-            fwrite($transportFp, "\$resources[" . $i . "]->setContent(file_get_contents(\$sources['data']." . "'resources/" . $this->makeFileName($elementObj) . "'));\n\n");
+            $tpl .= "\$resources[" . $i . "]->setContent(file_get_contents(\$sources['data']." . "'resources/" . $this->makeFileName($elementObj) . "'));\n\n";
         }
 
         /* handle properties */
-        if (! empty($properties)) {
-            fwrite($transportFp,"\n\$properties = include \$sources['data'].'properties/properties." . strtolower($elementObj->get('name')) .".php';\n");
-            fwrite($transportFp, '$' . $element . "s[" . $i . "]->setProperties(\$properties);\n");
-            fwrite($transportFp,"unset(\$properties);\n");
-            $this->writePropertyFile($properties, 'properties.' . strtolower($elementObj->get('name')) . '.php');
+        if ($hasProperties) {
+            $tpl .= "\n\$properties = include \$sources['data'].'properties/properties." . strtolower($elementObj->get('name')) . ".php';\n";
+            $tpl .= '$' . $element . "s[" . $i . "]->setProperties(\$properties);\n";
+            $tpl .= "unset(\$properties);\n";
+            $this->writePropertyFile($properties, 'properties.' . strtolower($elementObj->get('name')) . '.php', $elementObj->get('name'));
         }
-
+        return $tpl;
     }
-    protected function writePropertyFile($properties, $fileName) {
-        $path = $this->transportPath . 'properties/';
-        if (!is_dir($path) ) {
-            if (! $this->dryRun) {
-                if (! mkdir($path, $this->dirPermission, true)) {
-                    $this->modx->log(modX::LOG_LEVEL_ERROR, 'Failed to create directory: ' . $path);
-                } else {
-                    $this->modx->log(modX::LOG_LEVEL_INFO, 'Created directory: ' . $path);
-                }
-            } else {
-                $this->modx->log(modX::LOG_LEVEL_INFO, 'Would be creating directory: ' . $path);
-            }
-        }
-        $file = $path . $fileName;
+    protected function writePropertyFile($properties, $fileName, $objectName) {
+        $dir = $this->transportPath . 'properties/';
+        $tpl = $this->helpers->getTpl('propertiesfile.php');
+        $tpl = str_replace('[[+element]]',$objectName,$tpl);
+        $tpl = str_replace('[[+elementType]]', substr(strtolower($this->elementType), 3), $tpl);
+
+        $tpl = $this->helpers->replaceTags($tpl);
+        // $s = $this->render_properties($properties);
+        $tpl .= "\n\n" . $this->render_properties($properties) . "\n\n";
+
         if ($this->dryRun) {
-            $fp = fopen('php://output','w');
-        } else {
-            $fp = fopen($file,'w');
+            $this->modx->log(modX::LOG_LEVEL_INFO, 'Would be creating: ' . $fileName . "\n");
+            $this->modx->log(modX::LOG_LEVEL_INFO, " --- Begin File Content --- ");
         }
-        fwrite($fp, "<?php\n");
-        $this->writeLicense($fp);
-        fwrite($fp,
-         "/**\n" .
-         '* Default properties for the ' . $fileName . "snippet\n" .
-         '* @author ' . $this->props['authorName'] . ' ' . $this->props['authorEmail'] . "\n" .
-         "*\n" .
-         '* @package ' . strtolower($this->props['packageName']) . "\n" .
-         "* @subpackage build\n"  .
-         "*/\n\n"
-        );
-
-        $s = $this->render_properties($properties);
-
-        fwrite($fp,"\n\n" . $s . "\n");
-
-        fwrite ($fp,"\n");
-        fclose($fp);
+        $this->helpers->writeFile($dir, $fileName, $tpl, $this->dryRun);
+        if ($this->dryRun) {
+            $this->modx->log(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
+        }
+        unset($tpl);
     }
 
     function render_properties( $arr, $depth=-1, $tabWidth=4) {
-        /* this will only happen once */
+
         if ($depth == -1) {
+            /* this will only happen once */
+            unset($arr['desc_trans'], $arr['area_trans']);
             $output = "\$properties = array( \n";
             $depth++;
         } else {
@@ -452,58 +422,43 @@ class Export
             $this->modx->log(modX::LOG_LEVEL_INFO, 'Skipping object file for static object: ' . $elementObj->get('name'));
             return;
         }
-        $name = $this->makeFileName($elementObj);
-        if ($name) {
+        $fileName = $this->makeFileName($elementObj);
+        if ($fileName) {
             $content = $elementObj->getContent();
         } else {
             $this->modx->log(modX::LOG_LEVEL_INFO, 'Skipping object file for: ' . $this->elementType . '; object (does not need source file)');
             return;
         }
         if ($this->elementType == 'modResource') {
-            $path = $this->resourcePath;
+            $dir = $this->resourcePath;
         } else {
-            $path = $this->elementPath . $element . '/';
+            $dir = $this->elementPath . '/' . $element;
         }
-        if (! is_dir($path))
-            if( !$this->dryRun) {
-                if (!mkdir($path, $this->dirPermission, true)) {
-                    $this->modx->log(modX::LOG_LEVEL_ERROR, 'Failed to create directory: ' . $path);
-                } else {
-                    $this->modx->log(modX::LOG_LEVEL_INFO, 'Created directory: ' . $path);
-                }
-            } else {
-                $this->modx->log(modX::LOG_LEVEL_INFO, 'Would be creating directory: ' . $path);
-            }
-
-        $path .=  $name;
-
         if ($this->dryRun) {
-            $this->modx->log(modX::LOG_LEVEL_INFO, ' Would be writing to: ' . $path);
-            $fileFp = fopen('php://output', 'w');
-        } else {
-            $fileFp = fopen($path, 'w');
+            $this->modx->log(modX::LOG_LEVEL_INFO, '    Would be creating: ' . $fileName . "\n");
+            $this->modx->log(modX::LOG_LEVEL_INFO, " --- Begin File Content --- ");
         }
-        if (!$fileFp) {
-            $this->modx->log(modX::LOG_LEVEL_ERROR, 'Could not open transport file: ' . $path);
-        }
-        $this->modx->log(modX::LOG_LEVEL_INFO, "\n\n --- Begin File Content --- ");
-        flush();
+        $tpl = '';
         if ($this->elementType == 'modSnippet' || $this->elementType == 'modPlugin') {
             if (! strstr($content, '<?')) {
-                fwrite($fileFp,"<?php\n\n");
+                $tpl .= "<?php\n\n";
+                //fwrite($fileFp,"<?php\n\n");
             }
-
+            /* add header if it's not already there */
             if ( (!strstr($content,'GNU')) && (!stristr($content,'License')) ) {
-                $this->writeLicense($fileFp);
+                $tpl = $this->helpers->getTpl('phpfile.php');
+                $tpl = str_replace('[[+elementName]]', $elementObj->get('name'), $tpl);
+                $tpl = str_replace('[[+elementType]]', substr(strtolower($this->elementType), 3), $tpl);
+                $tpl = $this->helpers->replaceTags($tpl);
             }
         }
+        $tpl .= $content;
 
-        fwrite($fileFp,$content);
-        fclose($fileFp);
-        flush();
-        $this->modx->log(modX::LOG_LEVEL_INFO, "\n --- End File Content --- \n");
-
-
+        $this->helpers->writeFile($dir, $fileName, $tpl, $this->dryRun);
+        if ($this->dryRun) {
+            $this->modx->log(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
+        }
+        unset($tpl);
     }
 
     protected function makeFileName($elementObj) {
@@ -541,25 +496,7 @@ class Export
         return $name? strtolower($name) . '.' . $suffix . '.' . $extension : '';
 
     }
-    protected function writeLicense($fp) {
-        $tpl = file_get_contents(MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/license.tpl');
-        if (empty($tpl)) {
-            $this->modx->log(modX::LOG_LEVEL_ERROR, "License Tpl is empty");
-            return;
-        }
-        $fields = array(
-            '[[+packageName]]' => $this->props['packageName'],
-            '[[+packageNameLower]]' => strtolower($this->props['packageName']),
-            '[[+authorName]]' => $this->props['authorName'],
-            '[[+authorEmail]]' => $this->props['authorEmail'],
-            '[[+year]]' => strftime('%Y')
 
-        );
-
-        $tpl =  $this->strReplaceAssoc($fields,$tpl);
-        fwrite($fp,$tpl);
-
-    }
     public function strReplaceAssoc(array $replace, $subject) {
        return str_replace(array_keys($replace), array_values($replace), $subject);
     }

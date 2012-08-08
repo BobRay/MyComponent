@@ -44,6 +44,7 @@
  * will use the 'namespace' field for the match).
  *
  * This file can be run outside of MODX (e.g., in your editor).
+ *
  *  With &dryRun=`1`, no files will be written or modified and the output will go to the screen.
  *
  * Typical snippet call (use your package name instead of MyComponent):
@@ -87,22 +88,20 @@ if (!defined('MODX_CORE_PATH')) {
 } else {
     $outsideModx = false;
 }
-/* for debugging or running outside of MODX */
+/* These will override settings in the config file */
 
 if ($outsideModx) {
     $scriptProperties = array(
-        //'basePath' => MODX_ASSETS_PATH . 'mycomponents/notify/',
-        //'authorName' => 'Bob Ray',
-        //'authorEmail' => '<http://bobsguides.com>',
+
         //'category' => 'notify',
         //'packageName' => 'Notify',
-        'dryRun' => '1',
-        'createTransportFiles' => '1',
-        'createObjectFiles' => '1',
-        'process' => 'plugins',
-        'pagetitles' => 'Notify,NotifyPreview', // pagetitles of resources to process
-        'parents' => '', //parents of resources to process
-        'includeParents' => 0,
+        //'dryRun' => '1',
+        //'createTransportFiles' => '1',
+        //'createObjectFiles' => '1',
+        //'process' => 'plugins',
+        //'pagetitles' => 'Notify,NotifyPreview', // pagetitles of resources to process
+        //'parents' => '', //parents of resources to process
+        //'includeParents' => 0,
     );
 }
 
