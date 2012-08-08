@@ -349,7 +349,8 @@ class Bootstrap {
             }
             $dir = $this->targetBase . '_build/resolvers';
             $fileName = 'plugin.resolver.php';
-            if (! file_exists($dir . '/') . $fileName) {
+
+            if (! file_exists($dir . '/' . $fileName)) {
                 $code = '';
     
                 $codeTpl = $this->helpers->getTpl('pluginresolvercode.php');
