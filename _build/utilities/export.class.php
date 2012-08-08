@@ -119,35 +119,7 @@ class Export
         $this->resourcePath = $this->targetBase . '_build/data/resources';
         $this->elementPath = $this->targetCore . 'elements';
 
-        if (!is_dir($this->elementPath)) {
-            if (!$this->dryRun) {
-                if (!mkDir($this->elementPath, $this->dirPermission, true)) {
-                    $this->modx->log(modX::LOG_LEVEL_ERROR, 'Failed to create element path: ' . $this->elementPath);
-                    return false;
-                }
-            } else {
-                $this->modx->log(modX::LOG_LEVEL_ERROR, 'Would be creating element path: ' . $this->elementPath);
-            }
-        } else {
-            $this->modx->log(modX::LOG_LEVEL_INFO, 'element path: ' . $this->elementPath);
-        }
         $this->transportPath = $this->targetBase . '_build/data/';
-        
-        if (! is_dir($this->transportPath)) {
-            if (! $this->dryRun) {
-                if (! mkDir($this->transportPath, $this->dirPermission, true)) {
-                    $this->modx->log(modX::LOG_LEVEL_ERROR, 'Failed to create transport path: ' . $this->transportPath);
-                    return false;
-                } else {
-                    $this->modx->log(modX::LOG_LEVEL_INFO, 'Created transport path: ' . $this->transportPath);
-                }
-            } else {
-                $this->modx->log(modX::LOG_LEVEL_ERROR, 'Would be creating transport path: ' . $this->transportPath);
-            }
-        } else {
-            $this->modx->log(modX::LOG_LEVEL_INFO, 'Transport path: ' . $this->transportPath);
-        }
-        
         
         if (empty($this->category)) {
             $this->modx->log(modX::LOG_LEVEL_ERROR,'Category must be set');
@@ -349,7 +321,7 @@ class Export
         if ($hasProperties) {
             $tpl .= "\n\$properties = include \$sources['data'].'properties/properties." . strtolower($elementObj->get('name')) . ".php';\n";
             $tpl .= '$' . $element . "s[" . $i . "]->setProperties(\$properties);\n";
-            $tpl .= "unset(\$properties);\n";
+            $tpl .= "unset(\$properties);\n\n";
             $this->writePropertyFile($properties, 'properties.' . strtolower($elementObj->get('name')) . '.php', $elementObj->get('name'));
         }
         return $tpl;
