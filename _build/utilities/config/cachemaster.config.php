@@ -166,9 +166,9 @@ $components = array(
      * to create */
     'otherObjects' => array(
         'menus' => '',
-        'systemEvents' => '', /* only *new* System Events to be created */
         'propertySets' => '',
-        'systemSettings' => '',
+        'newSystemEvents' => '', /* *new* System Events to be created for the extra */
+        'newSystemSettings' => '', /* *new* SystemSettings to be created for the extra */
 
     )
 );
