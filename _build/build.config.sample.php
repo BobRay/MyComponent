@@ -24,6 +24,4 @@ if (!defined('MODX_BASE_URL')) {
     define('MODX_CONNECTORS_URL', 'http://localhost/addons/connectors/');
 }
 
-return @include $configFile;
-
- 
+return require realpath(dirname(__FILE__)) . '/utilities/' . $configFile;
