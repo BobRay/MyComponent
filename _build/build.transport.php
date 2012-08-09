@@ -30,62 +30,56 @@
 
 /* See the mycomponent/core/docs/tutorial.html file for
  * more detailed information about using the package
- *
- * Search and replace tasks:
- * (edit the resource and element names first if they have
- * different names than your package.)
- *
- * MyComponent -> Name of your package
- * mycomponent -> lowercase name of your package
- * Your Name -> Your Actual Name
- * Your Site -> Name of your site
- * yoursite -> domain name of your site
- * you@yourdomain.com -> your email address
- * Description -> Description of file or component
- *
- * 1/1/11 -> Current date
- * 2011 -> Current Year
+*
+
  */
 
-/* Set package info be sure to set all of these */
-define('PKG_NAME','MyComponent');
-define('PKG_NAME_LOWER','mycomponent');
-define('PKG_VERSION','1.0.0');
-define('PKG_RELEASE','beta1');
-define('PKG_CATEGORY','MyComponent');
+$config = dirname(__FILE__) . '/build.config.php';
 
-/* Set package options - you can turn these on one-by-one
- * as you create the transport package
- * */
-$hasAssets = true; /* Transfer the files in the assets dir. */
-$hasCore = true;   /* Transfer the files in the core dir. */
-$hasSnippets = true;
-$hasChunks = true;
-$hasTemplates = true;
-$hasResources = true;
-$hasValidator = true; /* Run a validator before installing anything */
-$hasResolver = true; /* Run a resolver after installing everything */
-$hasSetupOptions = true; /* HTML/PHP script to interact with user */
-$hasMenu = true; /* Add items to the MODx Top Menu */
-$hasSettings = true; /* Add new MODx System Settings */
-$minifyJS = true;
+if (file_exists($config)) {
+    $props = @include $config;
+} else {
+    die('Could not find main config file at ' . $config);
+}
 
-/* Note: TVs are connected to their templates in the script resolver
- * (see _build/data/resolvers/install.script.php)
+/* @var $configFile string - set in included file */
+if (empty($props)) {
+    die('Could not find project config file at ' . $configFile);
+}
+
+/* Set package info be sure these are all set in the project config file */
+define('PKG_NAME', $props['packageName']);
+define('PKG_NAME_LOWER', $props['packageNameLower']);
+define('PKG_VERSION', $props['version']);
+define('PKG_RELEASE', $props['release']);
+define('PKG_CATEGORY', $props['category']);
+
+/* Set package options - you can set these manually, but it's
+ * recommended to let them be generated autmatically from
+ * the project config file.
  */
-$hasTemplateVariables = true;
-$hasTemplates = true;
-/* Note: plugin events are connected to their plugins in the script
- * resolver (see _build/data/resolvers/install.script.php)
- */
-$hasPlugins = true;
-$hasPluginEvents = true;
 
-$hasPropertySets = true;
+$hasAssets = $props['hasAssets']; /* Transfer the files in the assets dir. */
+$hasCore = $props['hasCore'];   /* Transfer the files in the core dir. */
+$hasSnippets = !empty($props['elements']['snippets']);
+$hasChunks = !empty($props['elements']['chunks']);
+$hasTemplates = !empty($props['elements']['templates']);
+$hasTemplateVariables = !empty($props['elements']['templates']);
+$hasPlugins = !empty($props['elements']['plugins']);
+$hasResources = !empty($props['resources']);
+$hasValidator = !empty($props['validators']); /* Run a validator before installing anything */
+$hasResolver = !empty ($props['resolvers']); /* Run a resolver after installing everything */
+$hasSetupOptions = !empty($props['install.options']); /* HTML/PHP script to interact with user */
+//$hasMenu = true; /* Add items to the MODx Top Menu */
+//$hasSettings = true; /* Add new MODx System Settings */
+$minifyJS = $props['minifyJS'];
+
+// $hasPropertySets = true;
 /* Note: property sets are connected to elements in the script
  * resolver (see _build/data/resolvers/install.script.php)
  */
-$hasSubPackages = true; /* add in other component packages (transport.zip files)*/
+
+// $hasSubPackages = true; /* add in other component packages (transport.zip files)*/
 /* Note: The package files will be copied to core/packages but will
  * have to be installed manually with "Add New Package" and "Search
  * Locally for Packages" in Package Manager. Be aware that the
@@ -140,9 +134,10 @@ $builder->registerNamespace(PKG_NAME_LOWER,false,true,'{core_path}components/'.P
 
 /* minify JS */
 
-if ($minifyJs) {
+if ($minifyJS) {
     $modx->log(modX::LOG_LEVEL_INFO, 'Creating js-min file(s)');
-    require $sources['build'] . 'utilities/jsmin.class.php';
+    // require $sources['build'] . 'utilities/jsmin.class.php';
+    require MYCOMPONENT_ROOT . '_build/utilities/jsmin.class.php';
 
     $jsDir = $sources['source_assets'] . '/js';
 
@@ -178,7 +173,7 @@ if ($minifyJs) {
 /* create category  The category is required and will automatically
  * have the name of your package
  */
-
+/* @var $category modCategory */
 $category= $modx->newObject('modCategory');
 $category->set('id',1);
 $category->set('category',PKG_CATEGORY);
@@ -192,7 +187,7 @@ if ($hasSnippets) {
         $category->addMany($snippets, 'Snippets');
     } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding snippets failed.'); }
 }
-
+/* ToDo: Implement Property Sets */
 if ($hasPropertySets) { /* add property sets */
     $modx->log(modX::LOG_LEVEL_INFO,'Adding in property sets.');
     $propertysets = include $sources['data'].'transport.propertysets.php';
@@ -308,18 +303,34 @@ if ($hasTemplateVariables) {
 $vehicle = $builder->createVehicle($category,$attr);
 
 if ($hasValidator) {
-    $modx->log(modX::LOG_LEVEL_INFO,'Adding in Script Validator.');
-    $vehicle->validate('php',array(
-        'source' => $sources['validators'] . 'preinstall.script.php',
-    ));
+    $validators = explode(',', $props['validators']);
+    if (! empty($validators)) {
+        foreach ($validators as $validator) {
+            if ($validator == 'default') {
+                $validator = PKG_NAME_LOWER;
+            }
+            $modx->log(modX::LOG_LEVEL_INFO,'Adding in ' . $validator . ' Validator.');
+            $vehicle->validate('php',array(
+                'source' => $sources['validators'] . $validator . '.validator.php',
+            ));
+        }
+    }
 }
-
+/* ToDo: move this to the end */
 /* package in script resolver if any */
 if ($hasResolver) {
-    $modx->log(modX::LOG_LEVEL_INFO,'Adding in Script Resolver.');
-    $vehicle->resolve('php',array(
-        'source' => $sources['resolvers'] . 'install.script.php',
-    ));
+    $resolvers = explode(',', $props['resolvers']);
+    if (!empty($resolvers)) {
+        foreach ($resolvers as $resolver) {
+            if ($resolver == 'default') {
+                $resolver = PKG_NAME_LOWER;
+            }
+            $modx->log(modX::LOG_LEVEL_INFO, 'Adding in ' . $resolver . ' resolver.');
+            $vehicle->validate('php', array(
+                'source' => $sources['resolvers'] . $resolver . '.resolver.php',
+            ));
+        }
+    }
 }
 /* This section transfers every file in the local
  mycomponents/mycomponent/assets directory to the

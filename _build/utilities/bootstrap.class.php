@@ -234,12 +234,12 @@ class Bootstrap {
         $assets = $this->targetAssets;
 
         if (isset ($defaults['_build']) && $defaults['_build']) {
-            if (! is_dir($this->targetBase . '_build/data')) {
+            /*if (! is_dir($this->targetBase . '_build/data')) {
                 $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating directory: ' . $this->targetBase . '_build/data');
                 mkdir($this->targetBase . '_build/data', $this->dirPermission, true);
             } else {
                 $this->modx->log(MODX::LOG_LEVEL_INFO, 'Directory already exists: ' . $this->targetBase . '_build/data');
-            }
+            }*/
             $fromDir = $this->source . '_build/';
             $toDir = $this->targetBase . '_build/';
             $files = array(
@@ -255,7 +255,9 @@ class Bootstrap {
                 }
             }
         }
+
         if (isset ($defaults['utilities']) && $defaults['utilities']) {
+
             $fromDir = $this->source . '_build/utilities/';
             $toDir = $this->targetBase . '_build/utilities/';
             if (! is_dir($toDir)) {
@@ -265,7 +267,6 @@ class Bootstrap {
                 $this->modx->log(MODX::LOG_LEVEL_INFO, '    Utilities directory already exists');
             }
         }
-
 
         if (isset ($defaults['lexicon']) && $defaults['lexicon']) {
             $this->modx->log(MODX::LOG_LEVEL_INFO,'Creating Lexicon files');
@@ -491,26 +492,16 @@ class Bootstrap {
         return $names;
     }
     protected function ignore($f) {
-           /* $noProcess = array_merge(array(
-                '.gitignore',
-                '.zip',
-                '.html',
-                '.js',
-                '.css',
-                '.tpl',
-                '.gif',
-                '.jpg',
-                '.wav',
-                '.mov',
-                '.mpg',
-            ),$this->noProcess);*/
-    
-            foreach ($this->noProcess as $s) {
-                if (stristr($f,$s)) {
-                    return true;
-                }
-            }
-            return false;
+           /* make sure all sample files get transferred */
+           if (strstr($f, 'sample')) return false;
+
+           /* skip build.config.php */
+           if ($f == 'build.config.php') return true;
+
+           /* skip all project config files except the one for this project */
+           if (strstr($f, 'config.php') && $f != PKG_NAME_LOWER . '.config.php') return true;
+
+           return false;
     }
 
 } /* end of class */

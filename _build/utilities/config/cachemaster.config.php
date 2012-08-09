@@ -5,6 +5,8 @@ $components = array(
     /* These are used to define the package and set values for placeholders */
     'packageName' => 'CacheMaster',
     'packageNameLower' => 'cachemaster',
+    'version' => '1.0.0',
+    'release' => 'beta1',
     'category' => 'CacheMaster',
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
@@ -41,6 +43,9 @@ $components = array(
         'readme.md' => true, /* Description file for GitHub project home page */
         'languages' => 'en', /* only list languages for which you have language files */
     ),
+
+    'hasCore' => true, /* assume every package has a core directory */
+
     /* ********************************************* */
     /* Define optional directories to create under assets
      * add your own as needed
@@ -48,6 +53,8 @@ $components = array(
      * set to false to skip
      * Empty js and css files will be created
      */
+    'hasAssets' => true,
+    'minifyJS' => true, /* minify any JS files */
     'assetsDirs' => array(
         'css' => true,
         'js' => true,
@@ -128,7 +135,7 @@ $components = array(
     ),
     /* ********************************************* */
     /* These properties control exportObjects.php */
-    'dryRun' => '1',
+    'dryRun' => '0',
     'createTransportFiles' => '1',
     'createObjectFiles' => '1',
     /* comma-separated list of elements to export. All elements in the category
@@ -164,6 +171,7 @@ $components = array(
     ),
     /* (NOT IMPLEMENTED) comma-separated lists naming other new objects
      * to create */
+    /* ToDo: Implement Property Sets */
     'otherObjects' => array(
         'menus' => '',
         'propertySets' => '',
