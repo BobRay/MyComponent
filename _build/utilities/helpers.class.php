@@ -191,6 +191,8 @@ class Helpers
                     if (is_dir($source . '/' . $file)) {
                         $this->copyDir($source . '/' . $file, $destination . '/' . $file);
                     } else {
+                        if ($file == 'build.config.php') continue;
+                        if (strstr($file, 'config.php') && $file != PKG_NAME_LOWER . '.config.php') continue ;
                         copy($source . '/' . $file, $destination . '/' . $file);
                     }
                 }
