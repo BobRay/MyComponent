@@ -68,13 +68,13 @@ class Export
         clearstatcache(); /*  make sure is_dir() is current */
         $config = dirname(dirname(__FILE__)) . '/build.config.php';
         if (file_exists($config)) {
-            $configFile = include $config;
+            $configProps = @include $config;
         } else {
-            die('Could not find config file at ' . $config);
+            die('Could not find main config file at ' . $config);
         }
-        $configProps = include $configFile;
+        //$configProps = include $configFile;
         if (empty($configProps)) {
-            die('Could not find config file at ' . $configFile);
+            die('Could not find project config file at ' . $configFile);
         }
         $this->props = array_merge($configProps, $this->props);
         unset($config, $configFile, $configProps);
