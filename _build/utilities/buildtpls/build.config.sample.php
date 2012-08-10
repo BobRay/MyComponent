@@ -7,7 +7,7 @@
  * assets/mycomponents/mycomponent/_build/config directory
  * if not, change the MYCOMPONENT_ROOT define below.
  */
-$configFileName = 'cachemaster.config.php';
+$configFileName = 'yourcomponent.config.php';
 
 /* Define the MODX path constants necessary for connecting to your core and other directories.
  * If you have not moved the core, the current values should work.

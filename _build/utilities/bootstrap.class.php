@@ -228,28 +228,30 @@ class Bootstrap {
 
     public function createBasics() {
         $defaults = $this->props['defaultStuff'];
-        $source = $this->source;
+        /*$source = $this->source;
         $target = $this->targetBase;
         $core = $this->targetCore;
-        $assets = $this->targetAssets;
+        $assets = $this->targetAssets;*/
 
-        if (isset ($defaults['_build']) && $defaults['_build']) {
-            $fromDir = $this->source . '_build/';
-            $toDir = $this->targetBase . '_build/';
-            $files = array(
-                'build.config.sample.php',
-                'build.config.php',
-                'build.transport.php',
-            );
-            foreach ($files as $file) {
-                if (! file_exists($toDir . $file)) {
-                    copy ($fromDir . $file, $toDir . $file );
-                } else {
-                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    '  .  $file . ' already exists');
-                }
-            }
+        /* Transfer build and build config sample files */
+
+        $dir = $this->targetBase . '_build';
+
+        $fileName = 'build.transport.php';
+        if (!file_exists($dir . '/' . $fileName)) {
+            $tpl = $this->helpers->getTpl($fileName);
+            $tpl = $this->helpers->replaceTags($tpl);
+            $this->helpers->writeFile($dir, $fileName, $tpl);
+        } else {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
         }
+        $fileName = 'build.config.php';
+        if (!file_exists($dir . '/' . $fileName)) {
+            copy($this->source . '_build/build.config.php', $dir . '/' . 'build.config.php');
+        } else {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
 
+        }
         if (isset ($defaults['utilities']) && $defaults['utilities']) {
 
             $fromDir = $this->source . '_build/utilities/';
