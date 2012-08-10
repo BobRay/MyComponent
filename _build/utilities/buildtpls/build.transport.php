@@ -52,8 +52,9 @@ $hasResources = !empty($props['resources']);
 $hasValidator = !empty($props['validators']); /* Run a validator before installing anything */
 $hasResolver = !empty ($props['resolvers']); /* Run a resolver after installing everything */
 $hasSetupOptions = !empty($props['install.options']); /* HTML/PHP script to interact with user */
-//$hasMenu = true; /* Add items to the MODx Top Menu */
-//$hasSettings = true; /* Add new MODx System Settings */
+$hasMenu = !empty($props['menus']); /* Add items to the MODx Top Menu */
+$hasSettings = !empty($props['newSystemSettings']); /* Add new MODx System Settings */
+$hasSubPackages = !empty($props['subPackages']);
 $minifyJS = $props['minifyJS'];
 
 // $hasPropertySets = true;
