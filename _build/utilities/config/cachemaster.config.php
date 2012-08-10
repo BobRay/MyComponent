@@ -82,8 +82,11 @@ $components = array(
 
     'validators' => 'default,extra',
 
-    /* install.options is needed if you will interact with user during the install */
-    /* set to 'install.options' or ''
+    /* install.options is needed if you will interact with user during the install.
+     * See the user.input.php file for more information.
+     * Set this to 'install.options' or ''
+     * The file will be created as _build/install.options/user.input.php
+     * Don't change the filename or directory name.
      */
     'install.options' => 'install.options',
 

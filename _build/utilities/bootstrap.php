@@ -30,6 +30,7 @@ $bootStrap->createPluginResolver();
 $bootStrap->createTvResolver();
 $bootStrap->createValidators();
 $bootStrap->createExtraResolvers();
+$bootStrap->createInstallOptions();
 
 $modx->log(MODX::LOG_LEVEL_INFO,'Finished!');
 

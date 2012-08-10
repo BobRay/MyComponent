@@ -457,7 +457,22 @@ class Bootstrap {
             }
         }
     }
+    public function createInstallOptions() {
+        $iScript = $this->props['install.options'];
+        if (! empty($iScript)) {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating Install Options');
+            $dir = $this->targetBase . '_build/install.options';
+            $fileName = 'user.input.php';
 
+            if (! file_exists($dir . '/' . $fileName)) {
+                $tpl = $this->helpers->getTpl($fileName);
+                $tpl = $this->helpers->replaceTags($tpl);
+                $this->helpers->writeFile($dir, $fileName, $tpl);
+            } else {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+            }
+        }
+    }
 
     /* The next three function are not used, but can replace placeholders in files after the fact */
     public function doSearchReplace() {

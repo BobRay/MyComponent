@@ -188,14 +188,14 @@ if ($hasSnippets) {
     } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding snippets failed.'); }
 }
 /* ToDo: Implement Property Sets */
-if ($hasPropertySets) { /* add property sets */
+/*if ($hasPropertySets) {
     $modx->log(modX::LOG_LEVEL_INFO,'Adding in property sets.');
     $propertysets = include $sources['data'].'transport.propertysets.php';
-    /* note: property set' properties are set in transport.propertysets.php */
+    //  note: property set' properties are set in transport.propertysets.php
     if (is_array($snippets)) {
         $category->addMany($propertysets, 'PropertySets');
     } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding property sets failed.'); }
-}
+}*/
 if ($hasChunks) { /* add chunks  */
     $modx->log(modX::LOG_LEVEL_INFO,'Adding in chunks.');
     /* note: Chunks' default properties are set in transport.chunks.php */    
@@ -257,13 +257,13 @@ if ($hasSnippets) {
         );
 }
 
-if ($hasPropertySets) {
+/*if ($hasPropertySets) {
     $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['PropertySets'] = array(
             xPDOTransport::PRESERVE_KEYS => false,
             xPDOTransport::UPDATE_OBJECT => true,
             xPDOTransport::UNIQUE_KEY => 'name',
         );
-}
+}*/
 
 if ($hasChunks) {
     $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Chunks'] = array(
@@ -461,14 +461,20 @@ if ($hasSettings) {
 /* Next-to-last step - pack in the license file, readme.txt, changelog,
  * and setup options 
  */
-$builder->setPackageAttributes(array(
+$attr = array(
     'license' => file_get_contents($sources['docs'] . 'license.txt'),
     'readme' => file_get_contents($sources['docs'] . 'readme.txt'),
     'changelog' => file_get_contents($sources['docs'] . 'changelog.txt'),
-    'setup-options' => array(
-        'source' => $sources['install_options'].'user.input.php',
-    ),
-));
+);
+
+if (!empty($props['install.options'])) {
+    $attr['setup-options'] = array(
+        'source' => $sources['install_options'] . 'user.input.php',
+    );
+} else {
+    $attr['setup-options'] = array();
+}
+$builder->setPackageAttributes($attr);
 
 /* Last step - zip up the package */
 $builder->pack();
