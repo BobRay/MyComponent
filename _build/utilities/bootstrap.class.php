@@ -234,12 +234,6 @@ class Bootstrap {
         $assets = $this->targetAssets;
 
         if (isset ($defaults['_build']) && $defaults['_build']) {
-            /*if (! is_dir($this->targetBase . '_build/data')) {
-                $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating directory: ' . $this->targetBase . '_build/data');
-                mkdir($this->targetBase . '_build/data', $this->dirPermission, true);
-            } else {
-                $this->modx->log(MODX::LOG_LEVEL_INFO, 'Directory already exists: ' . $this->targetBase . '_build/data');
-            }*/
             $fromDir = $this->source . '_build/';
             $toDir = $this->targetBase . '_build/';
             $files = array(

@@ -36,8 +36,8 @@ $components = array(
     /* Define default directories and files to be created in project*/
     'initialize' => true,
     'defaultStuff' => array(
-        '_build' => true, /* build directory for transport package */
-        'utilities' => false, /* copy utilities to target dir -- Usually unnecessary */
+        '_build' => true, /* build directory for transport package - always needed */
+        'utilities' => false, /* copy entire utilities dir to target dir -- Usually unnecessary */
         'lexicon' => true, /* create lexicon directory */
         'docs' => 'readme.txt,license.txt,changelog.txt,tutorial.html',
         'readme.md' => true, /* Description file for GitHub project home page */
