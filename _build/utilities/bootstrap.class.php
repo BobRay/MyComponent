@@ -228,12 +228,8 @@ class Bootstrap {
 
     public function createBasics() {
         $defaults = $this->props['defaultStuff'];
-        /*$source = $this->source;
-        $target = $this->targetBase;
-        $core = $this->targetCore;
-        $assets = $this->targetAssets;*/
 
-        /* Transfer build and build config sample files */
+        /* Transfer build and build config files */
 
         $dir = $this->targetBase . '_build';
 
