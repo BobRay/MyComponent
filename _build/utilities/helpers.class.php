@@ -48,8 +48,8 @@ class Helpers
             '[[+authorSiteName]]' => $this->props['authorSiteName'],
             '[[+authorUrl]]' => $this->props['authorUrl'],
             '[[+packageUrl]]' => $this->props['packageUrl'],
-            '[[+gitHubUsername]]' => 'BobRay',
-            '[[+gitHubRepository]]' => 'CacheMaster',
+            '[[+gitHubUsername]]' => $this->props['gitHubUsername'],
+            '[[+gitHubRepository]]' => $this->props['gitHubRepository'],
 
         );
         $license = $this->getTpl('license');
@@ -83,44 +83,87 @@ class Helpers
         return $text !== false ? $text : '';
     }
 
-    public function makeFileName($elementObj, $elementType) {
+    /**
+     * @param $name - string name of object (mixed case OK)
+     * @param $elementType string - 'modChunk', 'modResource', etc.
+     * @param string $fileType string - Type of file to be created (code, properties)
+     * @return string
+     *
+     * Example returns for MyObject plugin-type object
+     *    code:  myobject.plugin.php
+     *    transport: transport.plugins.php
+     *    properties: properties.myobject.plugin.php
+     */
+    public function getFileName($name, $elementType, $fileType = 'code') {
         /* $elementType is in the form 'modSnippet', 'modChunk', etc.
          * set default suffix to 'chunk', 'snippet', etc. */
         /* ToDo: Get suffix from config file */
         /* @var $elementObj modElement */
-        $suffix = substr(strtolower($elementType), 3);
+        $name = strtolower($name);
+        $extension = 'php'; /* default extension */
+        $suffix = substr(strtolower($elementType), 3); /* modPlugin -> plugin, etc.; default suffix */
+        if ($suffix == 'templatevar') {
+            $suffix = 'tv';
+        }
+        $output = '';
 
-        $extension = 'php';
+        if ($fileType == 'code') {
+            switch ($elementType) {
+                case 'modResource':
+                    $suffix = 'content';
+                case 'modTemplate':
+                case 'modChunk':
+                    $extension = 'html';
+                case 'modSnippet':
+                case 'modPlugin':
+                    $output = $name .'.'. $suffix . '.' . $extension;
+                    break;
+                default:  /* all other elements get no code file */
+                    $output = '';
+                    break;
+
+            }
+
+        } elseif ($fileType == 'transport') {
+            $output = 'transport.' . $suffix . 's.php';
+        } elseif ($fileType = 'properties') {
+            $output = 'properties.' . $name . '.' . $suffix . '.php';
+        }
+        /* replace any spaces with underscore */
+        $output = str_replace(' ', '_', $output);
+        return $output;
+    }
+    public function getCodeDir ($targetCore, $type) {
+        $dir = $targetCore . 'elements/';
+        $type = $type == 'modTemplateVar' ? 'modTv' : $type;
+        return $dir . strtolower(substr($type, 3)) . 's';
+    }
+    /**
+     * @param $elementType string 'modChunk', 'modSnippet', etc.
+     * @return string
+     */
+    public function getNameAlias($elementType) {
         switch ($elementType) {
             case 'modTemplate':
-                $name = $elementObj->get('templatename');
-                $extension = 'html';
+                $nameAlias = 'templatename';
                 break;
-            case 'modChunk':
-                $extension = 'html';
-            /* intentional fall through */
-            case 'modSnippet':
-            case 'modPlugin':
-                $name = $elementObj->get('name');
+            case 'modCategory':
+                $nameAlias = 'category';
                 break;
             case 'modResource':
-                $name = $elementObj->get('pagetitle');
-                $extension = 'html';
-                $suffix = 'content';
+                $nameAlias = 'pagetitle';
                 break;
             default:
-                $name = '';
+                $nameAlias = 'name';
                 break;
-
         }
-        /* replace spaces with underscore */
-        $name = str_replace(' ', '_', $name);
-        return $name ? strtolower($name) . '.' . $suffix . '.' . $extension : '';
+        return $nameAlias;
 
     }
 
+
     /**
-     * Write a code file to disk - non-destructive -- will not overwrite existing files
+     * Write a file to disk - non-destructive -- will not overwrite existing files
      * Creates dir if necessary
      *
      * @param $dir string - directory for file (should not have trailing slash

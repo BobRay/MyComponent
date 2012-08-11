@@ -3,22 +3,22 @@
 
 $components = array(
     /* These are used to define the package and set values for placeholders */
-    'packageName' => 'CacheMaster',
-    'packageNameLower' => 'cachemaster',
+    'packageName' => 'Example',
+    'packageNameLower' => 'example',
     'version' => '1.0.0',
     'release' => 'beta1',
-    'category' => 'CacheMaster',
+    'category' => 'Example',
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
     'authorUrl' => 'http://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
-    'packageUrl' => 'http://bobsguides.com/cachemaster-tutorial.html',
+    'packageUrl' => 'http://bobsguides.com/example-tutorial.html',
     'copyright' => '2012',
     'createdon' => strftime('%m-%d-%Y'),
     'offerAbort' => false, /* Show package name and ask user to confirm before running */
-    'packageDescription' => 'CacheMaster allows you to clear the MODX cache for a single resource when saving it.',
+    'packageDescription' => 'Example project for MyComponent extra.',
     'gitHubUsername' => 'BobRay',
-    'gitHubRepository' => 'CacheMaster',
+    'gitHubRepository' => 'Example',
 
     /* Change this if you need to alter any tpl files. Use a new dir. under _build/utilities.
      * Be sure to copy all build tpls to the new directory */
@@ -31,7 +31,6 @@ $components = array(
     /* Define source directories (mycomponent root and core directories) */
     'source' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/', /* path to MyComponent source files */
     'sourceCore' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/',
-
     /* ********************************************* */
     /* Define default directories and files to be created in project*/
     'initialize' => true,
@@ -55,8 +54,8 @@ $components = array(
     'hasAssets' => true,
     'minifyJS' => true, /* minify any JS files */
     'assetsDirs' => array(
-        'css' => true,
-        'js' => true,
+        'css' => true, /* default (empty) CSS file will be created */
+        'js' => true, /* default (empty) JS file will be created */
         'images' => true,
         'audio' => true,
         'video' => true,
@@ -68,10 +67,10 @@ $components = array(
      * and TVs to templates will be created automatically -- don't list those here
      *
      * 'default' creates a default resolver named after the package
-     * (other resolvers may be created above for TVs and plugins)
-     * suffix 'resolver.php' will be added
+     * (other resolvers may be created above for TVs and plugins).
+     * Suffix 'resolver.php' will be added automatically
      */
-    'resolvers' => 'default,extra',
+    'resolvers' => 'default,addUsers',
 
     /* validators can abort the install after checking conditions.
      * comma-separated list of validator names (no prefix of suffix) or ''
@@ -79,7 +78,7 @@ $components = array(
      * suffix 'validator.php' will be added
      */
 
-    'validators' => 'default,extra',
+    'validators' => 'default,hasGdLib',
 
     /* install.options is needed if you will interact with user during the install.
      * See the user.input.php file for more information.
@@ -89,42 +88,41 @@ $components = array(
      */
     'install.options' => 'install.options',
 
-    /* suffixes for files */
+    /* suffixes for resource and element code files */
     'suffixes' => array(
-        'plugin' => '.php',
-        'snippet' => '.php',
-        'chunk' => '.html',
-        'template' => '.html',
-        'tv' => '.tv',
-        'resource' => '.html',
-        'default' => '.php',
+        'modPlugin' => '.php',
+        'modSnippet' => '.php',
+        'modChunk' => '.html',
+        'modTemplate' => '.html',
+        'modResource' => '.html',
     ),
     /* ********************************************* */
     /* These control the creation of elements */
     'createElementFiles' => true, /* create element files */
     'createElementObjects' => true, /* also create objects in MODX */
-    'makeStatic' => 'CacheMaster', /* Comma-separated list of elements to set as static */
-    'createResourceObjects' => false,
-    'createResourceFiles' => false,
-    'allStatic' => true, /* will make all element objects static - makeStatic will be ignored */
+    'makeStatic' => '', /* Comma-separated list of elements to set as static */
+    'createResourceFiles' => true,
+    'createResourceObjects' => true,
+    'allStatic' => false, /* will make all element objects static - makeStatic will be ignored */
 
 
     /* array containing the actual Element Names */
     'elements' => array(
-        'snippets' => '',
-        'plugins' => 'CacheMaster',
-        'tvs' => '',
-        'templates' => '',
-        'chunks' => '',
+        'modSnippet' => 'Example1,Example2',
+        'modPlugin' => 'Example1,Example2',
+        'modTemplateVar' => 'Example1,Example2',
+        'modTemplate' => 'Example1,Example2',
+        'modChunk' => 'Example1,Example2',
     ),
     /* comma-separated lists of the actual Resource pagetitles */
-    'resources' => '',
+    'resources' => 'Example1,Example2',
 
     /* array of plugin names and comma-separated list of their events.
      * automatically generates resolver
      */
     'pluginEvents' => array(
-        'CacheMaster' => 'OnDocFormSave',
+        'Example1' => 'OnDocFormSave,OnUserFormSave',
+        'Example2' => 'OnDocFormSave,OnUserFormSave',
     ),
 
     /* Array of Templates and comma-separated list of TVs to attach to them.
@@ -132,8 +130,9 @@ $components = array(
      * TV names and Template names are both case-sensitive
      */
     'templateVarTemplates' => array(
-        'default' => 'MyTvOne,MyTvTwo',
-        'Collapsible' => 'MyTvOne,MyTvTwo,MyTvThree',
+        'default' => 'Example1,Example2',
+        'Example1' => 'Example1,Example2',
+        'Example2' => 'Example1,Example2',
     ),
     /* ********************************************* */
     /* These properties control exportObjects.php */
@@ -144,18 +143,18 @@ $components = array(
      * set above will be handled.
      *
      * To export resources, list pagetitles and/or IDs of parents
-     * of desired resources (
+     * of desired resources
     */
-    'process' => 'plugins,templateVars',
-    'pagetitles' => 'Notify,NotifyPreview', // comma-separated list of pagetitles of resources to process
+    'process' => 'snippets,plugins,templateVars,templates,chunks',
+    'pagetitles' => 'Example1,Example2', // comma-separated list of pagetitles of resources to process
     'parents' => '', // comma-separated list of parent IDs to get children of
-    'includeParents' => false,  // include listed parent resources
+    'includeParents' => false, // include listed parent resources
 
     /* ********************************************* */
     /* (NOT IMPLEMENTED) Array of new events to create, plugins to attach, and fields */
     'newEvents' => array(
         'OnEvent1' => array(
-            'plugins' => 'CacheMaster',
+            'plugins' => 'Example',
             'fields' => array(
                 'event' => 'OnEvent1',
                 'priority' => 0,
@@ -163,7 +162,7 @@ $components = array(
             ),
         ),
         'OnEvent2' => array(
-            'plugins' => 'CacheMaster',
+            'plugins' => 'Example',
             'fields' => array(
                 'event' => 'OnEvent2',
                 'priority' => 0,

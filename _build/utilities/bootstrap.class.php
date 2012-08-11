@@ -47,8 +47,9 @@ class Bootstrap {
         } else {
             die('Could not find main config file at ' . $config);
         }
-        //$configProps = include $configFile;
+
         if (empty($configProps)) {
+            /* @var $configFile string - defined in included build.config.php */
             die('Could not find project config file at ' . $configFile);
         }
         $this->props = array_merge($configProps, $this->props);
@@ -97,31 +98,30 @@ class Bootstrap {
     }
     public function createCategory() {
 
-        /* @var $category modCategory */
-        $category = $this->modx->getObject('modCategory', array('category' => $this->packageName));
-        if (! $category) {
-            $category = $this->modx->newObject('modCategory', array('category' => $this->packageName));
-             if ($category->save()) {
-                 $this->modx->log(MODX::LOG_LEVEL_INFO, 'Created category Object: ' . $category->get('category'));
+        /* @var $categoryObj modCategory */
+        $category = $this->props['category'];
+        $categoryObj = $this->modx->getObject('modCategory', array('category' => $category ));
+        if (! $categoryObj) {
+            $categoryObj = $this->modx->newObject('modCategory', array('category' => $category));
+             if ($categoryObj->save()) {
+                 $this->modx->log(MODX::LOG_LEVEL_INFO, 'Created category Object: ' . $categoryObj->get('category'));
              };
-            $this->categoryId = $category->get('id');
+            $this->categoryId = $categoryObj->get('id');
         } else {
-            $this->modx->log(MODX::LOG_LEVEL_INFO, $category->get('category') . ' category object already exists ');
-            $this->categoryId = $category->get('id');
+            $this->modx->log(MODX::LOG_LEVEL_INFO, $categoryObj->get('category') . ' category object already exists ');
+            $this->categoryId = $categoryObj->get('id');
         }
-        unset($category);
+        unset($category, $categoryObj);
     }
 
     public function createElements() {
-        //$this->modx->log(MODX::LOG_LEVEL_INFO, 'Category ID: ' . $this->categoryId);
+        $this->modx->log(MODX::LOG_LEVEL_INFO, 'Category ID: ' . $this->categoryId);
 
-
-
-        foreach ($this->props['elements'] as $elementName => $elements) {
+        foreach ($this->props['elements'] as $elementType => $elements) {
             $elements = explode(',', $elements);
             foreach ($elements as $name) {
                 if (! empty ($name)) {
-                    $this->createElement($name, $elementName);
+                    $this->createElement($name, $elementType);
                 }
 
 
@@ -134,29 +134,21 @@ class Bootstrap {
      * Creates an element (code file and or MODX object) based on config file
      *
      * @param $name string - Name of Element (e.g., 'MySnippet')
-     * @param $type - Plural element type (e.g. 'plugins')
+     * @param $type - Element type (e.g. modPlugin, modTemplateVar)
      */
     public function createElement ($name, $type) {
 
-        // echo "\nNAME: " . $name .  "\nTYPE: " . $type;
-        $lName = strToLower($name);
-        /* fileNameType is lowercase type without the final s */
-        $fileNameType = substr(strtolower($type),0,-1);
-        $suffix = $this->props['suffixes'][$fileNameType];
-
         //echo "\nDIRNAME: " . $fileNameType;
+        $fileName = $this->helpers->getFileName($name, $type);
 
-        $this->modx->log(MODX::LOG_LEVEL_INFO,'Creating ' . $name . ' ' . $fileNameType);
+        $this->modx->log(MODX::LOG_LEVEL_INFO,'Creating ' . $type . ':' . $name);
 
         if ($this->props['createElementFiles']) {
-            $codeDir = $this->targetCore . 'elements/' . $type;
-
-            $fileName =  $lName . '.' . $fileNameType . $suffix;
-            $this->createCodeFile($name, $fileName, $codeDir, $fileNameType);
+            $this->createCodeFile($name, $type);
             // echo "\nCODE_PATH: " . $codePath . "\n";
         }
         if ($this->props['createElementObjects']) {
-            $this->createElementObject($name, $fileNameType, $suffix);
+            $this->createElementObject($name, $type);
         }
 
     }
@@ -168,26 +160,30 @@ class Bootstrap {
      * @param $codeDir string - directory for element file (must not end in a slash)
      * @param $type string - plugin, snippet, css, js, etc.
      */
-    public function createCodeFile($name, $fileName, $dir, $type) {
-        if (!file_exists($dir . '/' . $fileName)) {
-            $tpl = $this->helpers->getTpl($type);
-
-            /* use 'phpfile.tpl' as default for .php files */
-            if (empty($tpl) && strstr($fileName, 'php')) {
-                $tpl = $this->helpers->getTpl('phpfile.php');
-            }
-            $replace = $this->helpers->getReplaceFields();
-            $replace['[[+elementType]]'] = ucfirst($type);
-            $replace['[[+elementName]]'] = $name;
-            $fileContent = $tpl;
-            if (!empty ($tpl)) {
-                $fileContent = $this->helpers->replaceTags($fileContent, $replace);
-            }
-            $this->helpers->writeFile($dir, $fileName, $fileContent);
+    public function createCodeFile($name, $type) {
+        $dir = $this->helpers->getCodeDir($this->targetCore, $type);
+        $fileName = $this->helpers->getFileName($name, $type);
+        // echo "\nDIR: " . $dir . "\n" . 'FILENAME: ' . $fileName . "\n" . "TYPE: " . $type . "\n";
+        if (empty($fileName)) {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, '    skipping ' . $type . ' file -- needs no code file');
         } else {
-            $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' file already exists');
-        }
+            if (!file_exists($dir . '/' . $fileName)) {
+                $tpl = $this->helpers->getTpl($type);
 
+                /* use 'phpfile.tpl' as default for .php files */
+                if (empty($tpl) && strstr($fileName, '.php')) {
+                    $tpl = $this->helpers->getTpl('phpfile.php');
+                }
+                $tpl = str_replace('[[+elementType]]', strtolower(substr($type,3)), $tpl);
+                $tpl = str_replace('[[+elementName]]', $name, $tpl);
+                if (!empty ($tpl)) {
+                    $tpl = $this->helpers->replaceTags($tpl);
+                }
+                $this->helpers->writeFile($dir, $fileName, $tpl);
+            } else {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' file already exists');
+            }
+        }
     }
 
     /**
@@ -197,13 +193,11 @@ class Bootstrap {
      * @param $type
      * @param $suffix
      */
-    public function createElementObject($name, $type, $suffix) {
+    public function createElementObject($name, $type) {
         /* @var $object modElement */
         $lName =strtolower($name);
-        /* $objectType is 'modPlugin', 'modChunk', etc. */
-        $objectType = $type == 'tv' ? 'modTemplateVar' : 'mod' . ucfirst($type);
-        $alias = $type == 'templatename'? 'template' : 'name';
-        $object = $this->modx->getObject($objectType, array($alias => $name));
+        $alias = $type == 'modTemplate'? 'templatename' : 'name';
+        $object = $this->modx->getObject($type, array($alias => $name));
         if (!$object) {
             $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating ' . $name . ' ' . $type . ' object in DB');
             $fields = array(
@@ -212,14 +206,15 @@ class Bootstrap {
             );
             /* Make it static and connect to file if requested */
             if  ($this->props['allStatic'] || in_array($name, $this->makeStatic)) {
-
                 $fields['static'] = 1;
                 $fields['source'] = 1;
-                $fields['static_file'] = 'assets/mycomponents/' . $this->packageNameLower  . '/core/components/' . $this->packageNameLower .  '/elements/'  . $type . 's/' . $lName . "." . $type . $suffix;
+                $fields['static_file'] = $this->helpers->getCodeDir($this->targetCore, $type) . '/' . $this->helpers->getFileName($name, $type);
             }
-            $object = $this->modx->newObject($objectType, $fields);
+            $object = $this->modx->newObject($type, $fields);
             if ($object) {
                 $object->save();
+            } else {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, '    Could not create ' . $type .  ' object: ' . $name);
             }
         } else {
             $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $name . ' ' . $type . ' object already exists');
@@ -232,7 +227,7 @@ class Bootstrap {
         /* Transfer build and build config files */
 
         $dir = $this->targetBase . '_build';
-
+        $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating build files');
         $fileName = 'build.transport.php';
         if (!file_exists($dir . '/' . $fileName)) {
             $tpl = $this->helpers->getTpl($fileName);
@@ -322,9 +317,16 @@ class Bootstrap {
                 $this->modx->log(MODX::LOG_LEVEL_INFO,'    ' . $targetDir . ' directory already exists');
             }
             if ($dir == 'css' || $dir == 'js') {
+                $path = $this->targetAssets . $dir;
                 $fileName = $this->packageNameLower . '.' . $dir;
-                $this->createCodeFile($dir, $fileName, $targetDir . '/', $dir);
-                //$this->createCodeFile($file , $targetDir . '/' . $file, $dir);
+                if (!file_exists($dir . '/' . $fileName)) {
+                    $tpl = $this->helpers->getTpl($dir);
+                    $tpl = $this->helpers->replaceTags($tpl);
+                    $this->helpers->writeFile($path, $fileName, $tpl);
+                } else {
+                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+                }
+
             }
         }
 

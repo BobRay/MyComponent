@@ -170,8 +170,10 @@ class Export
 
 
         $transportFile = 'transport.' . strtolower($element) . '.php';
-        $transportDir = str_replace('systemsettings', 'settings', $this->transportPath);
-        $transportDir = str_replace('templatevars', 'tvs', $transportDir);
+        $transportFile = str_replace('templatevars', 'tvs', $transportFile);
+        $transportFile = str_replace('systemsettings', 'settings', $transportFile);
+        $transportDir = $this->transportPath;
+
 
         /* write transport header */
         $tpl = $this->helpers->getTpl('transportfile.php');
@@ -289,22 +291,26 @@ class Export
         }
         /* ToDo: Property Sets */
         /* write object-specific stuff */
+
+        $name = $elementObj->get($this->helpers->getNameAlias($this->elementType));
+        $type = $this->elementType;
+        $fileName = $this->helpers->getFileName($name, $type);
         switch ($this->elementType) {
 
             case 'modChunk':
-                $tpl .= "    'snippet' => file_get_contents(\$sources['source_core']." . "'/elements/chunks/" . $this->makeFileName($elementObj) . "'),\n";
+                $tpl .= "    'snippet' => file_get_contents(\$sources['source_core']." . "'/elements/chunks/" . $fileName . "'),\n";
                 break;
 
             case 'modSnippet':
-                $tpl .= "    'snippet' => stripPhpTags(\$sources['source_core']." . "'/elements/snippets/" . $this->makeFileName($elementObj) . "'),\n";
+                $tpl .= "    'snippet' => stripPhpTags(\$sources['source_core']." . "'/elements/snippets/" . $fileName . "'),\n";
                 break;
 
             case 'modPlugin':
-                $tpl .= "    'plugincode' => stripPhpTags(\$sources['source_core']." . "'/elements/plugins/" . $this->makeFileName($elementObj) . "'),\n";
+                $tpl .= "    'plugincode' => stripPhpTags(\$sources['source_core']." . "'/elements/plugins/" . $fileName . "'),\n";
                 break;
 
             case 'modTemplate':
-                $tpl .= "    'content' => file_get_contents(\$sources['source_core']." . "'/elements/templates/" . $this->makeFileName($elementObj) . "'),\n";
+                $tpl .= "    'content' => file_get_contents(\$sources['source_core']." . "'/elements/templates/" . $fileName . "'),\n";
                 break;
 
             default:
@@ -314,7 +320,7 @@ class Export
         $tpl .= "), '', true, true);\n";
 
         if ($this->elementType == 'modResource') {
-            $tpl .= "\$resources[" . $i . "]->setContent(file_get_contents(\$sources['data']." . "'resources/" . $this->makeFileName($elementObj) . "'));\n\n";
+            $tpl .= "\$resources[" . $i . "]->setContent(file_get_contents(\$sources['data']." . "'resources/" . $fileName . "'));\n\n";
         }
 
         /* handle properties */
@@ -394,14 +400,17 @@ class Export
             $this->modx->log(modX::LOG_LEVEL_INFO, 'Skipping object file for static object: ' . $elementObj->get('name'));
             return;
         }
-        $fileName = $this->makeFileName($elementObj);
+        $type = $this->elementType;
+        $name = $elementObj->get($this->helpers->getNameAlias($type));
+
+        $fileName = $this->helpers->getFileName($name, $type);
         if ($fileName) {
             $content = $elementObj->getContent();
         } else {
-            $this->modx->log(modX::LOG_LEVEL_INFO, 'Skipping object file for: ' . $this->elementType . '; object (does not need source file)');
+            $this->modx->log(modX::LOG_LEVEL_INFO, 'Skipping object file for: ' . $type . '; object (does not need source file)');
             return;
         }
-        if ($this->elementType == 'modResource') {
+        if ($type == 'modResource') {
             $dir = $this->resourcePath;
         } else {
             $dir = $this->elementPath . '/' . $element;
@@ -411,7 +420,7 @@ class Export
             $this->modx->log(modX::LOG_LEVEL_INFO, " --- Begin File Content --- ");
         }
         $tpl = '';
-        if ($this->elementType == 'modSnippet' || $this->elementType == 'modPlugin') {
+        if ($type == 'modSnippet' || $type == 'modPlugin') {
             if (! strstr($content, '<?')) {
                 $tpl .= "<?php\n\n";
                 //fwrite($fileFp,"<?php\n\n");
@@ -431,42 +440,6 @@ class Export
             $this->modx->log(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
         }
         unset($tpl);
-    }
-
-    protected function makeFileName($elementObj) {
-        /* $elementType is in the form 'modSnippet', 'modChunk', etc.
-         * set default suffix to 'chunk', 'snippet', etc. */
-
-        /* @var $elementObj modElement */
-        $suffix = substr(strtolower($this->elementType),3);
-
-        $extension = 'php';
-        switch ($this->elementType) {
-            case 'modTemplate':
-                $name = $elementObj->get('templatename');
-                $extension = 'html';
-                break;
-            case 'modChunk':
-                $extension = 'html';
-                /* intentional fallthrough */
-            case 'modSnippet':
-            case 'modPlugin':
-                $name = $elementObj->get('name');
-                break;
-            case 'modResource':
-                $name = $elementObj->get('pagetitle');
-                $extension = 'html';
-                $suffix = 'content';
-                break;
-            default:
-               $name = '';
-                break;
-
-        }
-        /* replace spaces with underscore */
-        $name = str_replace(' ', '_', $name);
-        return $name? strtolower($name) . '.' . $suffix . '.' . $extension : '';
-
     }
 
     public function strReplaceAssoc(array $replace, $subject) {
