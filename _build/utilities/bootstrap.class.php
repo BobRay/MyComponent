@@ -123,9 +123,6 @@ class Bootstrap {
                 if (! empty ($name)) {
                     $this->createElement($name, $elementType);
                 }
-
-
-
             }
         }
     }
@@ -141,7 +138,7 @@ class Bootstrap {
         //echo "\nDIRNAME: " . $fileNameType;
         $fileName = $this->helpers->getFileName($name, $type);
 
-        $this->modx->log(MODX::LOG_LEVEL_INFO,'Creating ' . $type . ':' . $name);
+        $this->modx->log(MODX::LOG_LEVEL_INFO,'Creating ' . $type . ': ' . $name);
 
         if ($this->props['createElementFiles']) {
             $this->createCodeFile($name, $type);
@@ -220,7 +217,40 @@ class Bootstrap {
             $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $name . ' ' . $type . ' object already exists');
         }
     }
-
+    public function createResources() {
+        $resources = explode(',', $this->props['resources']);
+        if (! empty($resources)) {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating Resources');
+        }
+        foreach( $resources as $resource) {
+            $res = $this->modx->getObject('modResource', array('pagetitle'=> $resource));
+            if (! $res) {
+                $alias = str_replace(' ', '-', strtolower($resource));
+                $fields = array(
+                    'pagetitle' => $resource,
+                    'alias' => $alias,
+                    'published' => $this->modx->getOption('publish_default', null),
+                    'richtext' => $this->modx->getOption('richtext_default',null),
+                    'hidemenu' => $this->modx->getOption('hidemenu_default', null),
+                    'cacheable' => $this->modx->getOption('cache_default', null),
+                    'searchable' => $this->modx->getOption('search_default', null),
+                    'context' => $this->modx->getOption('default_context', null),
+                    'template' => $this->modx->getOption('default_template', null),
+                );
+                /* @var $res modResource */
+                $res = $this->modx->newObject('modDocument', $fields);
+                if ($res) {
+                    $res->setContent("Content goes here");
+                    $res->save();
+                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    Created resource object ' . $resource);
+                } else {
+                    $this->modx->log(MODX::LOG_LEVEL_ERROR, '    Could not create resource object ' . $resource);
+                }
+            } else {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, '    Resource ' . $resource . ' object already exists');
+            }
+        }
+    }
     public function createBasics() {
         $defaults = $this->props['defaultStuff'];
 

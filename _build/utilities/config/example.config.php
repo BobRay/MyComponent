@@ -117,8 +117,26 @@ $components = array(
     /* comma-separated lists of the actual Resource pagetitles */
     'resources' => 'Example1,Example2',
 
+    /* set these only if you want to override system defaults */
+    'resource_defaults' => array(
+        //'published' => false,
+        //'richtext' => false,
+        //'hidemenu' => true,
+        //'cacheable' => false,
+        //'searchable' => true,
+        //'context' => 'web',
+        //'template' => 12,  /* must be a template ID */
+    ),
+    /* (NOT IMPLEMENTED) array of template names and comma-separated
+     * list of resource pagetitles.
+     * Only necessary if you want to connect package resources to package
+     * templates. A resolver will be created to connect them.
+     */
+    'resourceTemplates' => array(
+       'Example1' => 'Example1,Example2',
+    ),
     /* array of plugin names and comma-separated list of their events.
-     * automatically generates resolver
+     * automatically generates resolver to connect them
      */
     'pluginEvents' => array(
         'Example1' => 'OnDocFormSave,OnUserFormSave',
@@ -126,7 +144,8 @@ $components = array(
     ),
 
     /* Array of Templates and comma-separated list of TVs to attach to them.
-     * Automatically generates resolver (use 'default' for default template).
+     * Automatically generates resolver to connect them
+     * (use 'default' for default template).
      * TV names and Template names are both case-sensitive
      */
     'templateVarTemplates' => array(
@@ -145,7 +164,7 @@ $components = array(
      * To export resources, list pagetitles and/or IDs of parents
      * of desired resources
     */
-    'process' => 'snippets,plugins,templateVars,templates,chunks',
+    'process' => 'snippets,plugins,templateVars,templates,chunks,resources',
     'pagetitles' => 'Example1,Example2', // comma-separated list of pagetitles of resources to process
     'parents' => '', // comma-separated list of parent IDs to get children of
     'includeParents' => false, // include listed parent resources

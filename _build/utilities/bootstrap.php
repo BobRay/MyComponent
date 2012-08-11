@@ -25,6 +25,7 @@ $bootStrap->init();
 $bootStrap->createBasics();
 $bootStrap->createCategory();
 $bootStrap->createElements();
+$bootStrap->createResources();
 $bootStrap->createAssetsDirs();
 $bootStrap->createPluginResolver();
 $bootStrap->createTvResolver();

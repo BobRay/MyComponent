@@ -105,6 +105,7 @@ class Export
         $pagetitles = $this->modx->getOption('pagetitles', $this->props,null);
         $this->pagetitles =  $pagetitles ? explode(',',$pagetitles): array();
 
+
         $this->createObjectFiles = $this->modx->getOption('createObjectFiles',$this->props,false);
         $this->createTransportFiles = $this->modx->getOption('createTransportFiles',$this->props,false);
 
@@ -149,7 +150,6 @@ class Export
         /* convert 'chunks' to 'modChunk' etc. */
         $this->elementType = 'mod' . substr(ucFirst($element),0,-1);
         $this->modx->log(modX::LOG_LEVEL_INFO, 'Element Type: ' . $this->elementType);
-
         if ($this->elementType == 'modResource') {
             $this->pullResources();
         } else {
@@ -215,6 +215,8 @@ class Export
                 $resObject = $this->modx->getObject('modResource', array('pagetitle' => trim($pagetitle)));
                 if ($resObject) {
                     $this->elements[] = $resObject;
+                } else {
+                    $this->modx->log(modX::LOG_LEVEL_ERROR, 'Could not get resource with pagetitle: ' . $pagetitle);
                 }
             }
         }
