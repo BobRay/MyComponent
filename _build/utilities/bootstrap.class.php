@@ -107,7 +107,7 @@ class Bootstrap {
         $this->dirPermission = $this->props['dirPermission'];
         $this->filePermission = $this->props['filePermission'];
 
-        $this->makeStatic = explode(',', $this->props['makeStatic']);
+        $this->makeStatic = !empty($this->props['makeStatic'])? explode(',', $this->props['makeStatic']) : array();
 
         /* show basic info */
         $this->modx->log(MODX::LOG_LEVEL_INFO, 'Component: ' . $this->props['packageName']);
@@ -141,9 +141,10 @@ class Bootstrap {
 
     public function createElements() {
         $this->modx->log(MODX::LOG_LEVEL_INFO, 'Category ID: ' . $this->categoryId);
-
-        foreach ($this->props['elements'] as $elementType => $elements) {
-            $elements = explode(',', $elements);
+        $allElements = $this->modx->getOption('elements', $this->props, '');
+        $allElements = !empty($allElements)? $allElements : array();
+        foreach ($allElements as $elementType => $elements) {
+            $elements = !empty($elements)? explode(',', $elements) : array();
             foreach ($elements as $name) {
                 if (! empty ($name)) {
                     $this->createElement($name, $elementType);
@@ -243,7 +244,8 @@ class Bootstrap {
         }
     }
     public function createResources() {
-        $resources = explode(',', $this->props['resources']);
+        $res = $this->modx->getOption('resources', $this->props, '');
+        $resources = !empty($res)? explode(',',$res) : array();
         if (! empty($resources)) {
             $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating Resources');
         }
@@ -310,12 +312,12 @@ class Bootstrap {
             }
         }
 
-        if (isset ($this->props['languages']) && ($this->props['languages'])) {
+        if (isset ($this->props['languages']) &&  ! empty($this->props['languages'])) {
             $this->modx->log(MODX::LOG_LEVEL_INFO,'Creating Lexicon files');
             $lexiconBase = $this->targetCore . 'lexicon/';
             foreach($this->props['languages'] as $language => $languageFiles) {
                 $dir = $this->targetCore . 'lexicon/' . $language;
-                $files = explode(',', $languageFiles);
+                $files = !empty($languageFiles)? explode(',', $languageFiles) : array();
                 foreach($files as $file){
                     $fileName = $file . '.inc.php';
                     if (! file_exists($dir . '/' . $fileName)){
@@ -335,7 +337,7 @@ class Bootstrap {
         if (isset ($defaults['docs']) && ! empty($defaults['docs'])) {
             $this->modx->log(MODX::LOG_LEVEL_INFO,'Creating doc files');
             $toDir = $this->targetCore . 'docs';
-            $docs = explode(',', $defaults['docs']);
+            $docs = !empty($docs)? explode(',', $defaults['docs']) : array();
             foreach($docs as $doc) {
                 if (! file_exists($toDir . '/' . $doc )) {
                     $tpl = $this->helpers->getTpl($doc);
@@ -360,7 +362,10 @@ class Bootstrap {
         return true;
     }
     public function createAssetsDirs() {
-        $optionalDirs = $this->props['assetsDirs'];
+        if (! $this->props['hasAssets']) {
+            return;
+        }
+        $optionalDirs = !empty($this->props['assetsDirs'])? $this->props['assetsDirs'] : array();
         $this->modx->log(MODX::LOG_LEVEL_INFO,'Creating Assets directories');
         foreach($optionalDirs as $dir => $val) {
             $targetDir = $this->targetAssets . $dir;
@@ -389,7 +394,7 @@ class Bootstrap {
 }
     /** creates resolver for attaching events to plugins */
     public function createPluginResolver() {
-        $pluginEvents = $this->props['pluginEvents'];
+        $pluginEvents = $this->modx->getOption('pluginEvents', $this->props, array());
         if (! empty($pluginEvents)) {
             $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating plugin resolver');
             $tpl = $this->helpers->getTpl(('pluginresolver.php'));
@@ -410,10 +415,9 @@ class Bootstrap {
                 $codeTpl = str_replace('<?php', '', $codeTpl);
     
                 foreach($pluginEvents as $plugin => $events) {
-    
-                    $tempCodeTpl = str_replace('[[+plugin]]', $plugin, $codeTpl);
-                    $tempCodeTpl = str_replace('[[+events]]', $events, $tempCodeTpl);
-                    $code .= "\n" . $tempCodeTpl;
+                        $tempCodeTpl = str_replace('[[+plugin]]', $plugin, $codeTpl);
+                        $tempCodeTpl = str_replace('[[+events]]', $events, $tempCodeTpl);
+                        $code .= "\n" . $tempCodeTpl;
                 }
                 $tpl = str_replace('/* [[+code]] */', $code, $tpl);
                 $this->helpers->writeFile($dir, $fileName, $tpl);
@@ -428,7 +432,7 @@ class Bootstrap {
     /** creates resolver for attaching TVs to Templates */
     public function createTvResolver()
     {
-        $templateVarTemplates = $this->props['templateVarTemplates'];
+        $templateVarTemplates = $this->modx->getOption('templateVarTemplates', $this->props, array());
         if (!empty($templateVarTemplates)) {
             $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating tv resolver');
             $tpl = $this->helpers->getTpl('tvresolver.php');
@@ -459,7 +463,7 @@ class Bootstrap {
         }
     }
     public function createValidators() {
-        $validators = $this->props['validators'];
+        $validators = $this->modx->getOption('validators', $this->props, '');
         if (!empty($validators)) {
             $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating validators');
             $dir = $this->targetBase . '_build/validators';
@@ -482,7 +486,7 @@ class Bootstrap {
         }
     }
     public function createExtraResolvers() {
-        $resolvers = $this->props['resolvers'];
+        $resolvers = $this->modx->getOption('resolvers', $this->props, '');
         if (!empty($resolvers)) {
             $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating extra resolvers');
             $dir = $this->targetBase . '_build/resolvers';
@@ -507,7 +511,7 @@ class Bootstrap {
         }
     }
     public function createInstallOptions() {
-        $iScript = $this->props['install.options'];
+        $iScript = $this->modx->getOption('install.options', $this->props, '');
         if (! empty($iScript)) {
             $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating Install Options');
             $dir = $this->targetBase . '_build/install.options';

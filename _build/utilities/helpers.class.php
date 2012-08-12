@@ -184,7 +184,7 @@ class Helpers
 
         $file = $dryRun? 'php://output' : $dir . $fileName;
         if (empty($content)) {
-            $this->modx->log(MODX::LOG_LEVEL_ERROR, '    No content for file ' . $file);
+            $this->modx->log(MODX::LOG_LEVEL_ERROR, '    No content for file ' . $fileName . ' (normal for chunks and templates until content is added)');
         }
 
         $fp = fopen($file, 'w');

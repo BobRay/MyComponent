@@ -95,16 +95,16 @@ class Export
             $this->modx->log(modX::LOG_LEVEL_INFO,'Not a Dry Run');
         }
 
-        $this->packageName = $this->modx->getOption('packageName', $this->props, '');
-        $this->packageNameLower = $this->modx->getOption('packageNameLower', $this->props, '');
+        $this->packageName = $this->props['packageName'];
+        $this->packageNameLower = $this->props['packageNameLower'];
 
-        $this->category = $this->modx->getOption('category', $this->props, '');
+        $this->category = $this->props['category'];
         $parents = $this->modx->getOption('parents', $this->props,null);
-        $this->parents =  $parents ? explode(',',$parents): array();
+        $this->parents =  !empty($parents) ? explode(',',$parents): array();
         $this->includeParents = $this->modx->getOption('includeParents', $this->props,false);
 
         $pagetitles = $this->modx->getOption('pagetitles', $this->props,null);
-        $this->pagetitles =  $pagetitles ? explode(',',$pagetitles): array();
+        $this->pagetitles =  !empty($pagetitles) ? explode(',',$pagetitles): array();
 
 
         $this->createObjectFiles = $this->modx->getOption('createObjectFiles',$this->props,false);
@@ -186,7 +186,7 @@ class Export
         $i=1;
         foreach($this->elements as $elementObj) {
             $tpl .= $this->writeObject($elementObj, strtolower(substr($element, 0, -1)), $i);
-            if ($this->props['createObjectFiles']) {
+            if ($this->createObjectFiles) {
                 $this->createObjectFile($elementObj, $element);
             }
             $i++;
