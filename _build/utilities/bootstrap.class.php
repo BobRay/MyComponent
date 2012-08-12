@@ -337,7 +337,7 @@ class Bootstrap {
         if (isset ($defaults['docs']) && ! empty($defaults['docs'])) {
             $this->modx->log(MODX::LOG_LEVEL_INFO,'Creating doc files');
             $toDir = $this->targetCore . 'docs';
-            $docs = !empty($docs)? explode(',', $defaults['docs']) : array();
+            $docs = !empty($defaults['docs'])? explode(',', $defaults['docs']) : array();
             foreach($docs as $doc) {
                 if (! file_exists($toDir . '/' . $doc )) {
                     $tpl = $this->helpers->getTpl($doc);
