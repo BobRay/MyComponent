@@ -27,8 +27,17 @@
  *
  * Description:
  * ------------
- * Extracts objects (resources, chunks, snippets, etc.) from a MODX install
- * and creates build files for MyComponent to use in creating a transport package
+ * Extracts objects (resources, chunks, snippets, etc.) from a MODX
+ * install and creates code and transport build files for
+ * MyComponent to use in creating a transport package
+ *
+ * Warning: Will overwrite code files for resources and elements
+ * (except static elements) if CreateObjectFiles is set and dryRun
+ * is not set.
+ *
+ * Warning: Will overwrite transport files and properties for
+ * processed elements and resources if CreateTransportFiles is set
+ * and dryRun is not set.
  *
  * @package exportobjects
  *
