@@ -1,5 +1,12 @@
 <?php
 /**
+ * Important: You should almost never need to edit this file,
+ * except to add components that it won't handle (e.g., permissions,
+ * users, policies, policy templates, ACL entries, and Form
+ * Customization rules), and most of those might better be handled
+ * in a script resolver, which you can add without editing this file.
+ *
+ *
  * Build Script for [[+packageName]] extra
  *
  * Copyright 2012 by Bob Ray <http://bobsguides.com>
@@ -11,6 +18,12 @@
  * @subpackage build
  */
 
+/**
+ * This is the template for the build script, which creates the
+ * transport.zip file for your extra.
+ *
+
+ */
 /* See the tutorial at http://http://bobsguides.com/mycomponent-tutorial.html
  * for more detailed information about using the package.
  */
