@@ -1,8 +1,8 @@
 <?php
 /**
- * MyComponent exportobjects.php
- * @author Bob Ray
+ * exportobjects.php file for MyComponent Extra
  *
+ * @author Bob Ray
  * Copyright 2012 by Bob Ray <http://bobsguides.com>
  *
  * MyComponent is free software; you can redistribute it and/or modify it under the
@@ -22,7 +22,8 @@
  */
 
 /** Description:
- * Class for MyComponent exportobjects utility
+ * -------------
+ * Methods used by exportobjects.php in MyComponent Extra
  */
 class Export
 {
@@ -327,10 +328,15 @@ class Export
 
         /* handle properties */
         if ($hasProperties) {
-            $tpl .= "\n\$properties = include \$sources['data'].'properties/properties." . strtolower($elementObj->get('name')) . ".php';\n";
+            $name = $elementObj->get($this->helpers->getNameAlias($this->elementType));
+            $type = $this->elementType;
+            //$tpl .= "\n\$properties = include \$sources['data'].'properties/properties." . strtolower($elementObj->get('name')) . ".php';\n";
+            $fileName = $this->helpers->getFileName($name, $this->elementType, 'properties');
+            $tpl .= "\n\$properties = include \$sources['data'].'properties/" . $fileName ."';\n" ;
             $tpl .= '$' . $element . "s[" . $i . "]->setProperties(\$properties);\n";
             $tpl .= "unset(\$properties);\n\n";
-            $this->writePropertyFile($properties, 'properties.' . strtolower($elementObj->get('name')) . '.php', $elementObj->get('name'));
+            // $this->writePropertyFile($properties, 'properties.' . strtolower($elementObj->get('name')) . '.php', $elementObj->get('name'));
+            $this->writePropertyFile($properties, $fileName, $name);
         }
         return $tpl;
     }
@@ -359,7 +365,6 @@ class Export
 
         if ($depth == -1) {
             /* this will only happen once */
-            unset($arr['desc_trans'], $arr['area_trans']);
             $output = "\$properties = array( \n";
             $depth++;
         } else {
@@ -368,6 +373,9 @@ class Export
         $indent = str_repeat( " ", $depth + $tabWidth );
 
         foreach( $arr as $key => $val ) {
+            if ($key=='desc_trans' || $key == 'area_trans') {
+                continue;
+            }
             $output .= $indent . "'$key' => ";
 
             if( is_array( $val ) && !empty($val) ) {

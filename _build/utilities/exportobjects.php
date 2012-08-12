@@ -1,33 +1,36 @@
 <?php
 /**
- * ExportChunks
+ * ExportObjects script for MyComponent Extra
  *
  * Copyright 2012 by Bob Ray <http://bobsguides.com>
  *
  * @author Bob Ray
  * 3/27/12
  *
- * ExportChunks is free software; you can redistribute it and/or modify it
+ * ExportObjects is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or (at your option) any
  * later version.
  *
- * ExportChunks is distributed in the hope that it will be useful, but WITHOUT ANY
+ * ExportObjects is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * ExportChunks; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * ExportObjects; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * @package exportchunks
+ * @package exportobjects
  */
 /**
- * MODx ExportObjects Snippet
+ * MODx ExportObjects script
  *
- * Description Extracts objects from MODX install to build files for MyComponent
+ * Description:
+ * ------------
+ * Extracts objects (resources, chunks, snippets, etc.) from a MODX install
+ * and creates build files for MyComponent to use in creating a transport package
  *
- * @package exportchunks
+ * @package exportobjects
  *
  */
 /* @var $category string */
@@ -36,7 +39,7 @@
  *
  * Create a snippet called ExportObjects, paste the code or
  * use this for the snippet code:
- *     return include 'path/to/this/file';
+ *     return http://bit.ly/RJbUf8include 'path/to/this/file';
  *
  * Put a tag for the snippet on a page and preview the page
  *
