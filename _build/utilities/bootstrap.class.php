@@ -526,6 +526,33 @@ class Bootstrap {
             }
         }
     }
+    public function createPropertySets() {
+        $propertySets = $this->modx->getOption('propertySets', $this->props, '' );
+        if (! empty($propertySets)) {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating property sets');
+            $propertySets = explode(',', $propertySets);
+            foreach($propertySets as $name) {
+                $set = $this->modx->getObject('modPropertySet', array('name' => $name));
+                if (! $set){
+                    $fields = array(
+                        'name' => $name,
+                        'category' => $this->categoryId,
+                    );
+                    /* @var $setObj modPropertySet */
+                    $setObj = $this->modx->newObject('modPropertySet', $fields);
+                    if ($setObj && $setObj->save()) {
+                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    Created ' . $name . ' property set object');
+                    } else {
+                        $this->modx->log(MODX::LOG_LEVEL_ERROR, '    Could not create ' . $name . ' property set object');
+                    }
+
+                } else {
+                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $name . ' property set already exists');
+                }
+            }
+        }
+
+    }
 
     /* The next three function are not used, but can replace placeholders in files after the fact */
     public function doSearchReplace() {

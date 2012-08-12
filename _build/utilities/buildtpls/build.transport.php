@@ -65,6 +65,8 @@ $hasResources = !empty($props['resources']);
 $hasValidator = !empty($props['validators']); /* Run a validator before installing anything */
 $hasResolver = !empty ($props['resolvers']); /* Run a resolver after installing everything */
 $hasSetupOptions = !empty($props['install.options']); /* HTML/PHP script to interact with user */
+$hasPropertySets = !empty($props['propertySets']);
+
 $hasMenu = !empty($props['menus']); /* Add items to the MODx Top Menu */
 $hasSettings = !empty($props['newSystemSettings']); /* Add new MODx System Settings */
 $hasSubPackages = !empty($props['subPackages']);

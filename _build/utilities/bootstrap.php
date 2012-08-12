@@ -81,6 +81,7 @@ $bootStrap->createTvResolver();
 $bootStrap->createValidators();
 $bootStrap->createExtraResolvers();
 $bootStrap->createInstallOptions();
+$bootStrap->createPropertySets();
 
 $modx->log(MODX::LOG_LEVEL_INFO,'Finished!');
 
