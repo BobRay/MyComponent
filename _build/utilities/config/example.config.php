@@ -36,10 +36,13 @@ $components = array(
     'initialize' => true,
     'defaultStuff' => array(
         'utilities' => false, /* copy entire utilities dir to target dir -- Usually unnecessary */
-        'lexicon' => true, /* create lexicon directory */
         'docs' => 'readme.txt,license.txt,changelog.txt,tutorial.html',
         'readme.md' => true, /* Description file for GitHub project home page */
-        'languages' => 'en', /* only list languages for which you have language files */
+    ),
+    /* Array of languages for which you will have language files and
+     * comma-separated list of filenames ('.inc.php' will be added as a suffix) */
+    'languages' => array(
+        'en' => 'default,properties',
     ),
 
     'hasCore' => true, /* assume every package has a core directory */

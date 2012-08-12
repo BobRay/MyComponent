@@ -310,25 +310,25 @@ class Bootstrap {
             }
         }
 
-        if (isset ($defaults['lexicon']) && $defaults['lexicon']) {
+        if (isset ($this->props['languages']) && ($this->props['languages'])) {
             $this->modx->log(MODX::LOG_LEVEL_INFO,'Creating Lexicon files');
-            $toDir = $this->targetCore . 'lexicon';
-            //echo  "\n" . 'TODIR: ' . $toDir . "\n";
-            if (! is_dir($toDir)) {
-                $this->modx->log(MODX::LOG_LEVEL_INFO,'    Creating lexicon directory');
-                mkdir($toDir, $this->dirPermission, true);
-            } else {
-                $this->modx->log(MODX::LOG_LEVEL_INFO,'    Lexicon directory already exists');
-            }
-            if (!empty($defaults['languages'])) {
-                $languages = explode(',', $defaults['languages']);
-                foreach($languages as $lang) {
-                    if (!is_dir($toDir . '/' . $lang)) {
-                        $this->modx->log(MODX::LOG_LEVEL_INFO,'        creating ' . $lang . ' directory');
-                        mkdir($toDir . '/' . $lang, $this->dirPermission, true);
+            $lexiconBase = $this->targetCore . 'lexicon/';
+            foreach($this->props['languages'] as $language => $languageFiles) {
+                $dir = $this->targetCore . 'lexicon/' . $language;
+                $files = explode(',', $languageFiles);
+                foreach($files as $file){
+                    $fileName = $file . '.inc.php';
+                    if (! file_exists($dir . '/' . $fileName)){
+                        $tpl = $this->helpers->getTpl('phpfile.php');
+                        $tpl = str_replace('[[+elementName]]', $language . ' '. $file . ' topic', $tpl);
+                        $tpl = str_replace('[[+description]]', $language . ' ' . $file . ' topic lexicon strings', $tpl);
+                        $tpl = str_replace('[[+elementType]]', 'lexicon file', $tpl);
+                        $tpl = $this->helpers->replaceTags($tpl);
+                        $this->helpers->writeFile($dir, $fileName, $tpl);
                     } else {
-                        $this->modx->log(MODX::LOG_LEVEL_INFO,'        ' . $lang . ' directory already exists');
+                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $language . ':' . $fileName . ' file already exists');
                     }
+
                 }
             }
         }
