@@ -111,14 +111,33 @@ $components = array(
 
     /* array containing the actual Element Names */
     'elements' => array(
-        'modSnippet' => 'Example1,Example2',
-        'modPlugin' => 'Example1,Example2',
-        'modTemplateVar' => 'Example1,Example2',
-        'modTemplate' => 'Example1,Example2',
-        'modChunk' => 'Example1,Example2',
+        'modSnippet' => 'Snippet1,Snippet2',
+        'modPlugin' => 'Plugin1,Plugin2',
+        'modTemplateVar' => 'Tv1,Tv2',
+        'modTemplate' => 'Template1,Template2',
+        'modChunk' => 'Chunk1,Chunk2',
     ),
+    /* array of plugin names and comma-separated list of their events.
+     * automatically generates resolver to connect them
+     */
+    'pluginEvents' => array(
+        'Plugin1' => 'OnDocFormSave,OnUserFormSave',
+        'Plugin2' => 'OnDocFormSave,OnUserFormSave',
+    ),
+    /* Array of Templates and comma-separated list of TVs to attach to them.
+     * Automatically generates resolver to connect them
+     * (use 'default' for default template).
+     * TV names and Template names are both case-sensitive
+     */
+    'templateVarTemplates' => array(
+        'default' => 'Tv1,Tv2',
+        'Template1' => 'Tv1,Tv2',
+        'Example2' => 'Tv1,Tv2',
+    ),
+
     /* comma-separated lists of the actual Resource pagetitles */
-    'resources' => 'Example1,Example2',
+    /* ToDo: Make sure resources are created near the top of the build script */
+    'resources' => 'Resource1,Resource2',
 
     /* set these only if you want to override system defaults */
     'resource_defaults' => array(
@@ -134,30 +153,45 @@ $components = array(
      * list of resource pagetitles.
      * Only necessary if you want to connect package resources to package
      * templates. A resolver will be created to connect them.
+     * By default, all resources are given the site default template
      */
+
     'resourceTemplates' => array(
-       'Example1' => 'Example1,Example2',
+        'Template1' => 'Resource1,Resource2',
     ),
-    /* array of plugin names and comma-separated list of their events.
-     * automatically generates resolver to connect them
-     */
-    'pluginEvents' => array(
-        'Example1' => 'OnDocFormSave,OnUserFormSave',
-        'Example2' => 'OnDocFormSave,OnUserFormSave',
+    /* ToDo: make sure this resolver runs last */
+    /* (NOT IMPLEMENTED) TV Resource Values - set TV values for specific resources.
+     * A resolver will be created automatically
+     * Format is:
+     *    'TvName' => array(
+     *       'pagetitle' => 'value'
+     *    ),
+    */
+    'TvResourceValues' => array(
+        'Tv1' => array(
+            'Resource1' => 'someValue',
+        ),
+        'Tv2' => array(
+            'Resource1' => 'someOtherValue',
+        ),
     ),
 
-    /* Array of Templates and comma-separated list of TVs to attach to them.
-     * Automatically generates resolver to connect them
-     * (use 'default' for default template).
-     * TV names and Template names are both case-sensitive
-     */
-    'templateVarTemplates' => array(
-        'default' => 'Example1,Example2',
-        'Example1' => 'Example1,Example2',
-        'Example2' => 'Example1,Example2',
+    /* Comma-separated list of property set names to create */
+    'propertySets' => 'PropertySet1',
+
+    /* (NOT IMPLEMENTED) Array of property sets and elements to connect them to.
+     * A resolver to connect them will be created automatically
+    */
+    'propertySetElements' => array(
+        'PropertySet1' => array(
+                'Plugin1' => 'modPlugin',
+                'Snippet1' => 'modSnippet',
+        ),
     ),
-    /* ********************************************* */
-    /* These properties control exportObjects.php */
+
+    /* *******************************************
+     * These settings control exportObjects.php  *
+     ******************************************* */
     'dryRun' => '0',
     'createTransportFiles' => '1',
     'createObjectFiles' => '1',
@@ -197,7 +231,7 @@ $components = array(
     /* ToDo: Implement Property Sets */
     'otherObjects' => array(
         'menus' => '',
-        'propertySets' => '',
+
         'newSystemEvents' => '', /* *new* System Events to be created for the extra */
         'newSystemSettings' => '', /* *new* SystemSettings to be created for the extra */
 
