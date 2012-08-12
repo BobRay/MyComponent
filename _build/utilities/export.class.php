@@ -329,13 +329,10 @@ class Export
         /* handle properties */
         if ($hasProperties) {
             $name = $elementObj->get($this->helpers->getNameAlias($this->elementType));
-            $type = $this->elementType;
-            //$tpl .= "\n\$properties = include \$sources['data'].'properties/properties." . strtolower($elementObj->get('name')) . ".php';\n";
             $fileName = $this->helpers->getFileName($name, $this->elementType, 'properties');
             $tpl .= "\n\$properties = include \$sources['data'].'properties/" . $fileName ."';\n" ;
             $tpl .= '$' . $element . "s[" . $i . "]->setProperties(\$properties);\n";
             $tpl .= "unset(\$properties);\n\n";
-            // $this->writePropertyFile($properties, 'properties.' . strtolower($elementObj->get('name')) . '.php', $elementObj->get('name'));
             $this->writePropertyFile($properties, $fileName, $name);
         }
         return $tpl;
@@ -347,7 +344,6 @@ class Export
         $tpl = str_replace('[[+elementType]]', substr(strtolower($this->elementType), 3), $tpl);
 
         $tpl = $this->helpers->replaceTags($tpl);
-        // $s = $this->render_properties($properties);
         $tpl .= "\n\n" . $this->render_properties($properties) . "\n\n";
 
         if ($this->dryRun) {

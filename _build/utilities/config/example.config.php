@@ -201,7 +201,7 @@ $components = array(
      * To export resources, list pagetitles and/or IDs of parents
      * of desired resources
     */
-    'process' => 'snippets,plugins,templateVars,templates,chunks,resources',
+    'process' => 'snippets,plugins,templateVars,templates,chunks,resources,propertySets',
     'pagetitles' => 'Example1,Example2', // comma-separated list of pagetitles of resources to process
     'parents' => '', // comma-separated list of parent IDs to get children of
     'includeParents' => false, // include listed parent resources
