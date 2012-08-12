@@ -145,7 +145,7 @@ class Export
             $element='Actions';
         }
 
-        $this->modx->log(modX::LOG_LEVEL_INFO, "\n\n<h3>Processing " . $element . '</h3>');
+        $this->modx->log(modX::LOG_LEVEL_INFO, "\n\nProcessing " . $element);
         
         $this->modx->log(modX::LOG_LEVEL_INFO, 'Category: ' . $this->category);
         /* convert 'chunks' to 'modChunk' etc. */
