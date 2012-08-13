@@ -67,7 +67,8 @@ class Export
             $this->props =& $config;
     }
 
-    function init() {
+    /** Initializes class variables */
+    public function init() {
         clearstatcache(); /*  make sure is_dir() is current */
         $configFile = dirname(dirname(__FILE__)) . '/build.config.php';
         if (file_exists($configFile)) {
@@ -142,7 +143,16 @@ class Export
         return true;
     }
 
-    function process($element)
+
+    /**
+     * Processes all elements of specified type that are in the category or area
+     * (resources are specified by parent and/or list of pagetitles).
+     *
+     * (optionally) writes code file and transport file
+     *
+     * @param $element - string element type('snippets', 'plugins' etc.)
+     */
+    public function process($element)
     {
         if (stristr($element,'menus')) { /* note: may change in Revo 2.3 */
             $element='Actions';
@@ -187,6 +197,7 @@ class Export
         $tpl .= "\n\$" . strtolower($element) . " = array();\n\n";
 
         $i=1;
+        /* append the code (returned from writeObject) for each object to $tpl */
         foreach($this->elements as $elementObj) {
             $tpl .= $this->writeObject($elementObj, strtolower(substr($element, 0, -1)), $i);
             if ($this->createObjectFiles) {
@@ -241,8 +252,17 @@ class Export
 
         }
     }
-    /* Writes individual object to transport file */
 
+
+    /**
+     * Creates code for an individual element to be written to transport file
+     * and properties file for any objects with properties
+     *
+     * @param $elementObj - MODX object (the element)
+     * @param $element - type of object ('plugin', 'snippet', etc.)
+     * @param $i int - index of element in transport file
+     * @return string - code for this object to be inserted in transport file (by $this->process())
+     */
     protected function writeObject($elementObj, $element, $i) {
         /* element is in the form 'chunk', 'snippet', etc. */
         /* @var $elementObj modElement */
@@ -340,6 +360,13 @@ class Export
         }
         return $tpl;
     }
+
+    /**
+     * Writes the properties file for objects with properties
+     * @param $properties array - object properties as PHP array
+     * @param $fileName - Name of properties file
+     * @param $objectName - Name of MODX object
+     */
     protected function writePropertyFile($properties, $fileName, $objectName) {
         $dir = $this->transportPath . 'properties/';
         $tpl = $this->helpers->getTpl('propertiesfile.php');
@@ -360,6 +387,14 @@ class Export
         unset($tpl);
     }
 
+    /**
+     * Recursive function to write the code for the build properties file.
+     *
+     * @param $arr - array of properties
+     * @param $depth int - controls recursion
+     * @param int $tabWidth - tab width for code (uses spaces)
+     * @return string - code for the elements properties
+     */
     function render_properties( $arr, $depth=-1, $tabWidth=4) {
 
         if ($depth == -1) {
@@ -401,6 +436,12 @@ class Export
     }
 
 
+    /**
+     * Creates the code file for an element or resource - skips static elements
+     *
+     * @param $elementObj modElement - element MODX object
+     * @param $element - string name of element type ('plugin', 'snippet' etc.) used in dir name.
+     */
     protected function createObjectFile ($elementObj, $element) {
 
         /* @var $elementObj modElement */
@@ -422,7 +463,7 @@ class Export
         if ($type == 'modResource') {
             $dir = $this->resourcePath;
         } else {
-            $dir = $this->elementPath . '/' . $element;
+            $dir = $this->helpers->getCodeDir($this->targetCore, $type);
         }
         if ($this->dryRun) {
             $this->modx->log(modX::LOG_LEVEL_INFO, '    Would be creating: ' . $fileName . "\n");
@@ -449,10 +490,6 @@ class Export
             $this->modx->log(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
         }
         unset($tpl);
-    }
-
-    public function strReplaceAssoc(array $replace, $subject) {
-       return str_replace(array_keys($replace), array_values($replace), $subject);
     }
 
 }

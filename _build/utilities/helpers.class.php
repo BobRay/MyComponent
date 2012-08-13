@@ -92,7 +92,7 @@ class Helpers
      * Get tpl file contents from MyComponent build tpl directory
      *
      * @param $name string  - Name of tpl file
-     * @return bool|string
+     * @return string - Content of tpl file or '' if it doesn't exist
      */
     public function getTpl($name)
     {
@@ -105,9 +105,11 @@ class Helpers
     }
 
     /**
+     * Returns the correct filename for a given file
+     *
      * @param $name - string name of object (mixed case OK)
      * @param $elementType string - 'modChunk', 'modResource', etc.
-     * @param string $fileType string - Type of file to be created (code, properties)
+     * @param string $fileType string - Type of file to be created (code, properties, transport)
      * @return string
      *
      * Example returns for MyObject plugin-type object
@@ -154,14 +156,20 @@ class Helpers
         $output = str_replace(' ', '_', $output);
         return $output;
     }
+
+    /**
+     * @param $targetCore string - path to core directory in build
+     * @param $type string - modSnippet, modChunk, etc.
+     * @return string - full path for element code file (without filename or trailing slash)
+     */
     public function getCodeDir ($targetCore, $type) {
         $dir = $targetCore . 'elements/';
         $type = $type == 'modTemplateVar' ? 'modTv' : $type;
         return $dir . strtolower(substr($type, 3)) . 's';
     }
     /**
-     * @param $elementType string 'modChunk', 'modSnippet', etc.
-     * @return string
+     * @param $elementType string - 'modChunk', 'modSnippet', etc.
+     * @return string - The name of the 'name' field for the object (name, pagetitle, etc.)
      */
     public function getNameAlias($elementType) {
         switch ($elementType) {
@@ -187,7 +195,7 @@ class Helpers
      * Write a file to disk - non-destructive -- will not overwrite existing files
      * Creates dir if necessary
      *
-     * @param $dir string - directory for file (should not have trailing slash
+     * @param $dir string - directory for file (should not have trailing slash!)
      * @param $fileName string - file name
      * @param $content - file content
      * @param string $dryRun string - if true, writes to stdout instead of file.
@@ -225,17 +233,24 @@ class Helpers
 
     }
 
+    /**
+     * Replaces all strings in $subject based on $replace associative array
+     *
+     * @param $replace array - associative array of key => value pairs
+     * @param $subject string - text to do replacement in
+     * @return string - altered text
+     */
     public function strReplaceAssoc(array $replace, $subject)
     {
         return str_replace(array_keys($replace), array_values($replace), $subject);
     }
 
     /**
-     * Copies an entire directory and its descendants
+     * Recursive function copies an entire directory and its all descendants
      *
-     * @param $source
-     * @param $destination
-     * @return bool
+     * @param $source string - source directory
+     * @param $destination string - target directory
+     * @return bool - used only to control recursion
      */
 
     public function copyDir($source, $destination)

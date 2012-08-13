@@ -72,6 +72,9 @@ require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/boots
 $bootStrap = new Bootstrap($modx,$props);
 
 $bootStrap->init();
+/* These can be run independently -- comment out the ones you don't want to run.
+ * There's no risk in running all of them since no existing files or objects will
+ * be overwritten. */
 $bootStrap->createBasics();
 $bootStrap->createCategory();
 $bootStrap->createElements();

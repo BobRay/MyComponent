@@ -61,7 +61,7 @@ class Bootstrap {
                 $this->props =& $props;
     }
 
-
+    /** Initializes class variables */
     public function init() {
         clearstatcache(); /*  make sure is_dir() is current */
         $config = dirname(dirname(__FILE__)) . '/build.config.php';
@@ -115,10 +115,8 @@ class Bootstrap {
         $this->modx->log(MODX::LOG_LEVEL_INFO, 'Target Assets: ' . $this->targetAssets);
 
         $this->modx->log(MODX::LOG_LEVEL_INFO, '--------------------------------------------------');
-
-
-
     }
+    /** Creates category object in DB and sets $this->categoryId */
     public function createCategory() {
 
         /* @var $categoryObj modCategory */
@@ -136,7 +134,7 @@ class Bootstrap {
         }
         unset($category, $categoryObj);
     }
-
+    /** Calls $this->createElement to create element files and/or objects */
     public function createElements() {
         $this->modx->log(MODX::LOG_LEVEL_INFO, 'Category ID: ' . $this->categoryId);
         $allElements = $this->modx->getOption('elements', $this->props, '');
@@ -152,7 +150,7 @@ class Bootstrap {
     }
 
     /**
-     * Creates an element (code file and or MODX object) based on config file
+     * Creates an element (code file and or MODX object) based on project config file
      *
      * @param $name string - Name of Element (e.g., 'MySnippet')
      * @param $type - Element type (e.g. modPlugin, modTemplateVar)
@@ -175,11 +173,10 @@ class Bootstrap {
     }
 
     /**
-     * Creates a code file for an element
+     * Creates a code file for an element if set in project config file
      *
      * @param $name string - lowercase filename (without extension or type
-     * @param $codeDir string - directory for element file (must not end in a slash)
-     * @param $type string - plugin, snippet, css, js, etc.
+     * @param $type string - modPlugin, modSnippet etc.
      */
     public function createCodeFile($name, $type) {
         $dir = $this->helpers->getCodeDir($this->targetCore, $type);
@@ -208,11 +205,10 @@ class Bootstrap {
     }
 
     /**
-     * Creates a MODX element object in the DB
+     * Creates a MODX element object in the DB if set in project config file
      *
-     * @param $name
-     * @param $type
-     * @param $suffix
+     * @param $name string - name of object in MODX install
+     * @param $type string - modSnippet, modChunk, etc.
      */
     public function createElementObject($name, $type) {
         /* @var $object modElement */
@@ -241,6 +237,7 @@ class Bootstrap {
             $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $name . ' ' . $type . ' object already exists');
         }
     }
+    /** creates resources in MODX install if set in project config file */
     public function createResources() {
         $res = $this->modx->getOption('resources', $this->props, '');
         $resources = !empty($res)? explode(',',$res) : array();
@@ -276,6 +273,8 @@ class Bootstrap {
             }
         }
     }
+    /** Creates build transport and config files, (optionally) lexicon files, doc file,
+     *  readme.md, and full _build directory with utilities  if set in project config file */
     public function createBasics() {
         $defaults = $this->props['defaultStuff'];
 
@@ -359,6 +358,9 @@ class Bootstrap {
 
         return true;
     }
+
+    /** Creates assets directories and (optionally) empty css and js files
+     * if set in project config file */
     public function createAssetsDirs() {
         if (! $this->props['hasAssets']) {
             return;
@@ -387,10 +389,8 @@ class Bootstrap {
 
             }
         }
-
-
 }
-    /** creates resolver for attaching events to plugins */
+    /** creates resolver for attaching System Events to plugins if set in project config file */
     public function createPluginResolver() {
         $pluginEvents = $this->modx->getOption('pluginEvents', $this->props, array());
         if (! empty($pluginEvents)) {
@@ -427,7 +427,7 @@ class Bootstrap {
         }
     }
 
-    /** creates resolver for attaching TVs to Templates */
+    /** Creates resolver for attaching TVs to Templates if set in project config file*/
     public function createTvResolver()
     {
         $templateVarTemplates = $this->modx->getOption('templateVarTemplates', $this->props, array());
@@ -460,6 +460,7 @@ class Bootstrap {
             }
         }
     }
+    /** Creates validators if set in project config file */
     public function createValidators() {
         $validators = $this->modx->getOption('validators', $this->props, '');
         if (!empty($validators)) {
@@ -483,6 +484,7 @@ class Bootstrap {
             }
         }
     }
+    /** Creates additional resolvers specified in project config file */
     public function createExtraResolvers() {
         $resolvers = $this->modx->getOption('resolvers', $this->props, '');
         if (!empty($resolvers)) {
@@ -508,6 +510,7 @@ class Bootstrap {
             }
         }
     }
+    /** Creates example file for user input during install if set in project config file */
     public function createInstallOptions() {
         $iScript = $this->modx->getOption('install.options', $this->props, '');
         if (! empty($iScript)) {
@@ -524,6 +527,7 @@ class Bootstrap {
             }
         }
     }
+    /** Creates propertyset objects in MODX install if set in project config file */
     public function createPropertySets() {
         $propertySets = $this->modx->getOption('propertySets', $this->props, '' );
         if (! empty($propertySets)) {
@@ -550,6 +554,7 @@ class Bootstrap {
             }
         }
     }
+    /** Creates "starter" class files specified in project config file */
     public function createClassFiles() {
         $classes = $this->modx->getOption('classes', $this->props, array());
         $classes = !empty($classes) ? $classes : array();
@@ -583,6 +588,7 @@ class Bootstrap {
     }
 
     /* The next three function are not used, but can replace placeholders in files after the fact */
+    /* ********************************************************************* */
     public function doSearchReplace() {
         $this->_doSearchReplace($this->dest);
     }
