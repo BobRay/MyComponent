@@ -1,28 +1,49 @@
 <?php
 /**
- * User: Bob Ray
- * Date: 8/2/12
- * Time: 10:17 PM
- * To change this template use File | Settings | File Templates.
+ * helpers.class.php file for MyComponent Extra
+ *
+ * @author Bob Ray
+ * Copyright 2012 by Bob Ray <http://bobsguides.com>
+ *
+ * MyComponent is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * MyComponent is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * MyComponent; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ * @package MyComponent
+ */
+
+/** Description:
+ * -------------
+ * Methods used by helpers class in MyComponent Extra
  */
 
 class Helpers
 
 {
-    /* @var $replaceFields array */
-    var $replaceFields;
-    /* @var $tplPath string - path to MyComponent tpl directory */
-    var $tplPath;
-    /* @var $source string - path to root of MyComponent */
-    var $source;
-    /* @var $dirPermission - permission for new directories (from config file) */
-    var $dirPermission;
-    /* @var $filePermission - permission for new files (from config file) */
-    var $filePermission;
     /* @var $modx modX - $modx object */
-    var $modx;
+    public $modx;
     /* @var $props array - $scriptProperties array */
-    var $props;
+    public $props;
+    /* @var $replaceFields array */
+    protected $replaceFields;
+    /* @var $tplPath string - path to MyComponent tpl directory */
+    protected $tplPath;
+    /* @var $source string - path to root of MyComponent */
+    protected $source;
+    /* @var $dirPermission - permission for new directories (from config file) */
+    protected $dirPermission;
+    /* @var $filePermission - permission for new files (from config file) */
+    protected $filePermission;
+    
 
     function  __construct(&$modx, &$props = array()) {
         $this->modx =& $modx;

@@ -37,26 +37,24 @@
 
 class Bootstrap {
     /* @var $modx modX - MODX object */
-    var $modx;
+    public $modx;
     /* @var $props array  - $scriptProperties array */
-    var $props;
+    public $props;
     /* @var $helpers Helpers  - class of helper functions */
-    var $helpers;
-    var $packageName;
-    var $packageNameLower;
-    var $source;
-    var $targetBase;
-    var $targetCore;
-    var $targetAssets;
-    var $corePath;
-    var $assetsPath;
-    var $tplPath; /* path to element Tpl files */
-    var $categoryId;
-    var $makeStatic; /* array of objects to make static (comma,separated list in config) */
-    var $dirPermission;
-    var $filePermission;
-
-
+    public $helpers;
+    protected $packageName;
+    protected $packageNameLower;
+    protected $source;
+    protected $targetBase;
+    protected $targetCore;
+    protected $targetAssets;
+    protected $corePath;
+    protected $assetsPath;
+    protected $tplPath; /* path to element Tpl files */
+    protected $categoryId;
+    protected $makeStatic; /* array of objects to make static (comma,separated list in config) */
+    protected $dirPermission;
+    protected $filePermission;
 
     function  __construct(&$modx, &$props = array()) {
                 $this->modx =& $modx;

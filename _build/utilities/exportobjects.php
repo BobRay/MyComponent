@@ -94,11 +94,11 @@ if (!defined('MODX_CORE_PATH')) {
     require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
     $modx= new modX();
     $modx->initialize('mgr');
-    echo '<pre>'; /* used for nice formatting for log messages  */
     $modx->setLogLevel(modX::LOG_LEVEL_INFO);
     $modx->setLogTarget('ECHO');
 } else {
     $outsideModx = false;
+    echo "<pre>\n"; /* used for nice formatting for log messages  */
 }
 /* These will override settings in the config file */
 

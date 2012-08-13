@@ -61,6 +61,7 @@ if (!defined('MODX_CORE_PATH')) {
     $modx->initialize('mgr');
     $modx->setLogLevel(modX::LOG_LEVEL_INFO);
     $modx->setLogTarget('ECHO');
+} else {
     echo "\n<pre>\n"; /* used for nice formatting for log messages if run in a browser */
 }
 

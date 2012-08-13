@@ -28,57 +28,60 @@
 class Export
 {
     /* @var modx modX */
-    var $modx;
-    var $props;
-    var $elements;
-    var $category;
-    var $categoryId;
-    var $parents; //array of parents
-    var $includeParents; // should parent resources be included
-    var $pagetitles; // array of pagetitles
-    var $source; // path to root of MyComponent
-    var $sourceCore; // path to MyComponent Core directory
-    var $targetBase; // base path to new component
-    var $targetCore; // path to new component core dir
-    var $elementPath;
-    var $resourcePath;
-    var $packageName;
-    var $packageNameLower;
-    var $filePath;
-    var $transportPath;
-    var $createTransportFiles;
-    var $createObjectFiles;
-    var $dirPermission;
-
-    var $elementType;
-    /* @var $categoryObj modCategory */
-    var $categoryObj;
-    var $dryRun;
+    public $modx;
+    /* @var $props array */
+    public $props;
     /* @var $helpers Helpers */
-    var $helpers; /* helpers class */
+    public $helpers; /* helpers class */
+    protected $elements;
+    protected $category;
+    protected $categoryId;
+    protected $parents; //array of parents
+    protected $includeParents; // should parent resources be included
+    protected $pagetitles; // array of pagetitles
+    protected $source; // path to root of MyComponent
+    protected $sourceCore; // path to MyComponent Core directory
+    protected $targetBase; // base path to new component
+    protected $targetCore; // path to new component core dir
+    protected $elementPath;
+    protected $resourcePath;
+    protected $packageName;
+    protected $packageNameLower;
+    protected $filePath;
+    protected $transportPath;
+    protected $createTransportFiles;
+    protected $createObjectFiles;
+    protected $dirPermission;
+    protected $elementType;
+    /* @var $categoryObj modCategory */
+    protected $categoryObj;
+    protected $dryRun;
+    
+    
 
 
 
 
-    function  __construct(&$modx, &$props = array()) {
+    function  __construct(&$modx, &$config = array()) {
             $this->modx =& $modx;
-            $this->props =& $props;
+            $this->props =& $config;
     }
 
     function init() {
         clearstatcache(); /*  make sure is_dir() is current */
-        $config = dirname(dirname(__FILE__)) . '/build.config.php';
-        if (file_exists($config)) {
-            $configProps = @include $config;
+        $configFile = dirname(dirname(__FILE__)) . '/build.config.php';
+        if (file_exists($configFile)) {
+            $configProps = @include $configFile;
         } else {
-            die('Could not find main config file at ' . $config);
+            die('Could not find main config file at ' . $configFile);
         }
-        //$configProps = include $configFile;
+
         if (empty($configProps)) {
             die('Could not find project config file at ' . $configFile);
         }
+        /* properties sent to constructor will override those in config file */
         $this->props = array_merge($configProps, $this->props);
-        unset($config, $configFile, $configProps);
+        unset($configFile, $configProps);
 
         $this->source = $this->props['source'];
         if (empty ($this->source)) {
