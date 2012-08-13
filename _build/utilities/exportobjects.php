@@ -88,6 +88,7 @@
 
 
 /* @var $modx modX */
+$outsideModx = false;
 if (!defined('MODX_CORE_PATH')) {
     $outsideModx = true;
     require_once dirname(dirname(__FILE__)).'/build.config.php';
@@ -96,8 +97,8 @@ if (!defined('MODX_CORE_PATH')) {
     $modx->initialize('mgr');
     $modx->setLogLevel(modX::LOG_LEVEL_INFO);
     $modx->setLogTarget('ECHO');
-} else {
-    $outsideModx = false;
+}
+if (!php_sapi_name() == 'cli') {
     echo "<pre>\n"; /* used for nice formatting for log messages  */
 }
 /* These will override settings in the config file */
