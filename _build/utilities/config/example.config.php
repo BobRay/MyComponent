@@ -19,6 +19,7 @@ $components = array(
     'packageDescription' => 'Example project for MyComponent extra.',
     'gitHubUsername' => 'BobRay',
     'gitHubRepository' => 'Example',
+    'scriptPropertiesAlias' => 'props',
 
     /* Change this if you need to alter any tpl files. Use a new dir. under _build/utilities.
      * Be sure to copy all build tpls to the new directory */
@@ -108,7 +109,17 @@ $components = array(
     'createResourceObjects' => true,
     'allStatic' => false, /* will make all element objects static - makeStatic will be ignored */
 
-
+    /* Array of class files to be created.
+     * Format is:
+     * 'ClassName' => 'directory:filename',  ('.class.php' will be appended automatically)
+     *  Class file will be created as:
+     * yourcomponent/core/components/yourcomponent/model/directory/filename.class.php
+     *
+     * Set to array() if there are no classes.
+     */
+    'classes' => array(
+        'Example' => 'example:example',
+    ),
     /* array containing the actual Element Names */
     'elements' => array(
         'modSnippet' => 'Snippet1,Snippet2',
@@ -134,6 +145,7 @@ $components = array(
         'Template1' => 'Tv1,Tv2',
         'Example2' => 'Tv1,Tv2',
     ),
+
 
     /* comma-separated lists of the actual Resource pagetitles */
     /* ToDo: Make sure resources are created near the top of the build script */

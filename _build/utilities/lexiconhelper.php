@@ -119,7 +119,7 @@ if ($outsideModx) {
     $props['code_file'] = 'nfnotifyformtpl.chunk.html';
     $props['language_path'] = $core_path . 'core/components/notify/lexicon/';
     $props['language_file'] = 'form.inc.php';
-    $props['rewriteCodeFile'] = '1';
+    $props['rewriteCodeFile'] = '0';
     $props['rewriteLanguageFile'] = '0';
 }
 

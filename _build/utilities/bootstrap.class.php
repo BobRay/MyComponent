@@ -551,6 +551,36 @@ class Bootstrap {
                 }
             }
         }
+    }
+    public function createClassFiles() {
+        $classes = $this->modx->getOption('classes', $this->props, array());
+        $classes = !empty($classes) ? $classes : array();
+        if (!empty($classes)) {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating class files');
+            $baseDir = $this->targetCore . 'model';
+            foreach($classes as $className => $data) {
+                $data = explode(':', $data);
+                if (!empty($data[1])) {
+                    $dir = $baseDir . '/' . strtolower($data[0]);
+                    $fileName = $data[1];
+                } else {  /* no directory */
+                    $dir = $baseDir;
+                    $fileName = $data[0];
+                }
+                $fileName = strtolower($fileName) . '.class.php';
+                if (!file_exists($dir . '/' . $fileName)) {
+                    $tpl = $this->helpers->getTpl('classfile.php');
+                    $tpl = str_replace('MyClass', $className, $tpl );
+                    $tpl = str_replace('[[+className]]', $className, $tpl);
+                    $tpl = $this->helpers->replaceTags($tpl);
+                    $this->helpers->writeFile($dir, $fileName, $tpl);
+                } else {
+                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' file already exists');
+                }
+
+            }
+        }
+
 
     }
 
