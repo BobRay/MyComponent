@@ -379,7 +379,7 @@ class Bootstrap {
             if ($dir == 'css' || $dir == 'js') {
                 $path = $this->targetAssets . $dir;
                 $fileName = $this->packageNameLower . '.' . $dir;
-                if (!file_exists($dir . '/' . $fileName)) {
+                if (!file_exists($path . '/' . $fileName)) {
                     $tpl = $this->helpers->getTpl($dir);
                     $tpl = $this->helpers->replaceTags($tpl);
                     $this->helpers->writeFile($path, $fileName, $tpl);
