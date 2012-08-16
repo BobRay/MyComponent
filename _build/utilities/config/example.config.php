@@ -194,7 +194,10 @@ $components = array(
         ),
     ),
 
-    /* Comma-separated list of property set names to create */
+    /* Comma-separated list of property set names to create.
+     * Property set has no properties. Created here so it can
+     * be connected to elements in a resolver. Create the properties
+     * in the Manager and export them with exportObjects */
     'propertySets' => 'PropertySet1',
 
     /* (NOT IMPLEMENTED) Array of property sets and elements to connect them to.
