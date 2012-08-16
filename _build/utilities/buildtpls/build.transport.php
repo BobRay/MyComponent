@@ -66,6 +66,9 @@ $hasValidator = !empty($props['validators']); /* Run a validator before installi
 $hasResolver = !empty ($props['resolvers']); /* Run a resolver after installing everything */
 $hasSetupOptions = !empty($props['install.options']); /* HTML/PHP script to interact with user */
 $hasPropertySets = !empty($props['propertySets']);
+$hasResolvers = !empty($props['resolvers']);
+$hasPluginResolver = !empty($props['pluginEvents']);
+$hasTvResolver = !empty($props['templateVarTemplates']);
 
 $hasMenu = !empty($props['menus']); /* Add items to the MODx Top Menu */
 $hasSettings = !empty($props['newSystemSettings']); /* Add new MODx System Settings */
@@ -314,20 +317,25 @@ if ($hasValidator) {
         }
     }
 }
-/* ToDo: move this to the end */
-/* package in script resolver if any */
-if ($hasResolver) {
-    $resolvers = explode(',', $props['resolvers']);
-    if (!empty($resolvers)) {
-        foreach ($resolvers as $resolver) {
-            if ($resolver == 'default') {
-                $resolver = PKG_NAME_LOWER;
-            }
-            $modx->log(modX::LOG_LEVEL_INFO, 'Adding in ' . $resolver . ' resolver.');
-            $vehicle->validate('php', array(
-                'source' => $sources['resolvers'] . $resolver . '.resolver.php',
-            ));
+
+/* Package in script resolvers, if any */
+$resolvers = $props['resolvers'];
+$resolvers = empty($resolvers)? array() : explode(',', $resolvers);
+if ($hasPluginResolver) {
+    $resolvers[] = 'plugin';
+}
+if ($hasTvResolver) {
+    $resolvers[] = 'tv';
+}
+if (!empty ($resolvers)) {
+    foreach ($resolvers as $resolver) {
+        if ($resolver == 'default') {
+            $resolver = PKG_NAME_LOWER;
         }
+        $modx->log(modX::LOG_LEVEL_INFO, 'Adding in ' . $resolver . ' resolver.');
+        $vehicle->resolve('php', array(
+            'source' => $sources['resolvers'] . $resolver . '.resolver.php',
+        ));
     }
 }
 /* This section transfers every file in the local
@@ -380,7 +388,7 @@ $builder->putVehicle($vehicle);
 
 
 /* Transport Resources */
-
+/* ToDo: Move this to top */
 if ($hasResources) {
     $resources = include $sources['data'].'transport.resources.php';
     if (!is_array($resources)) {

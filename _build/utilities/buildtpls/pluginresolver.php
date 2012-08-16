@@ -14,6 +14,10 @@
 /* @var $mpe modPluginEvent */
 /* @var xPDOObject $object */
 /* @var array $options */
+/* @var $modx modX */
+/* @var $pluginObj modPlugin */
+/* @var $pluginEvent modPluginEvent */
+/* @var $obj modEvent */
 
 if ($object->xpdo) {
     $modx =& $object->xpdo;

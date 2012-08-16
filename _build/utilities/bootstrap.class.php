@@ -237,6 +237,35 @@ class Bootstrap {
             $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $name . ' ' . $type . ' object already exists');
         }
     }
+    /** Creates New System Events if set in project config file */
+    /*public function createNewSystemEvents() {
+        $events = $this->modx->getOption('newSystemEvents', $this->props, '');
+        if (! empty($events)) {
+            $events = explode(',', $events);
+            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating new System Events');
+            foreach($events as $event) {
+                $fields = array(
+                    'event' => $event,
+                    'priority' => 0,
+                    'propertyset' => 0,
+                    'namespace' => strtolower($this->props['category']),
+                    'area' => strtolower($this->props['category']),
+                );
+                if (! $this->modx->getObject('modSystemEvent', array('event' => $event))) {
+
+                    $ev = $this->modx->newObject('modSystemEvent', $fields);
+                    if ($ev) {
+                        $ev->save();
+                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    Created ' . $event . 'System Event object');
+                    }
+                } else {
+                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $event . 'System Event object already exists');
+                }
+            }
+        }
+    }*/
+
+
     /** creates resources in MODX install if set in project config file */
     public function createResources() {
         $res = $this->modx->getOption('resources', $this->props, '');
@@ -396,7 +425,7 @@ class Bootstrap {
         if (! empty($pluginEvents)) {
             $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating plugin resolver');
             $tpl = $this->helpers->getTpl(('pluginresolver.php'));
-            $this->helpers->replaceTags($tpl);
+            $tpl = $this->helpers->replaceTags($tpl);
             if (empty($tpl)) {
                 $this->modx->log(MODX::LOG_LEVEL_ERROR, 'pluginresolver tpl is empty');
             }
@@ -415,6 +444,7 @@ class Bootstrap {
                 foreach($pluginEvents as $plugin => $events) {
                         $tempCodeTpl = str_replace('[[+plugin]]', $plugin, $codeTpl);
                         $tempCodeTpl = str_replace('[[+events]]', $events, $tempCodeTpl);
+                        $tempCodeTpl = str_replace('[[+category]]', $this->props['category'], $tempCodeTpl);
                         $code .= "\n" . $tempCodeTpl;
                 }
                 $tpl = str_replace('/* [[+code]] */', $code, $tpl);

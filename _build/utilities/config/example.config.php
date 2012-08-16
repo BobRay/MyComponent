@@ -32,6 +32,7 @@ $components = array(
     /* Define source directories (mycomponent root and core directories) */
     'source' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/', /* path to MyComponent source files */
     'sourceCore' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/',
+
     /* ********************************************* */
     /* Define default directories and files to be created in project*/
     'initialize' => true,
@@ -40,6 +41,7 @@ $components = array(
         'docs' => 'readme.txt,license.txt,changelog.txt,tutorial.html',
         'readme.md' => true, /* Description file for GitHub project home page */
     ),
+
     /* Array of languages for which you will have language files and
      * comma-separated list of filenames ('.inc.php' will be added as a suffix) */
     'languages' => array(
@@ -49,11 +51,11 @@ $components = array(
     'hasCore' => true, /* assume every package has a core directory */
 
     /* ********************************************* */
-    /* Define optional directories to create under assets
-     * add your own as needed
-     * set to true to create directory
-     * set to false to skip
-     * Empty js and css files will be created
+    /* Define optional directories to create under assets.
+     * Add your own as needed.
+     * Set to true to create directory.
+     * Set to false to skip.
+     * Empty js and/or css files will be created.
      */
     'hasAssets' => true,
     'minifyJS' => true, /* minify any JS files */
@@ -65,22 +67,22 @@ $components = array(
         'video' => true,
         'themes' => true,
     ),
+
     /* ********************************************* */
-    /* comma-separated list of extra script resolver(s) to be run
-     * during install. Note that resolvers to connect plugins to events
-     * and TVs to templates will be created automatically -- don't list those here
+    /* Comma-separated list of extra script resolver(s) to be run
+     * during install. Note that resolvers to connect plugins to events,
+     * property sets to elements, and TVs to templates will be created
+     * automatically -- *don't* list those here!
      *
      * 'default' creates a default resolver named after the package
      * (other resolvers may be created above for TVs and plugins).
-     * Suffix 'resolver.php' will be added automatically
-     */
+     * Suffix 'resolver.php' will be added automatically */
     'resolvers' => 'default,addUsers',
 
-    /* validators can abort the install after checking conditions.
+    /* Validators can abort the install after checking conditions.
      * comma-separated list of validator names (no prefix of suffix) or ''
      * 'default' creates a default resolver named after the package
-     * suffix 'validator.php' will be added
-     */
+     * suffix 'validator.php' will be added */
 
     'validators' => 'default,hasGdLib',
 
@@ -88,11 +90,10 @@ $components = array(
      * See the user.input.php file for more information.
      * Set this to 'install.options' or ''
      * The file will be created as _build/install.options/user.input.php
-     * Don't change the filename or directory name.
-     */
+     * Don't change the filename or directory name. */
     'install.options' => 'install.options',
 
-    /* suffixes for resource and element code files */
+    /* Suffixes for resource and element code files */
     'suffixes' => array(
         'modPlugin' => '.php',
         'modSnippet' => '.php',
@@ -100,6 +101,7 @@ $components = array(
         'modTemplate' => '.html',
         'modResource' => '.html',
     ),
+
     /* ********************************************* */
     /* These control the creation of elements */
     'createElementFiles' => true, /* create element files */
@@ -109,18 +111,19 @@ $components = array(
     'createResourceObjects' => true,
     'allStatic' => false, /* will make all element objects static - makeStatic will be ignored */
 
+    /* ********************************************* */
     /* Array of class files to be created.
      * Format is:
      * 'ClassName' => 'directory:filename',  ('.class.php' will be appended automatically)
      *  Class file will be created as:
-     * yourcomponent/core/components/yourcomponent/model/directory/filename.class.php
+     * yourcomponent/core/components/yourcomponent/model/{directory}/{filename}.class.php
      *
-     * Set to array() if there are no classes.
-     */
+     * Set to array() if there are no classes. */
     'classes' => array(
         'Example' => 'example:example',
     ),
-    /* array containing the actual Element Names */
+
+    /* Array containing the actual Element Names */
     'elements' => array(
         'modSnippet' => 'Snippet1,Snippet2',
         'modPlugin' => 'Plugin1,Plugin2',
@@ -128,22 +131,22 @@ $components = array(
         'modTemplate' => 'Template1,Template2',
         'modChunk' => 'Chunk1,Chunk2',
     ),
-    /* array of plugin names and comma-separated list of their events.
-     * automatically generates resolver to connect them
-     */
+
+    /* Array of plugin names and comma-separated list of their events.
+     * If you need to create new system events, just list them here.
+     * Automatically generates resolver to connect and/or create them. */
     'pluginEvents' => array(
-        'Plugin1' => 'OnDocFormSave,OnUserFormSave',
-        'Plugin2' => 'OnDocFormSave,OnUserFormSave',
+        'Plugin1' => 'OnDocFormSave,OnUserFormSave,OnMyEvent1,OnMyEvent2',
+        'Plugin2' => 'OnDocFormSave,OnUserFormSave,OnMyEvent1,OnMyEvent2',
     ),
     /* Array of Templates and comma-separated list of TVs to attach to them.
      * Automatically generates resolver to connect them
      * (use 'default' for default template).
-     * TV names and Template names are both case-sensitive
-     */
+     * TV names and Template names are both case-sensitive */
     'templateVarTemplates' => array(
         'default' => 'Tv1,Tv2',
         'Template1' => 'Tv1,Tv2',
-        'Example2' => 'Tv1,Tv2',
+        'Template2' => 'Tv1,Tv2',
     ),
 
 
@@ -161,7 +164,8 @@ $components = array(
         //'context' => 'web',
         //'template' => 12,  /* must be a template ID */
     ),
-    /* (NOT IMPLEMENTED) array of template names and comma-separated
+
+    /* (NOT IMPLEMENTED) Array of template names and comma-separated
      * list of resource pagetitles.
      * Only necessary if you want to connect package resources to package
      * templates. A resolver will be created to connect them.
@@ -171,6 +175,7 @@ $components = array(
     'resourceTemplates' => array(
         'Template1' => 'Resource1,Resource2',
     ),
+
     /* ToDo: make sure this resolver runs last */
     /* (NOT IMPLEMENTED) TV Resource Values - set TV values for specific resources.
      * A resolver will be created automatically
@@ -178,10 +183,11 @@ $components = array(
      *    'TvName' => array(
      *       'pagetitle' => 'value'
      *    ),
-    */
+     *     */
     'TvResourceValues' => array(
         'Tv1' => array(
             'Resource1' => 'someValue',
+            'Resource2' => 'someOtherValue',
         ),
         'Tv2' => array(
             'Resource1' => 'someOtherValue',
@@ -207,47 +213,39 @@ $components = array(
     'dryRun' => '0',
     'createTransportFiles' => '1',
     'createObjectFiles' => '1',
-    /* comma-separated list of elements to export. All elements in the category
+    /* Comma-separated list of elements to export. All elements in the category
      * set above will be handled.
      *
      * To export resources, list pagetitles and/or IDs of parents
      * of desired resources
     */
     'process' => 'snippets,plugins,templateVars,templates,chunks,resources,propertySets',
-    'pagetitles' => 'Example1,Example2', // comma-separated list of pagetitles of resources to process
-    'parents' => '', // comma-separated list of parent IDs to get children of
+    'pagetitles' => 'Example1,Example2', // Comma-separated list of pagetitles of resources to process.
+    'parents' => '', // Comma-separated list of resource parent IDs to get children of.
     'includeParents' => false, // include listed parent resources
+    /* ******************************************* */
 
-    /* ********************************************* */
-    /* (NOT IMPLEMENTED) Array of new events to create, plugins to attach, and fields */
-    'newEvents' => array(
-        'OnEvent1' => array(
-            'plugins' => 'Example',
-            'fields' => array(
-                'event' => 'OnEvent1',
-                'priority' => 0,
-                'propertyset' => 0,
-            ),
-        ),
-        'OnEvent2' => array(
-            'plugins' => 'Example',
-            'fields' => array(
-                'event' => 'OnEvent2',
-                'priority' => 0,
-                'propertyset' => 0,
-            ),
-        )
-    ),
-    /* (NOT IMPLEMENTED) comma-separated lists naming other new objects
-     * to create */
-    /* ToDo: Implement Property Sets */
-    'otherObjects' => array(
-        'menus' => '',
+     /* Comma-separated lists of new System Events.
+      * These are minimal objects, created here so that they can
+      * be connected to your plugins in a resolver (with pluginEvents above).
+      * Complete them in the Manager and export them with exportObjects.
+      * The resolver to connect them should already exist. Their namespace
+      * should be set to the lowercase category or packageName of your extra. */
 
-        'newSystemEvents' => '', /* *new* System Events to be created for the extra */
-        'newSystemSettings' => '', /* *new* SystemSettings to be created for the extra */
+    'newSystemEvents' => 'OnMyEventOne,OnMyEventTwo',
 
-    )
+    /* If your extra needs new System Settings, set this to true, create them
+     * in the Manager and export them with exportObjects. Be sure to set their
+     * namespace to the lowercase category or packageName of your extra */
+
+    'NewSystemSettings' => false,
+
+
+    /* If your extra needs Menus, set this to true, create them
+     * in the Manager and export them with exportObjects. Be sure to set their
+     * namespace to the lowercase category or packageName of your extra */
+    'menus' => false,
+
 );
 
 return $components;

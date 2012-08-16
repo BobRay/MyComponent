@@ -1,27 +1,36 @@
 <?php
             $pluginId = null;
             $pluginObj = null;
+            $mpes = array();
             $plugin = '[[+plugin]]';
             $events = '[[+events]]';
             $events = explode(',', $events);
-            $pluginObj = $modx->getObject('modPlugin', array('name'=> $plugin));
-            if (!$pluginObj) {
-                $this->modx->log(MODX::LOG_LEVEL_ERROR, 'Could not get ' . $plugin . ' ' . ' plugin');
-            } else {
+            $pluginObj = $modx->getObject('modPlugin', array('name' => $plugin));
+            if ($pluginObj) {
                 $pluginId = $pluginObj->get('id');
-            }
-            foreach ($events as $event) {
-                $mpe = $modx->getObject('modPluginEvent', array('event' => $event, 'pluginid' => $pluginId));
-                if (! $mpe) {
-                    $mpe = $modx->newObject('modPluginEvent');
-                }
-                if ($mpe && $pluginObj) {
-                    $mpe->set('event', $event);
-                    $mpe->set('pluginid', $pluginId);
-                    $mpe->set('priority', 0);
-                    $mpe->set('propertyset', 0);
-                    if ($mpe->save()) {
-                        $this->modx->log(MODX::LOG_LEVEL_INFO, 'Attached ' . $plugin . ' plugin to ' . $event . ' event');
+                foreach ($events as $event) {
+
+                    $pluginEvent = $modx->getObject('modPluginEvent', array(
+                        'pluginid' => $pluginId,
+                        'event' => $event,
+                    ));
+                    if ($pluginEvent == null) {
+                        $pluginEvent = $modx->newObject('modPluginEvent');
+                        /* create new eventname record, if necessary */
+                        $eventName = $modx->getObject('modEvent', array('name' => $event));
+                        if (!$eventName) {
+                            $obj = $modx->newObject('modEvent');
+                            {
+                                $obj->set('name', $event);
+                                $obj->set('groupname', '[[+category]]');
+                                $obj->set('service',1);
+                                $obj->save();
+                            }
+                        }
                     }
+                    $pluginEvent->set('pluginid', $pluginId);
+                    $pluginEvent->set('event', $event);
+                    $pluginEvent->set('priority', 0);
+                    $pluginEvent->save();
                 }
             }

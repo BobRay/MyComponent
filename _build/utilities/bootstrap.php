@@ -88,5 +88,6 @@ $bootStrap->createInstallOptions();
 $bootStrap->createPropertySets();
 $bootStrap->createClassFiles();
 
+
 $modx->log(MODX::LOG_LEVEL_INFO,'Finished!');
 
