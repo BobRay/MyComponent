@@ -141,7 +141,7 @@ $components = array(
     ),
     /* Array of Templates and comma-separated list of TVs to attach to them.
      * Automatically generates resolver to connect them
-     * (use 'default' for default template).
+     * (use 'default' for the site's default template).
      * TV names and Template names are both case-sensitive */
     'templateVarTemplates' => array(
         'default' => 'Tv1,Tv2',

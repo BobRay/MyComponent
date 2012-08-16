@@ -564,6 +564,7 @@ class Bootstrap {
             $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating property sets');
             $propertySets = explode(',', $propertySets);
             foreach($propertySets as $name) {
+                /* @var $set modPropertySet */
                 $set = $this->modx->getObject('modPropertySet', array('name' => $name));
                 if (! $set){
                     $fields = array(
@@ -579,7 +580,15 @@ class Bootstrap {
                     }
 
                 } else {
-                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $name . ' property set already exists');
+                    /* do this in case the set is leftover from a bad install
+                     * and has the wrong category ID (won't show in tree). */
+                    if ($set->get('category') != $this->categoryId) {
+                        $set->set('category', $this->categoryId);
+                        $set->save();
+                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    Updated ' . $name . ' property set category');
+                    } else {
+                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $name . ' property set already exists');
+                    }
                 }
             }
         }
