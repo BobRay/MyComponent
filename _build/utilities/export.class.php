@@ -167,11 +167,16 @@ class Export
         if ($this->elementType == 'modResource') {
             $this->pullResources();
         } else {
-            $key = $this->elementType == 'modSystemSetting' || $this->elementType =='modAction' ? 'namespace' : 'category';
-            $value = $this->elementType == 'modSystemSetting' || $this->elementType =='modAction'  ? strtolower($this->category) : $this->categoryId;
+            /* use namespace rather than category for these */
+            $key = $this->elementType == 'modSystemSetting' ||  $this->elementType =='modAction' ? 'namespace' : 'category';
+            /* category ID or category name, depending on what we're looking for */
+            $value = $this->elementType =='modAction'  ? strtolower($this->category) : $this->categoryId;
+            /* get the objects */
             $this->elements = $this->modx->getCollection($this->elementType, array($key => $value));
-            if (empty($this->elements) && $this->elementType == 'modSystemSetting') {
-                /* try again with actual category for system settings*/
+
+            /* try again with actual category name (camel case) */
+            if (empty($this->elements) && ($this->elementType == 'modSystemSetting' || $this->elementType == 'modSystemEvent' || $this->elementType == 'modAction')) {
+
                 $value = $this->category;
                 $this->elements = $this->modx->getCollection($this->elementType, array($key => $value));
             }
