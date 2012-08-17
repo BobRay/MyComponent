@@ -71,7 +71,7 @@ $props =& $scriptProperties;
 require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/bootstrap.class.php';
 $bootStrap = new Bootstrap($modx,$props);
 
-$bootStrap->init();
+$bootStrap->init(dirname(dirname(__FILE__)) . '/build.config.php');
 /* These can be run independently -- comment out the ones you don't want to run.
  * There's no risk in running all of them since no existing files or objects will
  * be overwritten. */
