@@ -42,19 +42,19 @@ class Bootstrap {
     public $props;
     /* @var $helpers Helpers  - class of helper functions */
     public $helpers;
-    protected $packageName;
-    protected $packageNameLower;
-    protected $source;
-    protected $targetBase;
-    protected $targetCore;
-    protected $targetAssets;
-    protected $corePath;
-    protected $assetsPath;
-    protected $tplPath; /* path to element Tpl files */
-    protected $categoryId;
-    protected $makeStatic; /* array of objects to make static (comma,separated list in config) */
-    protected $dirPermission;
-    protected $filePermission;
+    public $packageName;
+    public $packageNameLower;
+    public $source;
+    public $targetBase;
+    public $targetCore;
+    public $targetAssets;
+    public $corePath;
+    public $assetsPath;
+    public $tplPath; /* path to element Tpl files */
+    public $categoryId;
+    public $makeStatic; /* array of objects to make static (comma,separated list in config) */
+    public $dirPermission;
+    public $filePermission;
 
     function  __construct(&$modx, &$props = array()) {
                 $this->modx =& $modx;
@@ -62,9 +62,9 @@ class Bootstrap {
     }
 
     /** Initializes class variables */
-    public function init() {
+    public function init($configPath) {
         clearstatcache(); /*  make sure is_dir() is current */
-        $config = dirname(dirname(__FILE__)) . '/build.config.php';
+        $config = $configPath;
         if (file_exists($config)) {
             $configProps = @include $config;
         } else {
@@ -603,13 +603,11 @@ class Bootstrap {
             foreach($classes as $className => $data) {
                 $data = explode(':', $data);
                 if (!empty($data[1])) {
-                    $dir = $baseDir . '/' . strtolower($data[0]);
-                    $fileName = $data[1];
+                    $dir = $baseDir . '/' . $data[0] . '/' . $data[1];
                 } else {  /* no directory */
-                    $dir = $baseDir;
-                    $fileName = $data[0];
+                    $dir = $baseDir . '/' . $data[0];
                 }
-                $fileName = strtolower($fileName) . '.class.php';
+                $fileName = strtolower($className) . '.class.php';
                 if (!file_exists($dir . '/' . $fileName)) {
                     $tpl = $this->helpers->getTpl('classfile.php');
                     $tpl = str_replace('MyClass', $className, $tpl );
