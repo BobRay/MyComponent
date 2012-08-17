@@ -271,7 +271,7 @@ class Helpers
                         $this->copyDir($source . '/' . $file, $destination . '/' . $file);
                     } else {
                         if ($file == 'build.config.php') continue;
-                        if (strstr($file, 'config.php') && $file != PKG_NAME_LOWER . '.config.php') continue ;
+                        if (strstr($file, 'config.php') && $file != $this->props['packageNameLower'] . '.config.php') continue ;
                         copy($source . '/' . $file, $destination . '/' . $file);
                     }
                 }
