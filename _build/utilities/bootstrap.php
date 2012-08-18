@@ -81,7 +81,7 @@ $bootStrap->createElements();
 $bootStrap->createResources();
 $bootStrap->createAssetsDirs();
 $bootStrap->connectSystemEventsToPlugins();
-$bootStrap->createTvResolver();
+$bootStrap->connectTvsToTemplates();
 $bootStrap->createValidators();
 $bootStrap->createExtraResolvers();
 $bootStrap->createInstallOptions();

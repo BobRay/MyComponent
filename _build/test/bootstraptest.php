@@ -261,9 +261,9 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testCreateTvResolver()
+    public function testConnectTvsToTemplates()
     {
-        $this->bootstrap->createTvResolver();
+        $this->bootstrap->connectTvsToTemplates();
         $this->assertFileExists($this->bootstrap->targetBase . '_build/resolvers/tv.resolver.php');
         $this->assertNotEmpty(file_get_contents($this->bootstrap->targetBase . '_build/resolvers/tv.resolver.php'));
     }

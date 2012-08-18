@@ -393,7 +393,7 @@ class Bootstrap {
         }
 }
     /** Connects System Events to Plugins and creates resolver for connecting them
-     *  during the build if set in project config file */
+     *  during the build if set in the project config file */
     public function connectSystemEventsToPlugins() {
         $plugins = $this->props['elements']['modPlugin'];
 
@@ -487,8 +487,9 @@ class Bootstrap {
         }
     }
 
-    /** Creates resolver for attaching TVs to Templates if set in project config file*/
-    public function createTvResolver()
+    /** Connects TVs to templates and creates resolver connecting them in the package
+     * if set in the project config file */
+    public function connectTvsToTemplates()
     {
         $templateVarTemplates = $this->modx->getOption('templateVarTemplates', $this->props, array());
         if (!empty($templateVarTemplates)) {
