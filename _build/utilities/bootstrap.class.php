@@ -237,33 +237,6 @@ class Bootstrap {
             $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $name . ' ' . $type . ' object already exists');
         }
     }
-    /** Creates New System Events if set in project config file */
-    /*public function createNewSystemEvents() {
-        $events = $this->modx->getOption('newSystemEvents', $this->props, '');
-        if (! empty($events)) {
-            $events = explode(',', $events);
-            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating new System Events');
-            foreach($events as $event) {
-                $fields = array(
-                    'event' => $event,
-                    'priority' => 0,
-                    'propertyset' => 0,
-                    'namespace' => strtolower($this->props['category']),
-                    'area' => strtolower($this->props['category']),
-                );
-                if (! $this->modx->getObject('modSystemEvent', array('event' => $event))) {
-
-                    $ev = $this->modx->newObject('modSystemEvent', $fields);
-                    if ($ev) {
-                        $ev->save();
-                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    Created ' . $event . 'System Event object');
-                    }
-                } else {
-                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $event . 'System Event object already exists');
-                }
-            }
-        }
-    }*/
 
 
     /** creates resources in MODX install if set in project config file */
