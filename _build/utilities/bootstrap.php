@@ -76,18 +76,21 @@ $bootStrap->init(dirname(dirname(__FILE__)) . '/build.config.php');
  * There's no risk in running all of them since no existing files or objects will
  * be overwritten. */
 $bootStrap->createBasics();
+$bootStrap->createAssetsDirs();
 $bootStrap->createCategory();
 $bootStrap->createElements();
 $bootStrap->createResources();
-$bootStrap->createAssetsDirs();
-$bootStrap->connectSystemEventsToPlugins();
-$bootStrap->connectTvsToTemplates();
+$bootStrap->createPropertySets();
+$bootStrap->createClassFiles();
 $bootStrap->createValidators();
 $bootStrap->createExtraResolvers();
 $bootStrap->createInstallOptions();
-$bootStrap->createPropertySets();
+
+/* These should be run only if their appropriate objects exist */
 $bootStrap->connectPropertySetsToElements();
-$bootStrap->createClassFiles();
+$bootStrap->connectSystemEventsToPlugins();
+$bootStrap->connectTvsToTemplates();
+
 
 
 $modx->log(MODX::LOG_LEVEL_INFO,'Finished!');
