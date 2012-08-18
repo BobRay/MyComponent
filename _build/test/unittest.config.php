@@ -229,7 +229,7 @@ $components = array(
      * of desired resources
     */
     'process' => 'snippets,plugins,templateVars,templates,chunks,resources,propertySets',
-    'pagetitles' => 'urResource1,utResource2', // Comma-separated list of pagetitles of resources to process.
+    'pagetitles' => 'utResource1,utResource2', // Comma-separated list of pagetitles of resources to process.
     'parents' => '', // Comma-separated list of resource parent IDs to get children of.
     'includeParents' => false, // include listed parent resources
     /* ******************************************* */
