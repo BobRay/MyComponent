@@ -419,8 +419,56 @@ class Bootstrap {
             }
         }
 }
-    /** creates resolver for attaching System Events to plugins if set in project config file */
-    public function createPluginResolver() {
+    /** Connects System Events to Plugins and creates resolver for connecting them
+     *  during the build if set in project config file */
+    public function connectSystemEventsToPlugins() {
+        $plugins = $this->props['elements']['modPlugin'];
+
+        $plugins = explode(',', $plugins);
+        foreach ($plugins as $plugin) {
+            /* @var $pluginObj modPlugin */
+            $alias = $this->helpers->getNameAlias('modPlugin');
+            $pluginObj = $this->modx->getObject('modPlugin', array($alias => $plugin));
+            $events = $this->props['pluginEvents'][$plugin];
+            $events = explode(',', $events);
+            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating pluginEvents');
+            $pluginId = $pluginObj->get('id');
+            foreach ($events as $event) {
+                /* @var $pluginEvent modPluginEvent */
+                $fields = array(
+                    'pluginid' => $pluginId,
+                    'event' => $event,
+                );
+                $pluginEvent = $this->modx->getObject('modPluginEvent', $fields);
+                if (! $pluginEvent) {
+                    $pluginEvent = $this->modx->newObject('modPluginEvent');
+                    /* create new eventname record, if necessary */
+                    /* @var $obj modEvent */
+                    $eventName = $this->modx->getObject('modEvent', array('name' => $event));
+                    if (!$eventName) {
+                        $obj = $this->modx->newObject('modEvent');
+                        {
+                            $obj->set('name', $event);
+                            $obj->set('groupname', $this->props['category']);
+                            $obj->set('service', 1);
+                            $obj->save();
+                        }
+                    }
+                    $pluginEvent->set('pluginid', $pluginId);
+                    $pluginEvent->set('event', $event);
+                    if (! $pluginEvent) {
+                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    Could not Create pluginEvent for: ' . $event);
+                    } else {
+                        if ($pluginEvent->save()) {
+                            $this->modx->log(MODX::LOG_LEVEL_INFO, '    Created pluginEvent: ' . $plugin . ' -- ' . $event);
+                        }
+                    }
+                } else {
+                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    Plugin event already exists for: ' . $plugin . ' -- ' . $event);
+                }
+            }
+        }
+        /* create the resolver */
         $pluginEvents = $this->modx->getOption('pluginEvents', $this->props, array());
         if (! empty($pluginEvents)) {
             $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating plugin resolver');
@@ -448,6 +496,15 @@ class Bootstrap {
                         $code .= "\n" . $tempCodeTpl;
                 }
                 $tpl = str_replace('/* [[+code]] */', $code, $tpl);
+
+                $newEvents = $this->props['newSystemEvents'];
+                $removeTpl = '';
+                if (!empty($newEvents)) {
+                    $removeTpl = $this->helpers->getTpl('removenewevents.php');
+                    $removeTpl = str_replace('<?php', '', $removeTpl);
+                    $removeTpl = str_replace('[[+newEvents]]', $newEvents, $removeTpl);
+                }
+                $tpl = str_replace('/* [[+remove_new_events]] */', $removeTpl, $tpl);
                 $this->helpers->writeFile($dir, $fileName, $tpl);
             } else {
                 $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
@@ -489,6 +546,9 @@ class Bootstrap {
                 $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
             }
         }
+    }
+    public function createResourceTemplateResolver() {
+
     }
     /** Creates validators if set in project config file */
     public function createValidators() {

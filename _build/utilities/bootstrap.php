@@ -80,7 +80,7 @@ $bootStrap->createCategory();
 $bootStrap->createElements();
 $bootStrap->createResources();
 $bootStrap->createAssetsDirs();
-$bootStrap->createPluginResolver();
+$bootStrap->connectSystemEventsToPlugins();
 $bootStrap->createTvResolver();
 $bootStrap->createValidators();
 $bootStrap->createExtraResolvers();

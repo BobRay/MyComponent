@@ -28,6 +28,7 @@ if ($object->xpdo) {
             break;
 
         case xPDOTransport::ACTION_UNINSTALL:
+            /* [[+remove_new_events]] */
             break;
     }
 }

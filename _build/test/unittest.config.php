@@ -71,10 +71,10 @@ $components = array(
     /* ********************************************* */
     /* Comma-separated list of extra script resolver(s) to be run
      * during install. Note that resolvers to connect plugins to events,
-     * property sets to elements, and TVs to templates will be created
-     * automatically -- *don't* list those here!
+     * property sets to elements, resources to templates, and TVs to
+     * templates will be created automatically -- *don't* list those here!
      *
-     * 'default' creates a default resolver named after the package
+     * 'default' creates a default resolver named after the package.
      * (other resolvers may be created above for TVs and plugins).
      * Suffix 'resolver.php' will be added automatically */
     'resolvers' => 'default,addUsers',
@@ -131,6 +131,12 @@ $components = array(
         'modTemplate' => 'utTemplate1,utTemplate2',
         'modChunk' => 'utChunk1,utChunk2',
     ),
+
+    /* Comma-separated array of new System Events (not default
+     * MODX System Events). Listed here so they can be removed
+     * during uninstall. Warning: Do *not* list regular
+     * System Events here !!! */
+    'newSystemEvents' => 'OnUtEvent1,OnUtEvent2',
 
     /* Array of plugin names and comma-separated list of their events.
      * If you need to create new system events, just list them here.
@@ -227,15 +233,6 @@ $components = array(
     'parents' => '', // Comma-separated list of resource parent IDs to get children of.
     'includeParents' => false, // include listed parent resources
     /* ******************************************* */
-
-     /* Comma-separated lists of new System Events.
-      * These are minimal objects, created here so that they can
-      * be connected to your plugins in a resolver (with pluginEvents above).
-      * Complete them in the Manager and export them with exportObjects.
-      * The resolver to connect them should already exist. Their namespace
-      * should be set to the lowercase category or packageName of your extra. */
-
-    'newSystemEvents' => 'OnUtEventOne,OnUtEventTwo',
 
     /* If your extra needs new System Settings, set this to true, create them
      * in the Manager and export them with exportObjects. Be sure to set their
