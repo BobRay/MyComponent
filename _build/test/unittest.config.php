@@ -204,16 +204,22 @@ $components = array(
      * Property set has no properties. Created here so it can
      * be connected to elements in a resolver. Create the properties
      * in the Manager and export them with exportObjects */
-    'propertySets' => 'utPropertySet1',
+    'propertySets' => 'utPropertySet1,utPropertySet2',
 
-    /* (NOT IMPLEMENTED) Array of property sets and elements to connect them to.
+    /* Array of property sets and elements to connect them to.
+     * form is:
+     * 'propertySetElements' => array(
+     *    'propertySetName1' => 'elementName:elementType,elementName:elementType, ...',
+     *    'propertySetName2' => 'elementName:elementType,elementName:elementType, ...',
+     * );
+     * Type must be specified because you might have different elements
+     * with the same name.
+     *
      * A resolver to connect them will be created automatically
     */
     'propertySetElements' => array(
-        'utPropertySet1' => array(
-                'utPlugin1' => 'modPlugin',
-                'utSnippet1' => 'modSnippet',
-        ),
+        'utPropertySet1' =>'utPlugin1:modPlugin,utSnippet1:modSnippet',
+        'utPropertySet2' => 'utChunk1:modChunk,utChunk2:modChunk',
     ),
 
     /* *******************************************

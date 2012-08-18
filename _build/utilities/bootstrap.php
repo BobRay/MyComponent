@@ -86,6 +86,7 @@ $bootStrap->createValidators();
 $bootStrap->createExtraResolvers();
 $bootStrap->createInstallOptions();
 $bootStrap->createPropertySets();
+$bootStrap->connectPropertySetsToElements();
 $bootStrap->createClassFiles();
 
 

@@ -627,8 +627,59 @@ class Bootstrap {
             }
         }
     }
+    public function connectPropertySetsToElements() {
+        $propertySets = $this->props['propertySetElements'];
+        if (!empty($propertySets)) {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, '    Connecting ' . count($propertySets) . ' Property Sets to Elements');
+
+            foreach ($propertySets as $propertySetName => $elements) {
+                $alias = $this->helpers->getNameAlias('modPropertySet');
+                $propertySetObj = $this->modx->getObject('modPropertySet', array($alias => $propertySetName));
+                if ($propertySetObj) {
+                    $els = empty($elements)? array() : explode(',', $elements);
+                    foreach($els as $el) {
+                        $data = explode(':', $el);
+                        $elementName = trim($data[0]);
+                        $elementType = trim($data[1]);
+                        $alias = $this->helpers->getNameAlias($elementType);
+                        $elementObj = $this->modx->getObject($elementType, array($alias => $elementName));
+                        if ($elementObj) {
+                            /* @var $elementObj modElement */
+                            /* @var $propertySetObj modPropertySet */
+                            /* @var $elementPropertySet modElementPropertySet */
+                            $elementId = $elementObj->get('id');
+                            $propertySetId = $propertySetObj->get('id');
+                            $elementPropertySet = $this->modx->getObject('modElementPropertySet',array(
+                                'element' => $elementId,
+                                'property_set' => $propertySetId,
+                            ));
+                            if (! $elementPropertySet) {
+                                $elementPropertySet = $this->modx->newObject('modElementPropertySet');
+                                $elementPropertySet->set('element', $elementId);
+                                $elementPropertySet->set('property_set', $propertySetId);
+                                $elementPropertySet->set('element_class', $elementType);
+                                if ($elementPropertySet->save()) {
+                                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    Connected ' . $elementName . ' to ' . $propertySetName);
+                                }
+                            } else {
+                                $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $elementName . ' is already connected to ' . $propertySetName);
+                            }
+
+                        } else {
+                            $this->modx->log(MODX::LOG_LEVEL_ERROR, '    Could not get element: ' . $elementName);
+                        }
+
+                    }
+                } else {
+                    $this->modx->log(MODX::LOG_LEVEL_ERROR, '   Could not get Property Set: ' . $propertySetName);
+                }
+            }
+
+        }
+    }
     /** Creates "starter" class files specified in project config file */
     public function createClassFiles() {
+        /* @var $element modElement */
         $classes = $this->modx->getOption('classes', $this->props, array());
         $classes = !empty($classes) ? $classes : array();
         if (!empty($classes)) {

@@ -313,6 +313,42 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
         }
 
     }
+    public function testConnectPropertySetsToElements() {
+        $this->bootstrap->createPropertySets();
+        $this->bootstrap->createElements();
+        $this->bootstrap->connectPropertySetsToElements();
+        $propertySets = $this->bootstrap->props['propertySetElements'];
+        $this->assertNotEmpty($propertySets);
+        $this->modx->log(MODX::LOG_LEVEL_INFO, '    Connecting ' . count($propertySets) . ' Property Sets to Elements');
+
+        foreach ($propertySets as $propertySetName => $elements) {
+            $alias = $this->bootstrap->helpers->getNameAlias('modPropertySet');
+            $propertySetObj = $this->modx->getObject('modPropertySet', array($alias => $propertySetName));
+            $this->assertInstanceOf('modPropertySet', $propertySetObj);
+
+            $els = empty($elements) ? array() : explode(',', $elements);
+            foreach ($els as $el) {
+                $data = explode(':', $el);
+                $elementName = trim($data[0]);
+                $elementType = trim($data[1]);
+                $alias = $this->bootstrap->helpers->getNameAlias($elementType);
+                $elementObj = $this->modx->getObject($elementType, array($alias => $elementName));
+                $this->assertInstanceOf($elementType,$elementObj);
+
+                /* @var $elementObj modElement */
+                /* @var $propertySetObj modPropertySet */
+                /* @var $elementPropertySet modElementPropertySet */
+                $elementId = $elementObj->get('id');
+                $propertySetId = $propertySetObj->get('id');
+                $elementPropertySet = $this->modx->getObject('modElementPropertySet', array(
+                    'element' => $elementId,
+                    'property_set' => $propertySetId,
+                ));
+                $this->assertInstanceOf('modElementPropertySet',$elementPropertySet);
+            }
+
+        }
+    }
 
     public function testCreateClassFiles() {
         $this->utHelpers->rrmdir($this->bootstrap->targetCore . '/model');

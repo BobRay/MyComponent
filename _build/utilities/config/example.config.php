@@ -206,14 +206,19 @@ $components = array(
      * in the Manager and export them with exportObjects */
     'propertySets' => 'PropertySet1',
 
-    /* (NOT IMPLEMENTED) Array of property sets and elements to connect them to.
+    /* Array of property sets and elements to connect them to.
+     * form is:
+     * 'propertySetElements' => array(
+     *    'propertySetName1' => 'elementName:elementType,elementName:elementType, ...',
+     *    'propertySetName2' => 'elementName:elementType,elementName:elementType, ...',
+     * );
+     * Type must be specified because you might have different elements
+     * with the same name.
+     *
      * A resolver to connect them will be created automatically
     */
     'propertySetElements' => array(
-        'PropertySet1' => array(
-                'Plugin1' => 'modPlugin',
-                'Snippet1' => 'modSnippet',
-        ),
+        'PropertySet1' => 'Plugin1:modPlugin,Snippet1:modSnippet',
     ),
 
     /* *******************************************
