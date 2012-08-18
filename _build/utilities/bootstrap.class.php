@@ -630,7 +630,7 @@ class Bootstrap {
     public function connectPropertySetsToElements() {
         $propertySets = $this->props['propertySetElements'];
         if (!empty($propertySets)) {
-            $this->modx->log(MODX::LOG_LEVEL_INFO, '    Connecting ' . count($propertySets) . ' Property Sets to Elements');
+            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Connecting ' . count($propertySets) . ' Property Set(s) to Elements');
 
             foreach ($propertySets as $propertySetName => $elements) {
                 $alias = $this->helpers->getNameAlias('modPropertySet');
