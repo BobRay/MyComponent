@@ -33,4 +33,55 @@ class UtHelpers
         }
 
     }
+
+    /**
+     * @param $modx modX
+     * @param $bootstrap Bootstrap
+     * Remove all elements specified in project config */
+    public function removeElements(&$modx, &$bootstrap) {
+        $props = $bootstrap->props;
+        $elements = $props['elements'];
+        foreach($elements as $elementType => $objectList) {
+            $objectList = empty($objectList)? array() : explode(',', $objectList);
+            foreach ($objectList as $elementName) {
+                /* @var $obj modElement */
+                $alias = $bootstrap->helpers->getNameAlias($elementType);
+                $obj = $modx->getObject($elementType, array($alias => $elementName) );
+                if ($obj) $obj->remove();
+
+            }
+        }
+   }
+
+    /**
+     * @param $modx modX
+     * @param $bootstrap Bootstrap
+     * Remove all resources specified in project config */
+   public function removeResources(&$modx, &$bootstrap) {
+       /* @var $r modResource */
+       $resources = $bootstrap->props['resources'];
+       $resources = explode(',', $resources);
+       foreach ($resources as $resource) {
+           $r = $modx->getObject('modResource', array('pagetitle' => $resource));
+           if ($r) $r->remove();
+       }
+   }
+
+    /**
+     * @param $modx modX
+     * @param $bootstrap Bootstrap
+     */
+    public function removePropertySets(&$modx, &$bootstrap) {
+       /* @var $setObj modPropertySet */
+       $sets = $bootstrap->props['propertySets'];
+       $sets = empty ($sets)? array() : explode(',', $sets);
+       foreach ($sets as $set) {
+           $alias = $bootstrap->helpers->getNameAlias('modPropertySet');
+           $setObj = $modx->getObject('modPropertySet', array($alias => $set));
+           if ($setObj) {
+               $setObj->remove();
+           }
+       }
+
+   }
 }
