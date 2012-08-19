@@ -591,7 +591,10 @@ class Bootstrap {
             }
         }
     }
-    /** Creates propertyset objects in MODX install if set in project config file */
+    /** Creates propertyset objects in MODX install if set in project config file.
+     * Create the property set's properties in the Manager and export them
+     * with exportObjects */
+
     public function createPropertySets() {
         $propertySets = $this->modx->getOption('propertySets', $this->props, '' );
         if (! empty($propertySets)) {
