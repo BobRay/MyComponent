@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Unit Testing in MODX</title>
+</head>
+<body>
+
+<h3>Unit Testing in MODX</h3>
+<p>Unit testing is a great way to develop software. A set of good unit tests helps you make sure that every method in your class objects works as it should. Technically, you don't need to use PHP classes for your code to do Unit Testing, but having all methods (functions) for your extra in a class file makes things easier and a lot more robust.</p>
+
+<p>Ideally, you design each class for your extra and create its class file with all the methods you will need, but with the methods empty. Then, you generate a &quot;skeleton&quot; test file containing a test for each method of the class. As you develop each method, you write a unit tests for the method before you write the actual code for the method. The tests are designed to make sure the method does what it should with both valid and invalid input. Each test should fail until you write the code &mdash;. Once you write the code, it should pass. Once all the code is written and all tests pass, you should be confident that you have a solid method. When all the tests for every method in the class pass, I guarantee that you'll feel a great sense of accomplishment.</p>
+
+<p>The method above isn't always practical, but if it doesn't work at all, it may be a sign that you haven't designed your class objects as well as you might have. Often, Unit Testing will expose flaws in your design early in the process, before you spend a lot of time writing code that you'll later have to rewrite or throw away.</p>
+
+<p>Unit Testing helps you make sure that your code is solid, but it has another function. As you modify the code of your extra for a new version, you can run your Unit Tests to make sure that nothing you've done has messed things up.</p>
+
+<h3>Installing/updating PhpUnit</h3>
+<p>It took some trial and error to get PHPUnit and the Skeleton generator working with PhpStorm, so I'm not positive that these steps are sufficient, but this is my best guess on what worked. These instructions are for using PhpStorm on a localhost install with XAMPP and using the typical organization of directories for a MODX extra. If you're doing something different, you'll have to either modify your method or the steps below.</p>
+
+<ol>
+    <li>Open a command window *as an administrator*</li>
+    <li>cd \c:\xampp\php\pear</li>
+    <li>pear config-set auto_discover 1</li>
+    <li>pear upgrade --force PEAR</li>
+    <li>pear clear-cache</li>
+    <li>pear install -a -f pear.phpunit.de/PHPUnit</li>
+    <li>pear install pear.phpunit.de/PHPUnit_SkeletonGenerator</li>
+</ol>
+
+<h3>Configuring PhpStorm</h3>
+
+<p>As installed, PhpStorm already has a working PhpUnit implementation, but it may not be current and I couldn't get it to generate a skeleton test file until I performed the steps above and the ones below. Before completing these steps, check the <fixedpre>XAMPP/php</fixedpre> directory and make sure the <fixedpre>phpunit-skelgen.bat</fixedpre> file is there. If not, the steps above didn't work.</p>
+
+<ol>
+    <li>In PhpStorm, go to File | Settings (or Ctrl-Alt-S)</li>
+    <li>Expand the Php section</li>
+    <li>Expand the PhpUnit section</li>
+    <li>Click on the Skeleton Generator</li>
+    <li>Check the Use Skeleton Generator box</li>
+    <li>Click on the browse button and select the <fixedpre>XAMPP/php</fixedpre> directory</li>
+    <li>Click on the &quot;Apply&quot; button</li>
+    <li>Click on the &quot;OK&quot; button</li>
+</ol>
+
+<h3>Generating a Test File</h3>
+
+<p>You can pretty easily create your own PHPUnit Test files, but it's really nice to have PhpStorm do it for you. Here's how: In PhpStorm, right-click on a class file. If the steps above worked, you should see <fixedpre>Generate PHPUnit Test</fixedpre> as an option. Select it and specify a directory where the test file goes. the Class File name and File name defaults should work fine. Click on the OK button. PhpStorm should create and open the Unit Test file. If you have other classes, you can create a test file each one now, or do it later, when you're ready to test the class.</p>
+
+<p>If none of the above works, you can always create a test file yourself. Here's an example for a class called &quot;Example&quot;</p>
+
+
+
+
+
+
+</body>
+</html>
