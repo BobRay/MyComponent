@@ -26,19 +26,18 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
 
     /**
      * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     * @outputBuffering disabled
+     * This method is called before each test is executed.
      */
     protected function setUp()
     {
-        echo "\n---------------- SETUP --------------------";
+        // echo "\n---------------- SETUP --------------------";
         require_once dirname(__FILE__) . '/build.config.php';
         require_once dirname(__FILE__) . '/uthelpers.class.php';
         require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
         $this->utHelpers = new UtHelpers();
         $modx = new modX();
         $modx->initialize('mgr');
-        $modx->setLogLevel(modX::LOG_LEVEL_INFO);
+        $modx->setLogLevel(modX::LOG_LEVEL_ERROR);
         $modx->setLogTarget('ECHO');
 
         require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/bootstrap.class.php';
@@ -60,12 +59,11 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
 
     /**
      * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     * @outputBuffering disabled
+     * This method is called after each test is executed.
      */
     protected function tearDown()
     {
-        echo "\n---------------- TEARDOWN --------------------";
+        // echo "\n---------------- TEARDOWN --------------------";
         /* @var $category modCategory */
         $this->utHelpers->rrmdir($this->bootstrap->targetBase);
         $category = $this->modx->getObject('modCategory', array('category' => 'UnitTest'));
