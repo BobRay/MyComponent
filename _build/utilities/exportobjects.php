@@ -124,8 +124,7 @@ require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/expor
 
 $export = new Export($modx,$props);
 
-
-if ($export->init()) {
+if ($export->init(dirname(dirname(__FILE__)) . '/build.config.php')) {
     $objects = explode(',', $props['process']);
     foreach ($objects as $object) {
         $export->process(trim($object));

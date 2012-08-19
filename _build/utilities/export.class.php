@@ -34,7 +34,7 @@ class Export
     /* @var $helpers Helpers */
     public $helpers; /* helpers class */
     protected $elements;
-    protected $category;
+    public $category;
     protected $categoryId;
     protected $parents; //array of parents
     protected $includeParents; // should parent resources be included
@@ -68,17 +68,19 @@ class Export
     }
 
     /** Initializes class variables */
-    public function init() {
+    public function init($configFile) {
         clearstatcache(); /*  make sure is_dir() is current */
-        $configFile = dirname(dirname(__FILE__)) . '/build.config.php';
+        //$configFile = dirname(dirname(__FILE__)) . '/build.config.php';
         if (file_exists($configFile)) {
-            $configProps = @include $configFile;
+            $configProps = include $configFile;
         } else {
-            die('Could not find main config file at ' . $configFile);
+            $this->modx->log(modX::LOG_LEVEL_ERROR, 'Could not find main config file at ' . $configFile);
+            die();
         }
 
         if (empty($configProps)) {
-            die('Could not find project config file at ' . $configFile);
+            $this->modx->log(modX::LOG_LEVEL_ERROR, 'Could not find project config file at ' . $configFile);
+            die();
         }
         /* properties sent to constructor will override those in config file */
         $this->props = array_merge($configProps, $this->props);
