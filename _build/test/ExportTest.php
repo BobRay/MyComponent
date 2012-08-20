@@ -120,14 +120,23 @@ class ExportTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers Export::process
-     * @todo   Implement testProcess().
+     * @todo   Implement testProcess()
+     * @dataProvider testProcessProvider()
      */
-    public function testProcess()
+    public function testProcess($element)
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+$this->fail('Failure Message');
+        $this->assertEquals('chunks', $element);
+
+    }
+
+
+    public static function testProcessProvider()
+    {
+        $x =  array(
+                'chunks',
         );
+        return array($x);
     }
 
     /**
