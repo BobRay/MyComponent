@@ -261,9 +261,57 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
 
     public function testConnectTvsToTemplates()
     {
+        $this->bootstrap->createElements();
         $this->bootstrap->connectTvsToTemplates();
+        $templateVarTemplates = $this->modx->getOption('templateVarTemplates', $this->bootstrap->props, array());
+
+        /* check connection */
+        $templateId = null;
+        $tvId = null;
+        $this->assertNotEmpty($templateVarTemplates);
+        foreach ($templateVarTemplates as $templateName => $tvNames) {
+            $this->assertNotEmpty($templateName);
+            $this->assertNotEmpty($tvNames);
+            if ($templateName == 'default') {
+                $templateId = $this->modx->getOption('default_template', null, null);
+                $templateObj = $this->modx->getObject('modTemplate', (integer)$templateId);
+            } else {
+                $alias = $this->utHelpers->getNameAlias('modTemplate');
+                $templateObj = $this->modx->getObject('modTemplate', array($alias => $templateName));
+                $this->assertInstanceOf('modTemplate', $templateObj);
+                $templateId = $templateObj->get('id');
+
+            }
+            $this->assertNotNull($templateId);
+            $tvs = explode(',', $tvNames);
+            $this->assertNotEmpty($tvs);
+            foreach ($tvs as $tvName) {
+                $this->assertTrue($templateId !== null);
+                $alias = $this->utHelpers->getNameAlias('modTemplateVar');
+                $tvObj = $this->modx->getObject('modTemplateVar', array($alias => $tvName));
+                $this->assertInstanceOf('modTemplateVar', $tvObj);
+                /* @var $tvObj modTemplateVar */
+                /* @var $templateObj modTemplate */
+                /* @var $tvt modTemplateVarTemplate */
+
+                $tvId = $tvObj->get('id');
+                $this->assertTrue($tvId !== null);
+                $fields = array(
+                    'templateid' => $templateId,
+                    'tmplvarid' => $tvId,
+                );
+                $tvt = $this->modx->getObject('modTemplateVarTemplate',$fields);
+                $this->assertInstanceOf('modTemplateVarTemplate', $tvt);
+
+            }
+        }
+        /* check for resolver */
         $this->assertFileExists($this->bootstrap->targetBase . '_build/resolvers/tv.resolver.php');
-        $this->assertNotEmpty(file_get_contents($this->bootstrap->targetBase . '_build/resolvers/tv.resolver.php'));
+        $content = file_get_contents($this->bootstrap->targetBase . '_build/resolvers/tv.resolver.php');
+        $this->assertNotEmpty($content);
+        $this->assertNotEmpty(strstr($content,'License'));
+        /* make sure all placeholders got replaced */
+        $this->assertEmpty(strstr($content, '[[+'));
     }
 
     public function testCreateValidators()

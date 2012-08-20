@@ -492,6 +492,74 @@ class Bootstrap {
     public function connectTvsToTemplates()
     {
         $templateVarTemplates = $this->modx->getOption('templateVarTemplates', $this->props, array());
+
+        /* connect them */
+        $templateId = null;
+        $tvId = null;
+        if (! empty ($templateVarTemplates)) {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Connecting TVs to Templates');
+            foreach($templateVarTemplates as $templateName => $tvNames ) {
+                if( ! empty ($tvNames)) {
+                    if ($templateName == 'default') {
+                        $templateId = $this->modx->getOption('default_template', null, null);
+                        $templateObj = $this->modx->getObject('modTemplate', (integer)$templateId);
+                    } else {
+                        $alias = $this->helpers->getNameAlias('modTemplate');
+                        $templateObj = $this->modx->getObject('modTemplate', array($alias => $templateName));
+                        if (!$templateObj) {
+                            $this->modx->log(MODX::LOG_LEVEL_ERROR, '    Could not get Template Object: ' . $templateName);
+                        } else {
+                            $templateId = $templateObj->get('id');
+                        }
+                    }
+                    $tvs = explode(',', $tvNames);
+                    if (empty($tvs)) {
+                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    $tvs is empty');
+                    }
+                    foreach ($tvs as $tvName) {
+
+                        $alias = $this->helpers->getNameAlias('modTemplateVar');
+                        $tvObj = $this->modx->getObject('modTemplateVar', array( $alias => $tvName));
+                        if (!$tvObj) {
+                            $this->modx->log(MODX::LOG_LEVEL_ERROR, '    Could not get TV Object: ' . $tvName);
+                        }
+                        /* create intersect object */
+                        if ($templateObj && $tvObj && ($templateId !== null))  {
+                            /* @var $tvObj modTemplateVar */
+                            /* @var $templateObj modTemplate */
+                            /* @var $tvt modTemplateVarTemplate */
+                            $tvId = $tvObj->get('id');
+                            /* @var $tvt modTemplateVarTemplate */
+                            $fields = array(
+                                'templateid' => $templateId,
+                                'tmplvarid' => $tvId,
+                            );
+                            $tvt = $this->modx->getObject('modTemplateVarTemplate', $fields);
+                            if (! $tvt) {
+                                $tvt = $this->modx->NewObject('modTemplateVarTemplate');
+                                $tvt->set('templateid', $templateId);
+                                $tvt->set('tmplvarid', $tvId);
+                                $tvt->set('rank', 0);
+                                $this->modx->log(MODX::LOG_LEVEL_INFO, '    Saving');
+                                if ($tvt->save()) {
+                                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    Connected ' . $tvName . ' TV to ' . $templateName . ' Template' );
+                                }
+
+                            } else {
+                                $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $tvName . ' TV is already connected to ' . $templateName . ' Template');
+                            }
+                        } else {
+                            $this->modx->log(MODX::LOG_LEVEL_INFO, '    Error connecting Tvs to Templates');
+                        }
+                    }
+
+                } else {
+                    $this->modx->log(MODX::LOG_LEVEL_ERROR, '    TvNames is empty');
+                }
+            }
+        }
+
+        /* Create Resolver */
         if (!empty($templateVarTemplates)) {
             $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating tv resolver');
             $tpl = $this->helpers->getTpl('tvresolver.php');
