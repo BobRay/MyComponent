@@ -84,4 +84,28 @@ class UtHelpers
        }
 
    }
+
+    /**
+     * @param $elementType string - 'modChunk', 'modSnippet', etc.
+     * @return string - The name of the 'name' field for the object (name, pagetitle, etc.)
+     */
+    public function getNameAlias($elementType)
+    {
+        switch ($elementType) {
+            case 'modTemplate':
+                $nameAlias = 'templatename';
+                break;
+            case 'modCategory':
+                $nameAlias = 'category';
+                break;
+            case 'modResource':
+                $nameAlias = 'pagetitle';
+                break;
+            default:
+                $nameAlias = 'name';
+                break;
+        }
+        return $nameAlias;
+
+    }
 }
