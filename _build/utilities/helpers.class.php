@@ -96,6 +96,7 @@ class Helpers
      */
     public function getTpl($name)
     {
+        $name = strtolower($name);
         if (strstr($name, '.php')) { /* already has extension */
             $text = @file_get_contents($this->tplPath . 'my' . $name);
             if (empty($text)) {
