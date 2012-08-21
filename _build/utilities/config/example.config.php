@@ -219,6 +219,7 @@ $components = array(
     */
     'propertySetElements' => array(
         'PropertySet1' => 'Plugin1:modPlugin,Snippet1:modSnippet',
+        'PropertySet2' => 'Chunk1:modChunk,Chunk2:modChunk',
     ),
 
     /* *******************************************
