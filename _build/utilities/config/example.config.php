@@ -172,7 +172,7 @@ $components = array(
         //'template' => 12,  /* must be a template ID */
     ),
 
-    /* (NOT IMPLEMENTED) Array of template names and comma-separated
+    /* Array of template names and comma-separated
      * list of resource pagetitles.
      * Only necessary if you want to connect package resources to package
      * templates. A resolver will be created to connect them.
