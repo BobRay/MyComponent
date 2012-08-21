@@ -395,52 +395,10 @@ class Bootstrap {
     /** Connects System Events to Plugins and creates resolver for connecting them
      *  during the build if set in the project config file */
     public function connectSystemEventsToPlugins() {
-        $plugins = $this->props['elements']['modPlugin'];
 
-        $plugins = explode(',', $plugins);
-        foreach ($plugins as $plugin) {
-            /* @var $pluginObj modPlugin */
-            $alias = $this->helpers->getNameAlias('modPlugin');
-            $pluginObj = $this->modx->getObject('modPlugin', array($alias => $plugin));
-            $events = $this->props['pluginEvents'][$plugin];
-            $events = explode(',', $events);
-            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating pluginEvents');
-            $pluginId = $pluginObj->get('id');
-            foreach ($events as $event) {
-                /* @var $pluginEvent modPluginEvent */
-                $fields = array(
-                    'pluginid' => $pluginId,
-                    'event' => $event,
-                );
-                $pluginEvent = $this->modx->getObject('modPluginEvent', $fields);
-                if (! $pluginEvent) {
-                    $pluginEvent = $this->modx->newObject('modPluginEvent');
-                    /* create new eventname record, if necessary */
-                    /* @var $obj modEvent */
-                    $eventName = $this->modx->getObject('modEvent', array('name' => $event));
-                    if (!$eventName) {
-                        $obj = $this->modx->newObject('modEvent');
-                        {
-                            $obj->set('name', $event);
-                            $obj->set('groupname', $this->props['category']);
-                            $obj->set('service', 1);
-                            $obj->save();
-                        }
-                    }
-                    $pluginEvent->set('pluginid', $pluginId);
-                    $pluginEvent->set('event', $event);
-                    if (! $pluginEvent) {
-                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    Could not Create pluginEvent for: ' . $event);
-                    } else {
-                        if ($pluginEvent->save()) {
-                            $this->modx->log(MODX::LOG_LEVEL_INFO, '    Created pluginEvent: ' . $plugin . ' -- ' . $event);
-                        }
-                    }
-                } else {
-                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    Plugin event already exists for: ' . $plugin . ' -- ' . $event);
-                }
-            }
-        }
+        $pluginEvents = $this->modx->getOption('pluginEvents', $this->props, array());
+        $this->helpers->createIntersects($pluginEvents, 'modPluginEvent', 'modPlugin', 'modSystemEvent', 'pluginid', 'event');
+
         /* create the resolver */
         $pluginEvents = $this->modx->getOption('pluginEvents', $this->props, array());
         if (! empty($pluginEvents)) {
@@ -492,72 +450,7 @@ class Bootstrap {
     public function connectTvsToTemplates()
     {
         $templateVarTemplates = $this->modx->getOption('templateVarTemplates', $this->props, array());
-
-        /* connect them */
-        $templateId = null;
-        $tvId = null;
-        if (! empty ($templateVarTemplates)) {
-            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Connecting TVs to Templates');
-            foreach($templateVarTemplates as $templateName => $tvNames ) {
-                if( ! empty ($tvNames)) {
-                    if ($templateName == 'default') {
-                        $templateId = $this->modx->getOption('default_template', null, null);
-                        $templateObj = $this->modx->getObject('modTemplate', (integer)$templateId);
-                    } else {
-                        $alias = $this->helpers->getNameAlias('modTemplate');
-                        $templateObj = $this->modx->getObject('modTemplate', array($alias => $templateName));
-                        if (!$templateObj) {
-                            $this->modx->log(MODX::LOG_LEVEL_ERROR, '    Could not get Template Object: ' . $templateName);
-                        } else {
-                            $templateId = $templateObj->get('id');
-                        }
-                    }
-                    $tvs = explode(',', $tvNames);
-                    if (empty($tvs)) {
-                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    $tvs is empty');
-                    }
-                    foreach ($tvs as $tvName) {
-
-                        $alias = $this->helpers->getNameAlias('modTemplateVar');
-                        $tvObj = $this->modx->getObject('modTemplateVar', array( $alias => $tvName));
-                        if (!$tvObj) {
-                            $this->modx->log(MODX::LOG_LEVEL_ERROR, '    Could not get TV Object: ' . $tvName);
-                        }
-                        /* create intersect object */
-                        if ($templateObj && $tvObj && ($templateId !== null))  {
-                            /* @var $tvObj modTemplateVar */
-                            /* @var $templateObj modTemplate */
-                            /* @var $tvt modTemplateVarTemplate */
-                            $tvId = $tvObj->get('id');
-                            /* @var $tvt modTemplateVarTemplate */
-                            $fields = array(
-                                'templateid' => $templateId,
-                                'tmplvarid' => $tvId,
-                            );
-                            $tvt = $this->modx->getObject('modTemplateVarTemplate', $fields);
-                            if (! $tvt) {
-                                $tvt = $this->modx->NewObject('modTemplateVarTemplate');
-                                $tvt->set('templateid', $templateId);
-                                $tvt->set('tmplvarid', $tvId);
-                                $tvt->set('rank', 0);
-                                $this->modx->log(MODX::LOG_LEVEL_INFO, '    Saving');
-                                if ($tvt->save()) {
-                                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    Connected ' . $tvName . ' TV to ' . $templateName . ' Template' );
-                                }
-
-                            } else {
-                                $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $tvName . ' TV is already connected to ' . $templateName . ' Template');
-                            }
-                        } else {
-                            $this->modx->log(MODX::LOG_LEVEL_INFO, '    Error connecting Tvs to Templates');
-                        }
-                    }
-
-                } else {
-                    $this->modx->log(MODX::LOG_LEVEL_ERROR, '    TvNames is empty');
-                }
-            }
-        }
+        $this->helpers->createIntersects($templateVarTemplates, 'modTemplateVarTemplate', 'modTemplate', 'modTemplateVar', 'templateid', 'tmplvarid');
 
         /* Create Resolver */
         if (!empty($templateVarTemplates)) {
@@ -589,8 +482,10 @@ class Bootstrap {
             }
         }
     }
-    public function createResourceTemplateResolver() {
-
+    public function connectResourcesToTemplates() {
+        $data = $this->modx->getOption('resourceTemplates', $this->props, '');
+        $this->helpers->createIntersects($data, 'resourceTemplates', 'modTemplate', 'modResource','','');
+        /* ToDo: Create resourcetemplate.resolver.php resolver */
     }
     /** Creates validators if set in project config file */
     public function createValidators() {

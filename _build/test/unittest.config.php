@@ -132,10 +132,11 @@ $components = array(
         'modChunk' => 'utChunk1,utChunk2',
     ),
 
-    /* Comma-separated array of new System Events (not default
-     * MODX System Events). Listed here so they can be removed
-     * during uninstall. Warning: Do *not* list regular
-     * System Events here !!! */
+    /* Comma-separated array of your new System Events (not default
+     * MODX System Events). Listed here so they can be created during
+     * install and removed during uninstall.
+     *
+     * Warning: Do *not* list regular MODX System Events here !!! */
     'newSystemEvents' => 'OnUtEvent1,OnUtEvent2',
 
     /* Array of plugin names and comma-separated list of their events.
@@ -171,7 +172,7 @@ $components = array(
         //'template' => 12,  /* must be a template ID */
     ),
 
-    /* (NOT IMPLEMENTED) Array of template names and comma-separated
+    /* Array of template names and comma-separated
      * list of resource pagetitles.
      * Only necessary if you want to connect package resources to package
      * templates. A resolver will be created to connect them.

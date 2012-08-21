@@ -233,7 +233,7 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
                     'event' => $event,
                 );
                 $eventName = $this->modx->getObject('modEvent', array('name' => $event));
-                $this->assertInstanceOf('modEvent', $eventName);
+                $this->assertInstanceOf('modEvent', $eventName, 'EVENT NAME: ' . $event);
                 if (strstr($this->bootstrap->props['newSystemEvents'],$event)) {
                     /* new event */
                     $this->assertEquals($eventName->get('groupname'), $this->bootstrap->props['category']);
@@ -287,8 +287,10 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
             $this->assertNotEmpty($tvs);
             foreach ($tvs as $tvName) {
                 $this->assertTrue($templateId !== null);
+                $this->assertNotEmpty($tvName);
                 $alias = $this->utHelpers->getNameAlias('modTemplateVar');
                 $tvObj = $this->modx->getObject('modTemplateVar', array($alias => $tvName));
+                $this->assertInstanceOf('modTemplate', $templateObj);
                 $this->assertInstanceOf('modTemplateVar', $tvObj);
                 /* @var $tvObj modTemplateVar */
                 /* @var $templateObj modTemplate */
@@ -297,11 +299,11 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
                 $tvId = $tvObj->get('id');
                 $this->assertTrue($tvId !== null);
                 $fields = array(
-                    'templateid' => $templateId,
-                    'tmplvarid' => $tvId,
+                    'templateid' => $templateObj->get('id'),
+                    'tmplvarid' => $tvObj->get('id'),
                 );
                 $tvt = $this->modx->getObject('modTemplateVarTemplate',$fields);
-                $this->assertInstanceOf('modTemplateVarTemplate', $tvt);
+                $this->assertInstanceOf('modTemplateVarTemplate', $tvt, 'Template: ' . $templateObj->get('templatename') . ' --  TV: ' . $tvObj->get('name'));
 
             }
         }
@@ -313,7 +315,40 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
         /* make sure all placeholders got replaced */
         $this->assertEmpty(strstr($content, '[[+'));
     }
+    public function testConnectResourcesToTemplates() {
+        $this->bootstrap->createElements();
+        $this->bootstrap->createResources();
+        $this->bootstrap->connectResourcesToTemplates();
+        $ResourceTemplates = $this->modx->getOption('resourceTemplates', $this->bootstrap->props, '');
+        $this->assertNotEmpty($ResourceTemplates);
+        foreach ($ResourceTemplates as $templateName => $resourceList) {
+            $this->assertNotEmpty($templateName);
+            $this->assertNotEmpty($resourceList);
+            $resources = explode(',', $resourceList);
 
+            $alias = $this->utHelpers->getNameAlias('modTemplate');
+            $templateObj = $this->modx->getObject('modTemplate', array($alias => $templateName));
+
+            $this->assertInstanceOf('modTemplate', $templateObj);
+            foreach ($resources as $resourcePagetitle) {
+                $alias = $this->utHelpers->getNameAlias('modResource');
+                $resourceObj = $this->modx->getObject('modResource', array($alias => $resourcePagetitle ));
+                $this->assertInstanceOf('modResource', $resourceObj);
+
+                $this->assertEquals($templateObj->get('id'), $resourceObj->get('template'));
+
+            }
+        }
+
+        /* check for resolver */
+        $this->assertFileExists($this->bootstrap->targetBase . '_build/resolvers/resourcetemplate.resolver.php');
+        $content = file_get_contents($this->bootstrap->targetBase . '_build/resolvers/resourcetemplate.resolver.php');
+        $this->assertNotEmpty($content);
+        $this->assertNotEmpty(strstr($content, 'License'));
+        /* make sure all placeholders got replaced */
+        $this->assertEmpty(strstr($content, '[[+'));
+
+    }
     public function testCreateValidators()
     {
         $this->bootstrap->createValidators();

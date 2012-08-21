@@ -90,6 +90,7 @@ $bootStrap->createInstallOptions();
 $bootStrap->connectPropertySetsToElements();
 $bootStrap->connectSystemEventsToPlugins();
 $bootStrap->connectTvsToTemplates();
+$bootStrap->connectResourcesToTemplates();
 
 
 

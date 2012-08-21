@@ -132,10 +132,11 @@ $components = array(
         'modChunk' => 'Chunk1,Chunk2',
     ),
 
-    /* Comma-separated array of new System Events (not default
-     * MODX System Events). Listed here so they can be removed
-     * during uninstall. Warning: Do *not* list regular
-     * System Events here !!! */
+    /* Comma-separated array of your new System Events (not default
+     * MODX System Events). Listed here so they can be created during
+     * install and removed during uninstall.
+     *
+     * Warning: Do *not* list regular MODX System Events here !!! */
     'newSystemEvents' => 'OnMyEvent1,OnMyEvent2',
 
     /* Array of plugin names and comma-separated list of their events.
