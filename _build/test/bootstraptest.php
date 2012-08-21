@@ -249,7 +249,7 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
         $this->assertNotEmpty($content);
         /* make sure all placeholders got replaced */
         $this->assertEmpty(strstr($content, '[[+'));
-
+        $this->assertNotEmpty(strstr($content, 'License'));
         /* remove event names from system_eventnames */
         /* @var $eventName modEvent */
         $names = $this->bootstrap->props['newSystemEvents'];

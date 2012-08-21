@@ -97,9 +97,15 @@ class Helpers
     public function getTpl($name)
     {
         if (strstr($name, '.php')) { /* already has extension */
-            $text = @file_get_contents($this->tplPath . $name);
+            $text = @file_get_contents($this->tplPath . 'my' . $name);
+            if (empty($text)) {
+                $text = @file_get_contents($this->tplPath . $name);
+            }
         } else { /* use .tpl extension */
-            $text = @file_get_contents($this->tplPath . $name . '.tpl');
+            $text = @file_get_contents($this->tplPath . 'my' .  $name . '.tpl');
+            if (empty($text)) {
+                $text = @file_get_contents($this->tplPath . $name . '.tpl');
+            }
         }
         return $text !== false ? $text : '';
     }
