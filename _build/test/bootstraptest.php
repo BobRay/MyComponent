@@ -344,8 +344,8 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
         }
 
         /* check for resolver */
-        $this->assertFileExists($this->bootstrap->targetBase . '_build/resolvers/resourcetemplate.resolver.php');
-        $content = file_get_contents($this->bootstrap->targetBase . '_build/resolvers/resourcetemplate.resolver.php');
+        $this->assertFileExists($this->bootstrap->targetBase . '_build/resolvers/resource.resolver.php');
+        $content = file_get_contents($this->bootstrap->targetBase . '_build/resolvers/resource.resolver.php');
         $this->assertNotEmpty($content);
         $this->assertNotEmpty(strstr($content, 'License'));
         /* make sure all placeholders got replaced */

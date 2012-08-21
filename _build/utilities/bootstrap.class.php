@@ -486,7 +486,35 @@ class Bootstrap {
     public function connectResourcesToTemplates() {
         $data = $this->modx->getOption('resourceTemplates', $this->props, '');
         $this->helpers->createIntersects($data, 'resourceTemplates', 'modTemplate', 'modResource','','');
-        /* ToDo: Create resourcetemplate.resolver.php resolver */
+        /* Create resource.resolver.php resolver */
+        if (!empty($data)) {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating resource resolver');
+            $tpl = $this->helpers->getTpl('resourceresolver.php');
+            $tpl = $this->helpers->replaceTags($tpl);
+            if (empty($tpl)) {
+                $this->modx->log(MODX::LOG_LEVEL_ERROR, 'resourceresolver tpl is empty');
+            }
+            $dir = $this->targetBase . '_build/resolvers';
+            $fileName = 'resource.resolver.php';
+
+            if (!file_exists($dir . '/' . $fileName)) {
+                $code = '';
+                $codeTpl = $this->helpers->getTpl('resourceresolvercode.php');
+                $codeTpl = str_replace('<?php', '', $codeTpl);
+
+                foreach ($data as $template => $resources) {
+                    $tempCodeTpl = str_replace('[[+template]]', $template, $codeTpl);
+                    $tempCodeTpl = str_replace('[[+resources]]', $resources, $tempCodeTpl);
+                    $code .= "\n" . $tempCodeTpl;
+                }
+
+                $tpl = str_replace('/* [[+code]] */', $code, $tpl);
+
+                $this->helpers->writeFile($dir, $fileName, $tpl);
+            } else {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+            }
+        }
     }
     /** Creates validators if set in project config file */
     public function createValidators() {

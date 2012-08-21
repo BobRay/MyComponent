@@ -177,6 +177,7 @@ $components = array(
      * Only necessary if you want to connect package resources to package
      * templates. A resolver will be created to connect them.
      * By default, all resources are given the site default template.
+     * Do not include default template here!
      */
 
     'resourceTemplates' => array(
