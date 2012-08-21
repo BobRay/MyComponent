@@ -11,9 +11,7 @@
  */
 
 /* @var $object xPDOObject */
-/* @var $tvObj modTemplateVar */
-/* @var $templateObj modTemplate */
-/* @var $tvt modTemplateVarTemplate */
+/* @var $modx modX */
 
 /* @var array $options */
 
