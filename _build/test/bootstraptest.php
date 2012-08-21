@@ -245,7 +245,10 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
 
         /* check creation of plugin resolver */
         $this->assertFileExists($this->bootstrap->targetBase . '_build/resolvers/plugin.resolver.php');
-        $this->assertNotEmpty(file_get_contents($this->bootstrap->targetBase . '_build/resolvers/plugin.resolver.php'));
+        $content = file_get_contents($this->bootstrap->targetBase . '_build/resolvers/plugin.resolver.php');
+        $this->assertNotEmpty($content);
+        /* make sure all placeholders got replaced */
+        $this->assertEmpty(strstr($content, '[[+'));
 
         /* remove event names from system_eventnames */
         /* @var $eventName modEvent */

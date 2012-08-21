@@ -423,7 +423,6 @@ class Bootstrap {
                 foreach($pluginEvents as $plugin => $events) {
                         $tempCodeTpl = str_replace('[[+plugin]]', $plugin, $codeTpl);
                         $tempCodeTpl = str_replace('[[+events]]', $events, $tempCodeTpl);
-                        $tempCodeTpl = str_replace('[[+category]]', $this->props['category'], $tempCodeTpl);
                         $code .= "\n" . $tempCodeTpl;
                 }
                 $tpl = str_replace('/* [[+code]] */', $code, $tpl);
@@ -433,9 +432,11 @@ class Bootstrap {
                 if (!empty($newEvents)) {
                     $removeTpl = $this->helpers->getTpl('removenewevents.php');
                     $removeTpl = str_replace('<?php', '', $removeTpl);
-                    $removeTpl = str_replace('[[+newEvents]]', $newEvents, $removeTpl);
+
                 }
                 $tpl = str_replace('/* [[+remove_new_events]] */', $removeTpl, $tpl);
+                $tpl = str_replace('[[+category]]', $this->props['category'], $tpl);
+                $tpl = str_replace('[[+newEvents]]', $newEvents, $tpl);
                 $this->helpers->writeFile($dir, $fileName, $tpl);
             } else {
                 $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
