@@ -56,11 +56,11 @@ define('PKG_CATEGORY', $props['category']);
 
 $hasAssets = $props['hasAssets']; /* Transfer the files in the assets dir. */
 $hasCore = $props['hasCore'];   /* Transfer the files in the core dir. */
-$hasSnippets = !empty($props['elements']['snippets']);
-$hasChunks = !empty($props['elements']['chunks']);
-$hasTemplates = !empty($props['elements']['templates']);
-$hasTemplateVariables = !empty($props['elements']['templates']);
-$hasPlugins = !empty($props['elements']['plugins']);
+$hasSnippets = !empty($props['elements']['modSnippet']);
+$hasChunks = !empty($props['elements']['modChunk']);
+$hasTemplates = !empty($props['elements']['modTemplate']);
+$hasTemplateVariables = !empty($props['elements']['modTemplateVar']);
+$hasPlugins = !empty($props['elements']['modPlugin']);
 $hasResources = !empty($props['resources']);
 $hasValidator = !empty($props['validators']); /* Run a validator before installing anything */
 $hasSetupOptions = !empty($props['install.options']); /* HTML/PHP script to interact with user */
@@ -70,10 +70,6 @@ $hasSettings = !empty($props['newSystemSettings']); /* Add new MODx System Setti
 $hasSubPackages = !empty($props['subPackages']);
 $minifyJS = $props['minifyJS'];
 
-
-/* Note: property sets are connected to elements in the script
- * resolver (see _build/data/resolvers/install.script.php)
- */
 
 // $hasSubPackages = true; /* add in other component packages (transport.zip files)*/
 /* Note: The package files will be copied to core/packages but will
@@ -128,6 +124,36 @@ $builder = new modPackageBuilder($modx);
 $builder->createPackage(PKG_NAME_LOWER, PKG_VERSION, PKG_RELEASE);
 $builder->registerNamespace(PKG_NAME_LOWER,false,true,'{core_path}components/'.PKG_NAME_LOWER.'/');
 
+/* Transport Resources */
+
+if ($hasResources) {
+    $resources = include $sources['data'] . 'transport.resources.php';
+    if (!is_array($resources)) {
+        $modx->log(modX::LOG_LEVEL_ERROR, 'Could not package in resources.');
+    } else {
+        $attributes = array(
+            xPDOTransport::PRESERVE_KEYS => false,
+            xPDOTransport::UPDATE_OBJECT => true,
+            xPDOTransport::UNIQUE_KEY => 'pagetitle',
+            xPDOTransport::RELATED_OBJECTS => true,
+            xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array(
+                'ContentType' => array(
+                    xPDOTransport::PRESERVE_KEYS => false,
+                    xPDOTransport::UPDATE_OBJECT => true,
+                    xPDOTransport::UNIQUE_KEY => 'name',
+                ),
+            ),
+        );
+        foreach ($resources as $resource) {
+            $vehicle = $builder->createVehicle($resource, $attributes);
+            $builder->putVehicle($vehicle);
+        }
+        $modx->log(modX::LOG_LEVEL_INFO, 'Packaged in ' . count($resources) . ' resources.');
+    }
+    unset($resources, $resource, $attributes);
+}
+
+
 /* minify JS */
 
 if ($minifyJS) {
@@ -176,41 +202,41 @@ $category->set('category',PKG_CATEGORY);
 
 /* add snippets */
 if ($hasSnippets) {
-    $modx->log(modX::LOG_LEVEL_INFO,'Adding in snippets.');
+    $modx->log(modX::LOG_LEVEL_INFO,'Adding in Snippets.');
     $snippets = include $sources['data'].'transport.snippets.php';
     /* note: Snippets' default properties are set in transport.snippets.php */
     if (is_array($snippets)) {
         $category->addMany($snippets, 'Snippets');
-    } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding snippets failed.'); }
+    } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding Snippets failed.'); }
 }
 /* ToDo: Implement Property Sets */
 if ($hasPropertySets) {
-    $modx->log(modX::LOG_LEVEL_INFO,'Adding in property sets.');
+    $modx->log(modX::LOG_LEVEL_INFO,'Adding in Property Sets.');
     $propertySets = include $sources['data'].'transport.propertysets.php';
     //  note: property set' properties are set in transport.propertysets.php
     if (is_array($propertySets)) {
         $category->addMany($propertySets, 'PropertySets');
-    } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding property sets failed.'); }
+    } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding Property Sets failed.'); }
 }
 if ($hasChunks) { /* add chunks  */
-    $modx->log(modX::LOG_LEVEL_INFO,'Adding in chunks.');
+    $modx->log(modX::LOG_LEVEL_INFO,'Adding in Chunks.');
     /* note: Chunks' default properties are set in transport.chunks.php */    
     $chunks = include $sources['data'].'transport.chunks.php';
     if (is_array($chunks)) {
         $category->addMany($chunks, 'Chunks');
-    } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding chunks failed.'); }
+    } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding Chunks failed.'); }
 }
 
 
 if ($hasTemplates) { /* add templates  */
-    $modx->log(modX::LOG_LEVEL_INFO,'Adding in templates.');
+    $modx->log(modX::LOG_LEVEL_INFO,'Adding in Templates.');
     /* note: Templates' default properties are set in transport.templates.php */
     $templates = include $sources['data'].'transport.templates.php';
     if (is_array($templates)) {
         if (! $category->addMany($templates,'Templates')) {
             $modx->log(modX::LOG_LEVEL_INFO,'addMany failed with templates.');
         };
-    } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding templates failed.'); }
+    } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding Templates failed.'); }
 }
 
 if ($hasTemplateVariables) { /* add template variables  */
@@ -228,6 +254,8 @@ if ($hasPlugins) {
     $plugins = include $sources['data'] . 'transport.plugins.php';
      if (is_array($plugins)) {
         $category->addMany($plugins);
+     } else {
+         $modx->log(modX::LOG_LEVEL_FATAL, 'Adding Plugins failed.');
      }
 }
 
@@ -305,10 +333,15 @@ if ($hasValidator) {
             if ($validator == 'default') {
                 $validator = PKG_NAME_LOWER;
             }
-            $modx->log(modX::LOG_LEVEL_INFO,'Adding in ' . $validator . ' Validator.');
-            $vehicle->validate('php',array(
-                'source' => $sources['validators'] . $validator . '.validator.php',
-            ));
+            $file = $sources['validators'] . $validator . '.validator.php';
+            if (file_exists($file)) {
+                $modx->log(modX::LOG_LEVEL_INFO,'Adding in ' . $validator . ' Validator.');
+                $vehicle->validate('php',array(
+                    'source' => $file,
+                ));
+            } else {
+                $modx->log(modX::LOG_LEVEL_ERROR, 'Could not find Validator file: ' . $file );
+            }
         }
     }
 }
@@ -379,37 +412,6 @@ if ($hasSubPackages) {
  * category) into the package 
  */
 $builder->putVehicle($vehicle);
-
-
-
-/* Transport Resources */
-/* ToDo: Move this to top */
-if ($hasResources) {
-    $resources = include $sources['data'].'transport.resources.php';
-    if (!is_array($resources)) {
-        $modx->log(modX::LOG_LEVEL_ERROR,'Could not package in resources.');
-    } else {
-        $attributes= array(
-    xPDOTransport::PRESERVE_KEYS => false,
-    xPDOTransport::UPDATE_OBJECT => true,
-    xPDOTransport::UNIQUE_KEY => 'pagetitle',
-    xPDOTransport::RELATED_OBJECTS => true,
-    xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
-        'ContentType' => array(
-            xPDOTransport::PRESERVE_KEYS => false,
-            xPDOTransport::UPDATE_OBJECT => true,
-            xPDOTransport::UNIQUE_KEY => 'name',
-        ),
-    ),
-);
-foreach ($resources as $resource) {
-    $vehicle = $builder->createVehicle($resource,$attributes);
-    $builder->putVehicle($vehicle);
-}
-        $modx->log(modX::LOG_LEVEL_INFO,'Packaged in '.count($resources).' resources.');
-    }
-    unset($resources,$resource,$attributes);
-}
 
 /* Transport Menus */
 if ($hasMenu) {
