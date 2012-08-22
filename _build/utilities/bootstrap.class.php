@@ -276,7 +276,7 @@ class Bootstrap {
         }
     }
     /** Creates build transport and config files, (optionally) lexicon files, doc file,
-     *  readme.md, and full _build directory with utilities  if set in project config file */
+     *  readme.md, and full _build directory with utilities if set in project config file */
     public function createBasics() {
         $defaults = $this->props['defaultStuff'];
 
@@ -483,6 +483,11 @@ class Bootstrap {
             }
         }
     }
+
+    /**
+     * Connects Resources to package templates and creates a resolver to
+     * connect them during the install.
+     */
     public function connectResourcesToTemplates() {
         $data = $this->modx->getOption('resourceTemplates', $this->props, '');
         $this->helpers->createIntersects($data, 'resourceTemplates', 'modTemplate', 'modResource','','');
@@ -622,11 +627,45 @@ class Bootstrap {
             }
         }
     }
+
+    /**
+     * Connects Property Sets to Elements and creates a resolver to connect them
+     * during the install.
+     */
     public function connectPropertySetsToElements() {
         $propertySets = $this->props['propertySetElements'];
 
         if (!empty($propertySets)) {
             $this->helpers->createIntersects($propertySets,'modElementPropertySet','modPropertySet','modElement', 'property_set','element');
+        }
+        /* Create Resolver */
+        if (!empty($propertySets)) {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating tv resolver');
+            $tpl = $this->helpers->getTpl('propertysetresolver.php');
+            $tpl = $this->helpers->replaceTags($tpl);
+            if (empty($tpl)) {
+                $this->modx->log(MODX::LOG_LEVEL_ERROR, 'propertysetresolver tpl is empty');
+            }
+            $dir = $this->targetBase . '_build/resolvers';
+            $fileName = 'propertyset.resolver.php';
+
+            if (!file_exists($dir . '/' . $fileName)) {
+                $code = '';
+                $codeTpl = $this->helpers->getTpl('propertysetresolvercode.php');
+                $codeTpl = str_replace('<?php', '', $codeTpl);
+
+                foreach ($propertySets as $propertySet => $elements) {
+                    $tempCodeTpl = str_replace('[[+propertySet]]', $propertySet, $codeTpl);
+                    $tempCodeTpl = str_replace('[[+elements]]', $elements, $tempCodeTpl);
+                    $code .= "\n" . $tempCodeTpl;
+                }
+
+                $tpl = str_replace('/* [[+code]] */', $code, $tpl);
+
+                $this->helpers->writeFile($dir, $fileName, $tpl);
+            } else {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+            }
         }
 
         /*if (!empty($propertySets)) {

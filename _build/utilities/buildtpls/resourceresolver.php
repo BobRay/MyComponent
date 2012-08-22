@@ -1,6 +1,6 @@
 <?php
 /**
-* Resolver to connect TVs to templates for [[+packageName]] extra
+* Resolver to connect Resources to Templates for [[+packageName]] extra
 *
 * Copyright [[+copyright]] by [[+author]] [[+email]]
 * Created on [[+createdon]]

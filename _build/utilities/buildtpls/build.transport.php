@@ -349,7 +349,7 @@ if ($hasValidator) {
 /* Package in script resolvers, if any */
 
 $resolvers = empty($props['resolvers'])? array() : explode(',', $props['resolvers']);
-$resolvers = array_merge($resolvers, array('plugin','tv','resource'));
+$resolvers = array_merge($resolvers, array('plugin','tv','resource','propertyset'));
 
 foreach ($resolvers as $resolver) {
     if ($resolver == 'default') {

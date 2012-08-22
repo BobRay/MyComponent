@@ -433,8 +433,8 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
 
         }
         /* check for resolver */
-        $dir = $this->bootstrap->targetBase . '/_build/resolvers';
-        $fileName = 'properties.resolver.php';
+        $dir = $this->bootstrap->targetBase . '_build/resolvers';
+        $fileName = 'propertyset.resolver.php';
         $this->assertFileExists($dir . '/' . $fileName);
 
         $content = file_get_contents($dir . '/' . $fileName);
