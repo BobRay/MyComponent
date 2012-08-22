@@ -624,7 +624,12 @@ class Bootstrap {
     }
     public function connectPropertySetsToElements() {
         $propertySets = $this->props['propertySetElements'];
+
         if (!empty($propertySets)) {
+            $this->helpers->createIntersects($propertySets,'modElementPropertySet','modPropertySet','modElement', 'property_set','element');
+        }
+
+        /*if (!empty($propertySets)) {
             $this->modx->log(MODX::LOG_LEVEL_INFO, 'Connecting ' . count($propertySets) . ' Property Set(s) to Elements');
 
             foreach ($propertySets as $propertySetName => $elements) {
@@ -639,9 +644,7 @@ class Bootstrap {
                         $alias = $this->helpers->getNameAlias($elementType);
                         $elementObj = $this->modx->getObject($elementType, array($alias => $elementName));
                         if ($elementObj) {
-                            /* @var $elementObj modElement */
-                            /* @var $propertySetObj modPropertySet */
-                            /* @var $elementPropertySet modElementPropertySet */
+
                             $elementId = $elementObj->get('id');
                             $propertySetId = $propertySetObj->get('id');
                             $elementPropertySet = $this->modx->getObject('modElementPropertySet',array(
@@ -670,7 +673,7 @@ class Bootstrap {
                 }
             }
 
-        }
+        }*/
     }
     /** Creates "starter" class files specified in project config file */
     public function createClassFiles() {
