@@ -18,7 +18,7 @@
                     $elementId = $elementObj->get('id');
                     $elementPropertySet = $modx->getObject('modElementPropertySet', array('property_set' => $propertySetId, 'element' => $elementId));
                     if (! $elementPropertySet) {
-                        $tvt = $modx->newObject('modElementPropertySet');
+                        $elementPropertySet = $modx->newObject('modElementPropertySet');
                     }
                     if ($elementPropertySet) {
                         $elementPropertySet->set('property_set', $propertySetId);

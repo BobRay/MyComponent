@@ -399,6 +399,9 @@ class Helpers
                         $intersect = $this->modx->newObject($intersectType);
                         $intersect->set($fieldName1, $mainObject->get('id'));
                         $intersect->set($fieldName2, $intersectType == 'modPluginEvent' ? $subsidiaryObjectName : $subsidiaryObject->get('id'));
+                        if ($intersectType == 'modElementPropertySet') {
+                            $intersect->set('element_class', $subsidiaryObjectType);
+                        }
 
                         if ($intersect && $intersect->save()) {
                             $this->modx->log(MODX::LOG_LEVEL_INFO, '    Created intersect ' . ' for ' . $mainObjectType . ' ' . $mainObjectName . ' -- ' . $subsidiaryObjectType . ' ' . $subsidiaryObjectName);
