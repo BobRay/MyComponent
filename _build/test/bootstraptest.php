@@ -432,6 +432,17 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
             }
 
         }
+        /* check for resolver */
+        $dir = $this->bootstrap->targetBase . '/_build/resolvers';
+        $fileName = 'properties.resolver.php';
+        $this->assertFileExists($dir . '/' . $fileName);
+
+        $content = file_get_contents($dir . '/' . $fileName);
+        $this->assertNotEmpty($content);
+        /* check for license */
+        $this->assertNotEmpty(strstr($content, 'License'));
+        /* make sure all placeholders got replaced */
+        $this->assertEmpty(strstr($content, '[[+'));
     }
 
     public function testCreateClassFiles() {
