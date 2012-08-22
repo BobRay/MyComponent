@@ -338,6 +338,20 @@ if (!empty ($resolvers)) {
         ));
     }
 }
+$basicResolvers = array(
+    'plugin',
+    'tv',
+    'resource',
+);
+foreach ($basicResolvers as $resolver) {
+    $file = $sources['resolvers'] . $resolver . '.resolver.php';
+    if (file_exists($file)) {
+        $modx->log(modX::LOG_LEVEL_INFO, 'Adding in ' . $resolver . ' resolver.');
+        $vehicle->resolve('php', array(
+            'source' => $sources['resolvers'] . $resolver . '.resolver.php',
+        ));
+    }
+}
 /* This section transfers every file in the local
  mycomponents/mycomponent/assets directory to the
  target site's assets/mycomponent directory on install.
