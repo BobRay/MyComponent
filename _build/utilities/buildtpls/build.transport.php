@@ -63,13 +63,8 @@ $hasTemplateVariables = !empty($props['elements']['templates']);
 $hasPlugins = !empty($props['elements']['plugins']);
 $hasResources = !empty($props['resources']);
 $hasValidator = !empty($props['validators']); /* Run a validator before installing anything */
-$hasResolver = !empty ($props['resolvers']); /* Run a resolver after installing everything */
 $hasSetupOptions = !empty($props['install.options']); /* HTML/PHP script to interact with user */
 $hasPropertySets = !empty($props['propertySets']);
-$hasResolvers = !empty($props['resolvers']);
-$hasPluginResolver = !empty($props['pluginEvents']);
-$hasTvResolver = !empty($props['templateVarTemplates']);
-
 $hasMenu = !empty($props['menus']); /* Add items to the MODx Top Menu */
 $hasSettings = !empty($props['newSystemSettings']); /* Add new MODx System Settings */
 $hasSubPackages = !empty($props['subPackages']);
@@ -319,37 +314,23 @@ if ($hasValidator) {
 }
 
 /* Package in script resolvers, if any */
-$resolvers = $props['resolvers'];
-$resolvers = empty($resolvers)? array() : explode(',', $resolvers);
-if ($hasPluginResolver) {
-    $resolvers[] = 'plugin';
-}
-if ($hasTvResolver) {
-    $resolvers[] = 'tv';
-}
-if (!empty ($resolvers)) {
-    foreach ($resolvers as $resolver) {
-        if ($resolver == 'default') {
-            $resolver = PKG_NAME_LOWER;
-        }
-        $modx->log(modX::LOG_LEVEL_INFO, 'Adding in ' . $resolver . ' resolver.');
-        $vehicle->resolve('php', array(
-            'source' => $sources['resolvers'] . $resolver . '.resolver.php',
-        ));
+
+$resolvers = empty($props['resolvers'])? array() : explode(',', $props['resolvers']);
+$resolvers = array_merge($resolvers, array('plugin','tv','resource'));
+
+foreach ($resolvers as $resolver) {
+    if ($resolver == 'default') {
+        $resolver = PKG_NAME_LOWER;
     }
-}
-$basicResolvers = array(
-    'plugin',
-    'tv',
-    'resource',
-);
-foreach ($basicResolvers as $resolver) {
+
     $file = $sources['resolvers'] . $resolver . '.resolver.php';
     if (file_exists($file)) {
         $modx->log(modX::LOG_LEVEL_INFO, 'Adding in ' . $resolver . ' resolver.');
         $vehicle->resolve('php', array(
             'source' => $sources['resolvers'] . $resolver . '.resolver.php',
         ));
+    } else {
+        $modx->log(modX::LOG_LEVEL_ERROR, 'Could not find ' . $resolver . ' resolver.');
     }
 }
 /* This section transfers every file in the local
