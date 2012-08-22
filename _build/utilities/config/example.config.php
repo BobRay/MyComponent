@@ -206,7 +206,7 @@ $components = array(
      * Property set has no properties. Created here so it can
      * be connected to elements in a resolver. Create the properties
      * in the Manager and export them with exportObjects */
-    'propertySets' => 'PropertySet1',
+    'propertySets' => 'PropertySet1,PropertySet2',
 
     /* Array of property sets and elements to connect them to.
      * form is:
