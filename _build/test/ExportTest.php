@@ -88,7 +88,7 @@ class ExportTest extends PHPUnit_Framework_TestCase
      * This method is called after a test is executed.
      */
     protected function tearDown() {
-        $this->utHelpers->rrmdir($this->bootstrap->targetBase);
+        //$this->utHelpers->rrmdir($this->bootstrap->targetBase);
         $this->export->modx = null;
         $this->modx = null;
         $this->bootstrap = null;
@@ -149,6 +149,16 @@ class ExportTest extends PHPUnit_Framework_TestCase
         $fileName = $this->bootstrap->targetBase . '_build/data/transport.propertysets.php';
         $this->assertFileExists($fileName);
         $this->assertNotEmpty(file_get_contents($fileName));
+        $modx =& $this->modx;
+        $objects = include $fileName;
+        $this->assertEquals(2, count($objects));
+
+        foreach($objects as $object) {
+            /* @var $object modPropertySet */
+            $properties = $object->getProperties();
+            $this->assertEquals(4, count($properties));
+        }
+
         $sets = $this->bootstrap->props['propertySets'];
         $this->assertNotEmpty($sets);
         $sets = explode(',', $sets);
@@ -158,6 +168,7 @@ class ExportTest extends PHPUnit_Framework_TestCase
             $fileName = $this->bootstrap->targetBase . '_build/data/properties/properties.' . $setName . '.propertyset.php';
             $this->assertFileExists($fileName);
             $this->assertNotEmpty(file_get_contents($fileName));
+
 
         }
 
@@ -198,9 +209,18 @@ class ExportTest extends PHPUnit_Framework_TestCase
             $fileName = $toProcess == 'templateVars'? 'tvs.php' : strtolower($toProcess) . '.php';
             $this->assertFileExists($transportDir . 'transport.' . $fileName);
             $this->assertNotEmpty(file_get_contents($transportDir . 'transport.' . $fileName));
+            $modx =& $this->modx;
+            $objects = include $transportDir . 'transport.' . $fileName;
+            foreach ($objects as $object) {
+                /* @var $object modElement */
+                $props = $object->getProperties();
+                $this->assertEquals(4, count($props));
+            }
             $fileName = strtolower($elementName) . '.' . $name . '.php';
             $this->assertFileExists($transportDir . 'properties/properties.' . $fileName);
             $this->assertNotEmpty(file_get_contents($transportDir . 'properties/properties.' . $fileName), 'FILENAME: ' . $fileName);
+            $props = include $transportDir . 'properties/properties.' . $fileName;
+            $this->assertEquals(4, count($props));
         }
     }
 
@@ -241,6 +261,9 @@ class ExportTest extends PHPUnit_Framework_TestCase
         $content = file_get_contents($fileName);
         $this->assertNotEmpty($content);
         $this->assertEmpty(strstr($content, '{{+'));
+        $modx =& $this->modx;
+        $objects = include $fileName;
+        $this->assertEquals(4, count($objects));
         $this->utHelpers->removeSystemSettings($this->modx, $this->bootstrap);
     }
 
