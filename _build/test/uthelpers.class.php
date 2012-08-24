@@ -156,5 +156,46 @@ class UtHelpers
         }
 
     }
+    public function createNewSystemSettings(&$modx, &$bootstrap) {
+        /* @var $modx modX */
+        /* @var $setting modSystemSetting */
+        $category = $bootstrap->props['category'];
+        $setting = $modx->newObject('modSystemSetting');
+        $setting->set('key', 'ut_system_setting_1');
+        $setting->set('value', 'Value one');
+        $setting->set('xtype', 'textfield');
+        $setting->set('namespace', $category);
+        $setting->set('area', $category);
+        $setting->save();
+
+
+        $setting = $modx->newObject('modSystemSetting');
+        $setting->set('key', 'ut_system_setting_2');
+        $setting->set('value', true);
+        $setting->set('xtype', 'combo-boolean');
+        $setting->set('namespace', $category);
+        $setting->set('area', $category);
+        $setting->save();
+
+        $setting = $modx->newObject('modSystemSetting');
+        $setting->set('key', 'ut_system_setting_3');
+        $setting->set('value', false);
+        $setting->set('xtype', 'combo-boolean');
+        $setting->set('namespace', $category);
+        $setting->set('area', $category);
+        $setting->save();
+
+        $setting = $modx->newObject('modSystemSetting');
+        $setting->set('key', 'ut_system_setting_4');
+        $setting->set('value', '');
+        $setting->set('xtype', 'combo-boolean');
+        $setting->set('namespace', $category);
+        $setting->set('area', $category);
+        $setting->save();
+
+    }
+    public function removeSystemSettings(&$modx) {
+
+    }
 }
 

@@ -77,7 +77,7 @@ class ExportTest extends PHPUnit_Framework_TestCase
         /* comment out this next line to leave the objects in the
          * directory for inspection */
 
-        // $this->utHelpers->rrmdir($this->bootstrap->targetBase);
+        $this->utHelpers->rrmdir($this->bootstrap->targetBase);
 
         $modx->setLogLevel(modX::LOG_LEVEL_INFO);
         $modx->setLogTarget('ECHO');
@@ -232,9 +232,16 @@ class ExportTest extends PHPUnit_Framework_TestCase
     }
     public function testProcessSystemSettings() {
         // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->utHelpers->createNewSystemSettings($this->modx, $this->bootstrap);
+        $settings = $this->modx->getCollection('modSystemSetting', array('namespace' => $this->bootstrap->props['category']));
+        $this->assertEquals(4, count($settings));
+        $this->export->process('systemSettings');
+        $fileName = $this->bootstrap->targetBase . '_build/data/transport.settings.php';
+        $this->assertFileExists($fileName);
+        $content = file_get_contents($fileName);
+        $this->assertNotEmpty($content);
+        $this->assertEmpty(strstr($content, '{{+'));
+        $this->assertNotEmpty(strstr($content,'License'));
     }
 
 }
