@@ -108,4 +108,53 @@ class UtHelpers
         return $nameAlias;
 
     }
+    /** Add properties to elements for testing */
+    public function createProperties(&$modx, &$bootstrap) {
+        /* @var $modx modX */
+        $properties = array(
+            'property1' => 'value1',
+            'property2' => 'value2',
+            'property3' => 'value3',
+            'property4' => 'value4',
+        );
+        $props = $bootstrap->props;
+        $elements = $props['elements'];
+        foreach ($elements as $elementType => $objectList) {
+            $objectList = empty($objectList) ? array() : explode(',', $objectList);
+            foreach ($objectList as $elementName) {
+                /* @var $obj modElement */
+                $alias = $bootstrap->helpers->getNameAlias($elementType);
+                $obj = $modx->getObject($elementType, array($alias => $elementName));
+                if ($obj) $obj->setProperties($properties);
+                $obj->save();
+
+            }
+        }
+
+    }
+
+    /** Add properties to elements for testing */
+    public function createPropertysetProperties(&$modx, &$bootstrap)
+    {
+        /* @var $modx modX */
+        $properties = array(
+            'property1' => 'value1',
+            'property2' => 'value2',
+            'property3' => 'value3',
+            'property4' => 'value4',
+        );
+        $props = $bootstrap->props;
+        $elements = $props['propertySets'];
+        $elements = explode(',', $elements);
+        $elementType = 'modPropertySet';
+        foreach ($elements as $elementName) {
+                /* @var $obj modElement */
+                $alias = $bootstrap->helpers->getNameAlias($elementType);
+                $obj = $modx->getObject($elementType, array($alias => $elementName));
+                if ($obj) $obj->setProperties($properties);
+                $obj->save();
+        }
+
+    }
 }
+

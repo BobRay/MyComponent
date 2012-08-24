@@ -15,9 +15,11 @@ class ExportTest extends PHPUnit_Framework_TestCase
     protected $export;
     protected $exportExposed;
     protected $object;
+    /* @var $utHelpers utHelpers */
     protected $utHelpers;
     /* @var $bootstrap Bootstrap */
     protected $bootstrap;
+    /* @var $modx modX */
     protected $modx;
 
     /**
@@ -35,6 +37,10 @@ class ExportTest extends PHPUnit_Framework_TestCase
         $bootstrap->init(dirname(__FILE__) . '/build.config.php');
         $bootstrap->createCategory();
         $bootstrap->createElements();
+        $bootstrap = null;
+        $modx = null;
+
+
     }
 
     public static function tearDownAfterClass() {
@@ -46,7 +52,7 @@ class ExportTest extends PHPUnit_Framework_TestCase
         $bootstrap = new Bootstrap($modx);
         $bootstrap->init(dirname(__FILE__) . '/build.config.php');
         $utHelpers = new UtHelpers();
-        $utHelpers->removeElements($mods, $bootstrap);
+        $utHelpers->removeElements($modx, $bootstrap);
 
     }
     protected function setUp()
@@ -57,9 +63,9 @@ class ExportTest extends PHPUnit_Framework_TestCase
         $modx = new modX();
         $modx->initialize('mgr');
         $this->utHelpers = new UtHelpers();
-        //$this->bootstrap = new Bootstrap($modx);
-        //$this->bootstrap->init(dirname(__FILE__) . '/build.config.php');
-        //$this->bootstrap->createCategory();
+        $this->bootstrap = new Bootstrap($modx);
+        $this->bootstrap->init(dirname(__FILE__) . '/build.config.php');
+        $this->bootstrap->createCategory();
         require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/export.class.php';
         $this->export = new Export($modx);
         $this->modx =& $this->export->modx;
@@ -68,10 +74,10 @@ class ExportTest extends PHPUnit_Framework_TestCase
         if ($this->export->props['category'] != 'UnitTest') {
             die('wrong config');
         }
+        /* comment out this next line to leave the objects in the
+         * directory for inspection */
 
-
-        //$this->export = new Export($modx);
-        //$this->bootstrap = new Bootstrap($modx);
+        // $this->utHelpers->rrmdir($this->bootstrap->targetBase);
 
         $modx->setLogLevel(modX::LOG_LEVEL_INFO);
         $modx->setLogTarget('ECHO');
@@ -82,7 +88,10 @@ class ExportTest extends PHPUnit_Framework_TestCase
      * This method is called after a test is executed.
      */
     protected function tearDown() {
+        $this->utHelpers->rrmdir($this->bootstrap->targetBase);
         $this->export->modx = null;
+        $this->modx = null;
+        $this->bootstrap = null;
     }
 
     /**
@@ -118,25 +127,96 @@ class ExportTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($v === true || $v === false || $v === '1' || $v === '0' || $v === 1 || $v === 0);
     }
 
+    public function testProcessResources() {
+        $this->bootstrap->createResources();
+        $this->export->process('resources');
+        $resources = $this->bootstrap->props['resources'];
+        $this->assertNotEmpty($resources);
+        $fileName = $this->bootstrap->targetBase . '_build/data/transport.resources.php';
+        $this->assertFileExists($fileName);
+        $this->assertNotEmpty(file_get_contents($fileName));
+        foreach($resources as $resource) {
+            $this->assertNotEmpty($resource);
+            $fileName = $this->bootstrap->targetBase . '_build/resources/' . strtolower($resource) . '.content.html';
+            $this->assertFileExists($fileName);
+            $this->assertNotEmpty(file_get_contents($fileName));
+        }
+    }
+    public function testProcessPropertySets() {
+        $this->bootstrap->createPropertySets();
+        $this->utHelpers->createPropertysetProperties($this->modx, $this->bootstrap);
+        $this->export->process('propertySets');
+        $fileName = $this->bootstrap->targetBase . '_build/data/transport.propertysets.php';
+        $this->assertFileExists($fileName);
+        $this->assertNotEmpty(file_get_contents($fileName));
+        $sets = $this->bootstrap->props['propertySets'];
+        $this->assertNotEmpty($sets);
+        $sets = explode(',', $sets);
+        $this->assertNotEmpty($sets);
+        foreach($sets as $setName) {
+            $setName = strtolower($setName);
+            $fileName = $this->bootstrap->targetBase . '_build/data/properties/properties.' . $setName . '.propertyset.php';
+            $this->assertFileExists($fileName);
+            $this->assertNotEmpty(file_get_contents($fileName));
+
+        }
+
+
+
+    }
     /**
      * @covers Export::process
      * @todo   Implement testProcess()
      * @dataProvider testProcessProvider()
      */
-    public function testProcess($element)
+    public function testProcessElements($element)
     {
-$this->fail('Failure Message');
-        $this->assertEquals('chunks', $element);
+        /* @var $utHelpers utHelpers */
+        $this->utHelpers->createProperties($this->modx, $this->bootstrap);
+        $data = explode(':', $element);
+        $toProcess = $data[0];
 
+        $name = substr($data[0], 0, -1);
+        $name = $name == 'templateVar'? 'tv' : $name;
+        $type = $data[1];
+        $this->export->process($toProcess);
+
+        $elements = $this->bootstrap->props['elements'][$type];
+        $elements = explode(',', $elements);
+        foreach ($elements as $elementName) {
+            $this->assertNotEmpty($elementName);
+            $baseDir = $this->bootstrap->targetBase . '_build/';
+            $transportDir = $baseDir . 'data/';
+            $propertiesDir = $baseDir . 'properties/';
+
+            /* @var $elementObj modElement */
+            $alias = $this->utHelpers->getNameAlias($type);
+            $elementObj = $this->modx->getObject($type, array($alias => $elementName));
+            $this->assertInstanceOf($type, $elementObj);
+            $properties = $elementObj->getProperties();
+            $this->assertNotEmpty($properties);
+            $fileName = $toProcess == 'templateVars'? 'tvs.php' : strtolower($toProcess) . '.php';
+            $this->assertFileExists($transportDir . 'transport.' . $fileName);
+            $this->assertNotEmpty(file_get_contents($transportDir . 'transport.' . $fileName));
+            $fileName = strtolower($elementName) . '.' . $name . '.php';
+            $this->assertFileExists($transportDir . 'properties/properties.' . $fileName);
+            $this->assertNotEmpty(file_get_contents($transportDir . 'properties/properties.' . $fileName), 'FILENAME: ' . $fileName);
+        }
     }
 
+    protected static $myData =
+        array(
+            array('chunks:modChunk'),
+            array('snippets:modSnippet'),
+            array('templates:modTemplate'),
+            array('plugins:modPlugin'),
+            array('templateVars:modTemplateVar'),
+        );
 
     public static function testProcessProvider()
     {
-        $x =  array(
-                'chunks',
-        );
-        return array($x);
+        return self::$myData;
+
     }
 
     /**
@@ -150,4 +230,11 @@ $this->fail('Failure Message');
           'This test has not been implemented yet.'
         );
     }
+    public function testProcessSystemSettings() {
+        // Remove the following lines when you implement this test.
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
 }
