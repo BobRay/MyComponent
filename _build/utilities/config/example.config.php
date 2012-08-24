@@ -243,14 +243,14 @@ $components = array(
     /* ******************************************* */
 
     /* If your extra needs new System Settings, set this to true, create them
-     * in the Manager and export them with exportObjects. Be sure to set their
+     * in the Manager, and export them with exportObjects. Be sure to set their
      * namespace to the lowercase category or packageName of your extra */
 
     'NewSystemSettings' => false,
 
 
     /* If your extra needs Menus, set this to true, create them
-     * in the Manager and export them with exportObjects. Be sure to set their
+     * in the Manager, and export them with exportObjects. Be sure to set their
      * namespace to the lowercase category or packageName of your extra */
     'menus' => false,
 

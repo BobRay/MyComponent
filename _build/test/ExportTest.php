@@ -241,7 +241,7 @@ class ExportTest extends PHPUnit_Framework_TestCase
         $content = file_get_contents($fileName);
         $this->assertNotEmpty($content);
         $this->assertEmpty(strstr($content, '{{+'));
-        $this->assertNotEmpty(strstr($content,'License'));
+        $this->utHelpers->removeSystemSettings($this->modx, $this->bootstrap);
     }
 
 }

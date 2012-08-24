@@ -194,7 +194,14 @@ class UtHelpers
         $setting->save();
 
     }
-    public function removeSystemSettings(&$modx) {
+    public function removeSystemSettings(&$modx, &$bootstrap) {
+        /* @var $modx modX */
+        /* @var $setting modSystemSetting */
+        $settings = $modx->getCollection('modSystemSetting', array('namespace' => $bootstrap->props['category']));
+        foreach($settings as $setting) {
+            $setting->remove();
+        }
+
 
     }
 }
