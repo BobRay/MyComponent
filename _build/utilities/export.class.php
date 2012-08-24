@@ -320,7 +320,12 @@ class Export
         );
 
         foreach ($fields as $field => $value) {
-            $tpl .= "    '" . $field . "'" . " => '" . $value . "',\n";
+            if ($field == 'value'  && in_array('combo-boolean', array_values($fields))) {
+                $value = $value? 'true' : 'false';
+                $tpl .= "    '" . $field . "'" . " => " . $value . ",\n";
+            } else {
+                $tpl .= "    '" . $field . "'" . " => '" . $value . "',\n";
+            }
         }
         /* ToDo: Property Sets */
         /* write object-specific stuff */
