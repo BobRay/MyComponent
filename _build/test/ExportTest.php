@@ -35,6 +35,9 @@ class ExportTest extends PHPUnit_Framework_TestCase
         $modx = new modX();
         $bootstrap = new Bootstrap($modx);
         $bootstrap->init(dirname(__FILE__) . '/build.config.php');
+        if ($bootstrap->props['category'] != 'UnitTest') {
+            die('wrong config - NEVER run unit test on a real project!');
+        }
         $bootstrap->createCategory();
         $bootstrap->createElements();
         $bootstrap = null;

@@ -47,7 +47,7 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
         /* @var $categoryObj modCategory */
         $this->bootstrap->init(dirname(__FILE__) . '/build.config.php');
         if ($this->bootstrap->props['category'] != 'UnitTest') {
-            die('wrong config');
+            die('wrong config - NEVER run unit test on a real project!');
         }
         $this->utHelpers->rrmdir($this->bootstrap->targetBase);
         $this->utHelpers->removeElements($this->modx, $this->bootstrap);
