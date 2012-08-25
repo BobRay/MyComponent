@@ -74,8 +74,6 @@ class ExportTest extends PHPUnit_Framework_TestCase
         if ($this->export->props['category'] != 'UnitTest') {
             die('wrong config');
         }
-        /* comment out this next line to leave the objects in the
-         * directory for inspection */
 
         $this->utHelpers->rrmdir($this->bootstrap->targetBase);
 
@@ -88,7 +86,10 @@ class ExportTest extends PHPUnit_Framework_TestCase
      * This method is called after a test is executed.
      */
     protected function tearDown() {
-        //$this->utHelpers->rrmdir($this->bootstrap->targetBase);
+        /* comment out this next line to leave the objects in the
+         * directory for inspection */
+        $this->utHelpers->rrmdir($this->bootstrap->targetBase);
+
         $this->export->modx = null;
         $this->modx = null;
         $this->bootstrap = null;
@@ -141,7 +142,9 @@ class ExportTest extends PHPUnit_Framework_TestCase
             $this->assertNotEmpty($resource);
             $fileName = $this->bootstrap->targetBase . '_build/data/resources/' . strtolower($resource) . '.content.html';
             $this->assertFileExists($fileName);
-            $this->assertNotEmpty(file_get_contents($fileName));
+            $content = file_get_contents($fileName);
+            $this->assertNotEmpty($content);
+            $this->assertNotEmpty(strstr($content, 'Content goes here'));
         }
     }
     public function testProcessPropertySets() {
