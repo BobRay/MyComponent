@@ -244,15 +244,21 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
         }
 
         /* check creation of plugin resolver */
-        $this->assertFileExists($this->bootstrap->targetBase . '_build/resolvers/plugin.resolver.php');
-        $content = file_get_contents($this->bootstrap->targetBase . '_build/resolvers/plugin.resolver.php');
+
+        $fileName = $this->bootstrap->targetBase . '_build/resolvers/plugin.resolver.php';
+        $this->assertFileExists($fileName);
+        $content = file_get_contents($fileName);
         $this->assertNotEmpty($content);
+
         /* make sure all placeholders got replaced */
         $this->assertEmpty(strstr($content, '[[+'));
         $this->assertNotEmpty(strstr($content, 'License'));
+
+        $names = $this->bootstrap->props['newSystemEvents'];
+        $this->assertNotEmpty(strstr($content, $names) . "NAMES: " . $names);
+
         /* remove event names from system_eventnames */
         /* @var $eventName modEvent */
-        $names = $this->bootstrap->props['newSystemEvents'];
         $names = empty($names) ? array() : explode(',', $names);
         foreach ($names as $name) {
             $eventName = $this->modx->getObject('modEvent', array('name' => $name));
