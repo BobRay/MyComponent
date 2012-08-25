@@ -135,9 +135,11 @@ class ExportTest extends PHPUnit_Framework_TestCase
         $fileName = $this->bootstrap->targetBase . '_build/data/transport.resources.php';
         $this->assertFileExists($fileName);
         $this->assertNotEmpty(file_get_contents($fileName));
+        $this->assertNotEmpty($resources);
+        $resources = explode(',', $resources);
         foreach($resources as $resource) {
             $this->assertNotEmpty($resource);
-            $fileName = $this->bootstrap->targetBase . '_build/resources/' . strtolower($resource) . '.content.html';
+            $fileName = $this->bootstrap->targetBase . '_build/data/resources/' . strtolower($resource) . '.content.html';
             $this->assertFileExists($fileName);
             $this->assertNotEmpty(file_get_contents($fileName));
         }
