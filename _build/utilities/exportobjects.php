@@ -111,7 +111,7 @@ if ($outsideModx) {
         //'dryRun' => '1',
         //'createTransportFiles' => '1',
         //'createObjectFiles' => '1',
-        //'process' => 'plugins,templateVars',
+        //'process' => 'elements,plugins,templateVars',
         //'pagetitles' => 'Notify,NotifyPreview', // pagetitles of resources to process
         //'parents' => '', //parents of resources to process
         //'includeParents' => 0,

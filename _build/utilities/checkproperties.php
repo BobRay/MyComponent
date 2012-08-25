@@ -35,7 +35,7 @@
 $prefix = 'np_'; /* prefix for Lexicon entries */
 $packageName = 'newspublisher'; /* Important: match directory case */
 $packageNameLower = strtolower(($packageName));
-$elementName = 'newspublisher'; /* Match file/directory case */
+//$elementName = 'newspublisher'; /* Match file/directory case */
 $elementName = empty($elementName)? $packageName: $elementName;
 $elementName = strtolower($elementName);
 
@@ -49,14 +49,124 @@ $propsAlias = str_replace('$','\$',$propsAlias);
 
 $base = 'c:/xampp/htdocs/addons/assets/mycomponents/' . $packageName .  '/';
 
-/* array of possible code files. Add your own if necessary */
-$codeFiles = array(
-    $base . 'core/components/' . $packageName . '/model/' . $packageName . '/' . $elementName . '.class.php',
-    $base . 'core/components/' . $packageName . '/elements/snippets/' . $elementName . '.snippet.php',
-    $base . 'core/components/' . $packageName . '/elements/plugins/' . $elementName . '.plugin.php',
-);
 
-$code = '';
+
+function doFiles ($dir,$fileName) {
+    $base = 'c:/xampp/htdocs/addons/assets/mycomponents/newspublisher/';
+    echo "\nDIR:" . $dir;
+    echo "\nFILE: " . $fileName;
+    $code = '';
+    $codeFile = $dir . '/' . $fileName;
+    $p = strpos($fileName, '.');
+    $elementName = substr($fileName, 0, $p);
+    echo "\nElement Name : " . $elementName;
+    $r = substr($fileName, $p + 1);
+    $type = substr($r, 0, strpos($r, '.'));
+    echo "\nType: " . $type;
+    $prefix = '_np';
+
+    $propertiesFile  = $base . '_build/data/properties.' . $elementName . '.php';
+
+    if (file_exists($propertiesFile)) {
+        echo "\nOK";
+    } else {
+        echo "\nCan't find: " . $propertiesFile;
+    }
+
+    $code = file_get_contents($codeFile);
+    $properties = require $propertiesFile;
+
+    echo "\nCOUNT: " . count($properties) . " properties in properties file\n";
+
+    /* OK to here */
+    $propsAlias = '$this->props';
+    /* escape the $ */
+    $propsAlias = str_replace('$', '\$', $propsAlias);
+    $matches = array();
+
+//$pattern = "/getOption\(\'([^\\']+)\'.+" . $propsAlias . "/";
+    $pattern = "/" . $propsAlias . "\[[\"\']([^\"\']+)/";
+//echo 'PATTERN: ' . $pattern . "\n";
+    /* get properties used with $scriptProperties['propertyName'] */
+    preg_match_all($pattern, $code, $matches);
+//echo "\nSp-alias\n" . print_r($matches[1], true);
+    $codeMatches = $matches[1];
+
+    /* get properties used with plain old $scriptProperties */
+    if ($propsAlias != "\$scriptProperties") {
+        $matches = array();
+        $pattern = "/" . "scriptProperties\[[\"\']([^\"\']+)/";
+        preg_match_all($pattern, $code, $matches);
+
+        // echo "\nSCRIPRPROPERTIES\n" . print_r($matches[1], true);
+
+        $codeMatches = array_merge($codeMatches, $matches[1]);
+    }
+    $matches = array();
+    /* get properties accessed with getOption() */
+    $pattern = "/getOption\(\'([^\']+)'.+" . $propsAlias . "/";
+    preg_match_all($pattern, $code, $matches);
+//echo "\n PropsAlias " . $propsAlias . "\n";
+//echo "\n getOption\n" . print_r($matches[1], true);
+    $codeMatches = array_merge($codeMatches, $matches[1]);
+
+    $codeMatches = array_unique($codeMatches);
+
+    echo "\nCOUNT: " . count($codeMatches) . " properties in code file(s)\n";
+
+    /*echo "\nProperties in code file(s)\n********************\n";
+    foreach ($codeMatches as $prop) {
+        echo $prop . "\n";
+    }*/
+
+    $names = array();
+    $missing = array();
+    // echo "\nProperties in properties file\n********************\n\n";
+    foreach ($properties as $property) {
+        $names[] = $property['name'];
+        //echo "\n" . $property['name'];
+    }
+    $orphans = array();
+    foreach ($names as $name) {
+        if (!in_array($name, $codeMatches)) {
+            $orphans[] = $name;
+        }
+    }
+    foreach ($codeMatches as $k => $v) {
+        if (!in_array($v, $names)) {
+            $missing[] = $v;
+        }
+    }
+
+    echo "\nMissing from properties file\n********************\n";
+    if (empty($missing)) {
+        echo "None\n";
+    } else {
+        foreach ($missing as $name) {
+            echo $name . "\n";
+        }
+    }
+
+    echo "\nOrphans in properties file (may be used in another file or generated dynamically)\n********************\n";
+
+    if (empty($orphans)) {
+        echo "None\n";
+    } else {
+        foreach ($orphans as $name) {
+            echo $name . "\n";
+        }
+    }
+
+
+}
+
+$callback = 'doFiles';
+
+dir_walk($callback, $base . 'core/components/' . $packageName . '/model', array('php'), true);
+dir_walk($callback, $base . 'core/components/' . $packageName . '/elements', array('php'), true);
+
+return;
+
 
 foreach ($codeFiles as $codeFile) {
     if (file_exists($codeFile) ) {
@@ -64,6 +174,7 @@ foreach ($codeFiles as $codeFile) {
         $code .= file_get_contents($codeFile) . "\n\n";
     }
 }
+
 if (empty($code)) {
     die ('Could not find any code files');
 }
@@ -213,4 +324,41 @@ return \$properties;";
     }
     echo $propertyText . "\n\n";
 
+}
+
+/**
+ * Calls a function for every file in a folder.
+ *
+ * @author Vasil Rangelov a.k.a. boen_robot
+ * @author Bob Ray - mods by Bob Ray 2012
+ *
+ * @param string $callback The function to call. It must accept one argument that is a relative filepath of the file.
+ * @param string $dir The directory to traverse.
+ * @param array $types The file types to call the function for. Leave as NULL to match all types.
+ * @param bool $recursive Whether to list subfolders as well.
+ * @param string $baseDir String to append at the beginning of every filepath that the callback will receive.
+ */
+
+function dir_walk($callback, $dir, $types = null, $recursive = false, $baseDir = '')
+{
+    if ($dh = opendir($dir)) {
+        while (($file = readdir($dh)) !== false) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+            // echo "\n" , $dir;
+            //echo "\n", $file;
+            if (is_file($dir . '/' . $file)) {
+                if (is_array($types)) {
+                    if (!in_array(strtolower(pathinfo($dir . $file, PATHINFO_EXTENSION)), $types, true)) {
+                        continue;
+                    }
+                }
+                $callback($dir , $file);
+            } elseif ($recursive && is_dir($dir . '/' . $file)) {
+                dir_walk($callback, $dir . '/' . $file, $types, $recursive, $baseDir . '/' . $file);
+            }
+        }
+        closedir($dh);
+    }
 }

@@ -242,16 +242,26 @@ $components = array(
     'includeParents' => false, // include listed parent resources
     /* ******************************************* */
 
-    /* If your extra needs new System Settings, set this to true, create them
-     * in the Manager and export them with exportObjects. Be sure to set their
-     * namespace to the lowercase category or packageName of your extra */
+    /* If your extra needs new System Settings, set their field values here.
+     * You can also create or edit them in the Manager (System -> System Settings),
+     * and export them with exportObjects. If you do that, be sure to set
+     * their namespace and area to the lowercase category of your extra */
 
-    'NewSystemSettings' => false,
+    'newSystemSettings' => array(
+        'ut_system_setting1' => array(  // key
+            'xtype' => 'textField',
+            'value' => 'value1',
+        ),
+        'ut_system_setting2' => array( // key
+            'xtype' => 'combo-boolean',
+            'value' => true,
+        ),
+    ),
 
 
     /* If your extra needs Menus, set this to true, create them
-     * in the Manager and export them with exportObjects. Be sure to set their
-     * namespace to the lowercase category or packageName of your extra */
+     * in the Manager, and export them with exportObjects. Be sure to set their
+     * namespace to the lowercase category of your extra */
     'menus' => false,
 
 );

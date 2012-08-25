@@ -388,6 +388,21 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
         $this->assertFileExists($this->bootstrap->targetBase . '_build/install.options/user.input.php');
         $this->assertNotEmpty(file_get_contents($this->bootstrap->targetBase . '_build/install.options/user.input.php'));
     }
+    public function testCreateNewSystemSettings() {
+        $this->bootstrap->createNewSystemSettings();
+        $settings = $this->bootstrap->props['newSystemSettings'];
+        $this->assertNotEmpty($settings);
+        /* @var $object modSystemSetting */
+        foreach ($settings as $settingKey => $values) {
+
+            $object = $this->modx->getObject('modSystemSetting', array('key' => $settingKey ));
+            $this->assertInstanceOf('modSystemSetting', $object);
+            $this->assertEquals(strtolower($this->bootstrap->props['category']), $object->get('namespace'));
+            $this->assertEquals(strtolower($this->bootstrap->props['category']), $object->get('area'));
+            $object->remove();
+        }
+
+    }
 
     public function testCreatePropertySets() {
         /* @var $setObj modPropertySet */

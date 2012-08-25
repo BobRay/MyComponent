@@ -236,22 +236,32 @@ $components = array(
      * To export resources, list pagetitles and/or IDs of parents
      * of desired resources
     */
-    'process' => 'snippets,plugins,templateVars,templates,chunks,resources,propertySets',
+    'process' => 'snippets,plugins,templateVars,templates,chunks,resources,propertySets,SystemSettings,menus',
     'pagetitles' => 'Example1,Example2', // Comma-separated list of pagetitles of resources to process.
     'parents' => '', // Comma-separated list of resource parent IDs to get children of.
     'includeParents' => false, // include listed parent resources
     /* ******************************************* */
 
-    /* If your extra needs new System Settings, set this to true, create them
-     * in the Manager, and export them with exportObjects. Be sure to set their
-     * namespace to the lowercase category or packageName of your extra */
+    /* If your extra needs new System Settings, set their field values here.
+     * You can also create or edit them in the Manager (System -> System Settings),
+     * and export them with exportObjects. If you do that, be sure to set
+     * their namespace and area to the lowercase category of your extra */
 
-    'NewSystemSettings' => false,
+    'newSystemSettings' => array(
+        'example_system_setting1' => array(  // key
+            'xtype' => 'textField',
+            'value' => 'value1',
+        ),
+        'example_system_setting2' => array( // key
+            'xtype' => 'combo-boolean',
+            'value' => true,
+        ),
+    ),
 
 
     /* If your extra needs Menus, set this to true, create them
      * in the Manager, and export them with exportObjects. Be sure to set their
-     * namespace to the lowercase category or packageName of your extra */
+     * namespace to the lowercase category of your extra */
     'menus' => false,
 
 );

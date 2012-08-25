@@ -571,6 +571,44 @@ class Bootstrap {
             }
         }
     }
+    /** Creates new System Settings if set in project confic file */
+    public function createNewSystemSettings() {
+        $newSettings = $this->modx->getOption('newSystemSettings', $this->props, array());
+        if (!empty($newSettings)) {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating New System Settings');
+            foreach($newSettings as $key => $fieldValues) {
+                $setting = $this->modx->getObject('modSystemSetting', array('key' => $key));
+                if (!$setting) {
+                    $setting = $this->modx->newObject('modSystemSetting');
+                    /* @var $setting modSystemSetting */
+                    if ($setting) {
+                        $setting->set('key', $key);
+                        $category = strtolower($this->props['category']);
+                        $setting->set('area', $category);
+                        $setting->set('namespace', $category);
+                        foreach ($fieldValues as $fieldKey => $value) {
+                            $setting->set($fieldKey, $value);
+                        }
+                        if ($setting->save()) {
+                            $this->modx->log(MODX::LOG_LEVEL_INFO, '    Created new system setting ' . $key);
+                        } else {
+
+                        }
+
+                    }
+                } else {
+                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $key . ' System Setting already exists');
+
+
+                }
+            }
+
+        } else {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, 'No System Settings in config file');
+        }
+
+
+    }
     /** Creates example file for user input during install if set in project config file */
     public function createInstallOptions() {
         $iScript = $this->modx->getOption('install.options', $this->props, '');
