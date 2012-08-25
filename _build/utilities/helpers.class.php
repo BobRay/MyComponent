@@ -415,8 +415,5 @@ class Helpers
                 }
             }
         }
-
-
-
     }
 }
