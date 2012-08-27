@@ -15,11 +15,12 @@ $components = array(
     'packageUrl' => 'http://bobsguides.com/example-tutorial.html',
     'copyright' => '2012',
     'createdon' => strftime('%m-%d-%Y'),
+    'prefix' => 'expl_', /* prefix for language strings */
     'offerAbort' => false, /* Show package name and ask user to confirm before running */
     'packageDescription' => 'Example project for MyComponent extra.',
     'gitHubUsername' => 'BobRay',
     'gitHubRepository' => 'Example',
-    'scriptPropertiesAlias' => 'props',
+
 
     /* Change this if you need to alter any tpl files. Use a new dir. under _build/utilities.
      * Be sure to copy all build tpls to the new directory */
@@ -263,6 +264,13 @@ $components = array(
      * in the Manager, and export them with exportObjects. Be sure to set their
      * namespace to the lowercase category of your extra */
     'menus' => false,
+
+    /* Comma-separated list of aliases used in code for the properties array.
+     * Used by the checkproperties utility to check properties in code against
+     * the properties in your properties transport files.
+     * if you use something else, add it here (OK to remove ones you never use.
+     * Search also checks with '$this->' prefix -- no need to add it here. */
+    'scriptPropertiesAliases' => 'props,sp,config,scriptProperties',
 
 );
 
