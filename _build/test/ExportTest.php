@@ -56,6 +56,8 @@ class ExportTest extends PHPUnit_Framework_TestCase
         $bootstrap->init(dirname(__FILE__) . '/build.config.php');
         $utHelpers = new UtHelpers();
         $utHelpers->removeElements($modx, $bootstrap);
+        $bootstrap = null;
+        $modx = null;
 
     }
     protected function setUp()
