@@ -275,7 +275,7 @@ class CheckProperties {
             $hasPropsFile = false;
         }
         $names = array();
-        if (empty($props)) {
+        if (empty($props) || ! is_array($props)) {
             $props = array();
             $hasProps = false;
         } else {
@@ -345,7 +345,7 @@ class CheckProperties {
         ),
     ";
         $propertyText = '';
-        if (count($properties) == 1) {
+        if (empty($properties)) {
             $propertyText .= "\$properties = array (
     ";
         }
@@ -358,7 +358,7 @@ class CheckProperties {
             $propertyText .= $tempPropertyTpl;
         }
 
-        if (count($properties) == 1) {
+        if (empty($properties)) {
             $propertyText .= "
     );
     return \$properties;";
