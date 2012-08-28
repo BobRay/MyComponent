@@ -98,7 +98,7 @@ if (!defined('MODX_CORE_PATH')) {
     $outsideModx = true;
     /* put the path to your core in the next line to run outside of MODx */
     define('MODX_CORE_PATH', 'c:/xampp/htdocs/addons/core/');
-    require_once MODX_CORE_PATH . '/model/modx/modx.class.php';
+    require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
     $modx = new modX();
     if (!$modx) {
         $modx->log(modX::LOG_LEVEL_ERROR, 'Could not create MODX class');
@@ -106,15 +106,47 @@ if (!defined('MODX_CORE_PATH')) {
     $modx->initialize('mgr');
 } else {
     $outsideModx = false;
+    /* @var $modx modX */
 }
+$props = array();
+include MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/lexiconhelper.class.php';
+    $lexiconHelper = new LexiconHelper($modx, $props);
+    $lexiconHelper->init(dirname(dirname(__FILE__)) . '/build.config.php');
 
+die();
+/*$ss = $modx->getObject('modSystemSetting', array('key' => 'default_template'));
+
+$modx->lexicon->load('core:setting');
+if ($ss) {
+    $desc = $modx->lexicon('setting_default_template_desc');
+    echo "DESC: " . $desc;
+} else {
+    echo "No System Setting";
+}
+$np = $modx->getObject('modSnippet', array('name' => 'NewsPublisher'));
+if ($np) {
+    echo "\nGot NP\n";
+    $props = $np->getProperties();
+    if (!empty($props)) {
+        echo print_r($props,true);
+
+        $modx->lexicon->load('newspublisher:properties');
+        foreach($props as $prop => $value ) {
+            $desc = $modx->lexicon('np_' . $prop. '_desc');
+            echo "\nDESC: " . $desc;
+        }
+    }
+} else {
+    echo 'No NewsPublisher';
+}
+exit;*/
 
 $codeChanged = false;
 $props =& $scriptProperties;
 /* @var $modx modX */
 /* This  section for running outside of MODX */
 if ($outsideModx) {
-    $core_path = 'c:/xampp/htdocs/addons/assets/mycomponents/notify/';
+    $core_path = 'c:/xampp/htdocs/addons/assets/mycomponents/example/';
     $props['code_path'] = $core_path . 'core/components/notify/elements/chunks/';
     $props['code_file'] = 'nfnotifyformtpl.chunk.html';
     $props['language_path'] = $core_path . 'core/components/notify/lexicon/';
