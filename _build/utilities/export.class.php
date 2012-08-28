@@ -422,7 +422,8 @@ class Export
             if ($key=='desc_trans' || $key == 'area_trans') {
                 continue;
             }
-            $output .= $indent . "'$key' => ";
+            /* No key for each property array */
+            $output .= $depth == 0? $indent : $indent . "'$key' => ";
 
             if( is_array( $val ) && !empty($val) ) {
                 $output .= $this->render_properties( $val, $depth + $tabWidth );

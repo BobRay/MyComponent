@@ -61,7 +61,7 @@ class CheckProperties {
             $modx->setLogTarget('ECHO');*/
         }
         if (!php_sapi_name() == 'cli') {
-            echo "<pre>\n"; /* used for nice formatting for log messages  */
+            $this->output .= "<pre>\n"; /* used for nice formatting for log messages  */
         }
 
 
@@ -115,7 +115,7 @@ class CheckProperties {
         $dir = $this->targetCore . 'model';
         $this->dir_walk($x, $dir, null, true);
         if(!empty($this->classFiles)) {
-            echo "\nAll Class Files: " . implode(', ', array_keys($this->classFiles));
+            $this->output .= "\nFound these class files: " . implode(', ', array_keys($this->classFiles));
 
         }
 
@@ -127,19 +127,19 @@ class CheckProperties {
             $this->codeMatches = array();
             $this->getCode($element, $type);
             if (!empty($this->included)) {
-                echo "\nFiles analyzed: " . implode(', ', $this->included);
+                $this->output .= "\nFiles analyzed: " . implode(', ', $this->included);
             }
-            echo "\nSize of all code: " . strlen($this->scriptCode);
+            $this->output .= "\nSize of all code: " . strlen($this->scriptCode);
 
-            //echo "\n ********************************* \n" . $this->scriptCode;
+            //$this->output .= "\n ********************************* \n" . $this->scriptCode;
             $this->getProperties();
-            echo "\n" . count($this->codeMatches) . ' properties in code';
+            $this->output .= "\n" . count($this->codeMatches) . ' properties in code';
             $this->checkProperties($element, $type);
         }
         $this->report();
     }
     public function addClassFiles($dir, $file) {
-        //echo "\nIn addClassFiles";
+        //$this->output .= "\nIn addClassFiles";
         $this->classFiles[$file] = $dir;
     }
 
@@ -152,17 +152,17 @@ class CheckProperties {
      */
     public function getCode($element, $type) {
         if (empty($element)) {
-            echo 'Error: Element is empty';
+            $this->output .= 'Error: Element is empty';
             return;
         }
         $typeName = strtolower(substr($type, 3));
         $file = $this->targetCore . 'elements/' . $typeName . 's/' . $element . '.' . $typeName . '.php';
-        echo "\n\n*********************************************";
-        echo "\nProcessing Element: " . $element . " -- Type: " . $type;
+        $this->output .= "\n\n*********************************************";
+        $this->output .= "\nProcessing Element: " . $element . " -- Type: " . $type;
         //$code = file_get_contents($file);
         //$lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
-        //echo $code;
+        //$this->output .= $code;
 
         $this->scriptCode = file_get_contents($file);
         $this->included[] = $element;
@@ -180,7 +180,7 @@ class CheckProperties {
         $matches = array();
         //preg_match_all('~<[?].*?(?:include|require(?:_once)?)\s *?(?:[(] ?[\'"])(.+?)(?:[\'"][)]?)\s*?;.*?(?:[?]>)?~is', $code, $matches);
         /*for ($i = 258; $i <= 380; $i++) {
-            echo "\n" . $i . ' - ' . token_name($i);
+            $this->output .= "\n" . $i . ' - ' . token_name($i);
         }*/
         $lines = array();
         $fp = fopen($file, "r");
@@ -190,7 +190,7 @@ class CheckProperties {
             }
             fclose($fp);
         } else {
-            echo "\nCould not open file: " . $file;
+            $this->output .= "\nCould not open file: " . $file;
             return;
         }
         $line = array();
@@ -198,17 +198,17 @@ class CheckProperties {
         foreach ($lines as $line) {
 
             if (strstr($line, 'include') || strstr($line, 'include_once') || strstr($line, 'require') || strstr($line, 'require_once')) {
-                //echo "\nHIT: " . $line;
+                //$this->output .= "\nHIT: " . $line;
 
                 preg_match('#[0-9a-zA-Z_\-\s]*\.class\.php#',$line, $matches);
-                //echo "\n" . $matches[0];
+                //$this->output .= "\n" . $matches[0];
 
                 if (isset($this->classFiles[$matches[0]])) {
 
-                    //echo "\nIn Classfiles Array";
+                    //$this->output .= "\nIn Classfiles Array";
                     /* skip files we've already includes */
                     if (! in_array($matches[0], $this->included)) {
-                        //echo "\n\nRecursing";
+                        //$this->output .= "\n\nRecursing";
                         /* file_get_contents add to code goes here */
                         $this->scriptCode .= file_get_contents($this->classFiles[$matches[0]] . '/' . $matches[0]);
                         $this->included[] = $matches[0];
@@ -227,10 +227,10 @@ class CheckProperties {
 
     //$pattern = "/getOption\(\'([^\\']+)\'.+" . $propsAlias . "/";
             $pattern = "/" . $alias . "\[[\"\']([^\"\']+)/";
-    //echo 'PATTERN: ' . $pattern . "\n";
+    //$this->output .= 'PATTERN: ' . $pattern . "\n";
             /* get properties used with $scriptProperties['propertyName'] */
             preg_match_all($pattern, $this->scriptCode, $matches);
-    //echo "\nSp-alias\n" . print_r($matches[1], true);
+    //$this->output .= "\nSp-alias\n" . print_r($matches[1], true);
             $codeMatches = $matches[1];
 
             /* get properties used with plain old $scriptProperties */
@@ -239,7 +239,7 @@ class CheckProperties {
                 $pattern = "/" . "scriptProperties\[[\"\']([^\"\']+)/";
                 preg_match_all($pattern, $this->scriptCode, $matches);
 
-                // echo "\nSCRIPRPROPERTIES\n" . print_r($matches[1], true);
+                // $this->output .= "\nSCRIPRPROPERTIES\n" . print_r($matches[1], true);
 
                 $codeMatches = array_merge($codeMatches, $matches[1]);
             }*/
@@ -247,13 +247,13 @@ class CheckProperties {
             /* get properties accessed with getOption() */
             $pattern = "/getOption\(\'([^\']+)'.+" . $alias . "/";
             preg_match_all($pattern, $this->scriptCode, $matches);
-    //echo "\n PropsAlias " . $propsAlias . "\n";
-    //echo "\n getOption\n" . print_r($matches[1], true);
+    //$this->output .= "\n PropsAlias " . $propsAlias . "\n";
+    //$this->output .= "\n getOption\n" . print_r($matches[1], true);
             $codeMatches = array_merge($codeMatches, $matches[1]);
 
             //$codeMatches = array_unique($this->codeMatches);
 
-            //echo "\nCOUNT: " . count($codeMatches) . " properties in code file(s)\n";
+            //$this->output .= "\nCOUNT: " . count($codeMatches) . " properties in code file(s)\n";
             $this->codeMatches = array_merge($this->codeMatches, $codeMatches);
         }
     }
@@ -270,8 +270,8 @@ class CheckProperties {
             $hasPropsFile = true;
 
         } else {
-            echo "\nNo Properties file for " . $element . ' ' . $type;
-            echo "\nLooked for: " . $propsFile;
+            $this->output .= "\nNo Properties file for " . $element . ' ' . $type;
+            $this->output .= "\nLooked for: " . $propsFile;
             $hasPropsFile = false;
         }
         $names = array();
@@ -280,8 +280,8 @@ class CheckProperties {
             $hasProps = false;
         } else {
             $hasProps = true;
-            echo "\n" . count($props) . ' properties in properties file';
-            echo "\nChecking: " . $element;
+            $this->output .= "\n" . count($props) . ' properties in properties file';
+            $this->output .= "\nChecking: " . $element . ' and all included files';
 
             foreach ($props as $prop) {
                 /* @var $prop xPDOObject */
@@ -292,7 +292,7 @@ class CheckProperties {
             foreach ($names as $name) {
                 if (!in_array($name, array_values($this->codeMatches))) {
                     $orphans[] = $name;
-                    //echo "\n    ORPHAN: " . $name;
+                    //$this->output .= "\n    ORPHAN: " . $name;
                 }
             }
         }
@@ -300,33 +300,33 @@ class CheckProperties {
             foreach($this->codeMatches as $key => $value) {
                 if (! in_array($value, $names)) {
                     $missing[] = $value;
-                    //echo "\n    MISSING: " . $value;
+                    //$this->output .= "\n    MISSING: " . $value;
                 }
             }
             if (!empty($missing)) {
-                echo "\n    Missing from properties file";
+                $this->output .= "\n    Missing from properties file";
                 foreach ($missing as $missed) {
-                    echo "\n        " . $missed;
+                    $this->output .= "\n        " . $missed;
                 }
             } else {
-                echo "\n    No properties missing from properties file:";
+                $this->output .= "\n    No properties missing from properties file:";
             }
         }
         if ($hasProps) {
             if (!empty($orphans)) {
-                echo "\n    Properties in properties file not found in code:";
+                $this->output .= "\n    Properties in properties file not found in code:";
                 foreach ($orphans as $orphan) {
-                    echo "\n        " . $orphan;
+                    $this->output .= "\n        " . $orphan;
                 }
             } else {
-                echo "\n    No unused properties found in properties file";
+                $this->output .= "\n    No unused properties found in properties file";
             }
         }
 
         if (!empty($missing)) {
             $pasteCode = $this->getPropertyCode($missing,$props);
-            echo "\n\n******* Code to paste in properties file ********\n";
-            echo $pasteCode;
+            $this->output .= "\n\n******* Code to paste in properties file (will need editing) ********\n";
+            $this->output .= $pasteCode;
         }
     }
 
@@ -334,7 +334,7 @@ class CheckProperties {
         $prefix = $this->props['prefix'];
         $packageNameLower = $this->props['packageNameLower'];
         $propertyTpl = "
-        Prop[[+i]] => array(
+        array(
             'name' => '[[+name]]',
             'desc' => '{$prefix}[[+name]]_desc~~(optional)Add description here for LexiconHelper',
             'type' => 'textfield',
@@ -349,11 +349,9 @@ class CheckProperties {
             $propertyText .= "\$properties = array (
     ";
         }
-        $i = count($properties) +1;
+
         foreach ($missing as $propertyName) {
             $tempPropertyTpl = str_replace('[[+name]]', $propertyName, $propertyTpl);
-            $tempPropertyTpl = str_replace('[[+i]]', $i, $tempPropertyTpl);
-            $i++;
             $tempPropertyTpl = str_replace('[[+package_name_lower]]', $packageNameLower, $tempPropertyTpl);
             $propertyText .= $tempPropertyTpl;
         }
@@ -368,7 +366,7 @@ class CheckProperties {
     }
 
     public function report() {
-
+        echo $this->output;
     }
 
     public function dir_walk($callback, $dir, $types = null, $recursive = false, $baseDir = '')
@@ -379,8 +377,8 @@ class CheckProperties {
                 if ($file === '.' || $file === '..') {
                     continue;
                 }
-                // echo "\n" , $dir;
-                //echo "\n", $file;
+                // $this->output .= "\n" , $dir;
+                //$this->output .= "\n", $file;
                 if (is_file($dir . '/' . $file)) {
                     if (is_array($types)) {
                         if (!in_array(strtolower(pathinfo($dir . $file, PATHINFO_EXTENSION)), $types, true)) {
