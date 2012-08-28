@@ -112,6 +112,7 @@ $props = array();
 include MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/lexiconhelper.class.php';
     $lexiconHelper = new LexiconHelper($modx, $props);
     $lexiconHelper->init(dirname(dirname(__FILE__)) . '/build.config.php');
+    $lexiconHelper->run();
 
 die();
 /*$ss = $modx->getObject('modSystemSetting', array('key' => 'default_template'));
