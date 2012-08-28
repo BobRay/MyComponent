@@ -249,17 +249,6 @@ class ExportTest extends PHPUnit_Framework_TestCase
 
     }
 
-    /**
-     * @covers Export::render_properties
-     * @todo   Implement testRender_properties().
-     */
-    public function testRender_properties()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
     public function testProcessSystemSettings() {
         // Remove the following lines when you implement this test.
         $this->utHelpers->createNewSystemSettings($this->modx, $this->bootstrap);
