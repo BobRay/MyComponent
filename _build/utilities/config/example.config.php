@@ -46,7 +46,7 @@ $components = array(
     /* Array of languages for which you will have language files and
      * comma-separated list of filenames ('.inc.php' will be added as a suffix) */
     'languages' => array(
-        'en' => 'default,properties',
+        'en' => 'default,properties,forms',
     ),
 
     'hasCore' => true, /* assume every package has a core directory */
