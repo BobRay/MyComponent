@@ -67,32 +67,32 @@
 /* Important: All language keys in the code file must be in this form:
  *
  *      $modx->lexicon('language_string_key');
+ *      $modx->lexicon("language_string_key"');
  *
  * or This form:
  *
  *      $modx->lexicon('language_string_key~~Actual Language String');
+ *      $modx->lexicon("language_string_key~~Actual Language String");
  *
- * Use singe quotes and no spaces
+ * Use no spaces in the key (the left side).
  *
- * If you have a prefix, be sure to include it as part of the language_string_key.
  *
  * With the first version, LexiconHelper will create a lexicon entry with a blank value.
  * With the second version, LexiconHelper will fill in the value as well.
  *
  * You have the option to rewrite the language file to append the new strings.
  *
- * You have the option to rewrite the code file to remove everything but the
- * language_string_key from the lexicon calls.
+ * You have the option to rewrite the code file to remove the description
+ * from the lexicon() calls.
  *
 
 */
 
-/* ToDo: make rewrite Code file(s) a separate utility */
-/* ToDo: Add new lexicon strings, properties, and property descriptions */
+/* ToDo:  check property descriptions and System Setting descriptions */
 /* ToDo: update version */
 /* ToDo: update tutorial */
 /* ToDo: lexicon strings in resources and chunks */
-/* ToDo: walk through directories and process all possible files */
+
 
 if (!defined('MODX_CORE_PATH')) {
     $outsideModx = true;
@@ -109,12 +109,18 @@ if (!defined('MODX_CORE_PATH')) {
     /* @var $modx modX */
 }
 $props = array();
+
 include MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/lexiconhelper.class.php';
     $lexiconHelper = new LexiconHelper($modx, $props);
     $lexiconHelper->init(dirname(dirname(__FILE__)) . '/build.config.php');
     $lexiconHelper->run();
 
-die();
+exit();
+
+/* ************************************************* */
+/* Code below as examples for future use */
+
+
 /*$ss = $modx->getObject('modSystemSetting', array('key' => 'default_template'));
 
 $modx->lexicon->load('core:setting');
@@ -142,92 +148,10 @@ if ($np) {
 }
 exit;*/
 
-$codeChanged = false;
-$props =& $scriptProperties;
-/* @var $modx modX */
-/* This  section for running outside of MODX */
-if ($outsideModx) {
-    $core_path = 'c:/xampp/htdocs/addons/assets/mycomponents/example/';
-    $props['code_path'] = $core_path . 'core/components/notify/elements/chunks/';
-    $props['code_file'] = 'nfnotifyformtpl.chunk.html';
-    $props['language_path'] = $core_path . 'core/components/notify/lexicon/';
-    $props['language_file'] = 'form.inc.php';
-    $props['rewriteCodeFile'] = '0';
-    $props['rewriteLanguageFile'] = '0';
-}
-
-
 
 /* language to use for error messages and reports */
-$snippetLanguage = $modx->getOption('manager_language',$props,null);
-$snippetLanguage = !empty ($snippetLanguage) ? $snippetLanguage . ':' : 'en:';
-$modx->lexicon->load($snippetLanguage . 'lexiconhelper:default');
 
-$orphans = array();
-$empty = array();
-$matches = array();
-$search = array(); /* array of lexicon descriptions to be (optionally) removed from code file */
-$replace = array(); /* array of empty strings to use for replacement */
-$code = '';
-$output = '';
-$languageStrings = '';
-$rewriteCodeFile = isset($props['rewriteCodeFile']) && $props['rewriteCodeFile'];
-$rewriteLanguageFile = isset($props['rewriteLanguageFile']) && $props['rewriteLanguageFile'];
-$showCode = isset($props['showCode']) && $props['showCode'];
 
-/* Set log stuff */
-$modx->setLogLevel(modX::LOG_LEVEL_INFO);
-$modx->setLogTarget(XPDO_CLI_MODE ? 'ECHO' : 'HTML');
-
-$path = $modx->getOption('code_path', $props, null);
-$path = str_replace('{core_path}', MODX_CORE_PATH, $path);
-$path = str_replace('{assets_path}', MODX_ASSETS_PATH, $path);
-
-$code_file = $modx->getOption('code_file', $props, null);
-$has_properties = $modx->getOption('has_properties',$props,null) || strstr($code_file,'properties');
-    
-$codeFiles = explode(',', $code_file);
-
-/* collect text in code file(s) */
-foreach($codeFiles as $file) {
-    /* full path to code file - set manually to run outside of MODX */
-    $codeFile = $path . $file;
-
-    /* make sure code file exists */
-    if (! file_exists($codeFile)) {
-        $modx->log(modX::LOG_LEVEL_ERROR, $modx->lexicon('lh.could_not_find_code_file') . ': ' . $codeFile);
-        return '';
-    } else {
-       $code .= file_get_contents($codeFile);
-    }
-}
-$path = $modx->getOption('language_path', $props, null);
-$path = str_replace('{core_path}', MODX_CORE_PATH, $path);
-$path = str_replace('{assets_path}', MODX_ASSETS_PATH, $path);
-$file = $modx->getOption('language_file', $props, null);
-$file = empty ($file)? 'default.inc.php' : $file;
-$language = $modx->getOption('language', $props, null);
-$language = $language ? $language  : 'en';
-
-/* full path to language file - set manually to run outside of MODX */
-$languageFile = $path . $language . '/' . $file;
-
-if (! file_exists($languageFile)) {
-    $modx->log(modX::LOG_LEVEL_ERROR,$modx->lexicon('lh.could_not_find_language_file') . ': ' . $languageFile);
-    return '';
-} else {
-   include $languageFile;
-}
-
-/* find the code strings */
-preg_match_all("/lexicon\(\'([^\\']+)\'\)/", $code, $matches);
-$codeStrings = array_values($matches[1]);
-
-$matches = array();
-
-/* look for language string tags */
-preg_match_all("/\[\[%([^?\]]+)/", $code, $matches);
-$codeStrings = array_merge($codeStrings, $matches[1]);
 
 /* look for descriptions in property files */
 if ($has_properties) {
@@ -272,46 +196,6 @@ if (isset($_lang)) {
     }
 }
 
-
-if (!empty($codeStrings) && !empty($_lang) && empty($untranslated) && empty($empty)) {
-    /* no untranslated code strings */
-    $output .= "\n\n\n   *** " . $modx->lexicon('lh.code_all_present_in_language_file') . ' ***';
-} else {
-    if (!empty($untranslated)) {
-        /* report untranslated code strings */
-        $output .= "\n\n\n   *** " . $modx->lexicon('lh.missing_from_language_file') . ": "   . $languageFile .  " ***\n";
-        $output .= "\n/* Lexicon Strings in: " . $code_file . ' */' . "\n";
-        foreach ($untranslated as $item) {
-            $value = isset($codeStringValues[$item])? $codeStringValues[$item]: '';
-
-            if (! empty($value)) {
-                $codeChanged = true;
-                $languageStrings .= "\n" . '$_lang[' . "'" . $item . "'] = '" . $value . "';";
-            }
-            $output .= "\n" . '$_lang[' . "'" . $item . "'] = '" . $value . "';";
-        }
-    }
-    if (!empty($empty)) {
-        /* report empty strings in language file */
-        $output .= "\n\n\n   *** " . $modx->lexicon('lh.in_lexicon_but_empty') . " ***\n";
-        foreach ($empty as $item) {
-            $output .= "\n" . '$_lang[' . "'" . $item . "'] = '';";
-        }
-    }
-}
-
-$output .= "\n";
-
-if (empty ($orphans) && !empty($_lang)) {
-    /* Report no orphans */
-    $output .= "\n\n\n   *** " . $modx->lexicon('lh.no_orphans') . " ***\n";
-} elseif (!empty($orphans)) {
-    /* list orphans */
-    $output .= "\n\n\n   *** " . $modx->lexicon('lh.orphans') . ' ***' . "\n";
-    foreach($orphans as $key => $value) {
-        $output .= "\n" . '$_lang[' . "'" . $value . "'] = " . "'" . $_lang[$value] . "'";
-    }
-}
 
 if ($rewriteCodeFile) {
 
