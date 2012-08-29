@@ -244,6 +244,7 @@ class CheckProperties {
                 $codeMatches = array_merge($codeMatches, $matches[1]);
             }*/
             $matches = array();
+            /* ToDo: add getProperty() $tags = $this->getProperty('tags',null);*/
             /* get properties accessed with getOption() */
             $pattern = "/getOption\(\'([^\']+)'.+" . $alias . "/";
             preg_match_all($pattern, $this->scriptCode, $matches);
