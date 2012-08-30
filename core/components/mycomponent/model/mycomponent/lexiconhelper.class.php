@@ -244,7 +244,7 @@ class LexiconHelper {
         if (!empty($this->usedSomewhere) && !empty($this->definedSomeWhere)) {
             foreach ($this->definedSomeWhere as $key => $value) {
                 if( !array_key_exists($key, $this->usedSomewhere))
-                    $unused['key'] = $value;
+                    $unused[$key] = $value;
             }
 
         }
@@ -284,6 +284,44 @@ class LexiconHelper {
         return $output;
     }
 
+    public function findEmpty() {
+        $empty = array();
+        foreach ($this->definedSomeWhere as $key => $value) {
+            if (empty($value)) {
+                $empty[] = $key;
+            }
+        }
+        return $empty;
+    }
+
+    public function reportEmpty($empty) {
+        if (empty($empty)) {
+            $output = "\nNo Empty Lexicon strings in lexicon files!";
+        }
+        else {
+            $output = "\nThe following lexicon strings are in a lexicon file, but have no value:";
+            foreach ($empty as $string) {
+                $output .= "\n    \$_lang['" . $string . "'] = '';";
+            }
+        }
+        return $output;
+    }
+
+    public function report() {
+
+        $this->output .= "\n\n  ********  Final Audit ********";
+        $undefined = $this->findUndefined();
+        $this->output .= $this->reportUndefined($undefined);
+
+        $unused = $this->findUnused();
+        $this->output .= $this->reportUnused($unused);
+        $empty = $this->findEmpty();
+        $this->output .= $this->reportEmpty($empty);
+
+        echo $this->output;
+        // echo "\n\nUsed Somewhere: " . print_r($this->usedSomewhere, true);
+        // echo "\n\nDefined Somewhere: " . print_r($this->definedSomeWhere, true);
+    }
 
     /* ToDo: checkPropertyDescriptions() */
     public function checkPropertyDescriptions($element, $type) {
@@ -312,19 +350,6 @@ class LexiconHelper {
          */
     }
 
-    public function report() {
-
-        $this->output .= "\n\n  ********  Final Audit ********";
-        $undefined = $this->findUndefined();
-        $this->output .= $this->reportUndefined($undefined);
-
-        $unused = $this->findUnused();
-        $this->output .= $this->reportUnused($unused);
-
-        echo $this->output;
-        // echo "\n\nUsed Somewhere: " . print_r($this->usedSomewhere, true);
-        // echo "\n\nDefined Somewhere: " . print_r($this->definedSomeWhere, true);
-    }
 
     public function addClassFiles($dir, $file) {
         //$this->output .= "\nIn addClassFiles";
