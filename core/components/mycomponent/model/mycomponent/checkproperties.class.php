@@ -193,29 +193,64 @@ class CheckProperties {
             $this->output .= "\nCould not open file: " . $file;
             return;
         }
-        $line = array();
+        $line = '';
 
         foreach ($lines as $line) {
-
+            $fileName = 'x';
             if (strstr($line, 'include') || strstr($line, 'include_once') || strstr($line, 'require') || strstr($line, 'require_once')) {
                 //$this->output .= "\nHIT: " . $line;
 
                 preg_match('#[0-9a-zA-Z_\-\s]*\.class\.php#',$line, $matches);
                 //$this->output .= "\n" . $matches[0];
 
-                if (isset($this->classFiles[$matches[0]])) {
+                $fileName = isset($matches[0])? $matches[0] : 'x';
 
-                    //$this->output .= "\nIn Classfiles Array";
-                    /* skip files we've already includes */
-                    if (! in_array($matches[0], $this->included)) {
-                        //$this->output .= "\n\nRecursing";
-                        /* file_get_contents add to code goes here */
-                        $this->scriptCode .= file_get_contents($this->classFiles[$matches[0]] . '/' . $matches[0]);
-                        $this->included[] = $matches[0];
-                        $this->getIncludes($this->classFiles[$matches[0]] . '/' . $matches[0]);
-                    }
+
+            }
+            /* check files included with getService() and loadClass() */
+            if (strstr($line, 'modx->getService')) {
+                $pattern = "/modx\s*->\s*getService\s*\(\s*\'[^,]*,\s*'([^']*)/";
+                preg_match($pattern, $line, $matches);
+                $s = strtoLower($matches[1]);
+                if (strstr($s, '.')) {
+                    $r = strrev($s);
+                    $fileName = strrev(substr($r, 0, strpos($r, '.')));
+                }
+                else {
+                    $fileName = $s;
+                }
+                echo "\nINCLUDED" . $fileName;
+
+            }
+            if (strstr($line, 'modx->loadClass')) {
+                $pattern = "/modx\s*->\s*loadClass\s*\(\s*\'([^']*)/";
+                preg_match($pattern, $line, $matches);
+                $s = strtoLower($matches[1]);
+                if (strstr($s, '.')) {
+                    $r = strrev($s);
+                    $fileName = strrev(substr($r, 0, strpos($r, '.')));
+                }
+                else {
+                    $fileName = $s;
+                }
+                echo "\nINCLUDED" . $fileName;
+            }
+            $fileName = strstr($fileName, 'class.php')? $fileName : $fileName . '.class.php';
+
+            if (isset($this->classFiles[$fileName])) {
+
+                //$this->output .= "\nIn Classfiles Array";
+                /* skip files we've already included */
+                if (!in_array($fileName, $this->included)) {
+                    //$this->output .= "\n\nRecursing";
+                    /* file_get_contents add to code goes here */
+                    $this->scriptCode .= file_get_contents($this->classFiles[$fileName] . '/' . $fileName);
+                    $this->included[] = $fileName;
+                    $this->getIncludes($this->classFiles[$fileName] . '/' . $fileName);
                 }
             }
+
+
         }
     }
     public function getProperties() {
