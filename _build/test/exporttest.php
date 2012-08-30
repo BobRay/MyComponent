@@ -30,7 +30,7 @@ class ExportTest extends PHPUnit_Framework_TestCase
     public static function setUpBeforeClass() {
         require_once dirname(__FILE__) . '/build.config.php';
         require_once dirname(__FILE__) . '/uthelpers.class.php';
-        require_once dirname(dirname(__FILE__)) . '/utilities/bootstrap.class.php';
+        require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/core/components/mycomponent/model/mycomponent/bootstrap.class.php';
         require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
         $modx = new modX();
         $bootstrap = new Bootstrap($modx);
@@ -49,7 +49,8 @@ class ExportTest extends PHPUnit_Framework_TestCase
     public static function tearDownAfterClass() {
         require_once dirname(__FILE__) . '/build.config.php';
         require_once dirname(__FILE__) . '/uthelpers.class.php';
-        require_once dirname(dirname(__FILE__)) . '/utilities/bootstrap.class.php';
+        require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/core/components/mycomponent/model/mycomponent/bootstrap.class.php';
+        // require_once dirname(dirname(__FILE__)) . '/utilities/bootstrap.class.php';
         require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
         $modx = new modX();
         $bootstrap = new Bootstrap($modx);
@@ -64,14 +65,14 @@ class ExportTest extends PHPUnit_Framework_TestCase
     {
         require_once dirname(__FILE__) . '/build.config.php';
 
-        //require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
         $modx = new modX();
         $modx->initialize('mgr');
         $this->utHelpers = new UtHelpers();
         $this->bootstrap = new Bootstrap($modx);
         $this->bootstrap->init(dirname(__FILE__) . '/build.config.php');
         $this->bootstrap->createCategory();
-        require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/export.class.php';
+        require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/core/components/mycomponent/model/mycomponent/export.class.php';
+
         $this->export = new Export($modx);
         $this->modx =& $this->export->modx;
         /* @var $categoryObj modCategory */

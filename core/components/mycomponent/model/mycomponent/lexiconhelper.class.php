@@ -89,7 +89,8 @@ class LexiconHelper {
         if (substr($this->source, -1) != "/") {
             $this->source .= "/";
         }
-        require_once $this->source . '_build/utilities/helpers.class.php';
+
+        require_once $this->source . 'core/components/mycomponent/model/mycomponent/helpers.class.php';
         $this->helpers = new Helpers($this->modx, $this->props);
         $this->helpers->init();
 

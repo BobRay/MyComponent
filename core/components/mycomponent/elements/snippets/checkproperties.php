@@ -31,19 +31,21 @@
  * No files are altered.
  */
 
-
+$sourceRoot = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/';
 if (!defined('MODX_CORE_PATH')) {
     /* no $modx object, just getting the paths */
-    require_once dirname(dirname(__FILE__)) . '/build.config.php';
+    $configPath = $sourceRoot . '_build/build.config.php';
+    require_once $configPath;
     require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
 }
 if (!php_sapi_name() == 'cli') {
     echo "<pre>\n"; /* used for nice formatting for $output  */
 }
-require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/checkProperties.class.php';
+
+require_once $sourceRoot . 'core/components/mycomponent/model/mycomponent/checkproperties.class.php';
 
 $checkProperties = new CheckProperties();
-$checkProperties->init(dirname(dirname(__FILE__)) . '/build.config.php');
+$checkProperties->init($sourceRoot . '_build/build.config.php');
 $checkProperties->run();
 
 

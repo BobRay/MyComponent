@@ -70,7 +70,6 @@ class Export
     /** Initializes class variables */
     public function init($configFile) {
         clearstatcache(); /*  make sure is_dir() is current */
-        //$configFile = dirname(dirname(__FILE__)) . '/build.config.php';
         if (file_exists($configFile)) {
             $configProps = include $configFile;
         } else {
@@ -90,7 +89,7 @@ class Export
         if (empty ($this->source)) {
             die('source directory must be set');
         }
-        require_once $this->source . '_build/utilities/helpers.class.php';
+        require_once $this->source . 'core/components/mycomponent/model/mycomponent/helpers.class.php';
         $this->helpers = new Helpers($this->modx, $this->props);
         $this->helpers->init();
         $this->dirPermission = $this->props['dirPermission'];

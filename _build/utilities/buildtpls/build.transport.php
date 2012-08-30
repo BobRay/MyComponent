@@ -159,7 +159,7 @@ if ($hasResources) {
 if ($minifyJS) {
     $modx->log(modX::LOG_LEVEL_INFO, 'Creating js-min file(s)');
     // require $sources['build'] . 'utilities/jsmin.class.php';
-    require MYCOMPONENT_ROOT . '_build/utilities/jsmin.class.php';
+    require MYCOMPONENT_ROOT . 'core/components/mycomponent/model/mycomponent/jsmin.class.php';
 
     $jsDir = $sources['source_assets'] . '/js';
 

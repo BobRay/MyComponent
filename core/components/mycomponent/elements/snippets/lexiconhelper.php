@@ -109,10 +109,10 @@ if (!defined('MODX_CORE_PATH')) {
     /* @var $modx modX */
 }
 $props = array();
-
-include MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/lexiconhelper.class.php';
+$sourceRoot = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/';
+include $sourceRoot . 'core/components/mycomponent/model/mycomponent/lexiconhelper.class.php';
     $lexiconHelper = new LexiconHelper($modx, $props);
-    $lexiconHelper->init(dirname(dirname(__FILE__)) . '/build.config.php');
+    $lexiconHelper->init($sourceRoot . '_build/build.config.php');
     $lexiconHelper->run();
 
 exit();

@@ -89,9 +89,12 @@
 
 /* @var $modx modX */
 $outsideModx = false;
+$sourceRoot = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/';
 if (!defined('MODX_CORE_PATH')) {
     $outsideModx = true;
-    require_once dirname(dirname(__FILE__)).'/build.config.php';
+    $configPath = $sourceRoot . '_build/build.config.php';
+    require_once $configPath;
+
     require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
     $modx= new modX();
     $modx->initialize('mgr');
@@ -120,11 +123,11 @@ if ($outsideModx) {
 
 $props =& $scriptProperties;
 
-require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/export.class.php';
+require_once $sourceRoot . 'core/components/mycomponent/model/mycomponent/export.class.php';
 
 $export = new Export($modx,$props);
 
-if ($export->init(dirname(dirname(__FILE__)) . '/build.config.php')) {
+if ($export->init($sourceRoot . '_build/build.config.php')) {
     $objects = explode(',', $props['process']);
     foreach ($objects as $object) {
         $export->process(trim($object));

@@ -40,7 +40,7 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
         $modx->setLogLevel(modX::LOG_LEVEL_ERROR);
         $modx->setLogTarget('ECHO');
 
-        require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/bootstrap.class.php';
+        require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/core/components/mycomponent/model/mycomponent/bootstrap.class.php';
 
         $this->bootstrap = new Bootstrap($modx);
         $this->modx =& $this->bootstrap->modx;

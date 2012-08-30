@@ -53,8 +53,13 @@
 $props =& $scriptProperties;
 
 /* @var $modx modX */
+$sourceRoot = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) .'/';
+
+
 if (!defined('MODX_CORE_PATH')) {
-    require_once dirname(dirname(__FILE__)) . '/build.config.php';
+
+    $configPath = $sourceRoot . '_build/build.config.php';
+    require_once $configPath;
     require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
     $modx= new modX();
     $modx->initialize('mgr');
@@ -68,10 +73,10 @@ if (!php_sapi_name() == 'cli') {
 $scriptProperties = array();
 
 $props =& $scriptProperties;
-require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/_build/utilities/bootstrap.class.php';
+require_once $sourceRoot . 'core/components/mycomponent/model/mycomponent/bootstrap.class.php';
 $bootStrap = new Bootstrap($modx,$props);
 
-$bootStrap->init(dirname(dirname(__FILE__)) . '/build.config.php');
+$bootStrap->init($sourceRoot . '_build/build.config.php');
 /* These can be run independently -- comment out the ones you don't want to run.
  * There's no risk in running all of them since no existing files or objects will
  * be overwritten. */
