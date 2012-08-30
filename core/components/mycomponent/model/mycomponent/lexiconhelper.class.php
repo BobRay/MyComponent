@@ -374,9 +374,11 @@ class LexiconHelper {
             $this->output .= "\nCould not open file: " . $file;
             return;
         }
-        $line = array();
+        $line = '';
+        $fileName = 'x';
 
         foreach ($lines as $line) {
+            /* process lexicon->load() lines */
             if (strstr($line,'lexicon->load')) {
                 preg_match('#lexicon->load\s*\s*\(\s*\'(.*)\'#', $line, $matches);
                 if (isset($matches[1]) && !empty($matches[1])) {
@@ -384,8 +386,8 @@ class LexiconHelper {
                         $this->loadedLexiconFiles[] = $matches[1];
                     }
                 }
-                // echo "\n" . $matches[1];
 
+            /* process lexicon entries */
             } elseif (strstr($line, 'modx->lexicon')) {
                 preg_match('#modx->lexicon\s*\s*\(\s*[\'\"](.*)[\'\"]#', $line, $matches);
                 if (isset($matches[1]) && !empty($matches[1])) {
@@ -404,40 +406,57 @@ class LexiconHelper {
                         $this->lexiconCodeStrings[$lexString] = $value;
                     }
                 }
-                //echo "\n" . $matches[1];
+            }
+            /* recursively process includes files */
+            if (strstr($line, 'include') || strstr($line, 'include_once') || strstr($line, 'require') || strstr($line, 'require_once')) {
+
+                preg_match('#[0-9a-zA-Z_\-\s]*\.class\.php#', $line, $matches);
+                $fileName = isset($matches[0]) && !empty($matches[0]) ? $matches[0] : 'x';
 
             }
 
-            if (strstr($line, 'include') || strstr($line, 'include_once') || strstr($line, 'require') || strstr($line, 'require_once')) {
-                //$this->output .= "\nHIT: " . $line;
+            /* check files included with getService() and loadClass() */
+            if (strstr($line, 'modx->getService')) {
+                $pattern = "/modx\s*->\s*getService\s*\(\s*\'[^,]*,\s*'([^']*)/";
+                preg_match($pattern, $line, $matches);
+                $s = strtoLower($matches[1]);
+                if (strstr($s, '.')) {
+                    $r = strrev($s);
+                    $fileName = strrev(substr($r, 0, strpos($r, '.')));
+                }
+                else {
+                    $fileName = $s;
+                }
+            }
+            if (strstr($line, 'modx->loadClass')) {
+                $pattern = "/modx\s*->\s*loadClass\s*\(\s*\'([^']*)/";
+                preg_match($pattern, $line, $matches);
+                $s = strtoLower($matches[1]);
+                if (strstr($s, '.')) {
+                    $r = strrev($s);
+                    $fileName = strrev(substr($r, 0, strpos($r, '.')));
+                }
+                else {
+                    $fileName = $s;
+                }
+            }
 
-                preg_match('#[0-9a-zA-Z_\-\s]*\.class\.php#', $line, $matches);
-                //$this->output .= "\n" . $matches[0];
 
+            $fileName = strstr($fileName, 'class.php')
+                ? $fileName
+                : $fileName . '.class.php';
+            if (isset($this->classFiles[$fileName])) {
 
-                if (isset($this->classFiles[$matches[0]])) {
-
-                    //$this->output .= "\nIn Classfiles Array";
-                    // skip files we've already included
-                    if (!in_array($matches[0], $this->included)) {
-                        //$this->output .= "\n\nRecursing";
-                        //$this->scriptCode .= file_get_contents($this->classFiles[$matches[0]] . '/' . $matches[0]);
-                        $this->included[] = $matches[0];
-                        $this->getIncludes($this->classFiles[$matches[0]] . '/' . $matches[0]);
-                    }
+                // skip files we've already included
+                if (!in_array($fileName, $this->included)) {
+                    //$this->output .= "\n\nRecursing";
+                    $this->included[] = $fileName;
+                    $this->getIncludes($this->classFiles[$fileName] . '/' . $fileName);
                 }
             }
         }
     }
-    public function getLexStrings($topicString)  {
 
-        $this->modx->lexicon->load($topicString);
-        //$this->modx->lexicon->
-
-
-
-
-    }
 
     public function dir_walk($callback, $dir, $types = null, $recursive = false, $baseDir = '') {
 

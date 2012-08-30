@@ -219,8 +219,6 @@ class CheckProperties {
                 else {
                     $fileName = $s;
                 }
-                echo "\nINCLUDED" . $fileName;
-
             }
             if (strstr($line, 'modx->loadClass')) {
                 $pattern = "/modx\s*->\s*loadClass\s*\(\s*\'([^']*)/";
@@ -233,7 +231,6 @@ class CheckProperties {
                 else {
                     $fileName = $s;
                 }
-                echo "\nINCLUDED" . $fileName;
             }
             $fileName = strstr($fileName, 'class.php')? $fileName : $fileName . '.class.php';
 
