@@ -259,6 +259,11 @@ $components = array(
         ),
     ),
 
+    /* ******************************************* */
+    /* These settings are used by LexiconHelper */
+    'rewriteCodeFiles' => false, // remove ~~descriptions
+    'rewriteLexiconFiles' => false, // automatically add missing strings to lexicon files
+    /* ******************************************* */
 
     /* If your extra needs Menus, set this to true, create them
      * in the Manager, and export them with exportObjects. Be sure to set their
