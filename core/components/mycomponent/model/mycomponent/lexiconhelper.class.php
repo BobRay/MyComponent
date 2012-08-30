@@ -325,10 +325,18 @@ class LexiconHelper {
 
     /* ToDo: checkPropertyDescriptions() */
     public function checkPropertyDescriptions($element, $type) {
-        /* scandir _build/properties, include properties file,
-         * check  lexicon properties.inc.php and default.inc.php file for property names and descriptions,
+        /*
+         * check  lexicon properties.inc.php for property names and descriptions,
          * output strings.
         */
+
+        $propsFileName = $this->helpers->getFileName($element, $type, 'properties');
+        $propsFilePath = $this->targetBase . '_build/properties/' . $propsFileName;
+        if (file_exists($propsFileName)) {
+            $props = include $propsFileName;
+            $this->output .= "\nChecking Properties for " . $element . ' -- Type' . $type;
+        }
+
 
     }
 
@@ -442,8 +450,10 @@ class LexiconHelper {
 
             /* check files included with getService() and loadClass() */
             if (strstr($line, 'modx->getService')) {
+                $matches = array();
                 $pattern = "/modx\s*->\s*getService\s*\(\s*\'[^,]*,\s*'([^']*)/";
                 preg_match($pattern, $line, $matches);
+                if (!isset($matches[1])) continue;
                 $s = strtoLower($matches[1]);
                 if (strstr($s, '.')) {
                     $r = strrev($s);
@@ -456,6 +466,8 @@ class LexiconHelper {
             if (strstr($line, 'modx->loadClass')) {
                 $pattern = "/modx\s*->\s*loadClass\s*\(\s*\'([^']*)/";
                 preg_match($pattern, $line, $matches);
+                if (!isset($matches[1])) continue;
+
                 $s = strtoLower($matches[1]);
                 if (strstr($s, '.')) {
                     $r = strrev($s);
