@@ -276,7 +276,7 @@ class CheckProperties {
                 $codeMatches = array_merge($codeMatches, $matches[1]);
             }*/
             $matches = array();
-            /* ToDo: add getProperty() $tags = $this->getProperty('tags',null);*/
+
             /* get properties accessed with getOption() */
             $pattern = "/getOption\(\'([^\']+)'.+" . $alias . "/";
             preg_match_all($pattern, $this->scriptCode, $matches);
@@ -284,11 +284,21 @@ class CheckProperties {
     //$this->output .= "\n getOption\n" . print_r($matches[1], true);
             $codeMatches = array_merge($codeMatches, $matches[1]);
 
+
+
             //$codeMatches = array_unique($this->codeMatches);
 
             //$this->output .= "\nCOUNT: " . count($codeMatches) . " properties in code file(s)\n";
             $this->codeMatches = array_merge($this->codeMatches, $codeMatches);
         }
+        /* ToDo: add getProperty() $tags = $this->getProperty('tags',null);*/
+        $matches = array();
+        $pattern = "/getProperty\(\'([^\']+)'/";
+        preg_match_all($pattern, $this->scriptCode, $matches);
+        //$this->output .= "\n PropsAlias " . $propsAlias . "\n";
+        //$this->output .= "\n getOption\n" . print_r($matches[1], true);
+        $codeMatches = array_merge($codeMatches, $matches[1]);
+        $this->codeMatches = array_merge($this->codeMatches, $codeMatches);
     }
 
     public function checkProperties($element, $elementType) {
