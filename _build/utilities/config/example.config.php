@@ -262,7 +262,7 @@ $components = array(
     /* ******************************************* */
     /* These settings are used by LexiconHelper */
     'rewriteCodeFiles' => false, // remove ~~descriptions
-    'rewriteLexiconFiles' => false, // automatically add missing strings to lexicon files
+    'rewriteLexiconFiles' => true, // automatically add missing strings to lexicon files
     /* ******************************************* */
 
     /* If your extra needs Menus, set this to true, create them
