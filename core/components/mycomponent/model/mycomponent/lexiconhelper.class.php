@@ -151,9 +151,9 @@ class LexiconHelper {
 
             $missing = $this->findMissing();
             $this->reportMissing($missing);
-
-            $this->checkPropertyDescriptions($element, $type);
         }
+        $lexPropStrings = $this->getLexiconPropertyStrings();
+        $this->checkPropertyDescriptions($lexPropStrings);
 
         $this->report();
     }
@@ -309,7 +309,7 @@ class LexiconHelper {
 
     public function report() {
 
-        $this->output .= "\n\n  ********  Final Audit ********";
+        $this->output .= "\n\n********  Final Audit  ********";
         $undefined = $this->findUndefined();
         $this->output .= $this->reportUndefined($undefined);
 
@@ -323,21 +323,136 @@ class LexiconHelper {
         // echo "\n\nDefined Somewhere: " . print_r($this->definedSomeWhere, true);
     }
 
-    /* ToDo: checkPropertyDescriptions() */
-    public function checkPropertyDescriptions($element, $type) {
-        /*
-         * check  lexicon properties.inc.php for property names and descriptions,
-         * output strings.
-        */
+    public function getLexiconPropertyStrings() {
+        $_lang = array();
+        $lexiconFilePath = $this->targetCore . 'lexicon/' . 'en' . '/' . 'properties.inc.php';
+        if (file_exists($lexiconFilePath)) {
+            require $lexiconFilePath;
+        } else {
+           // $this->output .= "\nNo properties.inc.php lexicon file";
+        }
+        return $_lang;
+    }
 
-        $propsFileName = $this->helpers->getFileName($element, $type, 'properties');
-        $propsFilePath = $this->targetBase . '_build/properties/' . $propsFileName;
-        if (file_exists($propsFileName)) {
-            $props = include $propsFileName;
-            $this->output .= "\nChecking Properties for " . $element . ' -- Type' . $type;
+    /**
+     * Check  lexicon properties.inc.php for property descriptions,
+     * output strings.
+     */
+    public function checkPropertyDescriptions($lexStrings) {
+
+        $this->output .= "\n\n********  Checking for property description lexicon strings ********";
+        foreach($this->props['elements'] as $type => $elementList) {
+
+            $elements = empty($elementList)? array() : explode(',', $elementList);
+            foreach ($elements as $element ) {
+                $propsFileName = $this->helpers->getFileName($element, $type, 'properties');
+                $propsFilePath = $this->targetBase . '_build/data/properties/' . $propsFileName;
+                /* process one properties file */
+                $missing = array();
+                $empty = array();
+                if (file_exists($propsFilePath)) {
+                    $props = include $propsFilePath;
+                    $this->output .= "\n\n********\nChecking Properties for " . $element . ' -- Type: ' . $type;
+                    if (!is_array($props)) {
+                        $this->output .= "\nNo properties in " . $propsFileName;
+                    } else {
+                        foreach($props as $prop) {
+                            $description = $prop['desc'];
+
+                            if (strstr($description, '~~')) {
+                                $s = explode('~~', $description);
+                                $lexKey = $s[0];
+                            } else {
+                                $lexKey = $description;
+                            }
+                            if ( ! array_key_exists($lexKey, $lexStrings)) {
+                                $missing[] = $description;
+                            } else {
+                                if (empty($lexStrings[$lexKey])) {
+                                    if (isset($s[1])) {
+                                        $empty[$lexKey] = $s[1];
+                                    }
+                                }
+                            }
+                        }
+                        $comment = "/* Used in " . $propsFileName . " */";
+                        $this->updateLexiconPropertiesFile($missing, $empty, $comment);
+                    }
+
+                }
+                else {
+                    // $this->output .= "\n\nNo Properties file for " . $element . '  -- at ' . $propsFilePath;
+                }
+            }
+        }
+    }
+
+    public function updateLexiconPropertiesFile($missing, $empty, $comment) {
+        $emptyFixed = 0;
+        $code = '';
+        if (empty($missing) && empty($empty) ) {
+            $this->output .= "\nNo missing property descriptions in lexicon file!";
+            $this->output .= "\nNo empty property descriptions in lexicon file!";
+            return;
+        } else {
+            $lexFile = $this->targetCore . '/lexicon/en/properties.inc.php';
+            $lexFileContent = file_get_contents($lexFile);
+            $original = $lexFileContent;
+        }
+
+        if (empty($missing)) {
+            $this->output .= "\nNo missing property description lexicon strings!";
+        } else {
+            foreach ($missing as $string) {
+                $val = strstr($string, '~~') ? explode('~~', $string) : array($string,'');
+                // $appendedDesc = isset($val[1])? $val[1] : '';
+                $code  .= "\n\$_lang['" . $val[0] . "'] = '" . $val[1] . "';";
+            }
+            if (strstr($lexFileContent, $comment)) {
+                $lexFileContent = str_replace($comment, $comment . $code,$lexFileContent);
+            } else {
+                $lexFileContent .= "\n\n" . $comment . $code . "\n";
+            }
+        }
+        if (!empty ($empty)) {
+            foreach ($empty as $key => $value) {
+                //$pattern = "/(_lang\[')" . $key . "('] = )''/";
+                //$replace = "$1$key$2'" . $value . "'";
+                $pattern = "/(_lang\[')" . $key . "(']\s*=\s* )''/";
+                $replace = "$1$key$2'" . $value . "'";
+                preg_match($pattern, $lexFileContent, $matches);
+                $count = 0;
+                $lexFileContent = preg_replace($pattern, $replace, $lexFileContent,  1, $count);
+                $emptyFixed += $count;
+            }
+            $this->output .= "\nFixed " . $emptyFixed . ' empty lexicon string(s)';
+        } else {
+            $this->output .= "\nNo empty property descriptions in lexicon file!";
+        }
+        if ($this->props['rewriteLexiconFiles'] && (!empty($missing) || $emptyFixed)) {
+            $fp = fopen($lexFile, 'w');
+            if ($fp) {
+                fwrite($fp, $lexFileContent);
+                fclose($fp);
+                if (!empty($missing)) {
+                    $this->output .= "\nUpdated properties.inc.php entries with these keys:";
+                    foreach($missing as $key => $value) {
+                       $this->output .= "\n    " . $value;
+                    }
+                    if ($emptyFixed) {
+                    $this->output .= "\nFixed " . $emptyFixed . ' empty lexicon string(s)';
+                    }
+                }
+            } else {
+                $this->output .= "\nCould not open lexicon properties file for writing: " . $lexFile;
+            }
+        } else {
+            $this->output .= "\nCode to add to lexicon properties file:";
+            $this->output .= "\n" . $comment . "\n" . $code . "\n\n";
         }
 
 
+        echo print_r($empty, true);
     }
 
     /* ToDo: checkSystemEventDescriptions() ?? */
