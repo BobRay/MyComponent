@@ -368,19 +368,19 @@ class LexiconHelper {
                             if ( ! array_key_exists($lexKey, $lexStrings)) {
                                 $missing[] = $description;
                             } else {
-                                if (empty($lexStrings[$lexKey])) {
-                                    if (isset($s[1])) {
+                                if (isset($s[1])) {
+                                    if ($lexStrings[$lexKey] != $s[1] ) {
                                         $empty[$lexKey] = $s[1];
                                     }
                                 }
+
                             }
                         }
                         $comment = "/* Used in " . $propsFileName . " */";
                         $this->updateLexiconPropertiesFile($missing, $empty, $comment);
                     }
 
-                }
-                else {
+                } else {
                     // $this->output .= "\n\nNo Properties file for " . $element . '  -- at ' . $propsFilePath;
                 }
             }
@@ -405,7 +405,6 @@ class LexiconHelper {
         } else {
             foreach ($missing as $string) {
                 $val = strstr($string, '~~') ? explode('~~', $string) : array($string,'');
-                // $appendedDesc = isset($val[1])? $val[1] : '';
                 $code  .= "\n\$_lang['" . $val[0] . "'] = '" . $val[1] . "';";
             }
             if (strstr($lexFileContent, $comment)) {
@@ -416,16 +415,17 @@ class LexiconHelper {
         }
         if (!empty ($empty)) {
             foreach ($empty as $key => $value) {
-                //$pattern = "/(_lang\[')" . $key . "('] = )''/";
-                //$replace = "$1$key$2'" . $value . "'";
-                $pattern = "/(_lang\[')" . $key . "(']\s*=\s* )''/";
+                $pattern = "/(_lang\[')" . $key . "(']\s*=\s* )'.*'/";
                 $replace = "$1$key$2'" . $value . "'";
                 preg_match($pattern, $lexFileContent, $matches);
                 $count = 0;
                 $lexFileContent = preg_replace($pattern, $replace, $lexFileContent,  1, $count);
                 $emptyFixed += $count;
             }
-            $this->output .= "\nFixed " . $emptyFixed . ' empty lexicon string(s)';
+            $this->output .= "\nUpdated lexicon string(s) with these key(s)";
+                foreach($empty as $key => $value) {
+                    $this->output .= "\n    " . $key;
+                }
         } else {
             $this->output .= "\nNo empty property descriptions in lexicon file!";
         }
