@@ -407,7 +407,8 @@ class LexiconHelper {
         } else {
             foreach ($missing as $string) {
                 $val = strstr($string, '~~') ? explode('~~', $string) : array($string,'');
-                $code  .= "\n\$_lang['" . $val[0] . "'] = '" . $val[1] . "';";
+                $qc = strchr($val[1], "'")? '"': "'";
+                $code  .= "\n\$_lang['" . $val[0] . "'] = {$qc}" . $val[1] . "{$qc};";
             }
             if (strstr($lexFileContent, $comment)) {
                 $lexFileContent = str_replace($comment, $comment . $code,$lexFileContent);
@@ -418,7 +419,8 @@ class LexiconHelper {
         if (!empty ($empty)) {
             foreach ($empty as $key => $value) {
                 $pattern = "/(_lang\[')" . $key . "(']\s*=\s* )'.*'/";
-                $replace = "$1$key$2'" . $value . "'";
+                $qc = strchr($value, "'")? '"' : "'";
+                $replace = "$1$key$2{$qc}" . $value . "{$qc}";
                 preg_match($pattern, $lexFileContent, $matches);
                 $count = 0;
                 $lexFileContent = preg_replace($pattern, $replace, $lexFileContent,  1, $count);
