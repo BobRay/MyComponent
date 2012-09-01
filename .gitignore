@@ -6,6 +6,7 @@ web.config
 
 # ignore all config.core.php
 config.core.php
+!build.config.php
 
 # ignore all compressed js and css
 *-min.css
