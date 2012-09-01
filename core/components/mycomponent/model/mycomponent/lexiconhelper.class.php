@@ -234,7 +234,8 @@ class LexiconHelper {
         if (!empty($missing)) {
             $this->output .= "\nStrings missing from Language file(s):";
             foreach ($missing as $key => $value) {
-                $this->output .= "\n    \$_lang['" . $key . "'] = '" . $value . "';";
+                $qc = strchr($value, "'")? '"' : "'";
+                $this->output .= "\n    \$_lang['" . $key . "'] = {$qc}" . $value . "{$qc};";
             }
 
         }
