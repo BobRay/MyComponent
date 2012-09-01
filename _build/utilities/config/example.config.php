@@ -43,8 +43,13 @@ $components = array(
         'readme.md' => true, /* Description file for GitHub project home page */
     ),
 
-    /* Array of languages for which you will have language files and
-     * comma-separated list of filenames ('.inc.php' will be added as a suffix) */
+    /* two-letter code of your primary language */
+    'primaryLanguage' => 'en',
+    /* Array of languages for which you will have language files, and
+     * comma-separated list of filenames ('.inc.php' will be added as a suffix).
+     *  */
+
+
     'languages' => array(
         'en' => 'default,properties,forms',
     ),

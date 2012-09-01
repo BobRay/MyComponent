@@ -55,6 +55,7 @@ class LexiconHelper {
     public $included;
     public $output;
     public $codeMatches;
+    public $primaryLanguage;
     public $loadedLexiconFiles = array();
     public $lexiconCodeStrings = array();
     public $usedSomewhere = array();
@@ -97,6 +98,7 @@ class LexiconHelper {
         $packageNameLower = $this->props['packageNameLower'];
         $this->targetBase = MODX_BASE_PATH . 'assets/mycomponents/' . $packageNameLower . '/';
         $this->targetCore = $this->targetBase . 'core/components/' . $packageNameLower . '/';
+        $this->primaryLanguage = $this->props['primaryLanguage'];
         clearstatcache(); /*  make sure is_dir() is current */
 
 
@@ -325,7 +327,7 @@ class LexiconHelper {
 
     public function getLexiconPropertyStrings() {
         $_lang = array();
-        $lexiconFilePath = $this->targetCore . 'lexicon/' . 'en' . '/' . 'properties.inc.php';
+        $lexiconFilePath = $this->targetCore . 'lexicon/' . $this->primaryLanguage . '/' . 'properties.inc.php';
         if (file_exists($lexiconFilePath)) {
             require $lexiconFilePath;
         } else {
@@ -395,7 +397,7 @@ class LexiconHelper {
             $this->output .= "\nNo empty property descriptions in lexicon file!";
             return;
         } else {
-            $lexFile = $this->targetCore . '/lexicon/en/properties.inc.php';
+            $lexFile = $this->targetCore . '/lexicon/' . $this->primaryLanguage . '/properties.inc.php';
             $lexFileContent = file_get_contents($lexFile);
             $original = $lexFileContent;
         }
