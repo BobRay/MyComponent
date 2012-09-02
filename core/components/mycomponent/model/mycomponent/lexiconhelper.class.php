@@ -139,7 +139,7 @@ class LexiconHelper {
                 $this->output .= "\nCode File(s) analyzed: " . implode(', ', $this->included);
             }
             if (!empty($this->loadedLexiconFiles)) {
-                $this->output .= "\nLexicon File(s) analyzed: " . implode(', ', $this->loadedLexiconFiles);
+                $this->output .= "\nLexicon File(s) analyzed: " . implode(', ', array_keys($this->loadedLexiconFiles));
             }
             $this->usedSomewhere = array_merge($this->usedSomewhere, $this->lexiconCodeStrings);
 
@@ -152,7 +152,7 @@ class LexiconHelper {
             $this->output .= "\n" . count($this->lexiconFileStrings) . ' lexicon strings in lexicon file(s)';
 
             $missing = $this->findMissing();
-            $this->reportMissing($missing);
+            $this->output .= $this->reportMissing($missing);
         }
         $lexPropStrings = $this->getLexiconPropertyStrings();
         $this->checkPropertyDescriptions($lexPropStrings);
@@ -163,33 +163,11 @@ class LexiconHelper {
     public  function getLexiconFileStrings() {
         $files = $this->loadedLexiconFiles;
         $included = array();
-        foreach ($files as $topicStr) {
-            if (!is_string($topicStr) || $topicStr == '') continue;
-            // if (in_array($topicStr, $this->_loadedTopics)) continue;
-            $nspos = strpos($topicStr, ':');
-            $languages = array_keys($this->props['languages']);
-            $language = $languages[0];
-            $namespace = $this->props['category'];
-            if ($nspos === false) {
-                $topic_parsed = $topicStr;
-
-            } else { /* if namespace, search specified lexicon */
-                $params = explode(':', $topicStr);
-                if (count($params) <= 2) {
-                    //$language = $this->props['languages'][0];
-                    $namespace = $params[0];
-                    $topic_parsed = $params[1];
-                }
-                else {
-                    $language = $params[0];
-                    $namespace = $params[1];
-                    $topic_parsed = $params[2];
-                }
-            }
-            $fileName = $this->getLexiconFilePath($language, $namespace, $topic_parsed);
-            if (!in_array($fileName, $included)) {
-                $included[] = $fileName;
-                // $this->output .=  "\nLexicon file: " . $fileName;
+        foreach ($files as $fqn => $path) {
+            if (!is_string($fqn) || $fqn == '') continue;
+            $fileName = $path;
+            if (!in_array($fqn, $included)) {
+                $included[] = $fqn;
                 if (file_exists($fileName)) {
                     $_lang = null;
                     include $fileName;
@@ -202,13 +180,41 @@ class LexiconHelper {
                     $this->output .= "\nCan't find lexicon file: " . $fileName;
                 }
             }
-
-
         }
     }
-    public function getLexiconFilePath($language, $namespace, $topic) {
-        return $this->targetCore . 'lexicon' . '/' . $language . '/' . $topic . '.inc.php';
+
+    /**
+     * Returns a fully qualified lexicon spec (e.g. 'example:en:default.inc.php')
+     * @param $lexFileSpec (partial or full lexicon spec (e.g., default, en:default)
+     * @return string
+     */
+    public function getLexFqn ($lexFileSpec) {
+        $nspos = strpos($lexFileSpec, ':');
+        $languages = array_keys($this->props['languages']);
+        $language = $languages[0];
+        $namespace = $this->props['category'];
+        if ($nspos === false) {
+            $topic_parsed = $lexFileSpec;
+
+        } else { /* if namespace, search specified lexicon */
+            $params = explode(':', $lexFileSpec);
+            if (count($params) <= 2) {
+                $namespace = $params[0];
+                $topic_parsed = $params[1];
+            }
+            else {
+                $language = $params[0];
+                $namespace = $params[1];
+                $topic_parsed = $params[2];
+            }
+        }
+        return $language . ':' . $namespace . ':'  . $topic_parsed;
     }
+    public function getLexiconFilePath($fqn) {
+        $val = explode(':', $fqn);
+        return $this->targetCore . 'lexicon' . '/' . $val[0] . '/' . $val[2] . '.inc.php';
+    }
+
     public function findMissing() {
         $missing = array();
         $inCode = $this->lexiconCodeStrings;
@@ -217,28 +223,58 @@ class LexiconHelper {
         foreach($inCode as $key => $value) {
 
             if (! array_key_exists($key, $inLexicon)) {
-                // $this->output .= "\nMissing: " . $key . '  -  ' . $value;
                 if (!array_key_exists($key, $missing)) {
                     $missing[$key] = $value;
                 }
             }
         }
         if (is_array($inCode) && !empty($inCode) && empty($missing)) {
-            $this->output .= "\n   *** " . $this->modx->lexicon('lh.code_all_present_in_language_file') . ' ***';
+            $this->output .= "\nNo missing strings in lexicon file!";
         }
         return $missing;
 
     }
 
     public function reportMissing($missing) {
+        $output = "";
         if (!empty($missing)) {
-            $this->output .= "\nStrings missing from Language file(s):";
+            //$this->output .= "\nStrings missing from Language file(s):";
+            $code = '';
             foreach ($missing as $key => $value) {
                 $qc = strchr($value, "'")? '"' : "'";
-                $this->output .= "\n    \$_lang['" . $key . "'] = {$qc}" . $value . "{$qc};";
+                $code .= "\n\$_lang['" . $key . "'] = {$qc}" . $value . "{$qc};";
+            }
+            $count = count($this->loadedLexiconFiles);
+            if ($count == 1 && $this->props['rewriteLexiconFiles']) {
+                /* append $output to lexicon file  */
+                $fileName = reset($this->loadedLexiconFiles);
+
+                if (file_exists($fileName)) {
+                    $fp = fopen($fileName, 'a');
+                    if ($fp) {
+                        fwrite($fp, $code);
+                        $output .= "\nUpdated Lexicon file -- " . key($this->loadedLexiconFiles) .  " with these strings:\n" . $code;
+                        fclose($fp);
+                    } else {
+                        $output .= "\nCould not open lexicon file: " . $fileName;
+                    }
+                }
+
+
+            } elseif ($this->props['rewriteLexiconFiles']) {
+                $output .= "\n\nCan't update multiple Lexicon files;\npaste these strings in the appropriate file:\n" . $code;
+            } else {
+                $this->output .= "\nMissing Lexicon strings:" . $code;
+
             }
 
+            // $this->output .= "\nloaded\n" .print_r($this->loadedLexiconFiles, true);
+            // $this->output .= "\nincluded\n" . print_r($this->included, true);
+
+            // $this->output .= "\nCount: " . count($this->loadedLexiconFiles);
         }
+
+        return $output;
 
     }
 
@@ -535,8 +571,9 @@ class LexiconHelper {
             if (strstr($line,'lexicon->load')) {
                 preg_match('#lexicon->load\s*\s*\(\s*\'(.*)\'#', $line, $matches);
                 if (isset($matches[1]) && !empty($matches[1])) {
-                    if (! in_array($matches[1], $this->loadedLexiconFiles )) {
-                        $this->loadedLexiconFiles[] = $matches[1];
+                    $fqn = $this->getLexFqn($matches[1]);
+                    if (! in_array($fqn, array_keys($this->loadedLexiconFiles ))) {
+                        $this->loadedLexiconFiles[$fqn] = $this->getLexiconFilePath($fqn);
                     }
                 }
 
