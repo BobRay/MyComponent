@@ -95,9 +95,9 @@ class LexiconHelper {
         $this->helpers = new Helpers($this->modx, $this->props);
         $this->helpers->init();
 
-        $packageNameLower = $this->props['packageNameLower'];
-        $this->targetBase = MODX_BASE_PATH . 'assets/mycomponents/' . $packageNameLower . '/';
-        $this->targetCore = $this->targetBase . 'core/components/' . $packageNameLower . '/';
+        $this->packageNameLower = $this->props['packageNameLower'];
+        $this->targetBase = MODX_BASE_PATH . 'assets/mycomponents/' . $this->packageNameLower . '/';
+        $this->targetCore = $this->targetBase . 'core/components/' . $this->packageNameLower . '/';
         $this->primaryLanguage = $this->props['primaryLanguage'];
         clearstatcache(); /*  make sure is_dir() is current */
 
@@ -347,7 +347,7 @@ class LexiconHelper {
     }
 
     public function report() {
-
+        $this->output .= $this->checkSystemSettingDescriptions();
         $this->output .= "\n\n********  Final Audit  ********";
         $undefined = $this->findUndefined();
         $this->output .= $this->reportUndefined($undefined);
@@ -356,7 +356,7 @@ class LexiconHelper {
         $this->output .= $this->reportUnused($unused);
         $empty = $this->findEmpty();
         $this->output .= $this->reportEmpty($empty);
-        $this->output .= $this->checkSystemSettingDescriptions();
+
 
         echo $this->output;
         // echo "\n\nUsed Somewhere: " . print_r($this->usedSomewhere, true);
@@ -504,7 +504,7 @@ class LexiconHelper {
            There's no hover help for them in the Manager */
     }
 
-    /* ToDo:  check SystemSettingDescriptions */
+
     public function checkSystemSettingDescriptions() {
         /*
         * These should be in the default topic  (checked).
@@ -515,16 +515,16 @@ class LexiconHelper {
         * Note: In the Manager, just update the system setting
         * and add the name and description (don't use keys or underscores)
         */
+        /* ToDo: Update lexicon file */
         $settings = $this->props['newSystemSettings'];
         $output = '';
         if (!empty($settings)) {
             $_lang = array();
             $missing = array();
             $output .= "\n\n*********************************************";
-            $output = "\n\nChecking System Setting names and descriptions";
+            $output .= "\nChecking System Setting names and descriptions";
             $fqn = $this->getLexFqn('default');
             $fileName = $this->getLexiconFilePath($fqn);
-            echo "\nFILENAME: " . $fileName;
             include $fileName;
             foreach($settings as $key => $value ) {
                 $key = strtoLower($key);
@@ -539,7 +539,7 @@ class LexiconHelper {
             }
         if (!empty($missing)) {
          $output .= "\nMissing from default.inc.php file (Setting Name/Setting Description):\n";
-         $this->modx->lexicon->load($this->primaryLanguage . $this->packageNameLower .  'default');
+         $this->modx->lexicon->load($this->primaryLanguage . ':' . $this->packageNameLower . ':default');
          foreach ($missing as $key => $value) {
              /* use values from MODX Lexicon Management, if set */
              $dbValue = $this->modx->lexicon($key);
