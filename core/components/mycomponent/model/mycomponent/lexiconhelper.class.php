@@ -356,6 +356,7 @@ class LexiconHelper {
         $this->output .= $this->reportUnused($unused);
         $empty = $this->findEmpty();
         $this->output .= $this->reportEmpty($empty);
+        $this->output .= $this->checkSystemSettingDescriptions();
 
         echo $this->output;
         // echo "\n\nUsed Somewhere: " . print_r($this->usedSomewhere, true);
@@ -504,14 +505,54 @@ class LexiconHelper {
     }
 
     /* ToDo:  check SystemSettingDescriptions */
-    public function checksystemSettingDescriptions() {
+    public function checkSystemSettingDescriptions() {
         /*
-         * These should be in the default topic  (checked).
-         * Check for both name and description  lex strings (not key):
+        * These should be in the default topic  (checked).
+        * Check for both name and description  lex strings (not key):
+        * setting_mySetting   Name of mySetting
+        * setting_mySetting_desc   Description of mySetting
          *
-         * setting_access_policies_version  -- Access Policy Schema Version
-         * setting_access_policies_version_desc -- The version of the Access Policy system. DO NOT CHANGE.
-         */
+        * Note: In the Manager, just update the system setting
+        * and add the name and description (don't use keys or underscores)
+        */
+        $settings = $this->props['newSystemSettings'];
+        $output = '';
+        if (!empty($settings)) {
+            $_lang = array();
+            $missing = array();
+            $output .= "\n\n*********************************************";
+            $output = "\n\nChecking System Setting names and descriptions";
+            $fqn = $this->getLexFqn('default');
+            $fileName = $this->getLexiconFilePath($fqn);
+            echo "\nFILENAME: " . $fileName;
+            include $fileName;
+            foreach($settings as $key => $value ) {
+                $key = strtoLower($key);
+                $lexNameKey = 'setting_' . $key;
+                $lexDescKey = 'setting_' . $key . '_desc';
+                if ( !in_array($lexNameKey, $_lang)) {
+                 $missing[$lexNameKey] = '';
+                }
+                if (!in_array($lexDescKey, $_lang)) {
+                 $missing[$lexDescKey] = '';
+                }
+            }
+        if (!empty($missing)) {
+         $output .= "\nMissing from default.inc.php file (Setting Name/Setting Description):\n";
+         $this->modx->lexicon->load($this->primaryLanguage . $this->packageNameLower .  'default');
+         foreach ($missing as $key => $value) {
+             /* use values from MODX Lexicon Management, if set */
+             $dbValue = $this->modx->lexicon($key);
+             $value = $dbValue != $key? $dbValue : $value;
+             $qc = strstr($value, "'") ? '"' : "'";
+             $output .= "\n\$_lang['" . $key . "'] = {$qc}" . $value . "{$qc};";
+         }
+        }
+    } else {
+    $output = "\nNo System Setting names to check";
+    }
+
+    return $output;
     }
 
 
