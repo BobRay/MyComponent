@@ -7,23 +7,76 @@ $components = array(
     'packageNameLower' => 'example',
     'version' => '1.0.0',
     'release' => 'beta1',
-    'category' => 'Example',
+    'category' => 'Example', /* usually the same as the package name */
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
     'authorUrl' => 'http://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
     'packageUrl' => 'http://bobsguides.com/example-tutorial.html',
     'copyright' => '2012',
-    'createdon' => strftime('%m-%d-%Y'),
-    'prefix' => 'expl_', /* prefix for language strings */
+    'createdon' => strftime('%m-%d-%Y'), /* no need to edit this except to change format */
     'offerAbort' => false, /* Show package name and ask user to confirm before running */
     'packageDescription' => 'Example project for MyComponent extra.',
     'gitHubUsername' => 'BobRay',
     'gitHubRepository' => 'Example',
 
+    /* Array containing the actual Element Names used in your extra */
+    'elements' => array(
+        'modSnippet' => 'Snippet1,Snippet2',
+        'modPlugin' => 'Plugin1,Plugin2',
+        'modTemplateVar' => 'Tv1,Tv2',
+        'modTemplate' => 'Template1,Template2',
+        'modChunk' => 'Chunk1,Chunk2',
+    ),
 
-    /* Change this if you need to alter any tpl files. Use a new dir. under _build/utilities.
-     * Be sure to copy all build tpls to the new directory */
+    /* comma-separated lists of the actual Resource pagetitles in your extra */
+    'resources' => 'Resource1,Resource2',
+
+    /* set these only if you want to override system defaults */
+    'resource_defaults' => array(
+        //'published' => false,
+        //'richtext' => false,
+        //'hidemenu' => true,
+        //'cacheable' => false,
+        //'searchable' => true,
+        //'context' => 'web',
+        //'template' => 12,  /* must be a template ID */
+    ),
+
+    /* two-letter code of your primary language */
+    'primaryLanguage' => 'en',
+
+    /* Array of languages for which you will have language files,
+     *  and comma-separated list of filenames
+     *  ('.inc.php' will be added as a suffix). */
+    'languages' => array(
+        'en' => 'default,properties,forms',
+    ),
+    /* ********************************************* */
+    /* Define optional directories to create under assets.
+     * Add your own as needed.
+     * Set to true to create directory.
+     * Set to false to skip.
+     * Empty js and/or css files will be created.
+     */
+    'hasAssets' => true,
+    'minifyJS' => true,
+    /* minify any JS files */
+    'assetsDirs' => array(
+        'css' => true,
+        /* If true, a default (empty) CSS file will be created */
+        'js' => true,
+        /* If true, a default (empty) JS file will be created */
+        'images' => true,
+        'audio' => true,
+        'video' => true,
+        'themes' => true,
+    ),
+
+
+    /* Standard location for Tpl files under _build/utilities.
+* If you want to alter a tpl, just duplicate it with a prefix of 'my' and
+* MyComponent will use yours instead of the default */
     'tplDir' => 'buildtpls',
 
     /* Set directory permissions for project directories */
@@ -39,43 +92,18 @@ $components = array(
     'initialize' => true,
     'defaultStuff' => array(
         'utilities' => false, /* copy entire utilities dir to target dir -- Usually unnecessary */
+        /* standard doc files */
         'docs' => 'readme.txt,license.txt,changelog.txt,tutorial.html',
-        'readme.md' => true, /* Description file for GitHub project home page */
+        /* (optional) Description file for GitHub project home page */
+        'readme.md' => true,
     ),
 
-    /* two-letter code of your primary language */
-    'primaryLanguage' => 'en',
-    /* Array of languages for which you will have language files, and
-     * comma-separated list of filenames ('.inc.php' will be added as a suffix).
-     *  */
 
-
-    'languages' => array(
-        'en' => 'default,properties,forms',
-    ),
 
     'hasCore' => true, /* assume every package has a core directory */
 
     /* ********************************************* */
-    /* Define optional directories to create under assets.
-     * Add your own as needed.
-     * Set to true to create directory.
-     * Set to false to skip.
-     * Empty js and/or css files will be created.
-     */
-    'hasAssets' => true,
-    'minifyJS' => true, /* minify any JS files */
-    'assetsDirs' => array(
-        'css' => true, /* default (empty) CSS file will be created */
-        'js' => true, /* default (empty) JS file will be created */
-        'images' => true,
-        'audio' => true,
-        'video' => true,
-        'themes' => true,
-    ),
-
-    /* ********************************************* */
-    /* Comma-separated list of extra script resolver(s) to be run
+    /* (optional) Comma-separated list of extra script resolver(s) to be run
      * during install. Note that resolvers to connect plugins to events,
      * property sets to elements, resources to templates, and TVs to
      * templates will be created automatically -- *don't* list those here!
@@ -85,21 +113,22 @@ $components = array(
      * Suffix 'resolver.php' will be added automatically */
     'resolvers' => 'default,addUsers',
 
-    /* Validators can abort the install after checking conditions.
-     * comma-separated list of validator names (no prefix of suffix) or ''
-     * 'default' creates a default resolver named after the package
-     * suffix 'validator.php' will be added */
+    /* (optional) Validators can abort the install after checking
+     * conditions. comma-separated list of validator names (no
+     * prefix of suffix) or '' 'default' creates a default resolver
+     *  named after the package suffix 'validator.php' will be added */
 
     'validators' => 'default,hasGdLib',
 
-    /* install.options is needed if you will interact with user during the install.
+    /* (optional) install.options is needed if you will interact
+     * with user during the install.
      * See the user.input.php file for more information.
      * Set this to 'install.options' or ''
      * The file will be created as _build/install.options/user.input.php
      * Don't change the filename or directory name. */
     'install.options' => 'install.options',
 
-    /* Suffixes for resource and element code files */
+    /* Suffixes to use for resource and element code files */
     'suffixes' => array(
         'modPlugin' => '.php',
         'modSnippet' => '.php',
@@ -110,32 +139,50 @@ $components = array(
 
     /* ********************************************* */
     /* These control the creation of elements */
-    'createElementFiles' => true, /* create element files */
-    'createElementObjects' => true, /* also create objects in MODX */
-    'makeStatic' => '', /* Comma-separated list of elements to set as static */
+
+    /* Create element files for the package.
+    * Will not overwrite existing files */
+    'createElementFiles' => true,
+
+    /* Also create objects (snippets, chunks, etc. in MODX.
+     * Will not overwrite existing objects */
+    'createElementObjects' => true,
+
+    /* (optional) Comma-separated list of elements to set as static */
+    'makeStatic' => '',
+
+    /* Create resource content files for the package.
+     * Necessary if you your package has resources */
     'createResourceFiles' => true,
+
+    /* Create empty resource objects in MODX.
+     * Will not overwrite existing resources */
     'createResourceObjects' => true,
-    'allStatic' => false, /* will make all element objects static - makeStatic will be ignored */
+
+    /* (optional) will make all element objects static - makeStatic will be ignored */
+    'allStatic' => false,
 
     /* ********************************************* */
-    /* Array of class files to be created.
+    /* (optional) Only necessary if you will have class files.
+     *
+     * Array of class files to be created.
+     *
      * Format is:
-     * 'ClassName' => 'directory:filename',  ('.class.php' will be appended automatically)
+     *
+     * 'ClassName' => 'directory:filename',
+     *
+     * or
+     *
+     *  'ClassName' => 'filename',
+     *
+     * ('.class.php' will be appended automatically)
+     *
      *  Class file will be created as:
-     * yourcomponent/core/components/yourcomponent/model/{directory}/{filename}.class.php
+     * yourcomponent/core/components/yourcomponent/model/[directory/]{filename}.class.php
      *
      * Set to array() if there are no classes. */
     'classes' => array(
         'Example' => 'example:example',
-    ),
-
-    /* Array containing the actual Element Names */
-    'elements' => array(
-        'modSnippet' => 'Snippet1,Snippet2',
-        'modPlugin' => 'Plugin1,Plugin2',
-        'modTemplateVar' => 'Tv1,Tv2',
-        'modTemplate' => 'Template1,Template2',
-        'modChunk' => 'Chunk1,Chunk2',
     ),
 
     /* Comma-separated array of your new System Events (not default
@@ -163,20 +210,7 @@ $components = array(
     ),
 
 
-    /* comma-separated lists of the actual Resource pagetitles */
-    /* ToDo: Make sure resources are created near the top of the build script */
-    'resources' => 'Resource1,Resource2',
 
-    /* set these only if you want to override system defaults */
-    'resource_defaults' => array(
-        //'published' => false,
-        //'richtext' => false,
-        //'hidemenu' => true,
-        //'cacheable' => false,
-        //'searchable' => true,
-        //'context' => 'web',
-        //'template' => 12,  /* must be a template ID */
-    ),
 
     /* Array of template names and comma-separated
      * list of resource pagetitles.
