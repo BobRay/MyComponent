@@ -56,6 +56,7 @@ class LexiconHelper {
     public $output;
     public $codeMatches;
     public $primaryLanguage;
+    public $element; // current element being processed
     public $loadedLexiconFiles = array();
     public $lexiconCodeStrings = array();
     public $usedSomewhere = array();
@@ -127,6 +128,7 @@ class LexiconHelper {
         }
 
         foreach ($elements as $element => $type) {
+            $this->element = $element;
             $this->included = array();
             $this->loadedLexiconFiles = array();
             $this->lexiconCodeStrings = array();
@@ -140,6 +142,8 @@ class LexiconHelper {
             }
             if (!empty($this->loadedLexiconFiles)) {
                 $this->output .= "\nLexicon File(s) analyzed: " . implode(', ', array_keys($this->loadedLexiconFiles));
+            } else {
+                $this->output .= "\nNo Lexicon File(s) loaded";
             }
             $this->usedSomewhere = array_merge($this->usedSomewhere, $this->lexiconCodeStrings);
 
@@ -247,16 +251,33 @@ class LexiconHelper {
             $count = count($this->loadedLexiconFiles);
             if ($count == 1 && $this->props['rewriteLexiconFiles']) {
                 /* append $output to lexicon file  */
+                $comment = '/* used in ' . $this->element . ' or its included classes */';
                 $fileName = reset($this->loadedLexiconFiles);
 
+
                 if (file_exists($fileName)) {
-                    $fp = fopen($fileName, 'a');
-                    if ($fp) {
-                        fwrite($fp, $code);
-                        $output .= "\nUpdated Lexicon file -- " . key($this->loadedLexiconFiles) .  " with these strings:\n" . $code;
-                        fclose($fp);
+                    $content = file_get_contents($fileName);
+                    $success = false;
+                    if (strstr($content, $comment)) {
+                        $content = str_replace($comment, $comment , $code, $content);
+                        $fp = fopen($fileName , 'w');
+                        if ($fp) {
+                            fwrite($fp, $content);
+                            fclose($fp);
+                            $success = true;
+                        }
                     } else {
-                        $output .= "\nCould not open lexicon file: " . $fileName;
+                        $fp = fopen($fileName, 'a');
+                        if ($fp) {
+                            fwrite($fp, "\n\n" . $comment . $code);
+                            fclose($fp);
+                            $success = true;
+                        } else {
+                            $output .= "\nCould not open lexicon file: " . $fileName;
+                        }
+                    }
+                    if ($success) {
+                    $output .= "\nUpdated Lexicon file -- " . key($this->loadedLexiconFiles) . " with these strings:\n" . $code;
                     }
                 }
 
@@ -292,9 +313,17 @@ class LexiconHelper {
     public function reportUnused($unused) {
         $output = '';
         if (!empty($unused)) {
-            $output .= "\nLexicon strings never used in code:";
+            $code = '';
             foreach($unused as $key => $value) {
-                $output .= "\n    \$_lang['" . $key . "'] = '" . $value . "';";
+                /* skip System Setting strings */
+                if (! strstr($key, 'setting_')) {
+                    $code .= "\n    \$_lang['" . $key . "'] = '" . $value . "';";
+                }
+            }
+            if (!empty($code)) {
+                $output .= "\nThe following lexicon strings never used in code:\n" . $code;
+            } else {
+                $output .= "\nNo unused strings in lexicon files!";
             }
         } else {
             $output .= "\nNo unused strings in lexicon files!";
@@ -516,42 +545,81 @@ class LexiconHelper {
         * and add the name and description (don't use keys or underscores)
         */
         /* ToDo: Update lexicon file */
+
+        $comment = "/* System Setting Names and Descriptions */";
         $settings = $this->props['newSystemSettings'];
         $output = '';
         if (!empty($settings)) {
             $_lang = array();
             $missing = array();
-            $output .= "\n\n*********************************************";
+            $output .= "\n\n********  Checking for System Setting lexicon strings ********";
             $output .= "\nChecking System Setting names and descriptions";
             $fqn = $this->getLexFqn('default');
             $fileName = $this->getLexiconFilePath($fqn);
             include $fileName;
+
+            if (empty($_lang)) {
+                $output .= "\nNo lexicon strings in default.inc.php";
+                return $output;
+            }
             foreach($settings as $key => $value ) {
                 $key = strtoLower($key);
                 $lexNameKey = 'setting_' . $key;
                 $lexDescKey = 'setting_' . $key . '_desc';
-                if ( !in_array($lexNameKey, $_lang)) {
+                if ( !in_array($lexNameKey, array_keys($_lang))) {
                  $missing[$lexNameKey] = '';
                 }
-                if (!in_array($lexDescKey, $_lang)) {
+                if (!in_array($lexDescKey, array_keys($_lang))) {
                  $missing[$lexDescKey] = '';
                 }
             }
         if (!empty($missing)) {
-         $output .= "\nMissing from default.inc.php file (Setting Name/Setting Description):\n";
-         $this->modx->lexicon->load($this->primaryLanguage . ':' . $this->packageNameLower . ':default');
-         foreach ($missing as $key => $value) {
-             /* use values from MODX Lexicon Management, if set */
-             $dbValue = $this->modx->lexicon($key);
-             $value = $dbValue != $key? $dbValue : $value;
-             $qc = strstr($value, "'") ? '"' : "'";
-             $output .= "\n\$_lang['" . $key . "'] = {$qc}" . $value . "{$qc};";
-         }
-        }
-    } else {
-    $output = "\nNo System Setting names to check";
-    }
 
+            $output .= "\nMissing from default.inc.php file (Setting Name/Setting Description):\n";
+            $this->modx->lexicon->load($this->primaryLanguage . ':' . $this->packageNameLower . ':default');
+            $code = '';
+            foreach ($missing as $key => $value) {
+             /* use values from MODX Lexicon Management, if set */
+                $dbValue = $this->modx->lexicon($key);
+                $value = $dbValue != $key? $dbValue : $value;
+                $qc = strstr($value, "'") ? '"' : "'";
+                $code .= "\n\$_lang['" . $key . "'] = {$qc}" . $value . "{$qc};";
+            }
+            if ($this->props['rewriteLexiconFiles']) {
+                $content = file_get_contents($fileName);
+                $success = false;
+                if (! strstr($content, $comment)) {
+                    $fp = fopen($fileName, 'a');
+                    if ($fp) {
+                        fwrite ($fp, "\n\n" . $comment . $code);
+                        fclose($fp);
+                        $success = true;
+                    } else {
+                        $output .= "\nCould not open default.inc.php for appending";
+                    }
+                } else {
+                    $content = str_replace($comment, $comment . $code, $content);
+                    $fp = fopen($fileName, 'w');
+                    if ($fp) {
+                        fwrite($fp, $content);
+                        fclose($fp);
+                        $success = true;
+                    }
+                    else {
+                        $output .= "\nCould not open default.inc.php for writing";
+                    }
+                }
+                if ($success) {
+                    $output .= "\nUpdated these strings in default.inc.php:\n" . $code;
+                }
+
+            } else {
+                $output .= "\nThese strings are missing from default.inc.php:" . $code;
+            }
+        }
+        } else {
+            $output = "\nNo System Setting names to check";
+        }
     return $output;
     }
 
