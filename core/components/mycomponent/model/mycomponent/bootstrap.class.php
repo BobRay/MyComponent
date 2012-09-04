@@ -145,7 +145,9 @@ class Bootstrap {
             $namespaceObj = $this->modx->newObject('modNamespace');
             $namespaceObj->set('name', $namespace);
             $namespaceObj->set('path' , '{core_path}components/' . $this->packageNameLower . '/');
-            $namespaceObj->set('assets_path', '{assets_path}components/' . $this->packageNameLower . '/');
+            if ($this->props['hasAssets']) {
+                $namespaceObj->set('assets_path', '{assets_path}components/' . $this->packageNameLower . '/');
+            }
             if ($namespaceObj->save()) {
                 $this->modx->log(MODX::LOG_LEVEL_INFO, 'Created namespace Object: ' . $namespaceObj->get('name'));
             }
