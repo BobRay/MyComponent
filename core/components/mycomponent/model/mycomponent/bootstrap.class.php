@@ -134,6 +134,27 @@ class Bootstrap {
         }
         unset($category, $categoryObj);
     }
+
+    /** Creates namespace object in DB */
+    public function createNamespace() {
+
+        /* @var $namespaceObj modNamespace */
+        $namespace = $this->props['packageNameLower'];
+        $namespaceObj = $this->modx->getObject('modNamespace', array('name' => $namespace));
+        if (!$namespaceObj) {
+            $namespaceObj = $this->modx->newObject('modNamespace');
+            $namespaceObj->set('name', $namespace);
+            $namespaceObj->set('path' , '{core_path}components/' . $this->packageNameLower . '/');
+            $namespaceObj->set('assets_path', '{assets_path}components/' . $this->packageNameLower . '/');
+            if ($namespaceObj->save()) {
+                $this->modx->log(MODX::LOG_LEVEL_INFO, 'Created namespace Object: ' . $namespaceObj->get('name'));
+            }
+        }
+        else {
+            $this->modx->log(MODX::LOG_LEVEL_INFO, $this->packageNameLower . ' namespace object already exists ');
+        }
+        unset($namespace, $namespaceObj);
+    }
     /** Calls $this->createElement to create element files and/or objects */
     public function createElements() {
         $this->modx->log(MODX::LOG_LEVEL_INFO, 'Category ID: ' . $this->categoryId);

@@ -54,6 +54,7 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
         $this->utHelpers->removeResources($this->modx, $this->bootstrap);
         $this->utHelpers->removePropertySets($this->modx, $this->bootstrap);
         $this->bootstrap->createCategory();
+        $this->bootstrap->createNamespace();
     }
 
 
@@ -65,9 +66,12 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
     {
         // echo "\n---------------- TEARDOWN --------------------";
         /* @var $category modCategory */
+        /* @var $namespace modNamespace */
         $this->utHelpers->rrmdir($this->bootstrap->targetBase);
         $category = $this->modx->getObject('modCategory', array('category' => 'UnitTest'));
         if ($category) $category->remove();
+        $namespace = $this->modx->getObject('modNamespace', array('name'=> 'unittest'));
+        if ($namespace) $namespace->remove();
         $this->utHelpers->rrmdir($this->bootstrap->targetBase);
         $this->utHelpers->removeElements($this->modx, $this->bootstrap);
         $this->utHelpers->removeResources($this->modx, $this->bootstrap);
@@ -106,6 +110,15 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('modCategory', $category);
         $this->assertEquals($this->bootstrap->props['category'],$category->get('category'));
+    }
+    public function testNamespace() {
+        /* @var $namespace modNamespace */
+        $namespace = $this->modx->getObject('modNamespace', array('name' => 'unittest'));
+        $this->assertInstanceOf('modNamespace', $namespace);
+        $this->assertNotEmpty($namespace->get('path'));
+        $this->assertTrue(strstr($namespace->get('path'),'{core_path}') !== false);
+        $this->assertTrue(strstr($namespace->get('assets_path'), '{assets_path}') !== false);
+
     }
     public function testCreateElements() {
         /* @var $obj modElement */

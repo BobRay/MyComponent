@@ -83,6 +83,7 @@ $bootStrap->init($sourceRoot . '_build/build.config.php');
 $bootStrap->createBasics();
 $bootStrap->createAssetsDirs();
 $bootStrap->createCategory();
+$bootStrap->createNamespace();
 $bootStrap->createElements();
 $bootStrap->createResources();
 $bootStrap->createPropertySets();
