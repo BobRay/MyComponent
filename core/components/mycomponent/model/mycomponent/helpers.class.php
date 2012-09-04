@@ -357,14 +357,19 @@ class Helpers
                 continue;
             }
             foreach ($subsidiaryObjectNames as $subsidiaryObjectName) {
+                $priority = 0;
                 if (empty($subsidiaryObjectName)) {
                     $this->modx->log(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': subsidiary object name is empty');
                     continue;
                 }
+
                 if (strstr($subsidiaryObjectName, ':')) {
                     $s = explode(':', $subsidiaryObjectName);
                     $subsidiaryObjectName = trim($s[0]);
                     $subsidiaryObjectType = trim($s[1]);
+                    if ($intersectType == 'modPluginEvent') {
+                        $priority = (integer) trim($s[1]);
+                    }
                 }
                 $alias = $this->getNameAlias($subsidiaryObjectType);
                 $subsidiaryObjectType = $intersectType == 'modPluginEvent' ? 'modEvent' : $subsidiaryObjectType;
@@ -399,6 +404,9 @@ class Helpers
                         $intersect = $this->modx->newObject($intersectType);
                         $intersect->set($fieldName1, $mainObject->get('id'));
                         $intersect->set($fieldName2, $intersectType == 'modPluginEvent' ? $subsidiaryObjectName : $subsidiaryObject->get('id'));
+                        if ($intersectType == 'modPluginEvent') {
+                            $intersect->set('priority', $priority);
+                        }
                         if ($intersectType == 'modElementPropertySet') {
                             $intersect->set('element_class', $subsidiaryObjectType);
                         }

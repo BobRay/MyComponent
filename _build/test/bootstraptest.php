@@ -228,6 +228,13 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
             $this->assertNotEmpty($events);
             $events = explode(',', $events);
             foreach ($events as $event) {
+                if (strstr($event, ':')) {
+                    $data = explode(':', $event);
+                    $event = $data[0];
+                    $priority = $data[1];
+                } else {
+                    $priority = 0;
+                }
                 $fields = array (
                     'pluginid' => $pluginObj->get('id'),
                     'event' => $event,
@@ -240,6 +247,7 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
                 }
                 $pluginEvent = $this->modx->getObject('modPluginEvent', $fields);
                 $this->assertInstanceOf('modPluginEvent', $pluginEvent);
+                $this->assertEquals($priority, $pluginEvent->get('priority'));
             }
         }
 

@@ -143,7 +143,7 @@ $components = array(
      * If you need to create new system events, just list them here.
      * Automatically generates resolver to connect and/or create them. */
     'pluginEvents' => array(
-        'utPlugin1' => 'OnDocFormSave,OnUserFormSave,OnUtEvent1,OnUtEvent2',
+        'utPlugin1' => 'OnDocFormSave:1,OnUserFormSave:2,OnUtEvent1:3,OnUtEvent2:4',
         'utPlugin2' => 'OnDocFormSave,OnUserFormSave,OnUtEvent1,OnUtEvent2',
     ),
     /* Array of Templates and comma-separated list of TVs to attach to them.

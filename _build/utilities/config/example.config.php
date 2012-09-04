@@ -194,9 +194,11 @@ $components = array(
 
     /* Array of plugin names and comma-separated list of their events.
      * If you need to create new system events, just list them here.
-     * Automatically generates resolver to connect and/or create them. */
+     * Automatically generates resolver to connect and/or create them.
+     * (optional) Specify the priority with OnSystemEvent:## (where
+     * ## is the priority you want). By default, priority will be 0 */
     'pluginEvents' => array(
-        'Plugin1' => 'OnDocFormSave,OnUserFormSave,OnMyEvent1,OnMyEvent2',
+        'Plugin1' => 'OnDocFormSave:1,OnUserFormSave:2,OnMyEvent1:3,OnMyEvent2:4',
         'Plugin2' => 'OnDocFormSave,OnUserFormSave,OnMyEvent1,OnMyEvent2',
     ),
     /* Array of Templates and comma-separated list of TVs to attach to them.

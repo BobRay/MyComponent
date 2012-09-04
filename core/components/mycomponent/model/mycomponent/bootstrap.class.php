@@ -419,7 +419,7 @@ class Bootstrap {
                     $this->modx->log(MODX::LOG_LEVEL_ERROR, 'pluginresolvercode tpl is empty');
                 }
                 $codeTpl = str_replace('<?php', '', $codeTpl);
-    
+
                 foreach($pluginEvents as $plugin => $events) {
                         $tempCodeTpl = str_replace('[[+plugin]]', $plugin, $codeTpl);
                         $tempCodeTpl = str_replace('[[+events]]', $events, $tempCodeTpl);

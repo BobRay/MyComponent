@@ -9,7 +9,13 @@
             if ($pluginObj) {
                 $pluginId = $pluginObj->get('id');
                 foreach ($events as $event) {
-
+                    if (strstr($event, ':')) {
+                        $data = explode(':', $event);
+                        $event = trim($data[0]);
+                        $priority = (integer) trim($data[1]);
+                    } else {
+                        $priority = 0;
+                    }
                     $pluginEvent = $modx->getObject('modPluginEvent', array(
                         'pluginid' => $pluginId,
                         'event' => $event,
@@ -18,7 +24,7 @@
                         $pluginEvent = $modx->newObject('modPluginEvent');
                         $pluginEvent->set('pluginid', $pluginId);
                         $pluginEvent->set('event', $event);
-                        $pluginEvent->set('priority', 0);
+                        $pluginEvent->set('priority', $priority);
                         $pluginEvent->save();
                     }
                 }
