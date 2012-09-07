@@ -484,22 +484,20 @@ class Export
         $tpl = '';
         if ($type == 'modSnippet' || $type == 'modPlugin') {
             if (! strstr($content, '<?')) {
-                $tpl .= "<?php\n\n";
-                //fwrite($fileFp,"<?php\n\n");
-            }
-            /* add header if it's not already there */
-            if ( (!strstr($content,'GNU')) && (!stristr($content,'License')) ) {
                 $tpl = $this->helpers->getTpl('phpfile.php');
                 $tpl = str_replace('[[+elementName]]', $elementObj->get('name'), $tpl);
                 $tpl = str_replace('[[+elementType]]', substr(strtolower($this->elementType), 3), $tpl);
                 $tpl = $this->helpers->replaceTags($tpl);
+            }
+            if (empty($tpl)) {
+                $this->modx->log(modX::LOG_LEVEL_ERROR, "\n tpl is empty after replacing tags");
             }
         }
         $tpl .= $content;
 
         $this->helpers->writeFile($dir, $fileName, $tpl, $this->dryRun);
         if ($this->dryRun) {
-            $this->modx->log(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
+            $this->modx->log(modX::LOG_LEVEL_INFO, "\n --- End File Content --- \n");
         }
         unset($tpl);
     }
