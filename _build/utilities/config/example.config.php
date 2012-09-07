@@ -293,10 +293,12 @@ $components = array(
         'example_system_setting1' => array(  // key
             'xtype' => 'textField',
             'value' => 'value1',
+            'area' => 'area1',
         ),
         'example_system_setting2' => array( // key
             'xtype' => 'combo-boolean',
             'value' => true,
+            'aria' => 'area2',
         ),
     ),
 

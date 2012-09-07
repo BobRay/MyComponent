@@ -607,11 +607,15 @@ class Bootstrap {
                     if ($setting) {
                         $setting->set('key', $key);
                         $category = strtolower($this->props['category']);
-                        $setting->set('area', $category);
-                        $setting->set('namespace', $category);
+
+                        $setting->set('namespace', $this->packageNameLower);
                         foreach ($fieldValues as $fieldKey => $value) {
                             $setting->set($fieldKey, $value);
                         }
+                        if (! isset($fieldValues['area'])) {
+                            $setting->set('area', $category);
+                        }
+
                         if ($setting->save()) {
                             $this->modx->log(MODX::LOG_LEVEL_INFO, '    Created new system setting ' . $key);
                         } else {
