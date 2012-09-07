@@ -418,8 +418,7 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
 
             $object = $this->modx->getObject('modSystemSetting', array('key' => $settingKey ));
             $this->assertInstanceOf('modSystemSetting', $object);
-            $this->assertEquals(strtolower($this->bootstrap->props['category']), $object->get('namespace'));
-            $this->assertEquals(strtolower($this->bootstrap->props['category']), $object->get('area'));
+            $this->assertEquals(strtolower($this->bootstrap->props['packageNameLower']), $object->get('namespace'));
             $object->remove();
         }
 
