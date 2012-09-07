@@ -256,9 +256,11 @@ class ExportTest extends PHPUnit_Framework_TestCase
 
     public function testProcessSystemSettings() {
         // Remove the following lines when you implement this test.
-        $this->utHelpers->createNewSystemSettings($this->modx, $this->bootstrap);
+        //$this->utHelpers->createNewSystemSettings($this->modx, $this->bootstrap);
+        $this->bootstrap->createNewSystemSettings();
+        $configSettings = count($this->bootstrap->props['newSystemSettings']);
         $settings = $this->modx->getCollection('modSystemSetting', array('namespace' => $this->bootstrap->props['category']));
-        $this->assertEquals(4, count($settings));
+        $this->assertEquals($configSettings, count($settings));
         $this->export->process('systemSettings');
         $fileName = $this->bootstrap->targetBase . '_build/data/transport.settings.php';
         $this->assertFileExists($fileName);
@@ -267,7 +269,7 @@ class ExportTest extends PHPUnit_Framework_TestCase
         $this->assertEmpty(strstr($content, '{{+'));
         $modx =& $this->modx;
         $objects = include $fileName;
-        $this->assertEquals(4, count($objects));
+        $this->assertEquals($configSettings, count($objects));
         $this->utHelpers->removeSystemSettings($this->modx, $this->bootstrap);
     }
 
