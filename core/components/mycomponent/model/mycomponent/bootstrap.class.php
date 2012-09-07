@@ -441,7 +441,7 @@ class Bootstrap {
                 if (empty($codeTpl)) {
                     $this->modx->log(MODX::LOG_LEVEL_ERROR, 'pluginresolvercode tpl is empty');
                 }
-                $codeTpl = str_replace('<?php', '', $codeTpl);
+                $codeTpl = str_replace('<' . '?' . 'php', '', $codeTpl);
 
                 foreach($pluginEvents as $plugin => $events) {
                         $tempCodeTpl = str_replace('[[+plugin]]', $plugin, $codeTpl);
@@ -454,7 +454,7 @@ class Bootstrap {
                 $removeTpl = '';
                 if (!empty($newEvents)) {
                     $removeTpl = $this->helpers->getTpl('removenewevents.php');
-                    $removeTpl = str_replace('<?php', '', $removeTpl);
+                    $removeTpl = str_replace('<' . '?' . 'php', '', $removeTpl);
 
                 }
                 $tpl = str_replace('/* [[+remove_new_events]] */', $removeTpl, $tpl);
@@ -490,7 +490,7 @@ class Bootstrap {
             if (! file_exists($dir . '/' . $fileName)) {
                 $code = '';
                 $codeTpl = $this->helpers->getTpl('tvresolvercode.php');
-                $codeTpl = str_replace('<?php', '', $codeTpl);
+                $codeTpl = str_replace('<' . '?' . 'php', '', $codeTpl);
 
                 foreach ($templateVarTemplates as $template => $tvs) {
                     $tempCodeTpl = str_replace('[[+template]]', $template, $codeTpl);
@@ -528,7 +528,7 @@ class Bootstrap {
             if (!file_exists($dir . '/' . $fileName)) {
                 $code = '';
                 $codeTpl = $this->helpers->getTpl('resourceresolvercode.php');
-                $codeTpl = str_replace('<?php', '', $codeTpl);
+                $codeTpl = str_replace('<' . '?' . 'php', '', $codeTpl);
 
                 foreach ($data as $template => $resources) {
                     $tempCodeTpl = str_replace('[[+template]]', $template, $codeTpl);
@@ -713,7 +713,7 @@ class Bootstrap {
             if (!file_exists($dir . '/' . $fileName)) {
                 $code = '';
                 $codeTpl = $this->helpers->getTpl('propertysetresolvercode.php');
-                $codeTpl = str_replace('<?php', '', $codeTpl);
+                $codeTpl = str_replace('<' . '?' . 'php', '', $codeTpl);
 
                 foreach ($propertySets as $propertySet => $elements) {
                     $tempCodeTpl = str_replace('[[+propertySet]]', $propertySet, $codeTpl);
