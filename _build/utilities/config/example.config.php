@@ -287,7 +287,7 @@ $components = array(
     /* If your extra needs new System Settings, set their field values here.
      * You can also create or edit them in the Manager (System -> System Settings),
      * and export them with exportObjects. If you do that, be sure to set
-     * their namespace and area to the lowercase category of your extra */
+     * their namespace and area to the lowercase package name of your extra */
 
     'newSystemSettings' => array(
         'example_system_setting1' => array(  // key
@@ -310,8 +310,8 @@ $components = array(
 
     /* If your extra needs Menus, set this to true, create them
      * in the Manager, and export them with exportObjects. Be sure to set their
-     * namespace to the lowercase category of your extra */
-    'menus' => false,
+     * namespace to the lowercase package name of your extra */
+    'menus' => true,
 
     /* Comma-separated list of aliases used in code for the properties array.
      * Used by the checkproperties utility to check properties in code against

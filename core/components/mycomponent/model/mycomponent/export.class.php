@@ -206,8 +206,12 @@ class Export
         $tpl = $this->helpers->getTpl('transportfile.php');
         $tpl = str_replace('[[+elementType]]', $element, $tpl);
         $tpl = $this->helpers->replaceTags($tpl);
-
-        $tpl .= "\n\$" . strtolower($element) . " = array();\n\n";
+        $objectName = $this->elementType == 'modAction'? 'menus' : $element;
+        if ($objectName == 'menus') {
+            $tpl .= "/* @var \$action modAction */";
+            $tpl .= "\n/* @var \$menu modMenu */\n";
+        }
+        $tpl .= "\n\$" . strtolower($objectName) . " = array();\n\n";
 
         $i=1;
         /* append the code (returned from writeObject) for each object to $tpl */
@@ -219,7 +223,7 @@ class Export
             $i++;
         }
         /* write transport footer */
-        $tpl .= 'return $' . strtolower($element) . ";\n";
+        $tpl .= 'return $' . strtolower($objectName) . ";\n";
 
         if ($this->dryRun) {
             $this->modx->log(modX::LOG_LEVEL_INFO, '    Would be creating: ' . $transportFile . "\n");
@@ -280,14 +284,19 @@ class Export
         /* element is in the form 'chunk', 'snippet', etc. */
         /* @var $elementObj modElement */
 
-        /* write generic stuff */
-        $tpl = '$' . $element . 's[' . $i . '] = $modx->newObject(' . "'" . $this->elementType . "');" . "\n";
-        $tpl .= '$' . $element . 's[' . $i . '] ->fromArray(array(' . "\n";
-        $tpl .= "    'id' => " . $i . ",\n";
+        /* write header for individual object */
+        if ($this->elementType == 'modAction') {
+            $tpl = '$' . $element . ' = $modx->newObject(' . "'" . $this->elementType . "');" . "\n";
+            $tpl .= '$' . $element . '->fromArray(array(' . "\n";
+            $tpl .= "    'id' => " . $i . ",\n";
+        } else {
+            $tpl = '$' . $element . 's[' . $i . '] = $modx->newObject(' . "'" . $this->elementType . "');" . "\n";
+            $tpl .= '$' . $element . 's[' . $i . '] ->fromArray(array(' . "\n";
+            $tpl .= "    'id' => " . $i . ",\n";
+        }
 
-        $fields = $elementObj->toArray('', true);  // true gets raw values - check this
+        $fields = $elementObj->toArray('', true);
 
-        /* This may not be necessary */
         /* *********** */
         $properties = $elementObj->get('properties');
         $hasProperties = false;
@@ -324,7 +333,11 @@ class Export
             $fields['text'],
             $fields['menu']
         );
-
+        if ($this->elementType == 'modAction' && isset($fields['lang_topics'])) {
+            if (empty($fields['lang_topics'])) {
+                $fields['lang_topics'] = $this->packageNameLower . ':default';
+            }
+        }
         foreach ($fields as $field => $value) {
             if ($field == 'value'  && in_array('combo-boolean', array_values($fields))) {
                 $value = $value? 'true' : 'false';
@@ -362,6 +375,28 @@ class Export
         }
         /* finish up */
         $tpl .= "), '', true, true);\n";
+
+        if ($this->elementType == 'modAction') {
+            /* get matching menu item */
+            $menus = $elementObj->getMany('Menus');
+
+            foreach ($menus as $menu) {
+                /* @var $menu modMenu */
+                $mFields = $menu->toArray('', true);
+                $mFields['action'] = '';
+                $tpl .= '$menu' . 's[' . $i . '] = $modx->newObject(' . "'" . 'modMenu' . "');" . "\n";
+                $tpl .= '$menu' . 's[' . $i . '] ->fromArray(array(' . "\n";
+                $tpl .= "    'id' => " . $i . ",\n";
+                foreach($mFields as $mField => $mValue) {
+                    $tpl .= "    '" . $mField . "'" . " => '" . $mValue . "',\n";
+                }
+                $tpl .= "), '', true, true);\n";
+                $tpl .= "\n\$menus[". $i . "]->addOne(\$action);\n\n";
+                $i++;
+            }
+
+
+        }
 
         if ($this->elementType == 'modResource') {
             $tpl .= "\$resources[" . $i . "]->setContent(file_get_contents(\$sources['data']." . "'resources/" . $fileName . "'));\n\n";

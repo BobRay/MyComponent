@@ -418,28 +418,32 @@ $builder->putVehicle($vehicle);
 if ($hasMenu) {
     /* load menu */
     $modx->log(modX::LOG_LEVEL_INFO,'Packaging in menu...');
-    $menu = include $sources['data'].'transport.menu.php';
-    if (empty($menu)) {
-        $modx->log(modX::LOG_LEVEL_ERROR,'Could not package in menu.');
-    } else {
-        $vehicle= $builder->createVehicle($menu,array (
-        xPDOTransport::PRESERVE_KEYS => true,
-        xPDOTransport::UPDATE_OBJECT => true,
-        xPDOTransport::UNIQUE_KEY => 'text',
-        xPDOTransport::RELATED_OBJECTS => true,
-        xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
-            'Action' => array (
-                xPDOTransport::PRESERVE_KEYS => false,
-                xPDOTransport::UPDATE_OBJECT => true,
-                xPDOTransport::UNIQUE_KEY => array ('namespace','controller'),
+    $menus = include $sources['data'].'transport.menu.php';
+    foreach ($menus as $menu) {
+        if (empty($menu)) {
+            $modx->log(modX::LOG_LEVEL_ERROR,'Could not package in menu.');
+        } else {
+            $vehicle= $builder->createVehicle($menu,array (
+            xPDOTransport::PRESERVE_KEYS => true,
+            xPDOTransport::UPDATE_OBJECT => true,
+            xPDOTransport::UNIQUE_KEY => 'text',
+            xPDOTransport::RELATED_OBJECTS => true,
+            xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
+                'Action' => array (
+                    xPDOTransport::PRESERVE_KEYS => false,
+                    xPDOTransport::UPDATE_OBJECT => true,
+                    xPDOTransport::UNIQUE_KEY => array ('namespace','controller'),
+                ),
             ),
-        ),
-));
-        $builder->putVehicle($vehicle);
-
-        $modx->log(modX::LOG_LEVEL_INFO,'Packaged in '.count($menu).' menu items.');
-        unset($vehicle,$menu);
+    ));
+            $builder->putVehicle($vehicle);
+            unset($vehicle, $menu);
+        }
+        $modx->log(modX::LOG_LEVEL_INFO, 'Packaged in ' . count($menus) . ' menu items.');
     }
+
+
+
 }
 
 /* load system settings */
