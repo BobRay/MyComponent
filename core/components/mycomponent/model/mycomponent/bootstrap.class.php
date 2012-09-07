@@ -594,7 +594,7 @@ class Bootstrap {
             }
         }
     }
-    /** Creates new System Settings if set in project confic file */
+    /** Creates new System Settings if set in project config file */
     public function createNewSystemSettings() {
         $newSettings = $this->modx->getOption('newSystemSettings', $this->props, array());
         if (!empty($newSettings)) {
