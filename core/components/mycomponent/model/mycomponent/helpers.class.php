@@ -102,6 +102,13 @@ class Helpers
             if (empty($text)) {
                 $text = @file_get_contents($this->tplPath . $name);
             }
+            if (empty($text)) {
+                $this->modx->log(MODX::LOG_LEVEL_ERROR, '    Problem loading Tpl file (text is empty) ' . $name  );
+                $text = "<?php\n/* empty header */\n\n";
+            } elseif (strpos($text, '<' . '?' . 'php') === false) {
+                $this->modx->log(MODX::LOG_LEVEL_ERROR, '    Problem loading Tpl file (text has no PHP tag) ' . $name);
+                $text = "<?php\m /* inserted PHP tag */\n\n" . $text;
+            }
         } else { /* use .tpl extension */
             $text = @file_get_contents($this->tplPath . 'my' .  $name . '.tpl');
             if (empty($text)) {
