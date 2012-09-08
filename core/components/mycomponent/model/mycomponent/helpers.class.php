@@ -155,6 +155,9 @@ class Helpers
                 case 'modPlugin':
                     $output = $name .'.'. $suffix . '.' . $extension;
                     break;
+                case 'modClass':
+                    $output = $name . '.' . 'class.' . $extension;
+                    break;
                 default:  /* all other elements get no code file */
                     $output = '';
                     break;

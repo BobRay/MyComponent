@@ -180,19 +180,16 @@ class Bootstrap {
      */
     public function createElement ($name, $type) {
 
-        //echo "\nDIRNAME: " . $fileNameType;
         $fileName = $this->helpers->getFileName($name, $type);
 
         $this->modx->log(MODX::LOG_LEVEL_INFO,'Creating ' . $type . ': ' . $name);
 
         if ($this->props['createElementFiles']) {
             $this->createCodeFile($name, $type);
-            // echo "\nCODE_PATH: " . $codePath . "\n";
         }
         if ($this->props['createElementObjects']) {
             $this->createElementObject($name, $type);
         }
-
     }
 
     /**
@@ -204,7 +201,7 @@ class Bootstrap {
     public function createCodeFile($name, $type) {
         $dir = $this->helpers->getCodeDir($this->targetCore, $type);
         $fileName = $this->helpers->getFileName($name, $type);
-        // echo "\nDIR: " . $dir . "\n" . 'FILENAME: ' . $fileName . "\n" . "TYPE: " . $type . "\n";
+
         if (empty($fileName)) {
             $this->modx->log(MODX::LOG_LEVEL_INFO, '    skipping ' . $type . ' file -- needs no code file');
         } else {
@@ -411,7 +408,6 @@ class Bootstrap {
                 } else {
                     $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
                 }
-
             }
         }
 }
@@ -436,7 +432,6 @@ class Bootstrap {
 
             if (! file_exists($dir . '/' . $fileName)) {
                 $code = '';
-    
                 $codeTpl = $this->helpers->getTpl('pluginresolvercode.php');
                 if (empty($codeTpl)) {
                     $this->modx->log(MODX::LOG_LEVEL_ERROR, 'pluginresolvercode tpl is empty');
@@ -621,20 +616,14 @@ class Bootstrap {
                         } else {
 
                         }
-
                     }
                 } else {
                     $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $key . ' System Setting already exists');
-
-
                 }
             }
-
         } else {
             $this->modx->log(MODX::LOG_LEVEL_INFO, 'No System Settings in config file');
         }
-
-
     }
     /** Creates example file for user input during install if set in project config file */
     public function createInstallOptions() {
@@ -749,7 +738,8 @@ class Bootstrap {
                 } else {  /* no directory */
                     $dir = $baseDir . '/' . $data[0];
                 }
-                $fileName = strtolower($className) . '.class.php';
+                $fileName = $this->helpers->getFileName($className,'modClass', true);
+
                 if (!file_exists($dir . '/' . $fileName)) {
                     $tpl = $this->helpers->getTpl('classfile.php');
                     $tpl = str_replace('MyClass', $className, $tpl );
@@ -762,8 +752,6 @@ class Bootstrap {
 
             }
         }
-
-
     }
 
     /* The next three function are not used, but can replace placeholders in files after the fact */
@@ -812,4 +800,4 @@ class Bootstrap {
            return false;
     }
 
-} /* end of class */
+} /* end of Bootstrap class */
