@@ -3,8 +3,8 @@
 
 $components = array(
     /* These are used to define the package and set values for placeholders */
-    'packageName' => 'Example',
-    'packageNameLower' => 'example',
+    'packageName' => 'Example', /* No spaces, no dashes */
+    'packageNameLower' => 'example', /* No spaces, no dashes */
     'version' => '1.0.0',
     'release' => 'beta1',
     'category' => 'Example', /* usually the same as the package name */
@@ -40,7 +40,6 @@ $components = array(
         //'cacheable' => false,
         //'searchable' => true,
         //'context' => 'web',
-        //'template' => 12,  /* must be a template ID */
     ),
 
     /* two-letter code of your primary language */
