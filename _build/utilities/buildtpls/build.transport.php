@@ -42,6 +42,9 @@ if (empty($props)) {
     die('Could not find project config file at ' . $configFile);
 }
 
+if (strpos($props['packageNameLower'], '-') || strpos($props['packageNameLower'], ' ') ) {
+    die ("\$packageNameLower cannot contain spaces or hyphens");
+}
 /* Set package info be sure these are all set in the project config file */
 define('PKG_NAME', $props['packageName']);
 define('PKG_NAME_LOWER', $props['packageNameLower']);
