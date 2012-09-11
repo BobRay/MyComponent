@@ -1,6 +1,6 @@
 ## Proposal of Submission
 
-This is a refactor of the already in place functionality of MyComponent. The purpose of this refactor is to keep the functionality in place, but reduce the previously necessary duplication of effort. In actuality, bootstrap, exportobjects, and build.transport all do the same job, but in different directions.
+This is a supplemental refactor of the already in place functionality of MyComponent. The purpose of this supplement is to keep the functionality in place, but reduce the previously necessary duplication of effort. In actuality, bootstrap, exportobjects, and build.transport all do the same job, but in different directions.
 
 By abstracting this out just a bit, they can all become shallow uni-directional functions and serve the same purpose. This allows us to create even shallower copies that reference the actual MyComponent's utilities, but allow further separation.
 
