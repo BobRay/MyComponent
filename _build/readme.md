@@ -22,7 +22,7 @@ This file will be copied to the new component's _build directory. This will make
 
 Shallow "pointer" copies will be added to the _build directory under "utilities". This keeps command-line/url fully functional, and allows the GUI to work without changing "workspaces".
 
-The real utilities, whereever they end up, will actually call the classes and force the directions. In other words, the classes are not functional without the bootstrap, utilities, or build.transport to use them. They do not have a $modx object without being given one, and therefore cannot do anything unless told.
+The real utilities (for the UI), whereever they end up, will actually call the classes and force the directions. In other words, the classes are not functional without the bootstrap, utilities, or build.transport to use them. They do not have a $modx object without being given one, and therefore cannot do anything unless told.
 
 ### How does this change MyComponent?
 
