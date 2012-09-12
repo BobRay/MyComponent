@@ -1,8 +1,6 @@
-Contained here is the omni-directional skeletal structure.  
-
 ## Component
 
-This structure focuses around the Component object. The Component serves as the parent for all of the other classes in this directory.
+This structure focuses around the Component object. The Component serves as the parent for all of the other classes in this directory. The Component Class has 4 major public methods: New(), Put(), Get(), Build(). These methods are top-down, running the methods in the same name in all child objects. 
 
 ### Core Methods
 
