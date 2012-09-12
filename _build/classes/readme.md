@@ -1,4 +1,3 @@
-
 ## Component
 
 This structure focuses around the Component object. The Component serves as the parent for all of the other classes in this directory. Component contains the majority of the functionality of BootStrap, ExportObjects and BuildTransport.
@@ -37,3 +36,6 @@ Most of the subclasses of ComponentVehicle are going to be "shallow" extensions.
 
 ### Notes on "Submission"
 It has been advised to me that addMany() doesn't always seem to work right. As such, this component will focus on looped use of addOne().
+
+## Other Classes
+The hierarchy listed in this document is not complete, but most classes have been accounted for in the actual file system. This document merely highlights the "major players". As functionality progresses, this document will become fleshed out.
