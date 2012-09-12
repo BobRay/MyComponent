@@ -1,5 +1,4 @@
 
-
 ## Component
 
 This structure focuses around the Component object. The Component serves as the parent for all of the other classes in this directory. Component contains the majority of the functionality of BootStrap, ExportObjects and BuildTransport.
@@ -24,9 +23,17 @@ Compiles the File Heirarchy into a Transport Package. This may only be run by th
 
 Most other classes in this structure extend the ComponentVehicle. This is where, for many, the top-down methods are contained, unless a specific subclass requires additional functionality. In essence, a Vehicle is just an PHP array containing all of the properties of a MODx object.
 
+Like Component, ComponentVehicle will have the same 4 primary methods. These may only be called by an object that is a child of Component. Component, however, does not  have to know the organizational structure, below its immediate children, and vice versa. 
+
+### Subclasses
+Most of the subclasses of ComponentVehicle are going to be "shallow" extensions. This allows the base code to do most of the work, but gives the object the opportunity to override.
+
 #### Classes that extend ComponentVehicle
 * ComponentResource
 * ComponentChunk (via ComponentElement)
 * ComponentTemplate (via ComponentElement)
 * ComponentSnippet (via ComponentElement)
 * ComponentPlugin (via ComponentElement)
+
+### Notes on "Submission"
+It has been advised to me that addMany() doesn't always seem to work right. As such, this component will focus on looped use of addOne().
