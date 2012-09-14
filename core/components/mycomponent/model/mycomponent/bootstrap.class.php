@@ -94,7 +94,7 @@ class Bootstrap {
         if (strpos($this->props['packageNameLower'], '-') || strpos($this->props['packageNameLower'], ' ')) {
             die ("\$packageNameLower cannot contain spaces or hyphens");
         }
-        
+
         if (isset($this->props['offerAbort']) && $this->props['offerAbort']) {
             echo 'Processing ' . $this->packageName . 'Continue? (y/n - Enter) ';
             $input = fgetc(STDIN);

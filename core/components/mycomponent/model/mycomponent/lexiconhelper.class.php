@@ -121,7 +121,9 @@ class LexiconHelper {
         $this->classFiles = array();
         $x = 'addClassFiles';
         $dir = $this->targetCore . 'model';
+        $this->helpers->resetFiles();
         $this->dir_walk($x, $dir, null, true);
+        // $this->classFiles = $this->helpers->getFiles();
         if (!empty($this->classFiles)) {
             $this->output .= "\nFound these class files: " . implode(', ', array_keys($this->classFiles));
 
