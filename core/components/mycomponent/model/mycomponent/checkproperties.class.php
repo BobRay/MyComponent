@@ -42,7 +42,9 @@ class CheckProperties {
     public $output;
     public $spAliases;
     public $codeMatches;
-
+    public $modx;
+    public $helpers;
+    public $source;
 
 
     function __construct(&$props = array()) {
@@ -55,20 +57,21 @@ class CheckProperties {
 
             require_once dirname(dirname(__FILE__)) . '/build.config.php';
             require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
-            /*$modx = new modX();
+            $modx = new modX();
             $modx->initialize('mgr');
             $modx->setLogLevel(modX::LOG_LEVEL_INFO);
-            $modx->setLogTarget('ECHO');*/
+            $modx->setLogTarget('ECHO');
+            $this->modx =& $modx;
         }
         if (!php_sapi_name() == 'cli') {
             $this->output .= "<pre>\n"; /* used for nice formatting for log messages  */
         }
-
-
+        clearstatcache(); /*  make sure is_dir() is current */
         $config = $configPath;
         if (file_exists($config)) {
             $configProps = @include $config;
-        } else {
+        }
+        else {
             die('Could not find main config file at ' . $config);
         }
 
@@ -78,6 +81,14 @@ class CheckProperties {
         }
         $this->props = array_merge($configProps, $this->props);
         unset($config, $configFile, $configProps);
+        $this->source = $this->props['source'];
+        /* add trailing slash if missing */
+        if (substr($this->source, -1) != "/") {
+            $this->source .= "/";
+        }
+        require_once $this->source . 'core/components/mycomponent/model/mycomponent/helpers.class.php';
+        $this->helpers = new Helpers($this->modx, $this->props);
+        $this->helpers->init();
 
         $packageNameLower = $this->props['packageNameLower'];
         $this->targetBase = MODX_BASE_PATH . 'assets/mycomponents/' . $packageNameLower . '/';
@@ -107,9 +118,9 @@ class CheckProperties {
             $elements[strtolower(trim($plugin))] = 'modPlugin';
         }
         $this->classFiles = array();
-        $x = 'addClassFiles';
         $dir = $this->targetCore . 'model';
-        $this->dir_walk($x, $dir, null, true);
+        $this->helpers->dirWalk($$dir, null, true);
+        $this->classFiles = $this->helpers->getFiles();
         if(!empty($this->classFiles)) {
             $this->output .= "\nFound these class files: " . implode(', ', array_keys($this->classFiles));
 
@@ -133,10 +144,7 @@ class CheckProperties {
         }
         $this->report();
     }
-    public function addClassFiles($dir, $file) {
-        //$this->output .= "\nIn addClassFiles";
-        $this->classFiles[$file] = $dir;
-    }
+
 
     /**
      * returns raw code from an element file and all
@@ -359,28 +367,5 @@ class CheckProperties {
 
     public function report() {
         echo $this->output;
-    }
-
-    public function dir_walk($callback, $dir, $types = null, $recursive = false, $baseDir = '')
-    {
-
-        if ($dh = opendir($dir)) {
-            while (($file = readdir($dh)) !== false) {
-                if ($file === '.' || $file === '..') {
-                    continue;
-                }
-                if (is_file($dir . '/' . $file)) {
-                    if (is_array($types)) {
-                        if (!in_array(strtolower(pathinfo($dir . $file, PATHINFO_EXTENSION)), $types, true)) {
-                            continue;
-                        }
-                    }
-                    $this->{$callback}($dir, $file);
-                } elseif ($recursive && is_dir($dir . '/' . $file)) {
-                    $this->dir_walk($callback, $dir . '/' . $file, $types, $recursive, $baseDir . '/' . $file);
-                }
-            }
-            closedir($dh);
-        }
     }
 }
