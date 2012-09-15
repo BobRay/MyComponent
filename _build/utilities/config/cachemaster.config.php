@@ -20,10 +20,6 @@ $components = array(
     'gitHubUsername' => 'BobRay',
     'gitHubRepository' => 'CacheMaster',
 
-    /* Change this if you need to alter any tpl files. Use a new dir. under _build/utilities.
-     * Be sure to copy all build tpls to the new directory */
-    'tplDir' => 'buildtpls',
-
     /* Set directory permissions for project directories */
     'dirPermission' => 0755, /* No quotes!! */
     'filePermission' => 0644, /* No quotes!! */

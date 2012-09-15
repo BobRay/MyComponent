@@ -73,11 +73,6 @@ $components = array(
     ),
 
 
-    /* Standard location for Tpl files under _build/utilities.
-* If you want to alter a tpl, just duplicate it with a prefix of 'my' and
-* MyComponent will use yours instead of the default */
-    'tplDir' => 'buildtpls',
-
     /* Set directory permissions for project directories */
     'dirPermission' => 0755, /* No quotes!! */
     'filePermission' => 0644, /* No quotes!! */
