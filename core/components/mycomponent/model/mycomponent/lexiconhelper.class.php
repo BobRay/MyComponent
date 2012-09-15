@@ -150,8 +150,6 @@ class LexiconHelper {
 
             $this->getLexiconFileStrings();
             $this->definedSomeWhere = array_merge($this->definedSomeWhere, $this->lexiconFileStrings);
-            // $this->output .= ! empty($this->loadedLexiconFiles)? "\nLexicon files: " . implode(', ', $this->loadedLexiconFiles) : "\nNo lexicon files used";
-            //$this->output .= ! empty($this->lexiconCodeStrings)? "\nLexicon strings: " . print_r($this->lexiconCodeStrings, true) : "\nNo Lexicon strings found";
 
             $this->output .= "\n" . count($this->lexiconCodeStrings) . ' lexicon strings in code file(s)';
             $this->output .= "\n" . count($this->lexiconFileStrings) . ' lexicon strings in lexicon file(s)';
@@ -306,11 +304,6 @@ class LexiconHelper {
                 $this->output .= "\nMissing Lexicon strings:" . $code;
 
             }
-
-            // $this->output .= "\nloaded\n" .print_r($this->loadedLexiconFiles, true);
-            // $this->output .= "\nincluded\n" . print_r($this->included, true);
-
-            // $this->output .= "\nCount: " . count($this->loadedLexiconFiles);
         }
 
         return $output;
@@ -403,11 +396,7 @@ class LexiconHelper {
         $this->output .= $this->reportUnused($unused);
         $empty = $this->findEmpty();
         $this->output .= $this->reportEmpty($empty);
-
-
         echo $this->output;
-        // echo "\n\nUsed Somewhere: " . print_r($this->usedSomewhere, true);
-        // echo "\n\nDefined Somewhere: " . print_r($this->definedSomeWhere, true);
     }
 
     public function getLexiconPropertyStrings() {
@@ -415,8 +404,6 @@ class LexiconHelper {
         $lexiconFilePath = $this->targetCore . 'lexicon/' . $this->primaryLanguage . '/' . 'properties.inc.php';
         if (file_exists($lexiconFilePath)) {
             require $lexiconFilePath;
-        } else {
-           // $this->output .= "\nNo properties.inc.php lexicon file";
         }
         return $_lang;
     }
@@ -467,8 +454,6 @@ class LexiconHelper {
                         $this->updateLexiconPropertiesFile($missing, $empty, $comment);
                     }
 
-                } else {
-                    // $this->output .= "\n\nNo Properties file for " . $element . '  -- at ' . $propsFilePath;
                 }
             }
         }
@@ -520,7 +505,8 @@ class LexiconHelper {
         }
         if ($this->props['rewriteLexiconFiles'] && (!empty($missing) || $emptyFixed)) {
             $fp = fopen($lexFile, 'w');
-            if ($fp) {
+            /* make sure we can open file and are not shortening it */
+            if ($fp && strlen($lexFileContent) > strlen($original)) {
                 fwrite($fp, $lexFileContent);
                 fclose($fp);
                 if (!empty($missing)) {
@@ -539,9 +525,6 @@ class LexiconHelper {
             $this->output .= "\nCode to add to lexicon properties file:";
             $this->output .= "\n" . $comment . "\n" . $code . "\n\n";
         }
-
-
-        echo print_r($empty, true);
     }
 
     /* ToDo: checkSystemEventDescriptions() ?? */
@@ -689,14 +672,7 @@ class LexiconHelper {
             } else {
                 $this->output .= "\nFile is empty:  " . $file;
             }
-        }
-        /*if ($fp) {
-            while (!feof($fp)) {
-                $lines[] = fgets($fp, 4096);
-            }
-            fclose($fp);
-        }*/
-        else {
+        } else {
             $this->output .= "\nCould not find file: " . $file;
             return;
         }
@@ -728,7 +704,6 @@ class LexiconHelper {
                     }
                     if (!in_array($lexString, array_keys($this->lexiconCodeStrings))) {
                         $this->lexiconCodeStrings[$lexString] = $value;
-                        // $this->lexiconCodeStrings[] = $matches[1];
                     } elseif (empty($this->lexiconCodeStrings[$lexString]) && !empty($value)) {
                         $this->lexiconCodeStrings[$lexString] = $value;
                     }
@@ -772,7 +747,6 @@ class LexiconHelper {
                 }
             }
 
-
             $fileName = strstr($fileName, 'class.php')
                 ? $fileName
                 : $fileName . '.class.php';
@@ -780,37 +754,10 @@ class LexiconHelper {
 
                 // skip files we've already included
                 if (!in_array($fileName, $this->included)) {
-                    //$this->output .= "\n\nRecursing";
                     $this->included[] = $fileName;
                     $this->getIncludes($this->classFiles[$fileName] . '/' . $fileName);
                 }
             }
         }
     }
-
-
-/*    public function dir_walk($callback, $dir, $types = null, $recursive = false, $baseDir = '') {
-
-        if ($dh = opendir($dir)) {
-            while (($file = readdir($dh)) !== false) {
-                if ($file === '.' || $file === '..') {
-                    continue;
-                }
-                if (is_file($dir . '/' . $file)) {
-                    if (is_array($types)) {
-                        if (!in_array(strtolower(pathinfo($dir . $file, PATHINFO_EXTENSION)), $types, true)) {
-                            continue;
-                        }
-                    }
-                    $this->{$callback}($dir, $file);
-                }
-                elseif ($recursive && is_dir($dir . '/' . $file)) {
-                    $this->dir_walk($callback, $dir . '/' . $file, $types, $recursive, $baseDir . '/' . $file);
-                }
-            }
-            closedir($dh);
-        }
-    }*/
-
-
 }
