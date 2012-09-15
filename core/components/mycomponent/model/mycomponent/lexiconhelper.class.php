@@ -121,7 +121,7 @@ class LexiconHelper {
         $this->classFiles = array();
         $dir = $this->targetCore . 'model';
         $this->helpers->resetFiles();
-        $this->helpers->dirWalk($dir, null, true);
+        $this->helpers->dirWalk($dir, 'php', true);
         $this->classFiles = $this->helpers->getFiles();
         if (!empty($this->classFiles)) {
             $this->output .= "\nFound these class files: " . implode(', ', array_keys($this->classFiles));
@@ -240,14 +240,30 @@ class LexiconHelper {
 
     }
 
+    /**
+     * Get appropriate quote character for a lexicon string
+     * @param $value
+     * @return string
+     */
+    public function getQc($value) {
+        /* use double quote for strings containing a single quote */
+        $qc = strchr($value, "'")
+            ? '"'
+            : "'";
+        /* switch back if the single quote is escaped */
+        $qc = strstr($value, "\'")
+            ? "'"
+            : $qc;
+        return $qc;
+    }
+
     public function reportMissing($missing) {
         $output = "";
         if (!empty($missing)) {
             //$this->output .= "\nStrings missing from Language file(s):";
             $code = '';
             foreach ($missing as $key => $value) {
-                $qc = strchr($value, "'")? '"' : "'";
-                $qc = strstr($value,"\'")? "'" : $qc ;
+                $qc = $this->getQc($value);
                 $code .= "\n\$_lang['" . $key . "'] = {$qc}" . $value . "{$qc};";
             }
             $count = count($this->loadedLexiconFiles);
@@ -476,8 +492,7 @@ class LexiconHelper {
         } else {
             foreach ($missing as $string) {
                 $val = strstr($string, '~~') ? explode('~~', $string) : array($string,'');
-                $qc = strchr($val[1], "'")? '"': "'";
-                $qc = strstr($val[1], "\'") ? "'" : $qc;
+                $qc = $this->getQc($val[1]);
                 $code  .= "\n\$_lang['" . $val[0] . "'] = {$qc}" . $val[1] . "{$qc};";
             }
             if (strstr($lexFileContent, $comment)) {
@@ -489,10 +504,7 @@ class LexiconHelper {
         if (!empty ($empty)) {
             foreach ($empty as $key => $value) {
                 $pattern = "/(_lang\[')" . $key . "(']\s*=\s* )'.*'/";
-                $qc = strchr($value, "'")? '"' : "'";
-                $qc = strstr($value, "\'")
-                    ? "'"
-                    : $qc;
+                $qc = $this->getQc($value);
                 $replace = "$1$key$2{$qc}" . $value . "{$qc}";
                 preg_match($pattern, $lexFileContent, $matches);
                 $count = 0;
