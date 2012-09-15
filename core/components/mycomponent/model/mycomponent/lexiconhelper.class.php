@@ -504,22 +504,28 @@ class LexiconHelper {
             $this->output .= "\nNo empty property descriptions in lexicon file!";
         }
         if ($this->props['rewriteLexiconFiles'] && (!empty($missing) || $emptyFixed)) {
-            $fp = fopen($lexFile, 'w');
-            /* make sure we can open file and are not shortening it */
-            if ($fp && strlen($lexFileContent) > strlen($original)) {
-                fwrite($fp, $lexFileContent);
-                fclose($fp);
-                if (!empty($missing)) {
-                    $this->output .= "\nUpdated properties.inc.php entries with these keys:";
-                    foreach($missing as $key => $value) {
-                       $this->output .= "\n    " . $value;
+            /* make sure we're not shortening it */
+            if (strlen($lexFileContent) > strlen($original)) {
+                $fp = fopen($lexFile, 'w');
+                /* make sure we can open file */
+                if ($fp) {
+                    fwrite($fp, $lexFileContent);
+                    fclose($fp);
+                    if (!empty($missing)) {
+                        $this->output .= "\nUpdated properties.inc.php entries with these keys:";
+                        foreach($missing as $key => $value) {
+                           $this->output .= "\n    " . $value;
+                        }
+                        if ($emptyFixed) {
+                        $this->output .= "\nFixed " . $emptyFixed . ' empty lexicon string(s)';
+                        }
                     }
-                    if ($emptyFixed) {
-                    $this->output .= "\nFixed " . $emptyFixed . ' empty lexicon string(s)';
-                    }
+
+                } else {
+                    $this->output .= "\nCould not open lexicon properties file for writing: " . $lexFile;
                 }
             } else {
-                $this->output .= "\nCould not open lexicon properties file for writing: " . $lexFile;
+                $this->output .= "\nFailed to update lexicon file; check for syntax errors in the lexicon file or lexicon strings: " . $lexFile;
             }
         } else {
             $this->output .= "\nCode to add to lexicon properties file:";
