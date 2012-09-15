@@ -174,7 +174,7 @@ class LexiconHelper {
             $fileName = $path;
             if (!in_array($fqn, $included)) {
                 $included[] = $fqn;
-                if (file_exists($fileName)) {
+                if  (file_exists($fileName)) {
                     $_lang = null;
                     include $fileName;
                     if (is_array($_lang)) {
@@ -663,18 +663,28 @@ class LexiconHelper {
     public function getIncludes($file) {
         $matches = array();
         $lines = array();
-        $fp = fopen($file, "r");
-        if ($fp) {
+        // $fp = fopen($file, "r");
+        if (file_exists($file)) {
+            $content = file_get_contents($file);
+            if (!empty($content)) {
+                $content = $this->helpers->strip_comments($content);
+                $lines = explode ("\n", $content);
+                unset($content);
+            } else {
+                $this->output .= "\nFile is empty:  " . $file;
+            }
+        }
+        /*if ($fp) {
             while (!feof($fp)) {
                 $lines[] = fgets($fp, 4096);
             }
             fclose($fp);
-        }
+        }*/
         else {
-            $this->output .= "\nCould not open file: " . $file;
+            $this->output .= "\nCould not find file: " . $file;
             return;
         }
-        $line = '';
+
         $fileName = 'x';
 
         foreach ($lines as $line) {
