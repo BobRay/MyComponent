@@ -99,11 +99,31 @@ class Helpers
     public function getTpl($name)
     {
         $name = strtolower($name);
-        if (strstr($name, '.php')) { /* already has extension */
-            $text = @file_get_contents($this->tplPath . 'my' . $name);
-            if (empty($text)) {
-                $text = @file_get_contents($this->tplPath . $name);
+        /* add .tpl if there's no .php */
+        $name = strstr($name, '.php')? $name : $name . '.tpl';
+        /* search for tpl in this order:
+            my . name chunk
+            my . name file
+            name chunk
+            name file
+        */
+        $text = $this->modx->getChunk('my' . $name);
+        if (empty($text)) {
+            if (file_exists($this->tplPath . 'my' . $name)) {
+                $text = file_get_contents($this->tplPath . 'my' . $name);
             }
+        }
+        if (empty($text)) {
+            $text = $this->modx->getChunk($name);
+        }
+        if (empty($text)) {
+            if (file_exists($this->tplPath . $name)) {
+                $text = file_get_contents($this->tplPath . $name);
+            }
+        }
+
+        if (strstr($name, '.php') && !empty($text)) {
+            /* make sure the header made it and do alerts if not */
             if (empty($text)) {
                 $this->modx->log(MODX::LOG_LEVEL_ERROR, '    Problem loading Tpl file (text is empty) ' . $name  );
                 $text = "<?php\n/* empty header */\n\n";
@@ -111,13 +131,8 @@ class Helpers
                 $this->modx->log(MODX::LOG_LEVEL_ERROR, '    Problem loading Tpl file (text has no PHP tag) ' . $name);
                 $text = "<?php\n /* inserted PHP tag */\n\n" . $text;
             }
-        } else { /* use .tpl extension */
-            $text = @file_get_contents($this->tplPath . 'my' .  $name . '.tpl');
-            if (empty($text)) {
-                $text = @file_get_contents($this->tplPath . $name . '.tpl');
-            }
         }
-        return $text !== false ? $text : '';
+        return empty($text) ? '' : $text;
     }
 
     /**
