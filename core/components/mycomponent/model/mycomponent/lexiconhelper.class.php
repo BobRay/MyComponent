@@ -119,11 +119,10 @@ class LexiconHelper {
             $elements[strtolower(trim($plugin))] = 'modPlugin';
         }
         $this->classFiles = array();
-        $x = 'addClassFiles';
         $dir = $this->targetCore . 'model';
         $this->helpers->resetFiles();
-        $this->dir_walk($x, $dir, null, true);
-        // $this->classFiles = $this->helpers->getFiles();
+        $this->helpers->dirWalk($dir, null, true);
+        $this->classFiles = $this->helpers->getFiles();
         if (!empty($this->classFiles)) {
             $this->output .= "\nFound these class files: " . implode(', ', array_keys($this->classFiles));
 
@@ -248,6 +247,7 @@ class LexiconHelper {
             $code = '';
             foreach ($missing as $key => $value) {
                 $qc = strchr($value, "'")? '"' : "'";
+                $qc = strstr($value,"\'")? "'" : $qc ;
                 $code .= "\n\$_lang['" . $key . "'] = {$qc}" . $value . "{$qc};";
             }
             $count = count($this->loadedLexiconFiles);
@@ -477,6 +477,7 @@ class LexiconHelper {
             foreach ($missing as $string) {
                 $val = strstr($string, '~~') ? explode('~~', $string) : array($string,'');
                 $qc = strchr($val[1], "'")? '"': "'";
+                $qc = strstr($val[1], "\'") ? "'" : $qc;
                 $code  .= "\n\$_lang['" . $val[0] . "'] = {$qc}" . $val[1] . "{$qc};";
             }
             if (strstr($lexFileContent, $comment)) {
@@ -489,6 +490,9 @@ class LexiconHelper {
             foreach ($empty as $key => $value) {
                 $pattern = "/(_lang\[')" . $key . "(']\s*=\s* )'.*'/";
                 $qc = strchr($value, "'")? '"' : "'";
+                $qc = strstr($value, "\'")
+                    ? "'"
+                    : $qc;
                 $replace = "$1$key$2{$qc}" . $value . "{$qc}";
                 preg_match($pattern, $lexFileContent, $matches);
                 $count = 0;
@@ -773,15 +777,13 @@ class LexiconHelper {
     }
 
 
-    public function dir_walk($callback, $dir, $types = null, $recursive = false, $baseDir = '') {
+/*    public function dir_walk($callback, $dir, $types = null, $recursive = false, $baseDir = '') {
 
         if ($dh = opendir($dir)) {
             while (($file = readdir($dh)) !== false) {
                 if ($file === '.' || $file === '..') {
                     continue;
                 }
-                // $this->output .= "\n" , $dir;
-                //$this->output .= "\n", $file;
                 if (is_file($dir . '/' . $file)) {
                     if (is_array($types)) {
                         if (!in_array(strtolower(pathinfo($dir . $file, PATHINFO_EXTENSION)), $types, true)) {
@@ -796,7 +798,7 @@ class LexiconHelper {
             }
             closedir($dh);
         }
-    }
+    }*/
 
 
 }

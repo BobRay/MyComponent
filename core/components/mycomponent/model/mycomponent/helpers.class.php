@@ -437,7 +437,7 @@ class Helpers
         }
     }
 
-    public function dirWalk($callback, $dir, $types = null, $recursive = false, $baseDir = '') {
+    public function dirWalk($dir, $types = null, $recursive = false, $baseDir = '') {
 
         if ($dh = opendir($dir)) {
             while (($file = readdir($dh)) !== false) {
@@ -447,15 +447,20 @@ class Helpers
                 // $this->output .= "\n" , $dir;
                 //$this->output .= "\n", $file;
                 if (is_file($dir . '/' . $file)) {
-                    if (is_array($types)) {
-                        if (!in_array(strtolower(pathinfo($dir . $file, PATHINFO_EXTENSION)), $types, true)) {
-                            continue;
+                    if ($types !== null) {
+                        $found = false;
+                        $typeArray = explode(',', $types);
+                        foreach($typeArray as $type) {
+                            if (strstr($file, $type)) {
+                                $found = true;
+                            }
                         }
+                        if (! $found) continue;
                     }
                     // $this->{$callback}($dir, $file);
                     $this->addFile($dir, $file);
                 } elseif ($recursive && is_dir($dir . '/' . $file)) {
-                    $this->dirWalk($callback, $dir . '/' . $file, $types, $recursive, $baseDir . '/' . $file);
+                    $this->dirWalk($dir . '/' . $file, $types, $recursive, $baseDir . '/' . $file);
                 }
             }
             closedir($dh);
@@ -469,5 +474,36 @@ class Helpers
     }
     public function getFiles() {
         return $this->files;
+    }
+
+    public function strip_comments($source) {
+        $tokens = token_get_all($source);
+        $ret = "";
+        foreach ($tokens as $token) {
+            if (is_string($token)) {
+                $ret .= $token;
+            }
+            else {
+                list($id, $text) = $token;
+
+                switch ($id) {
+                    case T_COMMENT:
+                    case T_ML_COMMENT: // we've defined this
+                    case T_DOC_COMMENT: // and this
+                        break;
+
+                    default:
+                        $ret .= $text;
+                        break;
+                }
+            }
+        }
+        return trim(str_replace(array(
+                 '<?',
+                 '?>'
+            ), array(
+                    '',
+                    ''
+               ), $ret));
     }
 }
