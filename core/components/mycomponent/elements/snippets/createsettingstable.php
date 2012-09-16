@@ -58,9 +58,14 @@ if (!defined('MODX_CORE_PATH')) {
     $modx->setLogTarget('ECHO');
     echo '<pre>'; /* used for nice formatting for log messages  */
 }
-    if (! defined('DS')) {
-        define('DS', DIRECTORY_SEPARATOR);
-    }
+
+if (php_sapi_name() != 'cli') {
+    echo "<pre>\n"; /* used for nice formatting for log messages  */
+}
+
+if (! defined('DS')) {
+    define('DS', DIRECTORY_SEPARATOR);
+}
 
 if (!file_exists($settingsFile)) {
     echo 'Could not find settings file';

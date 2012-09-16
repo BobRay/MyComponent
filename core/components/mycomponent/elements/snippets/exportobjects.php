@@ -101,7 +101,7 @@ if (!defined('MODX_CORE_PATH')) {
     $modx->setLogLevel(modX::LOG_LEVEL_INFO);
     $modx->setLogTarget('ECHO');
 }
-if (!php_sapi_name() == 'cli') {
+if (php_sapi_name() != 'cli') {
     echo "<pre>\n"; /* used for nice formatting for log messages  */
 }
 /* These will override settings in the config file */

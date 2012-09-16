@@ -42,7 +42,9 @@ $codeFile = $base . 'core/components/notify/elements/snippets/notify.snippet.php
 
 $propertiesInjected = false; /* This will be set automatically if properties are injected */
 
-
+if (php_sapi_name() != 'cli') {
+    echo "<pre>\n"; /* used for nice formatting for log messages  */
+}
 
 if (!file_exists($propertiesFile)) {
     echo 'Could not find properties file';

@@ -108,6 +108,9 @@ if (!defined('MODX_CORE_PATH')) {
     $outsideModx = false;
     /* @var $modx modX */
 }
+if (php_sapi_name() != 'cli') {
+    echo "<pre>\n"; /* used for nice formatting for log messages  */
+}
 $props = array();
 $sourceRoot = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/';
 include $sourceRoot . 'core/components/mycomponent/model/mycomponent/lexiconhelper.class.php';

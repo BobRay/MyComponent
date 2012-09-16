@@ -38,8 +38,8 @@ if (!defined('MODX_CORE_PATH')) {
     require_once $configPath;
     require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
 }
-if (!php_sapi_name() == 'cli') {
-    echo "<pre>\n"; /* used for nice formatting for $output  */
+if (php_sapi_name() != 'cli') {
+    echo "<pre>\n"; /* used for nice formatting for log messages  */
 }
 
 require_once $sourceRoot . 'core/components/mycomponent/model/mycomponent/checkproperties.class.php';
