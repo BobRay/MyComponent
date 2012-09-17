@@ -452,6 +452,15 @@ class Helpers
         }
     }
 
+    /**
+     * Recursively search directories for certain file types
+     * Adapted from boen dot robot at gmail dot com's code on the scandir man page
+     * @param $dir - dir to search (no trailing slash)
+     * @param mixed $types - null for all files, or a comma-separated list of strings
+     *                       the filename must include (e.g., '.php,.class')
+     * @param bool $recursive - if false, only searches $dir, not it's descendants
+     * @param string $baseDir - used internally -- do not send
+     */
     public function dirWalk($dir, $types = null, $recursive = false, $baseDir = '') {
 
         if ($dh = opendir($dir)) {
