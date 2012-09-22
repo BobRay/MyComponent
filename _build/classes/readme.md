@@ -76,3 +76,13 @@ Even further specific overrides may be performed by prepending the package name.
     'packagename.basic.' . static::$xPDOClass . '.tpl';
 
 This prioritized kind of templating allows users to choose their own generic templates, but even meet specific needs of specific projects. In other words, we check for a package specific template, first. Failing that, we look for a user specific template. Finally, if neither is present, we always have the default basic template.
+
+## Still Adding...
+
+* *Known Classes*
+  * PropertySetAdapter.class.php
+  * PackageAdapter.class.php - for sub-packages
+* *Missing Functionality*
+  * Schema handling
+  * Copying localized classes
+  * Copying localized utilities
