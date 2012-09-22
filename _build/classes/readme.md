@@ -34,7 +34,7 @@ Translates the Object in the defined Tranport File into the MODx Installation as
 #### exportObject($overwrite = false)
 Gets the MODx Object from MODx based on its $xPDOClass, $xPDOClassNameKey, and its $myColumns[$xPDOClassNameKey] value. If the object exists, it copies its column values to the Transport File. If the Object happens to be a ResourceAdapter or any extension of an ElementAdapter, it will also copy the code to its appropriate code file.
 
-#### buildTransport() 
+#### buildVehicle() 
 Translates the current object into a Transport Vehicle for a MODx Transport Package. Attributes are set to the Vehicle according to $xPDOTransportAttributes. This works well because in nearly every circumstance, the attributes do not change between different instances of the Adapters, just between the Adapter types themselves. In most cases, this will result in the creation of a Vehicle. Linking to the appropriate objects (category, etc) should already be complete at this point, so these should resolve correctly without any "tweaking".
 
 ### Subclasses
