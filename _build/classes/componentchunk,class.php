@@ -1,3 +1,0 @@
-class ComponentChunk extends ComponentVehicle
-{
-}
