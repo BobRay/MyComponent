@@ -43,7 +43,7 @@ Most of the subclasses of MODxObjectAdapter are going to be "shallow" extensions
 ## Differences from core MyComponent
 
 ### Global Utilities vs. Localized Utilities
-The Global Utilities will ultimately serve as "routers", that way they can be called by MODx, the UI or by command-line. This will reduce the amount of re-learning that must be accomplished by an older user. If the Utility sent with a project name, it will look for the project name in the File System. This way, there is no requirement to adjust the build.config. This ultimately takes advantage of the fact that there is already an inherent structure in place.
+The Global Utilities will ultimately serve as "routers", that way they can be called by MODx, the UI or by command-line. This will reduce the amount of re-learning that must be accomplished by an older user. If the Global Utility sent with a project name, it will look for the project name in the File System. Failing that, it will check the build.config to see which project it was working with. This way, there is no requirement to adjust the build.config. This ultimately takes advantage of the fact that there is already an inherent structure in place.
 
 ### Changes to Packages
 Unlike the current version of MyComponent, each object goes into its own Vehicle. This reduces the need for Resolvers that must reconcile links, for instance, like Plugins to Events. Due to the nature of the MODx Package Installer, as long as the objects reference the correct Namespace or Category, they will automatically be added accordingly. This mitigates the need (currently) for addOne() and addMany().
