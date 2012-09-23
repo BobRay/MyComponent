@@ -19,9 +19,9 @@ Compiles the File Heirarchy into a Transport Package. This may only be run by th
 
 ## ObjectAdapter
 
-Most other classes in this structure extend the MODxObjectAdapter. This is where, for many, the top-down methods are contained, unless a specific subclass requires additional functionality. In essence, a Vehicle is just an PHP array containing all of the properties of a MODx object.
+Most other classes in this structure extend the ObjectAdapter. This is where, for many, the top-down methods are contained, unless a specific subclass requires additional functionality. In essence, a Vehicle is just an PHP array containing all of the properties of a MODx object.
 
-Like MyComponentProject, MODxObjectAdapter will have 4 similar primary methods. These may only be called by an object that is a child of MyComponentProject. MyComponentProject, however, does not have to know the organizational structure, below its immediate children, and vice versa. 
+Like MyComponentProject, ObjectAdapter will have 4 similar primary methods. These may only be called by an object that is a child of MyComponentProject. MyComponentProject, however, does not have to know the organizational structure, below its immediate children, and vice versa. 
 
 ### Public Methods
 
@@ -38,7 +38,7 @@ Gets the MODx Object from MODx based on its $xPDOClass, $xPDOClassNameKey, and i
 Translates the current object into a Transport Vehicle for a MODx Transport Package. Attributes are set to the Vehicle according to $xPDOTransportAttributes. This works well because in nearly every circumstance, the attributes do not change between different instances of the Adapters, just between the Adapter types themselves. In most cases, this will result in the creation of a Vehicle. Linking to the appropriate objects (category, etc) should already be complete at this point, so these should resolve correctly without any "tweaking".
 
 ### Subclasses
-Most of the subclasses of MODxObjectAdapter are going to be "shallow" extensions. This allows the base code in MODxObjectAdapter to do most of the work, but gives the object the opportunity to preprocess or postprocess the default actions. In very few cases, like NamespaceAdapter, it may override the behavior completely. *(For instance, namespaces use registerNamespace() rather than createVehicle() during buildTransport())*
+Most of the subclasses of ObjectAdapter are going to be "shallow" extensions. This allows the base code in ObjectAdapter to do most of the work, but gives the object the opportunity to preprocess or postprocess the default actions. In very few cases, like NamespaceAdapter, it may override the behavior completely. *(For instance, namespaces use registerNamespace() rather than createVehicle() during buildTransport())*
 
 ## Differences from core MyComponent
 
