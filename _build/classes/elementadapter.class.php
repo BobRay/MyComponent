@@ -2,11 +2,34 @@
 // Include the Base Class (only once)
 require_once('modxobjectadapter.class.php');
 
-class ElementAdapter extends MODxObjectAdapter
+abstract class ElementAdapter extends MODxObjectAdapter
 {
+    
+/* *****************************************************************************
+   Property Getter and Setters
+***************************************************************************** */
+    /**
+     * Gets the directory containing the code files for the element.
+     *
+     * @return string - full path for element code file (without filename or 
+     *         trailing slash)
+     */
+    public function getCodeDir() 
+    {//Get the path...
+        $path = $this->myComponent->getPath('code') . 'elements/';
+    // Get the sub-directory according to type...
+        $type = $this->getClass();
+        $type = $type == 'modTemplateVar' ? 'modTv' : $type;
+        $type = strtolower(substr($type, 3) . 's');
+    // Append slash and return
+        return $path . $type . '/';
+    }
+
+
 /* *****************************************************************************
    Bootstrap and Support Functions (in MODxObjectAdapter)
 ***************************************************************************** */
+
 
 /* *****************************************************************************
    Import Objects and Support Functions (in MODxObjectAdapter) 
@@ -14,7 +37,39 @@ class ElementAdapter extends MODxObjectAdapter
 
     protected function addToMODx($overwrite = false)
     {//Perform default export implementation
-        return parent::addToMODx($overwrite);
+        $id = parent::addToMODx($overwrite);
+        if ($id > -1)
+            $this->attachCategory();
+    // Forward the result ID
+        return $id;   
+    }
+
+    /**
+     * Creates a MODX element object in the DB if set in project config file
+     *
+     * @param $name string - name of object in MODX install
+     * @param $type string - modSnippet, modChunk, etc.
+     */
+    public function attachCategory() 
+    {//For Quick Access
+        $myComponent = $this->myComponent;
+        $modx = $myComponent->modx;
+        $type = static::xPDOClass;
+        $nameKey = static::xPDOClassNameKey;
+        $nameValue = $this->myColumns[$nameKey];
+        
+        /* @var $object modElement */
+        $lName =strtolower($nameValue);
+        $alias = $type == 'modTemplate'? 'templatename' : 'name';
+        $obj = $modx->getObject($type, array($nameKey => $nameValue));
+        
+        if ($obj) 
+        {   $obj->set('category', $this->categoryId);
+            if ($obj->save())
+                $myComponent->sendLog(MODX::LOG_LEVEL_INFO, 'Attached ' . $type . ': ' . $name .  ' to Category (' . $this->categoryId . ')');
+            else
+                $myComponent->sendLog(MODX::LOG_LEVEL_INFO, 'Failed to attach ' . $type . ': ' . $name .  ' to Category (' . $this->categoryId . ')');
+        }
     }
 
 /* *****************************************************************************

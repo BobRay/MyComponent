@@ -1,12 +1,14 @@
 <?php
 // Include the Base Class (only once)
-require_once('modxobjectadapter.class.php');
+require_once('objectadapter.class.php');
 
-class ResourceAdapter extends MODxObjectAdapter
+class ResourceAdapter extends ObjectAdapter
 {//These will never change.
-    final static protected $xPDOClass = 'modResource';
-    final static protected $xPDOClassParentKey = 'parent';
-    final static protected $xPDOTransportAttributes = array(
+    final static protected $dbClass = 'modResource';
+    final static protected $dbClassIDKey = 'id';
+    final static protected $dbClassNameKey = 'pagetitle';
+    final static protected $dbClassParentKey = 'parent';
+    final static protected $dbTransportAttributes = array(
         xPDOTransport::PRESERVE_KEYS => false,
         xPDOTransport::UPDATE_OBJECT => true,
         xPDOTransport::UNIQUE_KEY => 'pagetitle',
@@ -29,15 +31,16 @@ class ResourceAdapter extends MODxObjectAdapter
     static private $init_template = '';
     
 // Database Columns for the XPDO Object
-    protected $myColumns;
+    protected $myFields;
+    protected $myObjects = array();
 
     final function __construct(&$forComponent, $columns)
     {   parent::__construct(&$forComponent);
         if (is_array($columns))
-            $this->myColumns = $columns;
+            $this->myFields = $columns;
             
     // Set defaults if they are not already set
-        $modx = $myComponent->modx;
+        $modx = $this->myComponent->modx;
         if (empty($init_published))
             $init_published => $modx->getOption('publish_default', null);
         if (empty($init_richtext))
@@ -60,25 +63,25 @@ class ResourceAdapter extends MODxObjectAdapter
     /** creates resources in MODX install if set in project config file */
     public function newTransport() 
     {//Validate Page's Title
-        if (empty($this->myColumns['pagetitle']))
-        {   $myComponent->log(MODX::LOG_LEVEL_INFO, 'A Resource must have a valid page title!')
+        if (empty($this->myFields['pagetitle']))
+        {   $this->myComponent->sendLog(MODX::LOG_LEVEL_INFO, 'A Resource must have a valid page title!')
             return false;
         }
         
     // Create an alias
-        $this->myColumns['alias'] = str_replace(' ', '-', strtolower($this->myColumns['pagetitle']));
+        $this->myFields['alias'] = str_replace(' ', '-', strtolower($this->myFields['pagetitle']));
 
     // Set default properties
-        $this->myColumns['published'] => $init_published;
-        $this->myColumns['richtext'] => $init_richtext;
-        $this->myColumns['hidemenu'] => $init_hidemenu;
-        $this->myColumns['cacheable'] => $init_cacheable;
-        $this->myColumns['searchable'] => $init_searchable;
-        $this->myColumns['context'] => $init_context;
-        $this->myColumns['template'] => $init_template;
+        $this->myFields['published'] => $init_published;
+        $this->myFields['richtext'] => $init_richtext;
+        $this->myFields['hidemenu'] => $init_hidemenu;
+        $this->myFields['cacheable'] => $init_cacheable;
+        $this->myFields['searchable'] => $init_searchable;
+        $this->myFields['context'] => $init_context;
+        $this->myFields['template'] => $init_template;
 
     // Set default Content
-        $this->myColumns['content'] = 'Enter your page\'s content here';
+        $this->myFields['content'] = 'Enter your page\'s content here';
         
     // Create the Transport File
         if (parent::newTransport())
@@ -92,28 +95,30 @@ class ResourceAdapter extends MODxObjectAdapter
      * @param $name string - lowercase filename (without extension or type
      * @param $type string - modPlugin, modSnippet etc.
      */
-    public function newCodeFile($name, $type) {
+    public function newCodeFile($name, $type) 
+    {   $mc = $this->myComponent;
+    
         $dir = $this->helpers->getCodeDir($this->targetCore, $type);
         $fileName = $this->helpers->getFileName($name, $type);
         // echo "\nDIR: " . $dir . "\n" . 'FILENAME: ' . $fileName . "\n" . "TYPE: " . $type . "\n";
         if (empty($fileName)) {
-            $this->modx->log(MODX::LOG_LEVEL_INFO, '    skipping ' . $type . ' file -- needs no code file');
+            $mc->sendLog(MODX::LOG_LEVEL_INFO, '    skipping ' . $type . ' file -- needs no code file');
         } else {
             if (!file_exists($dir . '/' . $fileName)) {
-                $tpl = $this->helpers->getTpl($type);
+                $tpl = $this->getTpl($type);
 
                 /* use 'phpfile.tpl' as default for .php files */
                 if (empty($tpl) && strstr($fileName, '.php')) {
-                    $tpl = $this->helpers->getTpl('phpfile.php');
+                    $tpl = $this->getTpl('phpfile.php');
                 }
                 $tpl = str_replace('[[+elementType]]', strtolower(substr($type,3)), $tpl);
                 $tpl = str_replace('[[+elementName]]', $name, $tpl);
                 if (!empty ($tpl)) {
-                    $tpl = $this->helpers->replaceTags($tpl);
+                    $tpl = $mc->replaceTags($tpl);
                 }
                 $this->helpers->writeFile($dir, $fileName, $tpl);
             } else {
-                $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' file already exists');
+                $mc->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' file already exists');
             }
         }
     }
@@ -128,12 +133,57 @@ class ResourceAdapter extends MODxObjectAdapter
     // If MODx accepted the object
         if ($id)
         {//Set the new ID
-            $this->myColumns[self::xPDOClassIDKey] = $id;
+            $this->myFields[self::dbClassIDKey] = $id;
+            attachTemplate();
         // Account for children resources
+            $children = $this->myObjects();
             foreach ($children as $child)
             {//Link the child and parent in database
-                $child->myColumns[get_class($child)::xPDOClassParentKey] = $id;
+                $child->myFields[get_class($child)::dbClassParentKey] = $id;
                 $child->addToMODx($overwrite);
+            }
+        }
+    }
+
+    /**
+     * Connects Resources to package templates and creates a resolver to
+     * connect them during the install.
+     */
+    public function attachTemplate() 
+    {//For Quick Access
+        $mc = $this->myComponent;
+        $modx = $mc->modx;
+        $dir = $mc->getPath('resolve');
+    
+        $data = $modx->getOption('resourceTemplates', $this->props, '');
+        $mc->createIntersects($data, 'resourceTemplates', 'modTemplate', 'modResource','','');
+        /* Create resource.resolver.php resolver */
+        if (!empty($data)) {
+            $mc->sendLog(MODX::LOG_LEVEL_INFO, 'Creating resource resolver');
+            $tpl = $this->getTpl('resourceresolver.php');
+            $tpl = $mc->replaceTags($tpl);
+            if (empty($tpl)) {
+                $mc->sendLog(MODX::LOG_LEVEL_ERROR, 'resourceresolver tpl is empty');
+            }
+            
+            $fileName = 'resource.resolver.php';
+
+            if (!file_exists($dir . '/' . $fileName)) {
+                $code = '';
+                $codeTpl = $this->getTpl('resourceresolvercode.php');
+                $codeTpl = str_replace('<?php', '', $codeTpl);
+
+                foreach ($data as $template => $resources) {
+                    $tempCodeTpl = str_replace('[[+template]]', $template, $codeTpl);
+                    $tempCodeTpl = str_replace('[[+resources]]', $resources, $tempCodeTpl);
+                    $code .= "\n" . $tempCodeTpl;
+                }
+
+                $tpl = str_replace('/* [[+code]] */', $code, $tpl);
+
+                $mc->writeFile($dir, $fileName, $tpl);
+            } else {
+                $mc->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
             }
         }
     }
@@ -142,150 +192,118 @@ class ResourceAdapter extends MODxObjectAdapter
    Export Objects and Support Functions
 ***************************************************************************** */
 
-    final public function exportObject()
-    {//Perform default export implementation
+    /**
+     * Exports the Resource. Resources work a little differently than most other
+     * adapters. Instead, top-level resources call this function recursively. This
+     * allows for the tree to grow organically, if there is one.
+     *
+     * @param $overwrite boolean - (Optional) Allows the function to overwrite the
+     *        files. Default value is false.
+     *
+     * @return boolean - True, if successful; False, if not.
+     */
+    final public function exportObject($overwrite = false)
+    {//For Quick Access
+        $mc = $this->myComponent;
+        $name = $this->getName();
+        
+    // Perform default export implementation
         if (!parent::exportObject())
-        {   $myComponent->log(modX::LOG_LEVEL_INFO, 'Transport File created for Resource: '.$this->myColumns['pagetitle']);
+        {   $mc->sendLog(modX::LOG_LEVEL_INFO, 'Transport File created for Resource: ' . $name);
             return false;
         }
+        $mc->sendLog(modX::LOG_LEVEL_INFO, 'Transport File created for Resource: ' . $name);
     // Special fuctionality for Resources
-        exportCode();
-        exportProperties();
+        $this->exportCode($overwrite);
+        $this->exportProperties($overwrite);
     // Handle Children
-        pullResources();
+        $this->exportChildren($overwrite);
     // Return Success
-        $myComponent->log(modX::LOG_LEVEL_INFO, 'Transport File created for Resource: '.$this->myColumns['pagetitle']);
         return true;
     }
 
-    /**
-     * Creates the code file for an element or resource - skips static elements
+    /** Deprecated: Function moved to exportChildren. Implementation completely replaced. */
+    private function pullResources() {    }
+
+    /** 
+     * Queries the MODx Installation for child Resources and exports all of them.
      *
-     * @param $elementObj modElement - element MODX object
-     * @param $element - string name of element type ('plugin', 'snippet' etc.) used in dir name.
+     * @param $overwrite boolean - (Optional) Allows the function to overwrite the
+     *        files. Default value is false.
      */
-    private function exportCode ($elementObj, $element) {
-
-        /* @var $elementObj modElement */
-
-        if ($elementObj->get('static')) {
-            $this->modx->log(modX::LOG_LEVEL_INFO, 'Skipping object file for static object: ' . $elementObj->get('name'));
-            return;
-        }
-        $type = $this->elementType;
-        $name = $elementObj->get($this->helpers->getNameAlias($type));
-
-        $fileName = $this->helpers->getFileName($name, $type);
-        if ($fileName) {
-            $content = $elementObj->getContent();
-        } else {
-            $this->modx->log(modX::LOG_LEVEL_INFO, 'Skipping object file for: ' . $type . '; object (does not need source file)');
-            return;
-        }
-        if ($type == 'modResource') {
-            $dir = $this->resourcePath;
-        } else {
-            $dir = $this->helpers->getCodeDir($this->targetCore, $type);
-        }
-        if ($this->dryRun) {
-            $this->modx->log(modX::LOG_LEVEL_INFO, '    Would be creating: ' . $fileName . "\n");
-            $this->modx->log(modX::LOG_LEVEL_INFO, " --- Begin File Content --- ");
-        }
-        $tpl = '';
-        if ($type == 'modSnippet' || $type == 'modPlugin') {
-            if (! strstr($content, '<?')) {
-                $tpl .= '<'.'?'.'php'."\n\n";
-                //fwrite($fileFp,"<?php\n\n");
-            }
-            /* add header if it's not already there */
-            if ( (!strstr($content,'GNU')) && (!stristr($content,'License')) ) {
-                $tpl = $this->helpers->getTpl('phpfile.php');
-                $tpl = str_replace('[[+elementName]]', $elementObj->get('name'), $tpl);
-                $tpl = str_replace('[[+elementType]]', substr(strtolower($this->elementType), 3), $tpl);
-                $tpl = $this->helpers->replaceTags($tpl);
-            }
-        }
-        $tpl .= $content;
-
-        $this->helpers->writeFile($dir, $fileName, $tpl, $this->dryRun);
-        if ($this->dryRun) {
-            $this->modx->log(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
-        }
-        unset($tpl);
-    }
-
-    /** populates $this->elements with an array of resources based on pagetitles and/or parents */
-    protected function pullResources() {
-        /* @var $parent modResource */
-        $this->elements = array();
-
-        /* add resources from pagetitle array to $this->elements */
-        if (!empty($this->pagetitles)) {
-            foreach ($this->pagetitles as $pagetitle) {
-                $resObject = $this->modx->getObject('modResource', array('pagetitle' => trim($pagetitle)));
-                if ($resObject) {
-                    $this->elements[] = $resObject;
-                } else {
-                    $this->modx->log(modX::LOG_LEVEL_ERROR, 'Could not get resource with pagetitle: ' . $pagetitle);
+    protected function exportChildren($overwrite = false) 
+    {//For Quick Access
+        $mc = $this->myComponent;
+        $modx = $mc->modx;
+    
+    // We DO NOT trust project.config for exporting.
+        $tempObj = array();
+        $children = $modx->getCollection($this->getClass(), array('parent' => $this->getKey()));
+        if (!empty($children))
+            foreach ($children as $child)
+                if (!empty($child))
+                {   $obj = new ResourceAdapter($mc);
+                    $obj->myFields = $child->toArray();
+                    $tempObj[] = $obj;
                 }
-            }
-        }
-        /* add children of pagetitle array objects to $this->elements */
-        if (!empty($this->parents)) {
-            foreach($this->parents as $parentId) {
-                $parent = $this->modx->getObject('modResource', $parentId);
-                if ($parent) {
-                    if ($this->includeParents) {
-                        $this->elements[] = $parent;
-                    }
-                    $children = $parent->getMany('Children');
-                    if (!empty ($children)) {
-                        $this->elements = array_merge($this->elements,$children);
-                    }
-                }
-            }
-        }
+    // Clean up some memory
+        unset $children
+        
+    // Export all VALID Children
+        foreach ($tempObj as $obj)
+            if (!empty($obj))
+                $obj->exportObject($overwrite)
+
+    // Align the Children array
+        $this->myObjects = $tempObj;
     }
 
     /**
      * Writes the properties file for objects with properties
+     *
      * @param $properties array - object properties as PHP array
      * @param $fileName - Name of properties file
      * @param $objectName - Name of MODX object
      */
-    private function exportProperties($properties, $fileName, $objectName) 
-    {   $dir = $this->transportPath . 'properties/';
-        $tpl = $this->helpers->getTpl('propertiesfile.tpl');
-        $tpl = str_replace('[[+element]]',$objectName,$tpl);
-        $tpl = str_replace('[[+elementType]]', substr(strtolower($this->elementType), 3), $tpl);
+    public function exportProperties($overwrite = false) 
+    {//For Quick Access
+        $mc = $this->myComponent;
+        $dir = $mc->getPath('properties');
+        $name = $this->getName();
+        $class = $this->getSafeClass();
+        $properties = $this->myFields['properties'];
+        $fileName = $this->getFileName('properties');
+        
+        $tpl = $this->getTpl('propertiesfile.tpl');
+        $tpl = str_replace('[[+element]]',$name,$tpl);
+        $tpl = str_replace('[[+elementType]]', $class, $tpl);
+        $tpl = $mc->replaceTags($tpl);
 
-        $tpl = $this->helpers->replaceTags($tpl);
         $hastags = strpos($tpl, '<'.'?'.'php');
         if ($hastags === false)
             $tpl = '<'.'?'.'php'.$tpl;
         $tpl .=  "\n\n" . $this->render_properties($properties) . "\n\n";
 
-        if ($this->dryRun) {
-            $this->modx->log(modX::LOG_LEVEL_INFO, 'Would be creating: ' . $fileName . "\n");
-            $this->modx->log(modX::LOG_LEVEL_INFO, " --- Begin File Content --- ");
-        }
-        $this->helpers->writeFile($dir, $fileName, $tpl, $this->dryRun);
-        if ($this->dryRun) {
-            $this->modx->log(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
-        }
+        $mc->writeFile($dir, $fileName, $tpl, $this->dryRun);
+        
         unset($tpl);
     }
 
     /**
-     * Recursive function to write the code for the build properties file.
+     * Recursive function to write the code for the build properties file. This
+     * function has changed from its original, as it checks the passed value. If
+     * it is a string, there is no recursion. If not, there is.
      *
      * @param $arr - array of properties
      * @param $depth int - controls recursion
-     * @param int $tabWidth - tab width for code (uses spaces)
+     *
      * @return string - code for the elements properties
      */
-    private function render_properties( $arr, $depth=-1, $tabWidth=4) {
-
+    public function render_properties($arr, $depth = -1) 
+    {
+    // For Indents
+        $tabWidth = 4;
+    
         if ($depth == -1) {
             /* this will only happen once */
             $output = "\$properties = array( \n";
@@ -293,14 +311,18 @@ class ResourceAdapter extends MODxObjectAdapter
         } else {
             $output = "array( \n";
         }
-        $indent = str_repeat( " ", $depth + $tabWidth );
+        $indent = str_repeat(" ", $depth + $tabWidth );
 
-        foreach( $arr as $key => $val ) {
-            if ($key=='desc_trans' || $key == 'area_trans') {
+        foreach( $arr as $key => $val ) 
+        {//Ignore List...
+            if ($key == 'desc_trans' 
+            ||  $key == 'area_trans') 
                 continue;
-            }
+            
             /* No key for each property array */
-            $output .= $depth == 0? $indent : $indent . "'$key' => ";
+            $output .= $depth == 0
+                ? $indent 
+                : $indent . "'$key' => ";
 
             if( is_array( $val ) && !empty($val) ) {
                 $output .= $this->render_properties( $val, $depth + $tabWidth );
@@ -318,13 +340,11 @@ class ResourceAdapter extends MODxObjectAdapter
                 $output .= $qc . $val . $qc . ",\n";
             }
         }
-        $output .= $depth?
-            $indent . "),\n"
+        $output .= $depth
+            ? $indent . "),\n"
             : "\n);\n\nreturn \$properties;";
-
         return $output;
     }
-
 
 /* *****************************************************************************
    Build Vehicle and Support Functions 
@@ -333,7 +353,7 @@ class ResourceAdapter extends MODxObjectAdapter
     {//Add to the Transport Package
         if (parent::buildVehicle())
         {//Return Success
-            $myComponent->log(modX::LOG_LEVEL_INFO, 'Packaged Resource: '.$this->myColumns['pagetitle']);
+            $this->myComponent->sendLog(modX::LOG_LEVEL_INFO, 'Packaged Resource: '.$this->myFields['pagetitle']);
             return true;
         }
     }

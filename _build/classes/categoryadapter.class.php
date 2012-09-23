@@ -4,9 +4,12 @@ require_once('elementadapter.class.php');
 
 class CategoryAdapter extends ElementAdapter
 {//These will never change.
-    final static protected $xPDOClass = 'modCategory';
-    final static protected $xPDOTransportAttributes = array
-    (   xPDOTransport::UNIQUE_KEY => 'category',
+    final static protected $dbClass = 'modCategory';
+    final static protected $dbClassIDKey = 'id';
+    final static protected $dbClassNameKey = 'category';
+    final static protected $dbClassParentKey = 'parent';
+    final static protected $dbTransportAttributes = array
+    (   xPDOTransport::UNIQUE_KEY => 'id',
         xPDOTransport::PRESERVE_KEYS => false,
         xPDOTransport::UPDATE_OBJECT => true,
         xPDOTransport::RELATED_OBJECTS => true,
@@ -15,41 +18,124 @@ class CategoryAdapter extends ElementAdapter
     );
     
 // Database Columns for the XPDO Object
-    protected $myColumns;
-
-    private myTemplates = false;
-    private myChunks = false;
-    private mySnippets = false;
-    private myPlugins = false;
-    private myTemplateVariables;
+    protected $myFields;
+    protected $myObjects = array();
   
     final public function __construct(&$forComponent, $columns)
     {   parent::__construct(&$forComponent);
         if (is_array($columns))
-            $this->myColumns = $columns;
+            $this->myFields = $columns;
+    }
+/* *****************************************************************************
+   Bootstrap and Support Functions (in MODxObjectAdapter)
+***************************************************************************** */
+
+    public function newTransport()
+    {//Call the parent function first
+        parent::newTransport();
     }
     
+/* *****************************************************************************
+   Import Objects and Support Functions (in MODxObjectAdapter) 
+***************************************************************************** */
+    public function addToMODx($overwrite = false)
+    {//Perform default export implementation
+        $id = parent::addToMODx($overwrite);
+        $this->myFields[static::dbClassIDKey] = $id;
+        if ($id > -1)
+        {//Align Children to ID, and add them to MODx
+            $objects = $this->myObjects;
+            foreach ($objects as $obj)
+            {//In all Elements, this sets the Category
+                $obj->setParentID($id);
+            // Add it to the MODx
+                $obj->addToMODx($overwrite);
+            }
+        // Now we can attach Intersects...
+            //foreach ($objects as $obj)
+            //{   $class = get_class($thing);
+            //    $class::$property
+            //    
+            //}
+            connectTvsToTemplates();
+            
+        }
+    }
+    
+    
+    
+    /** Connects TVs to templates and creates resolver connecting them in the package
+     * if set in the project config file */
+    public function connectTvsToTemplates()
+    {//For Quick Access
+        $mc = $this->myComponent;
+    
+        $templateVarTemplates = $this->modx->getOption('templateVarTemplates', $this->props, array());
+        $mc->createIntersects($templateVarTemplates, 'modTemplateVarTemplate', 'modTemplate', 'modTemplateVar', 'templateid', 'tmplvarid');
+
+        /* Create Resolver */
+        if (!empty($templateVarTemplates)) {
+            $mc->sendLog(MODX::LOG_LEVEL_INFO, 'Creating tv resolver');
+            $tpl = $this->getTpl('tvresolver.php');
+            $tpl = $mc->replaceTags($tpl);
+            if (empty($tpl)) {
+                $mc->sendLog(MODX::LOG_LEVEL_ERROR, 'tvresolver tpl is empty');
+            }
+            $dir = $this->targetBase . '_build/resolvers';
+            $fileName = 'tv.resolver.php';
+
+            if (! file_exists($dir . '/' . $fileName)) {
+                $code = '';
+                $codeTpl = $this->getTpl('tvresolvercode.php');
+                $codeTpl = str_replace('<?php', '', $codeTpl);
+
+                foreach ($templateVarTemplates as $template => $tvs) {
+                    $tempCodeTpl = str_replace('[[+template]]', $template, $codeTpl);
+                    $tempCodeTpl = str_replace('[[+tvs]]', $tvs, $tempCodeTpl);
+                    $code .= "\n" . $tempCodeTpl;
+                }
+
+            $tpl = str_replace('/* [[+code]] */', $code, $tpl);
+
+            $mc->writeFile($dir, $fileName, $tpl);
+            } else {
+                $mc->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+            }
+        }
+    }
+    
+/* *****************************************************************************
+   Export Objects and Support Functions (in MODxObjectAdapter)
+***************************************************************************** */
+
+
+/* *****************************************************************************
+   Build Vehicle and Support Functions 
+***************************************************************************** */
+
     final public function buildVehicle()
-    {//Localize builder
-        $builder =& $useBuilder;
+    {//For Quick Access
+        $mc = $this->myComponent;
+        $attr = static::dbTransportAttributes;
+        $title = $this->properties['pagetitle'];
+        
+    // Localize builder
+        $builder = $mc->builder;
         if (!empty($this->properties)
         ||  is_array($this->properties))
-        {   $myComponent->log(modX::LOG_LEVEL_ERROR, 'Resource has no Properties');
+        {   $mc->sendLog(modX::LOG_LEVEL_ERROR, 'Resource has no Properties');
             return false;
         }
-    //For quick access
-        $attr = $this->attr;
-        $title = $this->properties['pagetitle'];
     // We must have Attributes in order to Package
         if (empty($attr)
         ||  is_array($attr))
-        {   $myComponent->log(modX::LOG_LEVEL_ERROR, 'Could not package Category: '.$title);
+        {   $mc->sendLog(modX::LOG_LEVEL_ERROR, 'Could not package Category: '.$title);
             return false;
         }
     // Add to the Transport Package
         if (parent::buildVehicle())
         {//Return Success
-            $myComponent->log(modX::LOG_LEVEL_INFO, 'Packaged Category: '.$title);
+            $mc->sendLog(modX::LOG_LEVEL_INFO, 'Packaged Category: '.$title);
             return true;
         }
         else
@@ -65,29 +151,31 @@ class CategoryAdapter extends ElementAdapter
         
         /* add snippets */
         if ($hasSnippets) {
-            $modx->log(modX::LOG_LEVEL_INFO,'Adding in Snippets.');
+            $mc->sendLog(modX::LOG_LEVEL_INFO,'Adding in Snippets.');
             $snippets = include $sources['data'].'transport.snippets.php';
             /* note: Snippets' default properties are set in transport.snippets.php */
             if (is_array($snippets)) {
                 $category->addMany($snippets, 'Snippets');
-            } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding Snippets failed.'); }
+            } 
+            else { $mc->sendLog(modX::LOG_LEVEL_FATAL,'Adding Snippets failed.'); }
         }
         /* ToDo: Implement Property Sets */
         if ($hasPropertySets) {
-            $modx->log(modX::LOG_LEVEL_INFO,'Adding in Property Sets.');
+            $mc->sendLog(modX::LOG_LEVEL_INFO,'Adding in Property Sets.');
             $propertySets = include $sources['data'].'transport.propertysets.php';
             //  note: property set' properties are set in transport.propertysets.php
             if (is_array($propertySets)) {
                 $category->addMany($propertySets, 'PropertySets');
-            } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding Property Sets failed.'); }
+            } 
+            else { $mc->sendLog(modX::LOG_LEVEL_FATAL,'Adding Property Sets failed.'); }
         }
         if ($hasChunks) { /* add chunks  */
-            $modx->log(modX::LOG_LEVEL_INFO,'Adding in Chunks.');
+            $mc->sendLog(modX::LOG_LEVEL_INFO,'Adding in Chunks.');
             /* note: Chunks' default properties are set in transport.chunks.php */    
             $chunks = include $sources['data'].'transport.chunks.php';
             if (is_array($chunks)) {
                 $category->addMany($chunks, 'Chunks');
-            } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding Chunks failed.'); }
+            } else { $mc->sendLog(modX::LOG_LEVEL_FATAL,'Adding Chunks failed.'); }
         }
         
         
@@ -97,9 +185,9 @@ class CategoryAdapter extends ElementAdapter
             $templates = include $sources['data'].'transport.templates.php';
             if (is_array($templates)) {
                 if (! $category->addMany($templates,'Templates')) {
-                    $modx->log(modX::LOG_LEVEL_INFO,'addMany failed with templates.');
+                    $mc->sendLog(modX::LOG_LEVEL_INFO,'addMany failed with templates.');
                 };
-            } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding Templates failed.'); }
+            } else { $mc->sendLog(modX::LOG_LEVEL_FATAL,'Adding Templates failed.'); }
         }
         
         if ($hasTemplateVariables) { /* add template variables  */
@@ -108,17 +196,17 @@ class CategoryAdapter extends ElementAdapter
             $tvs = include $sources['data'].'transport.tvs.php';
             if (is_array($tvs)) {
                 $category->addMany($tvs, 'TemplateVars');
-            } else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding Template Variables failed.'); }
+            } else { $mc->sendLog(modX::LOG_LEVEL_FATAL,'Adding Template Variables failed.'); }
         }
         
         
         if ($hasPlugins) {
-            $modx->log(modX::LOG_LEVEL_INFO,'Adding in Plugins.');
+            $mc->sendLog(modX::LOG_LEVEL_INFO,'Adding in Plugins.');
             $plugins = include $sources['data'] . 'transport.plugins.php';
              if (is_array($plugins)) {
                 $category->addMany($plugins);
              } else {
-                 $modx->log(modX::LOG_LEVEL_FATAL, 'Adding Plugins failed.');
+                 $mc->sendLog(modX::LOG_LEVEL_FATAL, 'Adding Plugins failed.');
              }
         }
         
@@ -221,7 +309,7 @@ class CategoryAdapter extends ElementAdapter
          */
         
         if ($hasSubPackages) {
-            $modx->log(modX::LOG_LEVEL_INFO, 'Adding in subpackages.');
+            $mc->sendLog(modX::LOG_LEVEL_INFO, 'Adding in subpackages.');
              $vehicle->resolve('file',array(
                 'source' => $sources['packages'],
                 'target' => "return MODX_CORE_PATH;",
