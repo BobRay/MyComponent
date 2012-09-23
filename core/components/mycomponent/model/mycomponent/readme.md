@@ -17,7 +17,7 @@ Get copies the MODx objects in the Namespace and Categories to the Project's Fil
 #### buildPackage() 
 Compiles the File Heirarchy into a Transport Package. This may only be run by the Project's Build.Transport.php. 
 
-## MODxObjectAdapter
+## ObjectAdapter
 
 Most other classes in this structure extend the MODxObjectAdapter. This is where, for many, the top-down methods are contained, unless a specific subclass requires additional functionality. In essence, a Vehicle is just an PHP array containing all of the properties of a MODx object.
 
