@@ -1,0 +1,13 @@
+*.txt eol=lf
+*.tpl eol=lf
+*.html eol=lf
+*.htm eol=lf
+*.php eol=lf
+*.md eol=lf
+*.css eol=lf
+*.js eol=lf
+
+*.pdf -text
+
+*.jpg binary
+*.png binary
