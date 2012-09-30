@@ -442,7 +442,9 @@ public function initPaths() { //For Quick Access
                 }
             }
         }
-        if (isset ($defaults['readme.md']) && $defaults['readme.md']) {
+        $readmeMd = isset($this->props['readme.md']) ?
+            $this->props['readme.md'] : false;
+        if ($readmeMd) {
             if (! file_exists($this->myPaths['targetCore'] . 'readme.md')) {
                 $tpl = $this->helpers->getTpl('readme.md');
                 $tpl = $this->helpers->replaceTags($tpl);
