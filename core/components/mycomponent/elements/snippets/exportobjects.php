@@ -82,60 +82,9 @@
  * defaults to assets/mycomponents/{categoryLower}/_build/data/
  *
  *
-*/
+ */
 
+include dirname(__FILE__) . 'mycomponentproject.class.php';
 
-
-
-/* @var $modx modX */
-$outsideModx = false;
-$sourceRoot = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/';
-if (!defined('MODX_CORE_PATH')) {
-    $outsideModx = true;
-    $configPath = $sourceRoot . '_build/build.config.php';
-    require_once $configPath;
-
-    require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
-    $modx= new modX();
-    $modx->initialize('mgr');
-    $modx->setLogLevel(modX::LOG_LEVEL_INFO);
-    $modx->setLogTarget('ECHO');
-}
-if (php_sapi_name() != 'cli') {
-    echo "<pre>\n"; /* used for nice formatting for log messages  */
-}
-/* These will override settings in the config file */
-
-if ($outsideModx) {
-    $scriptProperties = array(
-
-        //'category' => 'notify',
-        //'packageName' => 'Notify',
-        //'dryRun' => '1',
-        //'createTransportFiles' => '1',
-        //'createObjectFiles' => '1',
-        //'process' => 'elements,plugins,templateVars',
-        //'pagetitles' => 'Notify,NotifyPreview', // pagetitles of resources to process
-        //'parents' => '', //parents of resources to process
-        //'includeParents' => 0,
-    );
-}
-
-$props =& $scriptProperties;
-
-require_once $sourceRoot . 'core/components/mycomponent/model/mycomponent/export.class.php';
-
-$export = new Export($modx,$props);
-
-if ($export->init($sourceRoot . '_build/build.config.php')) {
-    $objects = explode(',', $props['process']);
-    foreach ($objects as $object) {
-        $export->process(trim($object));
-    }
-
-}
-
-$modx->log(modX::LOG_LEVEL_INFO, 'All Finished');
-
-
-
+$project = new MyComponentProject();
+$project->exportComponent(false);

@@ -1,5 +1,6 @@
 <?php
 
+
 /* Location of config file for current project.
  * Change this when you start work on a different project!!!
  *
@@ -7,23 +8,26 @@
  * assets/mycomponents/mycomponent/_build/config directory
  * if not, change the MYCOMPONENT_ROOT define below.
  */
-$configFileName = 'yourcomponent.config.php';
+$configFileName = '[[+packageNameLower]].config.php';
+
+/* This path is used below. Edit if necessary */
+
+$configFile = dirname(__FILE__) . '/config/' . $configFileName;
+
+if (!file_exists($configFile)) {
+    die('No project config file at: ' . $configFile);
+}
 
 /* Define the MODX path constants necessary for connecting to your core and other directories.
  * If you have not moved the core, the current values should work.
  * In some cases, you may have to hard-code the full paths */
-if (!defined('MODX_CORE_PATH')) {
+if (! defined('MODX_CORE_PATH')) {
     define('MODX_CORE_PATH', dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/core/');
     define('MODX_BASE_PATH', dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/');
     define('MODX_MANAGER_PATH', MODX_BASE_PATH . 'manager/');
     define('MODX_CONNECTORS_PATH', MODX_BASE_PATH . 'connectors/');
     define('MODX_ASSETS_PATH', MODX_BASE_PATH . 'assets/');
 }
-
-/* This define is used here, AND in the build.transport.php file - edit if necessary */
-define('MYCOMPONENT_ROOT', MODX_ASSETS_PATH . 'mycomponents/mycomponent /');
-$configFile = MYCOMPONENT_ROOT . '_build/utilities/config/' . $configFileName;
-
 
 /* not used -- here to prevent E_NOTICE warnings */
 if (!defined('MODX_BASE_URL')) {

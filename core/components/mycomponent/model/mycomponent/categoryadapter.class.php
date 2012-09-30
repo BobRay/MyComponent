@@ -4,11 +4,11 @@ require_once('elementadapter.class.php');
 
 class CategoryAdapter extends ElementAdapter
 {//These will never change.
-    final static protected $dbClass = 'modCategory';
-    final static protected $dbClassIDKey = 'id';
-    final static protected $dbClassNameKey = 'category';
-    final static protected $dbClassParentKey = 'parent';
-    final static protected $dbTransportAttributes = array
+    static protected $dbClass = 'modCategory';
+    static protected $dbClassIDKey = 'id';
+    static protected $dbClassNameKey = 'category';
+    static protected $dbClassParentKey = 'parent';
+    static protected $dbTransportAttributes = array
     (   xPDOTransport::UNIQUE_KEY => 'id',
         xPDOTransport::PRESERVE_KEYS => false,
         xPDOTransport::UPDATE_OBJECT => true,
@@ -127,19 +127,17 @@ class CategoryAdapter extends ElementAdapter
             return false;
         }
     // We must have Attributes in order to Package
-        if (empty($attr)
-        ||  is_array($attr))
-        {   $mc->sendLog(modX::LOG_LEVEL_ERROR, 'Could not package Category: '.$title);
+        if (empty($attr) ||  is_array($attr)) {
+            $mc->sendLog(modX::LOG_LEVEL_ERROR, 'Could not package Category: '.$title);
             return false;
         }
     // Add to the Transport Package
-        if (parent::buildVehicle())
-        {//Return Success
+        if (parent::buildVehicle()) {//Return Success
             $mc->sendLog(modX::LOG_LEVEL_INFO, 'Packaged Category: '.$title);
             return true;
-        }
-        else
+        } else {
             return false;
+        }
         
         /* create category  The category is required and will automatically
          * have the name of your package
@@ -223,9 +221,11 @@ class CategoryAdapter extends ElementAdapter
                     xPDOTransport::PRESERVE_KEYS => false,
                     xPDOTransport::UPDATE_OBJECT => true,
                     xPDOTransport::UNIQUE_KEY => 'name',
-                );if ($validator == 'default') {
+                );
         }
-        
+        if ($validator == 'default') {
+        }
+
         if ($hasPropertySets) {
             $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['PropertySets'] = array(
                     xPDOTransport::PRESERVE_KEYS => false,
@@ -315,5 +315,6 @@ class CategoryAdapter extends ElementAdapter
                 'target' => "return MODX_CORE_PATH;",
                 ));
         }
-    }
+        return '';
+ }
 }

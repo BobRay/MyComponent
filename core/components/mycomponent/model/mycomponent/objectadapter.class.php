@@ -1,3 +1,4 @@
+<?php
 abstract class ObjectAdapter
 {//Base required     
     static protected $dbClass = '';
@@ -44,7 +45,7 @@ abstract class ObjectAdapter
      */
     public function getName()
     {//Simple Getter Function
-        return $this->myFields[static::dbClassNameKey]
+        return $this->myFields[static::dbClassNameKey];
     }
     
     /**
@@ -85,7 +86,7 @@ abstract class ObjectAdapter
         if ($class == 'templatevar')
             return 'tv';
         elseif ($class == 'systemsettings')
-            return 'setting'
+            return 'setting';
         else
             return $class;
     }
@@ -147,7 +148,7 @@ abstract class ObjectAdapter
     }
     public function getTransportFileName()
     {//Simple Calculation
-        return 'transport.' $this->getSafeClass() . '.' . $this->getSafeName() . '.php';
+        return 'transport.' . $this->getSafeClass() . '.' . $this->getSafeName() . '.php';
     }
     public function getPropertiesFileName()
     {//Simple Calculation
@@ -199,7 +200,7 @@ abstract class ObjectAdapter
         }
     // Now that we know all directories exist...
         $filename = $this->getTransportFileName();
-        $mc->
+        //$mc->
         
     // Do some post-processing
         $this->createResolvers();
@@ -298,7 +299,7 @@ abstract class ObjectAdapter
         return $obj->get($idKey);
     }
     
-    public function toDBObject();
+    public function toDBObject()
     {///Use MODx to create the object
         $object = $this->myComponent->modx->newObject($this->getClass());
         $object->fromArray($this->myFields);
@@ -535,13 +536,13 @@ abstract class ObjectAdapter
             $dir = $mc->getCodeDir($this->targetCore, $type);
         }
 
-        $tpl = '';
+         $tpl = '';
         if ($type == 'modSnippet' || $type == 'modPlugin') {
-            if (! strstr($content, '<?')) {
-                $tpl .= '<'.'?'.'php'."\n\n";
-                //fwrite($fileFp,"<?php\n\n");
+            if (! strstr($content, '')) {
+                $tpl .= '<' . '?' . 'php' . "\n\n";
+
             }
-            /* add header if it's not already there */
+
             if ( (!strstr($content,'GNU')) && (!stristr($content,'License')) ) {
                 $tpl = $this->getTpl('phpfile.php');
                 $tpl = str_replace('[[+elementName]]', $name, $tpl);
@@ -589,7 +590,7 @@ abstract class ObjectAdapter
         }
         
     // We must have a valid xPDO Object to Package
-        $obj = $this->toDBObject($modx)
+        $obj = $this->toDBObject($modx);
         if (empty($obj))
         {   $mc->sendLog(modX::LOG_LEVEL_ERROR, 'Could not create xPDO object: ' . $this->getDBClass());
             return false;
@@ -633,7 +634,7 @@ abstract class ObjectAdapter
         $name = strtolower($name);
     // For Quick Access
         $mc = $this->myComponent;
-        $path = $mc->getPath('mc-tpl')
+        $path = $mc->getPath('mcTpl');
         $modx = $mc->modx;
         
     /* Check MODx Chunks first */

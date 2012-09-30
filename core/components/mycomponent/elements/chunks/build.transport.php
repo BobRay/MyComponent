@@ -99,15 +99,18 @@ $root = dirname(dirname(__FILE__)) . '/';
 $sources= array (
     'root' => $root,
     'build' => $root . '_build/',
+    'config' => $root . '_build/config/',
+    'utilities' => $root . '_build/utilities/',
     /* note that the next two must not have a trailing slash */
-    'source_core' => $root.'core/components/'.PKG_NAME_LOWER,
-    'source_assets' => $root.'assets/components/'.PKG_NAME_LOWER,
+    'source_core' => $root . 'core/components/'.PKG_NAME_LOWER,
+    'source_assets' => $root . 'assets/components/'.PKG_NAME_LOWER,
     'resolvers' => $root . '_build/resolvers/',
     'validators'=> $root . '_build/validators/',
     'data' => $root . '_build/data/',
     'docs' => $root . 'core/components/' . PKG_NAME_LOWER . '/docs/',
     'install_options' => $root . '_build/install.options/',
-    'packages'=> $root . 'core/packages',
+    'packages'=> $root . 'core/packages', /* no trailing slash */
+
 );
 unset($root);
 
@@ -163,7 +166,7 @@ if ($hasResources) {
 if ($minifyJS) {
     $modx->log(modX::LOG_LEVEL_INFO, 'Creating js-min file(s)');
     // require $sources['build'] . 'utilities/jsmin.class.php';
-    require MYCOMPONENT_ROOT . 'core/components/mycomponent/model/mycomponent/jsmin.class.php';
+    require $sources['utilities'] . 'jsmin.class.php';
 
     $jsDir = $sources['source_assets'] . '/js';
 

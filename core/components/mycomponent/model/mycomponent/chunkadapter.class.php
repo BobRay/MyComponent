@@ -4,8 +4,8 @@ require_once('elementadapter.class.php');
 
 class ChunkAdapter extends ElementAdapter
 {//This will never change.
-    final static protected $xPDOClass = 'modChunk';
-    final static protected $xPDOTransportAttributes = array
+    static protected $xPDOClass = 'modChunk';
+    static protected $xPDOTransportAttributes = array
     (   xPDOTransport::UNIQUE_KEY => 'key',
         xPDOTransport::PRESERVE_KEYS => true,
         xPDOTransport::UPDATE_OBJECT => false,
@@ -38,6 +38,7 @@ class ChunkAdapter extends ElementAdapter
 ***************************************************************************** */
     final public function buildVehicle()
     {//Add to the Transport Package
+        /* @var $myComponent MyComponentProject */
         if (parent::buildVehicle())
         {//Return Success
             $myComponent->log(modX::LOG_LEVEL_INFO, 'Packaged Resource: '.$this->properties['pagetitle']);

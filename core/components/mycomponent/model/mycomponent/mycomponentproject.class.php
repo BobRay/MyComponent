@@ -1,16 +1,26 @@
 <?php
 
-class MyComponentProject
-{   $modx;
-    
-    $myName;
-    $myVersion;
-    
+class MyComponentProject {
+    /* @var $modx modX */
+    public $modx;
+
+    public $myName;
+    public $myVersion;
+
 // List of Paths for MC and the Project
-    $myPaths;
+    public $myPaths = array();
+    public $packageNameLower = '';
 // List of all Objects
-    $myObjects = array();
-    
+    //public $myObjects = array();
+    public $targetRoot = '';
+    public $mcRoot = '';
+    public $mcCore = '';
+    public $props = array();
+    /* @var $helpers Helpers */
+    public $helpers;
+    public $dirPermission;
+
+
 /* *****************************************************************************
    Property Getter and Setters
 ***************************************************************************** */
@@ -21,19 +31,23 @@ class MyComponentProject
      */
     public function isMCInstalled()
     {//Simple Getter
-        return $this->myPaths['mc-core'] == '';
+        return $this->myPaths['mcCore'] != '';
     }
-    
+
 /* *****************************************************************************
    Construction and Support Functions (in MODxObjectAdapter)
 ***************************************************************************** */
     public function __construct()
-    {//Get MODx first
+    {
+        /* Create $modx object if it doesn't exist */
         $this->initMODx();
-    // Build the Folder Structure
+        /* Get the config file */
+        $this->init();
+        /* Set up our paths */
         $this->initPaths();
-    // Load the Build Config
-        $this->initComponent();
+
+        // $output =  print_r($this->props,true);
+        // echo $output;
     }
 
     /* Instantiate MODx -- if this require fails, check your
@@ -41,40 +55,74 @@ class MyComponentProject
      */
     public function initMODx()
     {//Only redefine if not defined
-        if (!defined('MODX_CORE_PATH'))
-        {   require_once $sources['build'].'build.config.php';
+        if (!defined('MODX_CORE_PATH')){
+
+            require_once dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) .'/_build/build.config.php';
+            $cp = MODX_CORE_PATH;
+
+            if (empty($cp)) {
+                die ('Could not initialize MODX');
+
+            }
             require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
-            
+
             $modx= new modX();
         }
-        else
-            global $modx;
-    
+        $this->modx =& $modx;
     // Initialize and set up logging
-        $modx->initialize('mgr');
-        $modx->setLogLevel(xPDO::LOG_LEVEL_INFO);
-        $modx->setLogTarget(XPDO_CLI_MODE ? 'ECHO' : 'HTML');
+        $this->modx->initialize('mgr');
+        $this->modx->setLogLevel(xPDO::LOG_LEVEL_INFO);
+        $this->modx->setLogTarget(XPDO_CLI_MODE ? 'ECHO' : 'HTML');
     // Point to modx
-        $this->modx = $modx;
+
     }
-    
-    public function initComponent()
-    {//Load the Config File
-        $config = $this->getPath('root') . '/_build/build.config.php';
-    // Get the Config File
-        if (file_exists($config)) 
-            $properties = @include $config;
-        else
-            die('Could not find main config file at ' . $config);
-    // Make sure that we get usable values
-        if (empty($properties))
-            die('Config File was not set up correctly: ' . $config);
+    public function init() {
+        // Get the project config file
+        include dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/_build/config/current.project.php';
+        if (! isset($configPath)) {
+            die('Config path not set');
+        }
+        if (file_exists($configPath)) {
+            $properties = @include $configPath;
+        } else {
+            die('Could not find project config file at ' . $configPath);
+        }
+        // Make sure that we get usable values
+        if (empty($properties)) {
+            die('Config File was not set up correctly: ' . $configPath);
+        }
+        $this->mcRoot = isset($properties['mycomponentRoot'])
+            ? $properties['mycomponentRoot']
+            : '';
+        if ( empty($this->mcRoot)) {
+            die('mycomponentRoot is not set');
+        }
+        $this->targetRoot = isset($properties['targetRoot'])
+            ? $properties['targetRoot']
+            : '';
+
+        if (empty($this->targetRoot)) {
+            die('targetRoot is not set');
+        }
+        $this->props = $properties;
+        $helpersPath = $this->props['mycomponentCore'] . 'model/mycomponent/helpers.class.php';
+        require_once $helpersPath;
+        $helpers = new Helpers($this->modx, $this->props);
+        $this->helpers = $helpers;
+        $this->helpers->init();
         
+        $this->dirPermission = $this->props['dirPermission'];
+        $this->packageNameLower = $this->props['packageNameLower'];
+
+
+    }
+
+    public function initComponent() {
     // Initialize Component
         $this->copyAssets = file_exists($this->assets);
         $this->copyCore = file_exists($this->core);
         $this->runBuild = file_exists($this->build);
-        
+
         $hasPropertySets = !empty($props['propertySets']);
         $hasMenu = !empty($props['menus']); /* Add items to the MODx Top Menu */
     // This will only work if we have a Core directory
@@ -90,17 +138,17 @@ class MyComponentProject
     // This will only work if we have a Build directory
         if ($this->runBuild)
         {   $this->pathData = $this->build.'data/';
-        
+
             $this->addValidators = file_exists($this->build.'validators/');
-            
+
             $hasSettings = true;
             $hasTemplateVariables = !empty($props['elements']['modTemplateVar']);
-            
+
             $hasSetupOptions = !empty($props['install.options']); /* HTML/PHP script to interact with user */
             $hasResources = !empty($props['resources']);
         }
     // This will only work if we have a Core AND Build directory
-        if ($this->copyCore 
+        if ($this->copyCore
         &&  $this->runBuild)
         {
             $hasSnippets = !empty($props['elements']['modSnippet']);
@@ -111,7 +159,7 @@ class MyComponentProject
     // This will only work if we have Assets
         if ($this->copyAssets)
         {
-            $this->minify = $properties['minifyJS'];
+            $this->minify = $props['minifyJS'];
         }
         else
         {
@@ -121,67 +169,56 @@ class MyComponentProject
 
     /**
      * Sets up the Path variables for the Component Project. Runs automatically
-     * on __construct. 
+     * on __construct.
      */
-    public function initPaths()
-    {//For Quick Access
-        $modx = $this->modx;
-    // Init as blank array()
-        $paths = array();
-    // Set the MODx path
-        $paths['modx'] = '';
-    // Set the Root paths for MyComponent
-    /* IMPORTANT: Namespace Hardcoded!! */
-        $ns = $modx->getObject('modNamespace', array('key' => 'mycomponent'));
-        $paths['mc-core'] = !empty($ns)
-            ? $ns->get('path')
-            : is_dir(MODX_ASSETS_PATH . 'mycomponents/mycomponent/core/components/mycomponent/')
-                ? MODX_ASSETS_PATH . 'mycomponents/mycomponent/core/components/mycomponent/'
-                : '';
-            $paths['mc-model'] = $paths['mc-core'] != ''
-                ? $paths['mc-core'] . 'model/mycomponent/'
-                : '';
-                $paths['mc-new'] = $paths['mc-core'] != ''
-                    ? $paths['mc-model'] . 'model/mycomponent/newbuild/'
-                    : '';
-                $paths['mc-tpl'] = $paths['mc-core'] != ''
-                    ? $paths['mc-model'] . 'model/mycomponent/buildtpls/'
-                    : '';
-            $paths['mc-elements'] = $paths['mc-core'] != ''
-                ? $paths['mc-core'] . 'elements/'
-                : '';
-                $paths['mc-tpl'] = $paths['mc-core'] != ''
-                    ? $paths['mc-elements'] . 'chunks/'
-                    : '';
-        $paths['mc-assets'] = !empty($ns)
+public function initPaths() { //For Quick Access
+        // Init as blank array()
+            $paths = array();
+        // Set the MODx path
+            $paths['modx'] = '';
+        // Set the Root paths for MyComponent
+
+        $name = $this->props['packageNameLower'];
+        /* @var $ns modNameSpace */
+        $ns = null;
+        //$ns = $this->modx->getObject('modNamespace', array('key' => 'mycomponent'));
+        $paths['mcCore'] = $this->mcRoot . 'core/components/mycomponent/';
+        $paths['mcModel'] = $paths['mcCore'] . 'model/mycomponent/';
+        /* $paths['mcNew'] = $paths['mc-core'] != ''
+            ? $paths['mc-model'] . 'model/mycomponent/newbuild/'
+            : ''; */
+
+        $paths['mcElements'] = $paths['mcCore'] . 'elements/';
+        $paths['mcTpl'] = $paths['mcElements'] . 'chunks/';
+        /*$paths['mcAssets'] = $paths['mcCore] . 'assets/comp!empty($ns)
             ? $ns->get('assets_path')
             : is_dir(MODX_ASSETS_PATH . 'mycomponents/mycomponent/assets/components/mycomponent/')
                 ? MODX_ASSETS_PATH . 'mycomponents/mycomponent/assets/components/mycomponent/'
-                : '';
-    // Set the Root path for this Component
-        $paths['me'] = dirname(dirname(dirname(__FILE__)));
+                : '';*/
+        // Set the Root path for this Component
+        $paths['targetRoot'] = $this->targetRoot;
         // Set the Basic Necessary Paths
-            $paths['core']      = $paths['me'] . 'core/components/' . $name . '/';
-                $paths['control']   = $paths['core'] . 'controllers/';
-                $paths['docs']      = $paths['core'] . 'docs/';
-                $paths['elements']  = $paths['core'] . 'elements/';
-                $paths['lexicon']   = $paths['core'] . 'lexicon/';
-                $paths['model']     = $paths['core'] . 'model/' . $name . '/';
-                $paths['process']   = $paths['core'] . 'processors/';
-            $paths['assets']    = $paths['me'] . 'assets/components/' . $name . '/';
-                $paths['css']       = $paths['assets'] . 'css/';
-                $paths['js']        = $paths['assets'] . 'js/';
-                $paths['images']    = $paths['assets'] . 'images/';
-            $paths['build']     = $paths['me'] . '_build/';
-                $paths['data']      = $paths['build'] . 'data/';
-                    $paths['propeties'] = $paths['data'] . 'properties/';
-                $paths['resolve']   = $paths['build'] . 'resolvers/';
-                $paths['validate']  = $paths['build'] . 'validators/';
+            $paths['targetCore']      = $paths['targetRoot'] . 'core/components/' . $name . '/';
+                $paths['targetControl']   = $paths['targetCore'] . 'controllers/';
+                $paths['targetDocs']      = $paths['targetCore'] . 'docs/';
+                $paths['targetElements']  = $paths['targetCore'] . 'elements/';
+                $paths['targetLexicon']   = $paths['targetCore'] . 'lexicon/';
+                $paths['targetModel']     = $paths['targetCore'] . 'model/' . $name . '/';
+                $paths['targetProcess']   = $paths['targetCore'] . 'processors/';
+            $paths['targetAssets']    = $paths['targetCore'] . 'assets/components/' . $name . '/';
+                $paths['targetCss']       = $paths['targetAssets'] . 'css/';
+                $paths['targetJs']        = $paths['targetAssets'] . 'js/';
+                $paths['targetImages']    = $paths['targetAssets'] . 'images/';
+            $paths['targetBuild']     = $paths['targetRoot'] . '_build/';
+                $paths['targetData']      = $paths['targetBuild'] . 'data/';
+                $paths['targetProperties'] = $paths['targetData'] . 'properties/';
+                $paths['targetResolve']   = $paths['targetBuild'] . 'resolvers/';
+                $paths['targetValidate']  = $paths['targetBuild'] . 'validators/';
     // Set to Class Member
         $this->myPaths = $paths;
     }
-    
-    
+
+
     public function loadChildren()
     {   if ($this->runBuild)
         {//For quick access
@@ -190,7 +227,7 @@ class MyComponentProject
             $resources = include $data.'transport.resources.php';
             foreach ($resources as $resource)
                 $this->myResources[] = new ComponentResource($this, $resource);
-                
+
         // Load System Settings
             $settings = include $data.'transport.settings.php';
             foreach ($settings as $setting)
@@ -201,17 +238,17 @@ class MyComponentProject
             $this->myMenu = new ComponentMenu($this, $menu);
         }
 
-        if ($this->copyCore 
+        if ($this->copyCore
         &&  $this->runBuild)
         {
-            
+
         }
     }
 
 /* *****************************************************************************
    Property Getter and Setters
 ***************************************************************************** */
-    
+
     /**
      * Convenience Method for getting the File System Safe Name of the component.
      *
@@ -221,7 +258,7 @@ class MyComponentProject
     {//Simple Getter Function
         return str_replace(' ', '', strtolower($this->name));
     }
-    
+
     /**
      * Generic Getter for the path of the desired key for the Project. This enforces
      * consistency and reduces the need for path building in other objects.
@@ -233,45 +270,47 @@ class MyComponentProject
     {//We already have this stored!!
         return $this->myPaths[$target];
     }
-    
+
     /**
      * Deprecated: See getPath('code') and ElementAdapter->getCodeDir.
      */
     private function getCodeDir ($targetCore, $type) {    }
-    
+
 
 /* *****************************************************************************
    Bootstrap and Support Functions
 ***************************************************************************** */
 
-    public function newComponent()
+    public function bootstrap()
     {//Only run if MC is installed
         if (!$this->isMCInstalled())
-        {   $this->sendLog(MODX::LOG_LEVEL_ERROR, 'MyComponent must be installed to create a new MyComponent Project!');
+        {   $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'MyComponent must be installed to create a new MyComponent Project!');
             return;
         }
-        
-    // This must happen first
-        $this->newPaths();
-        
+
+    $this->createBasics();
+        // $this->newPaths();
+
     // Installation Options Scripts
+
         $this->newInstallOptions();
     }
-    
+
     public function newPaths()
     {//For Quick Access
         $paths = $this->paths;
         $needs = $this->hasObjects;
-    
+
     // Iterate through array
         foreach($needs as $key => $value)
         {   if ($value == true)
                 $this->makeDir($paths[$key]);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Created Directory: ' . $paths['key']);
         }
     }
-    
-    /** Initializes class variables */
-    public function init($configPath) {
+
+    /** Initializes class variables  NOT USED */
+    public function xinit($configPath) {
         clearstatcache(); /*  make sure is_dir() is current */
         $config = $configPath;
         if (file_exists($config)) {
@@ -299,6 +338,7 @@ class MyComponentProject
         $this->packageName = $this->props['packageName'];
         $this->packageNameLower = $this->props['packageNameLower'];
 
+
         if (isset($this->props['offerAbort']) && $this->props['offerAbort']) {
             echo 'Processing ' . $this->packageName . 'Continue? (y/n - Enter) ';
             $input = fgetc(STDIN);
@@ -317,94 +357,98 @@ class MyComponentProject
         $this->makeStatic = !empty($this->props['makeStatic'])? explode(',', $this->props['makeStatic']) : array();
 
         /* show basic info */
-        $this->sendLog(MODX::LOG_LEVEL_INFO, 'Component: ' . $this->props['packageName']);
-        $this->sendLog(MODX::LOG_LEVEL_INFO, 'Source: ' . $this->source);
-        $this->sendLog(MODX::LOG_LEVEL_INFO, 'Target Base: ' . $this->targetBase);
-        $this->sendLog(MODX::LOG_LEVEL_INFO, 'Target Core: ' . $this->targetCore);
-        $this->sendLog(MODX::LOG_LEVEL_INFO, 'Target Assets: ' . $this->targetAssets);
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Component: ' . $this->props['packageName']);
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Source: ' . $this->source);
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Target Base: ' . $this->targetBase);
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Target Core: ' . $this->targetCore);
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Target Assets: ' . $this->targetAssets);
 
-        $this->sendLog(MODX::LOG_LEVEL_INFO, '--------------------------------------------------');
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '--------------------------------------------------');
     }
 
     /** Creates build transport and config files, (optionally) lexicon files, doc file,
      *  readme.md, and full _build directory with utilities if set in project config file */
     public function createBasics() {
-        $defaults = $this->props['defaultStuff'];
 
         /* Transfer build and build config files */
 
-        $dir = $this->targetBase . '_build';
-        $this->sendLog(MODX::LOG_LEVEL_INFO, 'Creating build files');
+        $dir = $this->myPaths['targetBuild'];
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating build files');
         $fileName = 'build.transport.php';
         if (!file_exists($dir . '/' . $fileName)) {
-            $tpl = $this->getTpl($fileName);
-            $tpl = $this->replaceTags($tpl);
-            $this->writeFile($dir, $fileName, $tpl);
+            $tpl = $this->helpers->getTpl($fileName);
+            $tpl = $this->helpers->replaceTags($tpl);
+            $this->helpers->writeFile($dir, $fileName, $tpl);
         } else {
-            $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
         }
         $fileName = 'build.config.php';
         if (!file_exists($dir . '/' . $fileName)) {
-            copy($this->source . '_build/build.config.php', $dir . '/' . 'build.config.php');
+            $tpl = $this->helpers->getTpl('build.config.php');
+            $tpl = str_replace('[[+packageNameLower]]', $this->packageNameLower, $tpl);
+            $dir = $this->myPaths['targetBuild'];
+            $this->helpers->writeFile($dir, $fileName, $tpl);
+            //copy($this->mcRoot . '_build/build.config.php', $dir . '/' . 'build.config.php');
         } else {
-            $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
 
         }
-        
-        if (isset ($defaults['utilities']) && $defaults['utilities']) {
-            $fromDir = $this->source . '_build/utilities/';
-            $toDir = $this->targetBase . '_build/utilities/';
-            if (! is_dir($toDir)) {
-                $this->sendLog(MODX::LOG_LEVEL_INFO, 'Copying Utilities directory');
-                $this->copyDir($fromDir, $toDir);
-            } else {
-                $this->sendLog(MODX::LOG_LEVEL_INFO, '    Utilities directory already exists');
-            }
+        $fileName = $this->packageNameLower . '.config.php';
+        $dir = $this->myPaths['targetBuild'] . 'config/';
+        if (!file_exists('$dir' . $fileName)) {
+            $tpl = $this->helpers->getTpl('example.config.php');
+            $this->helpers->writeFile($dir, $fileName, $tpl);
+
         }
+
+
+
+
 
         if (isset ($this->props['languages']) &&  ! empty($this->props['languages'])) {
-            $this->sendLog(MODX::LOG_LEVEL_INFO,'Creating Lexicon files');
-            $lexiconBase = $this->targetCore . 'lexicon/';
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,'Creating Lexicon files');
+            $lexiconBase = $this->myPaths['targetCore'] . 'lexicon/';
             foreach($this->props['languages'] as $language => $languageFiles) {
-                $dir = $this->targetCore . 'lexicon/' . $language;
-                $files = !empty($languageFiles)? explode(',', $languageFiles) : array();
+                $dir = $lexiconBase . 'lexicon/' . $language;
+                $files = !empty($languageFiles)? $languageFiles : array();
                 foreach($files as $file){
                     $fileName = $file . '.inc.php';
                     if (! file_exists($dir . '/' . $fileName)){
-                        $tpl = $this->getTpl('phpfile.php');
+                        $tpl = $this->helpers->getTpl('phpfile.php');
                         $tpl = str_replace('[[+elementName]]', $language . ' '. $file . ' topic', $tpl);
                         $tpl = str_replace('[[+description]]', $language . ' ' . $file . ' topic lexicon strings', $tpl);
                         $tpl = str_replace('[[+elementType]]', 'lexicon file', $tpl);
-                        $tpl = $this->replaceTags($tpl);
-                        $this->writeFile($dir, $fileName, $tpl);
+                        $tpl = $this->helpers->replaceTags($tpl);
+                        $this->helpers->writeFile($dir, $fileName, $tpl);
                     } else {
-                        $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $language . ':' . $fileName . ' file already exists');
+                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $language . ':' . $fileName . ' file already exists');
                     }
 
                 }
             }
         }
-        if (isset ($defaults['docs']) && ! empty($defaults['docs'])) {
-            $this->sendLog(MODX::LOG_LEVEL_INFO,'Creating doc files');
-            $toDir = $this->targetCore . 'docs';
-            $docs = !empty($defaults['docs'])? explode(',', $defaults['docs']) : array();
+
+        $docs = isset($this->props['docs'])? $this->props['docs']: array();
+        if (! empty($docs)) {
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,'Creating doc files');
+            $toDir = $this->myPaths['targetCore'] . 'docs';
             foreach($docs as $doc) {
                 if (! file_exists($toDir . '/' . $doc )) {
-                    $tpl = $this->getTpl($doc);
-                    $tpl = $this->replaceTags($tpl);
-                    $this->writeFile($toDir, $doc, $tpl);
+                    $tpl = $this->helpers->getTpl($doc);
+                    $tpl = $this->helpers->replaceTags($tpl);
+                    $this->helpers->writeFile($toDir, $doc, $tpl);
                 } else {
-                    $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $doc . ' file already exists');
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $doc . ' file already exists');
                 }
             }
         }
         if (isset ($defaults['readme.md']) && $defaults['readme.md']) {
-            if (! file_exists($this->targetBase . 'readme.md')) {
-                $tpl = $this->getTpl('readme.md');
-                $tpl = $this->replaceTags($tpl);
-                $this->writeFile($this->targetBase, 'readme.md', $tpl);
+            if (! file_exists($this->myPaths['targetCore'] . 'readme.md')) {
+                $tpl = $this->helpers->getTpl('readme.md');
+                $tpl = $this->helpers->replaceTags($tpl);
+                $this->helpers->writeFile($this->myPaths['targetRoot'], 'readme.md', $tpl);
             } else {
-                $this->sendLog(MODX::LOG_LEVEL_INFO, 'readme.md file already exists');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'readme.md file already exists');
             }
 
         }
@@ -419,25 +463,25 @@ class MyComponentProject
             return;
         }
         $optionalDirs = !empty($this->props['assetsDirs'])? $this->props['assetsDirs'] : array();
-        $this->sendLog(MODX::LOG_LEVEL_INFO,'Creating Assets directories');
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,'Creating Assets directories');
         foreach($optionalDirs as $dir => $val) {
             $targetDir = $this->targetAssets . $dir;
             if ($val && (! is_dir($targetDir)) ) {
                 if (mkdir($targetDir, $this->dirPermission, true)) {
-                    $this->sendLog(MODX::LOG_LEVEL_INFO,'    Created ' . $targetDir . ' directory');
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,'    Created ' . $targetDir . ' directory');
                 }
             } else {
-                $this->sendLog(MODX::LOG_LEVEL_INFO,'    ' . $targetDir . ' directory already exists');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,'    ' . $targetDir . ' directory already exists');
             }
             if ($dir == 'css' || $dir == 'js') {
                 $path = $this->targetAssets . $dir;
                 $fileName = $this->packageNameLower . '.' . $dir;
                 if (!file_exists($path . '/' . $fileName)) {
-                    $tpl = $this->getTpl($dir);
-                    $tpl = $this->replaceTags($tpl);
-                    $this->writeFile($path, $fileName, $tpl);
+                    $tpl = $this->helpers->getTpl($dir);
+                    $tpl = $this->helpers->replaceTags($tpl);
+                    $this->helpers->writeFile($path, $fileName, $tpl);
                 } else {
-                    $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
                 }
 
             }
@@ -445,54 +489,49 @@ class MyComponentProject
     }
 
     /** Creates example file for user input during install if set in project config file */
-    public function newInstallOptions() 
+    public function newInstallOptions()
     {//For Quick Access
-        $path = $this->myPaths['build'] . 'install.options/';
-        $filename = 'user.input.php';
-        
+        $path = $this->myPaths['targetBuild'] . 'install.options/';
+        $fileName = 'user.input.php';
+
         $iScript = $this->modx->getOption('install.options', $this->props, '');
-        if (! empty($iScript)) 
-        {//Make sure we have the directory 
-            if(!is_dir($path))
-            {
-                
-            }
+        if (! empty($iScript)) {
 
         // Check if the file exists
-            if (file_exists($path . $fileName)) 
-                $this->sendLog(MODX::LOG_LEVEL_INFO, 'Install Options already exist at: ' $path . $fileName);
+            if (file_exists($path . $fileName))
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Install Options already exist at: ' . $path . $fileName);
             else
             {//Get the Templatized Basic file
-                $tpl = $this->getTpl($fileName);
-                $tpl = $this->replaceTags($tpl);
-                $this->writeFile($path, $fileName, $tpl);
-                $this->sendLog(MODX::LOG_LEVEL_INFO, 'Created Install Options at: ' . $path . $filename);
-            } 
+                $tpl = $this->helpers->getTpl($fileName);
+                $tpl = $this->helpers->replaceTags($tpl);
+                $this->helpers->writeFile($path, $fileName, $tpl);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Created Install Options at: ' . $path . $filename);
+            }
         }
     }
 
     /** Deprecated: Called from NamespaceAdapter->addToMODx */
     public function createNewSystemSettings() {    }
-    
+
     /** Creates example file for user input during install if set in project config file */
     public function createInstallOptions() {
         $iScript = $this->modx->getOption('install.options', $this->props, '');
         if (! empty($iScript)) {
-            $this->sendLog(MODX::LOG_LEVEL_INFO, 'Creating Install Options');
-            $dir = $this->targetBase . '_build/install.options';
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating Install Options');
+            $dir = $this->targetRoot . '_build/install.options';
             $fileName = 'user.input.php';
 
             if (! file_exists($dir . '/' . $fileName)) {
-                $tpl = $this->getTpl($fileName);
-                $tpl = $this->replaceTags($tpl);
-                $this->writeFile($dir, $fileName, $tpl);
+                $tpl = $this->helpers->getTpl($fileName);
+                $tpl = $this->helpers->replaceTags($tpl);
+                $this->helpers->writeFile($dir, $fileName, $tpl);
             } else {
-                $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
             }
         }
     }
-    
-    
+
+
     /** Creates propertyset objects in MODX install if set in project config file.
      * Create the property set's properties in the Manager and export them
      * with exportObjects */
@@ -500,7 +539,7 @@ class MyComponentProject
     public function createPropertySets() {
         $propertySets = $this->modx->getOption('propertySets', $this->props, '' );
         if (! empty($propertySets)) {
-            $this->sendLog(MODX::LOG_LEVEL_INFO, 'Creating property sets');
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating property sets');
             $propertySets = explode(',', $propertySets);
             foreach($propertySets as $name) {
                 /* @var $set modPropertySet */
@@ -513,9 +552,9 @@ class MyComponentProject
                     /* @var $setObj modPropertySet */
                     $setObj = $this->modx->newObject('modPropertySet', $fields);
                     if ($setObj && $setObj->save()) {
-                        $this->sendLog(MODX::LOG_LEVEL_INFO, '    Created ' . $name . ' property set object');
+                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Created ' . $name . ' property set object');
                     } else {
-                        $this->sendLog(MODX::LOG_LEVEL_ERROR, '    Could not create ' . $name . ' property set object');
+                        $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '    Could not create ' . $name . ' property set object');
                     }
 
                 } else {
@@ -524,9 +563,9 @@ class MyComponentProject
                     if ($set->get('category') != $this->categoryId) {
                         $set->set('category', $this->categoryId);
                         $set->save();
-                        $this->sendLog(MODX::LOG_LEVEL_INFO, '    Updated ' . $name . ' property set category');
+                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Updated ' . $name . ' property set category');
                     } else {
-                        $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $name . ' property set already exists');
+                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $name . ' property set already exists');
                     }
                 }
             }
@@ -537,8 +576,8 @@ class MyComponentProject
     public function createValidators() {
         $validators = $this->modx->getOption('validators', $this->props, '');
         if (!empty($validators)) {
-            $this->sendLog(MODX::LOG_LEVEL_INFO, 'Creating validators');
-            $dir = $this->targetBase . '_build/validators';
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating validators');
+            $dir = $this->targetRoot . '_build/validators';
 
             $validators = explode(',', $validators);
             foreach ($validators as $validator) {
@@ -548,11 +587,11 @@ class MyComponentProject
                     $fileName = $validator . '.' . 'validator.php';
                 }
                 if (!file_exists($dir . '/' . $fileName)) {
-                    $tpl = $this->getTpl('genericvalidator.php');
-                    $tpl = $this->replaceTags($tpl);
-                    $this->writeFile($dir, $fileName, $tpl);
+                    $tpl = $this->helpers->getTpl('genericvalidator.php');
+                    $tpl = $this->helpers->replaceTags($tpl);
+                    $this->helpers->writeFile($dir, $fileName, $tpl);
                 } else {
-                        $this->sendLog(MODX::LOG_LEVEL_INFO, '    '  . $fileName . ' already exists');
+                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    '  . $fileName . ' already exists');
                 }
             }
         }
@@ -561,7 +600,7 @@ class MyComponentProject
     public function createExtraResolvers() {
         $resolvers = $this->modx->getOption('resolvers', $this->props, '');
         if (!empty($resolvers)) {
-            $this->sendLog(MODX::LOG_LEVEL_INFO, 'Creating extra resolvers');
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating extra resolvers');
             $dir = $this->myPaths['build'] . 'resolvers';
             if (!is_dir($dir)) {
                 mkdir($dir, $this->dirPermission, true);
@@ -574,11 +613,11 @@ class MyComponentProject
                     $fileName = $resolver . '.' . 'resolver.php';
                 }
                 if (!file_exists($dir . '/' . $fileName)) {
-                    $tpl = $this->getTpl('genericresolver.php');
-                    $tpl = $this->replaceTags($tpl);
-                    $this->writeFile($dir, $fileName, $tpl);
+                    $tpl = $this->helpers->getTpl('genericresolver.php');
+                    $tpl = $this->helpers->replaceTags($tpl);
+                    $this->helpers->writeFile($dir, $fileName, $tpl);
                 } else {
-                    $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
                 }
             }
         }
@@ -596,18 +635,18 @@ class MyComponentProject
         }
         /* Create Resolver */
         if (!empty($propertySets)) {
-            $this->sendLog(MODX::LOG_LEVEL_INFO, 'Creating tv resolver');
-            $tpl = $this->getTpl('propertysetresolver.php');
-            $tpl = $this->replaceTags($tpl);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating tv resolver');
+            $tpl = $this->helpers->getTpl('propertysetresolver.php');
+            $tpl = $this->helpers->replaceTags($tpl);
             if (empty($tpl)) {
-                $this->sendLog(MODX::LOG_LEVEL_ERROR, 'propertysetresolver tpl is empty');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'propertysetresolver tpl is empty');
             }
-            $dir = $this->targetBase . '_build/resolvers';
+            $dir = $this->targetRoot . '_build/resolvers';
             $fileName = 'propertyset.resolver.php';
 
             if (!file_exists($dir . '/' . $fileName)) {
                 $code = '';
-                $codeTpl = $this->getTpl('propertysetresolvercode.php');
+                $codeTpl = $this->helpers->getTpl('propertysetresolvercode.php');
                 $codeTpl = str_replace('<?php', '', $codeTpl);
 
                 foreach ($propertySets as $propertySet => $elements) {
@@ -618,9 +657,9 @@ class MyComponentProject
 
                 $tpl = str_replace('/* [[+code]] */', $code, $tpl);
 
-                $this->writeFile($dir, $fileName, $tpl);
+                $this->helpers->writeFile($dir, $fileName, $tpl);
             } else {
-                $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
             }
         }
 
@@ -631,8 +670,8 @@ class MyComponentProject
         $classes = $this->modx->getOption('classes', $this->props, array());
         $classes = !empty($classes) ? $classes : array();
         if (!empty($classes)) {
-            $this->sendLog(MODX::LOG_LEVEL_INFO, 'Creating class files');
-            $baseDir = $this->targetCore . 'model';
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating class files');
+            $baseDir = $this->myPaths['targetCore'] . 'model';
             foreach($classes as $className => $data) {
                 $data = explode(':', $data);
                 if (!empty($data[1])) {
@@ -642,13 +681,13 @@ class MyComponentProject
                 }
                 $fileName = strtolower($className) . '.class.php';
                 if (!file_exists($dir . '/' . $fileName)) {
-                    $tpl = $this->getTpl('classfile.php');
+                    $tpl = $this->helpers->getTpl('classfile.php');
                     $tpl = str_replace('MyClass', $className, $tpl );
                     $tpl = str_replace('[[+className]]', $className, $tpl);
-                    $tpl = $this->replaceTags($tpl);
-                    $this->writeFile($dir, $fileName, $tpl);
+                    $tpl = $this->helpers->replaceTags($tpl);
+                    $this->helpers->writeFile($dir, $fileName, $tpl);
                 } else {
-                    $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' file already exists');
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' file already exists');
                 }
 
             }
@@ -656,38 +695,38 @@ class MyComponentProject
     }
 
 /* *****************************************************************************
-   Import Objects and Support Functions 
+   Import Objects and Support Functions
 ***************************************************************************** */
 
     public function importComponent($overwrite = false)
     {//Only run if MC is installed
         if (!$this->isMCInstalled())
-        {   $this->sendLog(MODX::LOG_LEVEL_ERROR, 'MyComponent must be installed to import the Project into MODx!');
+        {   $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'MyComponent must be installed to import the Project into MODx!');
             return;
         }
-        
+
     // Crawl through the list top-down
         $objects = $this->myObjects;
         foreach ($objects as $child)
             if (!empty($child))
             // Each Child adds their own Children.
                 $child->addToMODx();
-                
+
     /* NOTE: This is where specific Intersects could be handled (if not handled by the objects themselves.) */
     }
 
 /* *****************************************************************************
-   Export Objects and Support Functions 
+   Export Objects and Support Functions
 ***************************************************************************** */
 
     /**
      * This function does the real work of getting the package objects from the
-     * MODx database. 
+     * MODx database.
      */
     public function exportComponent($overwrite = false)
     {//Only run if MC is installed
         if (!$this->isMCInstalled())
-        {   $this->sendLog(MODX::LOG_LEVEL_ERROR, 'MyComponent must be installed to export the Project from MODx!');
+        {   $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'MyComponent must be installed to export the Project from MODx!');
             return;
         }
 
@@ -702,13 +741,13 @@ class MyComponentProject
         foreach ($objects as $child)
             if (!empty($child))
                 $child->exportObject($overwrite);
-                
+
     // Report Completion
-        $this->sendLog();
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Finished');
     }
-    
+
 /* *****************************************************************************
-   Build Vehicle and Support Functions 
+   Build Vehicle and Support Functions
 ***************************************************************************** */
 
     /**
@@ -723,7 +762,7 @@ class MyComponentProject
         set_time_limit(0);
 
     // Create the Namespace Object
-        
+
         /* define sources */
         $root = dirname(dirname(__FILE__)) . '/';
         $sources= array (
@@ -742,12 +781,12 @@ class MyComponentProject
         unset($root);
 
         /* load builder */
-        $modx->loadClass('transport.modPackageBuilder','',false, true);
-        
-        
-        $builder = new modPackageBuilder($modx);
+        $this->modx->loadClass('transport.modPackageBuilder','',false, true);
+
+
+        $builder = new modPackageBuilder($this->modx);
         $builder->createPackage($this->myName, $this->myVersion, PKG_RELEASE);
-        
+
     // Package Namespace
         $this->myNamespace->buildVehicle($builder);
 
@@ -758,18 +797,17 @@ class MyComponentProject
                 if ($resource instanceof ComponentResource)
                     $resource->buildVehicle($builder);
     // Clear some Memory
-        unset($this->myResources, $resource)
-        
-        
+        unset($this->myResources, $resource);
+
+
         /* minify JS */
-        
-        if ($this->minify) 
-        {   $this->sendLog(modX::LOG_LEVEL_INFO, 'Creating js-min file(s)');
+
+        if ($this->minify)  {   $this->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Creating js-min file(s)');
             // require $sources['build'] . 'utilities/jsmin.class.php';
             require MYCOMPONENT_ROOT . 'core/components/mycomponent/model/mycomponent/jsmin.class.php';
-        
+
             $jsDir = $sources['source_assets'] . '/js';
-        
+
             if (is_dir($jsDir)) {
                 $files = scandir($jsDir);
                 foreach ($files as $file) {
@@ -777,7 +815,7 @@ class MyComponentProject
                     if ( (!stristr($file, '.js') || strstr($file,'min'))) {
                         continue;
                     }
-        
+
                     $jsmin = JSMin::minify(file_get_contents($sources['source_assets'] . '/js/' . $file));
                     if (!empty($jsmin)) {
                         $outFile = $jsDir . '/' . str_ireplace('.js', '-min.js', $file);
@@ -785,19 +823,19 @@ class MyComponentProject
                         if ($fp) {
                             fwrite($fp, $jsmin);
                             fclose($fp);
-                            $this->sendLog(modX::LOG_LEVEL_INFO, 'Created: ' . $outFile);
+                            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Created: ' . $outFile);
                         } else {
-                            $this->sendLog(modX::LOG_LEVEL_ERROR, 'Could not open min.js outfile: ' . $outFile);
+                            $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, 'Could not open min.js outfile: ' . $outFile);
                         }
                     }
                 }
-        
+
             } else {
-                $this->sendLog(modX::LOG_LEVEL_ERROR, 'Could not open JS directory.');
+                $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, 'Could not open JS directory.');
             }
         }
-        
-        
+
+
     // Build each Category
         if (!empty($this->myCategories)
         &&  is_array($this->myCategories))
@@ -805,8 +843,8 @@ class MyComponentProject
                 if ($category instanceof ComponentResource)
                     $category->build($builder);
     // Clear some Memory
-        unset($this->myCategories, $category)
-        
+        unset($this->myCategories, $category);
+
     // Build the Action Menu
         if (!empty($this->myMenu))
             $this->myMenu->build($builder);
@@ -817,7 +855,7 @@ class MyComponentProject
             'readme' => file_get_contents($sources['docs'] . 'readme.txt'),
             'changelog' => file_get_contents($sources['docs'] . 'changelog.txt'),
         );
-        
+
         if (!empty($props['install.options'])) {
             $attr['setup-options'] = array(
                 'source' => $sources['install_options'] . 'user.input.php',
@@ -826,10 +864,10 @@ class MyComponentProject
             $attr['setup-options'] = array();
         }
         $builder->setPackageAttributes($attr);
-        
+
     // ZIP up the Package.
         $builder->pack();
-        
+
         /* report how long it took */
         $mtime= microtime();
         $mtime= explode(" ", $mtime);
@@ -837,15 +875,15 @@ class MyComponentProject
         $tend= $mtime;
         $totalTime= ($tend - $tstart);
         $totalTime= sprintf("%2.4f s", $totalTime);
-        
-        $this->sendLog(xPDO::LOG_LEVEL_INFO, "Package Built.");
-        $this->sendLog(xPDO::LOG_LEVEL_INFO, "Execution time: {$totalTime}");
+
+        $this->helpers->sendLog(xPDO::LOG_LEVEL_INFO, "Package Built.");
+        $this->helpers->sendLog(xPDO::LOG_LEVEL_INFO, "Execution time: {$totalTime}");
         exit();
     }
 
 
 /* *****************************************************************************
-   General Support Functions 
+   General Support Functions
 ***************************************************************************** */
 
     /**
@@ -855,44 +893,44 @@ class MyComponentProject
      * @param $log boolean - (Optional) Whether to log this action
      *
      * @return boolean - Whether the directory exists after this function is run.
-     *         Note that this does not mean the directory was created by this 
+     *         Note that this does not mean the directory was created by this
      *         functin.
      */
     public function makeDir($path, $log = true)
     {//Initialize
         $success = $exists = is_dir($path);
-        
+
     // Already exists
-        if ($exists && $log)
-            $this->sendLog(MODX::LOG_LEVEL_INFO,'Directory already exists: ' . $path);
-    // Create the path
+        if ($exists && $log) {
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,'Directory already exists: ' . $path);
+        } // Create the path
         elseif (!$exists)
-        {   $success = mkdir($path, $this->dirPermission, true)
+        {   $success = @mkdir($path, $this->dirPermission, true);
             if ($success && $log)
-                $this->sendLog(MODX::LOG_LEVEL_INFO,'Created Directory: ' . $path);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,'Created Directory: ' . $path);
             elseif ($log)
-                $this->sendLog(MODX::LOG_LEVEL_INFO,'Could not create Directory: ' . $path);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,'Could not create Directory: ' . $path);
         }
     // Return Success or Failure
         return $success;
     }
-    
+
 /*
  * Not sure of the need for this... placeholder.
  */
     public function loadFromFileSystem()
     {
-        
+
     }
-    
+
 /*
  * Reads a Transport Package and unbuilds it into a Build Script
  */
     public function extractPackage($file)
     {
-        
+
     }
-    
+
     public function initHelpers() {
         $this->source = $this->props['source'];
         $this->tplPath = $this->source . '_build/utilities/' . $this->props['tplDir'];
@@ -912,27 +950,27 @@ class MyComponentProject
             '[[+createdon]]' => $this->props['createdon'],
             '[[+authorSiteName]]' => $this->props['authorSiteName'],
             '[[+authorUrl]]' => $this->props['authorUrl'],
-            '[[+packageUrl]]' => $this->props['packageUrl'],
+            '[[+packageUrl]]' => $this->props['packageDocumentationUrl'],
             '[[+gitHubUsername]]' => $this->props['gitHubUsername'],
             '[[+gitHubRepository]]' => $this->props['gitHubRepository'],
 
         );
-        
-        $license = $this->getTpl('license');
+
+        $license = $this->helpers->getTpl('license');
         if (!empty($license)) {
             $license = $this->strReplaceAssoc($this->replaceFields, $license);
             $this->replaceFields['[[+license]]'] = $license;
         }
         unset($license);
     }
-    
-    public function getReplaceFields() {
+
+    /*public function getReplaceFields() {
         return $this->replaceFields;
-    }
-    public function replaceTags($text, $replaceFields = array()) {
+    }*/
+    /*public function replaceTags($text, $replaceFields = array()) {
         $replaceFields = empty ($replaceFields)? $this->replaceFields : $replaceFields;
         return $this->strReplaceAssoc($replaceFields, $text);
-    }
+    }*/
 
     /**
      * Write a file to disk - non-destructive -- will not overwrite existing files
@@ -943,12 +981,12 @@ class MyComponentProject
      * @param $content - file content
      * @param string $dryRun string - if true, writes to stdout instead of file.
      */
-    public function writeFile ($dir, $fileName, $content) 
+    public function writeFile ($dir, $fileName, $content)
     {//For Quick Access
         $isDry = $this->dryRun;
-        if ($isDry) 
-        {   $this->sendLog(modX::LOG_LEVEL_INFO, '    Would be creating: ' . $fileName . "\n");
-            $this->sendLog(modX::LOG_LEVEL_INFO, " --- Begin File Content --- ");
+        if ($isDry)
+        {   $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    Would be creating: ' . $fileName . "\n");
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, " --- Begin File Content --- ");
         }
     // Protect ourselves...
         if (substr($dir, -1) != "/")
@@ -959,18 +997,18 @@ class MyComponentProject
             return false;
 
     /* write to stdout if dryRun is true */
-        $file = $isDry 
-              ? 'php://output' 
+        $file = $isDry
+              ? 'php://output'
               : $dir . $fileName;
         if (empty($content)) {
-            $this->sendLog(MODX::LOG_LEVEL_ERROR, '    No content for file ' . $fileName . ' (normal for chunks and templates until content is added)');
+            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '    No content for file ' . $fileName . ' (normal for chunks and templates until content is added)');
         }
 
         $fp = fopen($file, 'w');
-        if ($fp) 
+        if ($fp)
         {//Output
             if (!$isDry)
-                $this->sendLog(MODX::LOG_LEVEL_INFO, '    Creating ' . $file);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Creating ' . $file);
 
             fwrite($fp, $content);
             fclose($fp);
@@ -981,11 +1019,12 @@ class MyComponentProject
             $success = true;
         }
         else
-        {   $this->sendLog(MODX::LOG_LEVEL_INFO, '    Could not write file ' . $file);
+        {   $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Could not write file ' . $file);
             $success = false;
-        }        
-        if ($isDry)
-            $mc->sendLog(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
+        }
+        if ($isDry) {
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
+        }
         return $success;
 
     }
@@ -1014,9 +1053,9 @@ class MyComponentProject
     {//Is a File (Most common first)
         if (is_file($source))
         {   if (copy($source, $destination))
-                $this->sendLog(MODX::LOG_LEVEL_INFO, 'File copied to: ' . $destination);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'File copied to: ' . $destination);
             else
-                $this->sendLog(MODX::LOG_LEVEL_ERROR, 'Could not copy file: ' . $source);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'Could not copy file: ' . $source);
         }
     // Is a Directory (Next most common)
         elseif (is_dir($source))
@@ -1024,10 +1063,10 @@ class MyComponentProject
             $canDo = $this->makeDir($destination);
         // Recursive Functions should end as soon as work is/cannot be done.
             if (!$canDo)
-            {   $this->sendLog(MODX::LOG_LEVEL_ERROR, 'Could not copy directory: ' . $source);
+            {   $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'Could not copy directory: ' . $source);
                 return false;
             }
-            
+
         // Protect ourselves...
             if (substr($source, -1) != "/")
                 $source .= "/";
@@ -1037,11 +1076,11 @@ class MyComponentProject
         // Exists - Proceed forward...
             $objects = scandir($source);
             if (sizeof($objects) > 0) {
-                foreach ($objects as $file) 
+                foreach ($objects as $file)
                 {//Ignore List
-                    if ($file == "." 
-                    ||  $file == ".." 
-                    ||  $file == '.git' 
+                    if ($file == "."
+                    ||  $file == ".."
+                    ||  $file == '.git'
                     ||  $file == '.svn') {
                         continue;
                     }
@@ -1049,10 +1088,10 @@ class MyComponentProject
                 //Is a File (Most common first)
                     if (is_file($source . $file))
                     {//Check against ignores
-                        if ($file == 'build.config.php') 
+                        if ($file == 'build.config.php')
                             continue;
-                        elseif (strstr($file, 'config.php') 
-                        &&      $file != $this->props['packageNameLower'] . '.config.php') 
+                        elseif (strstr($file, 'config.php')
+                        &&      $file != $this->props['packageNameLower'] . '.config.php')
                             continue;
                         else
                             $this->copyDir($source . $file, $destination . $file);
@@ -1061,7 +1100,7 @@ class MyComponentProject
                         $this->copyDir($source . $file, $destination . $file);
                 }
             }
-            $this->sendLog(MODX::LOG_LEVEL_INFO, 'Directory copied to: ' . $destination);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Directory copied to: ' . $destination);
             return true;
         }
     // Default Return
@@ -1077,7 +1116,7 @@ class MyComponentProject
      * @param $fieldName2 string - intersect field name for subsidiary object.
      */
     public function createIntersects($values, $intersectType, $mainObjectType, $subsidiaryObjectType, $fieldName1, $fieldName2 ) {
-        $this->sendLog(MODX::LOG_LEVEL_INFO, 'Creating ' . $intersectType . ' objects');
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating ' . $intersectType . ' objects');
 
 
         if ($intersectType == 'modPluginEvent') {
@@ -1095,25 +1134,25 @@ class MyComponentProject
                         $obj->set('service', 1);
 
                         if ($obj && $obj->save()) {
-                            $this->sendLog(MODX::LOG_LEVEL_INFO, '    Created new System Event name: ' . $newEventName);
+                            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Created new System Event name: ' . $newEventName);
                         } else {
-                            $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating System Event name: Could not save  ' . $newEventName);
+                            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating System Event name: Could not save  ' . $newEventName);
                         }
                     }
                 } else {
-                    $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $newEventName . ': System Event name already exists');
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $newEventName . ': System Event name already exists');
                 }
             }
         }
 
 
         if (empty($values)) {
-            $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': value array is empty');
+            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': value array is empty');
             return;
         }
         foreach ($values as $mainObjectName => $subsidiaryObjectNames) {
             if (empty($mainObjectName)) {
-                $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': main object name is empty');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': main object name is empty');
                 continue;
             }
 
@@ -1125,17 +1164,17 @@ class MyComponentProject
                 $mainObject = $this->modx->getObject($mainObjectType, array($alias => $mainObjectName) );
             }
             if (! $mainObject) {
-                $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': Could not get main object ' . $mainObjectName);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': Could not get main object ' . $mainObjectName);
                 continue;
             }
             $subsidiaryObjectNames = explode(',', $subsidiaryObjectNames);
             if (empty($subsidiaryObjectNames)) {
-                $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': subsidiary object name list is empty');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': subsidiary object name list is empty');
                 continue;
             }
             foreach ($subsidiaryObjectNames as $subsidiaryObjectName) {
                 if (empty($subsidiaryObjectName)) {
-                    $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': subsidiary object name is empty');
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': subsidiary object name is empty');
                     continue;
                 }
                 if (strstr($subsidiaryObjectName, ':')) {
@@ -1147,7 +1186,7 @@ class MyComponentProject
                 $subsidiaryObjectType = $intersectType == 'modPluginEvent' ? 'modEvent' : $subsidiaryObjectType;
                 $subsidiaryObject = $this->modx->getObject($subsidiaryObjectType, array($alias => $subsidiaryObjectName));
                 if (! $subsidiaryObject) {
-                    $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': Could not get subsidiary object ' . $subsidiaryObjectName);
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': Could not get subsidiary object ' . $subsidiaryObjectName);
                     continue;
                 }
                 if ($mainObjectType == 'modTemplate' && $subsidiaryObjectType == 'modResource') {
@@ -1156,12 +1195,12 @@ class MyComponentProject
                     if ($subsidiaryObject->get('template') != $mainObject->get('id')) {
                         $subsidiaryObject->set('template', $mainObject->get('id'));
                         if ($subsidiaryObject->save()) {
-                            $this->sendLog(MODX::LOG_LEVEL_INFO, '    Connected ' . $mainObjectName . ' Template to ' . $subsidiaryObjectName . ' Resource');
+                            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Connected ' . $mainObjectName . ' Template to ' . $subsidiaryObjectName . ' Resource');
                         } else {
-                            $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType);
+                            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType);
                         }
                     } else {
-                        $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $mainObjectName . ' Template is already connected to ' . $subsidiaryObjectName . ' Resource');
+                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $mainObjectName . ' Template is already connected to ' . $subsidiaryObjectName . ' Resource');
                     }
                     continue;
                 } else {
@@ -1181,21 +1220,22 @@ class MyComponentProject
                         }
 
                         if ($intersect && $intersect->save()) {
-                            $this->sendLog(MODX::LOG_LEVEL_INFO, '    Created intersect ' . ' for ' . $mainObjectType . ' ' . $mainObjectName . ' -- ' . $subsidiaryObjectType . ' ' . $subsidiaryObjectName);
+                            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Created intersect ' . ' for ' . $mainObjectType . ' ' . $mainObjectName . ' -- ' . $subsidiaryObjectType . ' ' . $subsidiaryObjectName);
                         } else {
-                            $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': Failed to save intersect');
+                            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': Failed to save intersect');
                         }
                     } else {
-                        $this->sendLog(MODX::LOG_LEVEL_INFO, '    Intersect ' . $intersectType . ' already exists for ' . $mainObjectType . ' ' . $mainObjectName . ' -- ' . $subsidiaryObjectType . ' ' . $subsidiaryObjectName);
+                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Intersect ' . $intersectType . ' already exists for ' . $mainObjectType . ' ' . $mainObjectName . ' -- ' . $subsidiaryObjectType . ' ' . $subsidiaryObjectName);
                     }
                 }
             }
         }
     }
+
 }
 
 // Include Base Classes
-    require_once($root.'classes/'.'objectadapter.class.php');
+    require_once('objectadapter.class.php');
 // Include Class Hierarchy
-    require_once($root.'classes/'.'namespaceadapter.class.php');
-    require_once($root.'classes/'.'categoryadapter.class.php');
+    require_once('namespaceadapter.class.php');
+    require_once('categoryadapter.class.php');

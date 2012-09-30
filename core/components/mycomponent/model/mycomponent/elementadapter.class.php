@@ -1,8 +1,8 @@
 <?php
 // Include the Base Class (only once)
-require_once('modxobjectadapter.class.php');
+require_once 'objectadapter.class.php';
 
-abstract class ElementAdapter extends MODxObjectAdapter
+abstract class ElementAdapter extends ObjectAdapter
 {
     
 /* *****************************************************************************
@@ -35,7 +35,7 @@ abstract class ElementAdapter extends MODxObjectAdapter
    Import Objects and Support Functions (in MODxObjectAdapter) 
 ***************************************************************************** */
 
-    protected function addToMODx($overwrite = false)
+    public function addToMODx($overwrite = false)
     {//Perform default export implementation
         $id = parent::addToMODx($overwrite);
         if ($id > -1)
@@ -76,13 +76,13 @@ abstract class ElementAdapter extends MODxObjectAdapter
    Export Objects and Support Functions (in MODxObjectAdapter)
 ***************************************************************************** */
 
-    protected function exportObject()
+    public function exportObject()
     {//Perform default export implementation
         if (!parent::exportObject())
             return false;
     // Special fuctionality for ALL Elements
-        if (static::xPDOClass != 'modCategory')
-        {   exportCode()
+        if (static::xPDOClass != 'modCategory') {
+            exportCode();
             exportProperties();
         }
     // Return Success
@@ -96,7 +96,7 @@ abstract class ElementAdapter extends MODxObjectAdapter
      * @param $elementObj modElement - element MODX object
      * @param $element - string name of element type ('plugin', 'snippet' etc.) used in dir name.
      */
-    private function exportCode ($elementObj, $element) {
+    public function exportCode ($elementObj, $element) {
 
         /* @var $elementObj modElement */
 
@@ -152,7 +152,7 @@ abstract class ElementAdapter extends MODxObjectAdapter
      * @param $fileName - Name of properties file
      * @param $objectName - Name of MODX object
      */
-    private function exportProperties($properties, $fileName, $objectName) 
+    public function exportProperties($properties, $fileName, $objectName)
     {   $dir = $this->transportPath . 'properties/';
         $tpl = $this->helpers->getTpl('propertiesfile.tpl');
         $tpl = str_replace('[[+element]]',$objectName,$tpl);

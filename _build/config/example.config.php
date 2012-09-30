@@ -1,21 +1,25 @@
 <?php
 
-
 $components = array(
     /* These are used to define the package and set values for placeholders */
-    'packageName' => 'Example', /* No spaces, no dashes */
-    'packageNameLower' => 'example', /* No spaces, no dashes */
+    'packageName' => 'Example',
+    /* No spaces, no dashes */
+    'packageNameLower' => 'example',
+    /* No spaces, no dashes */
     'version' => '1.0.0',
     'release' => 'beta1',
-    'category' => 'Example', /* usually the same as the package name */
+    'category' => 'Example',
+    /* usually the same as the package name */
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
     'authorUrl' => 'http://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
     'packageUrl' => 'http://bobsguides.com/example-tutorial.html',
     'copyright' => '2012',
-    'createdon' => strftime('%m-%d-%Y'), /* no need to edit this except to change format */
-    'offerAbort' => false, /* Show package name and ask user to confirm before running */
+    'createdon' => strftime('%m-%d-%Y'),
+    /* no need to edit this except to change format */
+    'offerAbort' => false,
+    /* Show package name and ask user to confirm before running */
     'packageDescription' => 'Example project for MyComponent extra.',
     'gitHubUsername' => 'BobRay',
     'gitHubRepository' => 'Example',
@@ -33,8 +37,7 @@ $components = array(
     'resources' => 'Resource1,Resource2',
 
     /* set these only if you want to override system defaults */
-    'resource_defaults' => array(
-        //'published' => false,
+    'resource_defaults' => array(//'published' => false,
         //'richtext' => false,
         //'hidemenu' => true,
         //'cacheable' => false,
@@ -74,18 +77,22 @@ $components = array(
 
 
     /* Set directory permissions for project directories */
-    'dirPermission' => 0755, /* No quotes!! */
-    'filePermission' => 0644, /* No quotes!! */
+    'dirPermission' => 0755,
+    /* No quotes!! */
+    'filePermission' => 0644,
+    /* No quotes!! */
 
     /* Define source directories (mycomponent root and core directories) */
-    'source' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/', /* path to MyComponent source files */
+    'source' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/',
+    /* path to MyComponent source files */
     'sourceCore' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/',
 
     /* ********************************************* */
     /* Define default directories and files to be created in project*/
     'initialize' => true,
     'defaultStuff' => array(
-        'utilities' => false, /* copy entire utilities dir to target dir -- Usually unnecessary */
+        'utilities' => false,
+        /* copy entire utilities dir to target dir -- Usually unnecessary */
         /* standard doc files */
         'docs' => 'readme.txt,license.txt,changelog.txt,tutorial.html',
         /* (optional) Description file for GitHub project home page */
@@ -93,8 +100,8 @@ $components = array(
     ),
 
 
-
-    'hasCore' => true, /* assume every package has a core directory */
+    'hasCore' => true,
+    /* assume every package has a core directory */
 
     /* ********************************************* */
     /* (optional) Comma-separated list of extra script resolver(s) to be run
@@ -206,15 +213,13 @@ $components = array(
     ),
 
 
-
-
     /* Array of template names and comma-separated
-     * list of resource pagetitles.
-     * Only necessary if you want to connect package resources to package
-     * templates. A resolver will be created to connect them.
-     * By default, all resources are given the site default template.
-     * Do not include default template here!
-     */
+    * list of resource pagetitles.
+    * Only necessary if you want to connect package resources to package
+    * templates. A resolver will be created to connect them.
+    * By default, all resources are given the site default template.
+    * Do not include default template here!
+    */
 
     'resourceTemplates' => array(
         'Template1' => 'Resource1,Resource2',
@@ -273,9 +278,12 @@ $components = array(
      * of desired resources
     */
     'process' => 'snippets,plugins,templateVars,templates,chunks,resources,propertySets,SystemSettings,menus',
-    'pagetitles' => 'Example1,Example2', // Comma-separated list of pagetitles of resources to process.
-    'parents' => '', // Comma-separated list of resource parent IDs to get children of.
-    'includeParents' => false, // include listed parent resources
+    'pagetitles' => 'Example1,Example2',
+    // Comma-separated list of pagetitles of resources to process.
+    'parents' => '',
+    // Comma-separated list of resource parent IDs to get children of.
+    'includeParents' => false,
+    // include listed parent resources
     /* ******************************************* */
 
     /* If your extra needs new System Settings, set their field values here.
@@ -284,7 +292,7 @@ $components = array(
      * their namespace and area to the lowercase package name of your extra */
 
     'newSystemSettings' => array(
-        'example_system_setting1' => array(  // key
+        'example_system_setting1' => array( // key
             'xtype' => 'textField',
             'value' => 'value1',
             'area' => 'area1',
@@ -298,8 +306,10 @@ $components = array(
 
     /* ******************************************* */
     /* These settings are used by LexiconHelper */
-    'rewriteCodeFiles' => false, // remove ~~descriptions
-    'rewriteLexiconFiles' => true, // automatically add missing strings to lexicon files
+    'rewriteCodeFiles' => false,
+    // remove ~~descriptions
+    'rewriteLexiconFiles' => true,
+    // automatically add missing strings to lexicon files
     /* ******************************************* */
 
     /* If your extra needs Menus, set this to true, create them

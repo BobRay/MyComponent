@@ -52,8 +52,7 @@ class Helpers
         $this->props =& $props;
     }
     public function init() {
-        $this->source = $this->props['source'];
-        $this->tplPath = $this->source . 'core/components/mycomponent/elements/chunks/';
+        $this->tplPath = $this->props['mycomponentCore'] . 'elements/chunks/';
         if (substr($this->tplPath, -1) != "/") {
             $this->tplPath .= "/";
         }
@@ -70,7 +69,7 @@ class Helpers
             '[[+createdon]]' => $this->props['createdon'],
             '[[+authorSiteName]]' => $this->props['authorSiteName'],
             '[[+authorUrl]]' => $this->props['authorUrl'],
-            '[[+packageUrl]]' => $this->props['packageUrl'],
+            '[[+packageUrl]]' => $this->props['packageDocumentationUrl'],
             '[[+gitHubUsername]]' => $this->props['gitHubUsername'],
             '[[+gitHubRepository]]' => $this->props['gitHubRepository'],
 
@@ -125,10 +124,10 @@ class Helpers
         if (strstr($name, '.php') && !empty($text)) {
             /* make sure the header made it and do alerts if not */
             if (empty($text)) {
-                $this->modx->log(MODX::LOG_LEVEL_ERROR, '    Problem loading Tpl file (text is empty) ' . $name  );
+                $this->sendLog(MODX::LOG_LEVEL_ERROR, '    Problem loading Tpl file (text is empty) ' . $name  );
                 $text = "<?php\n/* empty header */\n\n";
             } elseif (strpos($text, '<' . '?' . 'php') === false) {
-                $this->modx->log(MODX::LOG_LEVEL_ERROR, '    Problem loading Tpl file (text has no PHP tag) ' . $name);
+                $this->sendLog(MODX::LOG_LEVEL_ERROR, '    Problem loading Tpl file (text has no PHP tag) ' . $name);
                 $text = "<?php\n /* inserted PHP tag */\n\n" . $text;
             }
         }
@@ -232,7 +231,7 @@ class Helpers
      * @param $dir string - directory for file (should not have trailing slash!)
      * @param $fileName string - file name
      * @param $content - file content
-     * @param string $dryRun string - if true, writes to stdout instead of file.
+     * @param $dryRun boolean - if true, writes to stdout instead of file.
      */
     public function writeFile ($dir, $fileName, $content, $dryRun = false) {
 
@@ -246,14 +245,15 @@ class Helpers
         /* write to stdout if dryRun is true */
 
         $file = $dryRun? 'php://output' : $dir . $fileName;
-        if (empty($content)) {
-            $this->modx->log(MODX::LOG_LEVEL_ERROR, '    No content for file ' . $fileName . ' (normal for chunks and templates until content is added)');
-        }
 
         $fp = fopen($file, 'w');
         if ($fp) {
             if ( ! $dryRun) {
-                $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating ' . $file);
+                $this->sendLog(MODX::LOG_LEVEL_INFO, '    Creating ' . $file);
+                if (empty($content)) {
+                    $this->sendLog(MODX::LOG_LEVEL_INFO, ' (empty)', true);
+                }
+
             }
             fwrite($fp, $content);
             fclose($fp);
@@ -261,7 +261,7 @@ class Helpers
                 chmod($file, $this->filePermission);
             }
         } else {
-            $this->modx->log(MODX::LOG_LEVEL_INFO, '    Could not write file ' . $file);
+            $this->sendLog(MODX::LOG_LEVEL_INFO, '    Could not write file ' . $file);
         }
 
 
@@ -327,7 +327,7 @@ class Helpers
      * @param $fieldName2 string - intersect field name for subsidiary object.
      */
     public function createIntersects($values, $intersectType, $mainObjectType, $subsidiaryObjectType, $fieldName1, $fieldName2 ) {
-        $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating ' . $intersectType . ' objects');
+        $this->sendLog(MODX::LOG_LEVEL_INFO, 'Creating ' . $intersectType . ' objects');
 
 
         if ($intersectType == 'modPluginEvent') {
@@ -345,25 +345,25 @@ class Helpers
                         $obj->set('service', 1);
 
                         if ($obj && $obj->save()) {
-                            $this->modx->log(MODX::LOG_LEVEL_INFO, '    Created new System Event name: ' . $newEventName);
+                            $this->sendLog(MODX::LOG_LEVEL_INFO, '    Created new System Event name: ' . $newEventName);
                         } else {
-                            $this->modx->log(MODX::LOG_LEVEL_ERROR, '   Error creating System Event name: Could not save  ' . $newEventName);
+                            $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating System Event name: Could not save  ' . $newEventName);
                         }
                     }
                 } else {
-                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $newEventName . ': System Event name already exists');
+                    $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $newEventName . ': System Event name already exists');
                 }
             }
         }
 
 
         if (empty($values)) {
-            $this->modx->log(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': value array is empty');
+            $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': value array is empty');
             return;
         }
         foreach ($values as $mainObjectName => $subsidiaryObjectNames) {
             if (empty($mainObjectName)) {
-                $this->modx->log(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': main object name is empty');
+                $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': main object name is empty');
                 continue;
             }
 
@@ -375,18 +375,18 @@ class Helpers
                 $mainObject = $this->modx->getObject($mainObjectType, array($alias => $mainObjectName) );
             }
             if (! $mainObject) {
-                $this->modx->log(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': Could not get main object ' . $mainObjectName);
+                $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': Could not get main object ' . $mainObjectName);
                 continue;
             }
             $subsidiaryObjectNames = explode(',', $subsidiaryObjectNames);
             if (empty($subsidiaryObjectNames)) {
-                $this->modx->log(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': subsidiary object name list is empty');
+                $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': subsidiary object name list is empty');
                 continue;
             }
             foreach ($subsidiaryObjectNames as $subsidiaryObjectName) {
                 $priority = 0;
                 if (empty($subsidiaryObjectName)) {
-                    $this->modx->log(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': subsidiary object name is empty');
+                    $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': subsidiary object name is empty');
                     continue;
                 }
 
@@ -402,7 +402,7 @@ class Helpers
                 $subsidiaryObjectType = $intersectType == 'modPluginEvent' ? 'modEvent' : $subsidiaryObjectType;
                 $subsidiaryObject = $this->modx->getObject($subsidiaryObjectType, array($alias => $subsidiaryObjectName));
                 if (! $subsidiaryObject) {
-                    $this->modx->log(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': Could not get subsidiary object ' . $subsidiaryObjectName);
+                    $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': Could not get subsidiary object ' . $subsidiaryObjectName);
                     continue;
                 }
                 if ($mainObjectType == 'modTemplate' && $subsidiaryObjectType == 'modResource') {
@@ -411,12 +411,12 @@ class Helpers
                     if ($subsidiaryObject->get('template') != $mainObject->get('id')) {
                         $subsidiaryObject->set('template', $mainObject->get('id'));
                         if ($subsidiaryObject->save()) {
-                            $this->modx->log(MODX::LOG_LEVEL_INFO, '    Connected ' . $mainObjectName . ' Template to ' . $subsidiaryObjectName . ' Resource');
+                            $this->sendLog(MODX::LOG_LEVEL_INFO, '    Connected ' . $mainObjectName . ' Template to ' . $subsidiaryObjectName . ' Resource');
                         } else {
-                            $this->modx->log(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType);
+                            $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType);
                         }
                     } else {
-                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $mainObjectName . ' Template is already connected to ' . $subsidiaryObjectName . ' Resource');
+                        $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $mainObjectName . ' Template is already connected to ' . $subsidiaryObjectName . ' Resource');
                     }
                     continue;
                 } else {
@@ -439,12 +439,12 @@ class Helpers
                         }
 
                         if ($intersect && $intersect->save()) {
-                            $this->modx->log(MODX::LOG_LEVEL_INFO, '    Created intersect ' . ' for ' . $mainObjectType . ' ' . $mainObjectName . ' -- ' . $subsidiaryObjectType . ' ' . $subsidiaryObjectName);
+                            $this->sendLog(MODX::LOG_LEVEL_INFO, '    Created intersect ' . ' for ' . $mainObjectType . ' ' . $mainObjectName . ' -- ' . $subsidiaryObjectType . ' ' . $subsidiaryObjectName);
                         } else {
-                            $this->modx->log(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': Failed to save intersect');
+                            $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': Failed to save intersect');
                         }
                     } else {
-                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    Intersect ' . $intersectType . ' already exists for ' . $mainObjectType . ' ' . $mainObjectName . ' -- ' . $subsidiaryObjectType . ' ' . $subsidiaryObjectName);
+                        $this->sendLog(MODX::LOG_LEVEL_INFO, '    Intersect ' . $intersectType . ' already exists for ' . $mainObjectType . ' ' . $mainObjectName . ' -- ' . $subsidiaryObjectType . ' ' . $subsidiaryObjectName);
                     }
 
                 }
@@ -529,5 +529,17 @@ class Helpers
                     '',
                     ''
                ), $ret));
+    }
+
+    public function sendLog($level, $message, $suppressReturn = false) {
+        $msg = '';
+        if (!$suppressReturn) {
+            $msg .= "\n";
+        }
+        if ($level == MODX::LOG_LEVEL_ERROR) {
+            $msg .= 'ERROR -- ';
+        }
+        $msg .= $message;
+        echo $msg;
     }
 }

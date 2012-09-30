@@ -15,21 +15,20 @@
  *
  * @package mycomponent
  **/
-class NamespaceAdapter 
-{
+class NamespaceAdapter {
 /* @var $myComponent Component - The Component that this ComponentNamespace belongs to. */
-    $myComponent;
+    public $myComponent;
     
 /* @var $myKey string - The Key of the ComponentNamespace. */
-   $myKey;
+   public $myKey;
    
 /* @var $systemSettings array - An array of ComponentSystemSettings. */
-    $mySettings = array();
+   public $mySettings = array();
 
-    __construct(&$component, $name)
+    function __construct(&$component, $name)
     {
         $this->myComponent =& $component;
-        $this->$myKey = $name;
+        $this->myKey = $name;
     }
 
     public function getFromDatabase()
