@@ -510,6 +510,7 @@ abstract class ObjectAdapter
      */
     public function exportCode ($elementObj, $element) 
     {//For Quick Access
+        /* @var $mc MyComponentProject */
         $mc = $this->myComponent;
         $name = $this->getName();
         $class = $this->getSafeClass();
@@ -517,7 +518,7 @@ abstract class ObjectAdapter
         /* @var $elementObj modElement */
 
         if ($elementObj->get('static')) {
-            $mc->sendLog(modX::LOG_LEVEL_INFO, 'Skipping object file for static object: ' . $name);
+            $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Skipping object file for static object: ' . $name);
             return;
         }
         $type = $this->elementType;
@@ -527,13 +528,13 @@ abstract class ObjectAdapter
         if ($fileName) {
             $content = $elementObj->getContent();
         } else {
-            $mc->sendLog(modX::LOG_LEVEL_INFO, 'Skipping object file for: ' . $type . '; object (does not need source file)');
+            $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Skipping object file for: ' . $type . '; object (does not need source file)');
             return;
         }
         if ($type == 'modResource') {
             $dir = $this->resourcePath;
         } else {
-            $dir = $mc->getCodeDir($this->targetCore, $type);
+            $dir = $this->getCodeDir($this->targetCore, $type);
         }
 
          $tpl = '';
@@ -547,7 +548,7 @@ abstract class ObjectAdapter
                 $tpl = $this->getTpl('phpfile.php');
                 $tpl = str_replace('[[+elementName]]', $name, $tpl);
                 $tpl = str_replace('[[+elementType]]', $class, $tpl);
-                $tpl = $mc->replaceTags($tpl);
+                $tpl = $mc->helpers->replaceTags($tpl);
             }
         }
         $tpl .= $content;

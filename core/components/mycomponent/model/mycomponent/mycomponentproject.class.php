@@ -274,7 +274,7 @@ public function initPaths() { //For Quick Access
     /**
      * Deprecated: See getPath('code') and ElementAdapter->getCodeDir.
      */
-    private function getCodeDir ($targetCore, $type) {    }
+    public function getCodeDir ($targetCore, $type) {    }
 
 
 /* *****************************************************************************
@@ -293,7 +293,7 @@ public function initPaths() { //For Quick Access
 
     // Installation Options Scripts
 
-        $this->newInstallOptions();
+       // $this->newInstallOptions();
     }
 
     public function newPaths()
@@ -395,15 +395,12 @@ public function initPaths() { //For Quick Access
         }
         $fileName = $this->packageNameLower . '.config.php';
         $dir = $this->myPaths['targetBuild'] . 'config/';
-        if (!file_exists('$dir' . $fileName)) {
+        if (!file_exists($dir . $fileName)) {
             $tpl = $this->helpers->getTpl('example.config.php');
             $this->helpers->writeFile($dir, $fileName, $tpl);
-
+        } else {
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
         }
-
-
-
-
 
         if (isset ($this->props['languages']) &&  ! empty($this->props['languages'])) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,'Creating Lexicon files');
@@ -421,19 +418,22 @@ public function initPaths() { //For Quick Access
                         $tpl = $this->helpers->replaceTags($tpl);
                         $this->helpers->writeFile($dir, $fileName, $tpl);
                     } else {
-                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $language . ':' . $fileName . ' file already exists');
+                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $language . '/' . $fileName . ' file already exists');
                     }
 
                 }
             }
         }
 
-        $docs = isset($this->props['docs'])? $this->props['docs']: array();
+        $docs = isset($this->props['docs'])
+            ? $this->props['docs']
+            : array();
+
         if (! empty($docs)) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,'Creating doc files');
-            $toDir = $this->myPaths['targetCore'] . 'docs';
+            $toDir = $this->myPaths['targetCore'] . 'docs/';
             foreach($docs as $doc) {
-                if (! file_exists($toDir . '/' . $doc )) {
+                if (! file_exists($toDir . $doc )) {
                     $tpl = $this->helpers->getTpl($doc);
                     $tpl = $this->helpers->replaceTags($tpl);
                     $this->helpers->writeFile($toDir, $doc, $tpl);
@@ -442,18 +442,22 @@ public function initPaths() { //For Quick Access
                 }
             }
         }
-        $readmeMd = isset($this->props['readme.md']) ?
-            $this->props['readme.md'] : false;
+        $readmeMd = isset($this->props['readme.md'])
+            ? $this->props['readme.md']
+            : false;
         if ($readmeMd) {
-            if (! file_exists($this->myPaths['targetCore'] . 'readme.md')) {
+            if (! file_exists($this->myPaths['targetRoot'] . 'readme.md')) {
                 $tpl = $this->helpers->getTpl('readme.md');
                 $tpl = $this->helpers->replaceTags($tpl);
                 $this->helpers->writeFile($this->myPaths['targetRoot'], 'readme.md', $tpl);
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'readme.md file already exists');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    readme.md file already exists');
             }
 
         }
+        $this->newInstallOptions();
+        $this->newAssetsDirs();
+        $this->createClassFiles();
 
         return true;
     }
@@ -467,23 +471,23 @@ public function initPaths() { //For Quick Access
         $optionalDirs = !empty($this->props['assetsDirs'])? $this->props['assetsDirs'] : array();
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,'Creating Assets directories');
         foreach($optionalDirs as $dir => $val) {
-            $targetDir = $this->targetAssets . $dir;
+            $targetDir = $this->myPaths['targetAssets'] . $dir;
             if ($val && (! is_dir($targetDir)) ) {
                 if (mkdir($targetDir, $this->dirPermission, true)) {
                     $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,'    Created ' . $targetDir . ' directory');
                 }
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,'    ' . $targetDir . ' directory already exists');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,'    Assets/' . $dir . ' directory already exists');
             }
             if ($dir == 'css' || $dir == 'js') {
-                $path = $this->targetAssets . $dir;
+                $path = $this->myPaths['targetAssets'] . $dir;
                 $fileName = $this->packageNameLower . '.' . $dir;
                 if (!file_exists($path . '/' . $fileName)) {
                     $tpl = $this->helpers->getTpl($dir);
                     $tpl = $this->helpers->replaceTags($tpl);
                     $this->helpers->writeFile($path, $fileName, $tpl);
                 } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $fileName . ' file already exists');
                 }
 
             }
@@ -501,13 +505,13 @@ public function initPaths() { //For Quick Access
 
         // Check if the file exists
             if (file_exists($path . $fileName))
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Install Options already exist at: ' . $path . $fileName);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Install Options file already exists');
             else
             {//Get the Templatized Basic file
                 $tpl = $this->helpers->getTpl($fileName);
                 $tpl = $this->helpers->replaceTags($tpl);
                 $this->helpers->writeFile($path, $fileName, $tpl);
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Created Install Options at: ' . $path . $filename);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Created Install Options at: ' . $path . $fileName);
             }
         }
     }

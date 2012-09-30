@@ -4,8 +4,8 @@ require_once('modxobjectadapter.class.php');
 
 class ContextAdapter extends MODxObjectAdapter
 {//This will never change.
-    final static protected $xPDOClass = 'modContext';
-    final static protected $xPDOTransportAttributes = array
+    static protected $xPDOClass = 'modContext';
+    static protected $xPDOTransportAttributes = array
     (   xPDOTransport::UNIQUE_KEY => 'key',
         xPDOTransport::PRESERVE_KEYS => true,
         xPDOTransport::UPDATE_OBJECT => false,

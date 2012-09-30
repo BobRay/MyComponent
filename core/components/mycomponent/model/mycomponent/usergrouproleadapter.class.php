@@ -4,8 +4,8 @@ require_once('modxobjectadapter.class.php');
 
 class UserGroupRoleAdapter extends MODxObjectAdapter
 {//This will never change.
-    final static protected $xPDOClass = 'modUserGroupRole';
-    final static protected $xPDOTransportAttributes = array
+    static protected $xPDOClass = 'modUserGroupRole';
+    static protected $xPDOTransportAttributes = array
     (   xPDOTransport::UNIQUE_KEY => 'key',
         xPDOTransport::PRESERVE_KEYS => true,
         xPDOTransport::UPDATE_OBJECT => false,

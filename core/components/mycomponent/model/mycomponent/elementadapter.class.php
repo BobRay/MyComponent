@@ -16,7 +16,7 @@ abstract class ElementAdapter extends ObjectAdapter
      */
     public function getCodeDir() 
     {//Get the path...
-        $path = $this->myComponent->getPath('code') . 'elements/';
+        $path = $this->myComponent->myPaths['targetCore'] . 'elements/';
     // Get the sub-directory according to type...
         $type = $this->getClass();
         $type = $type == 'modTemplateVar' ? 'modTv' : $type;
