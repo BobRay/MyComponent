@@ -36,13 +36,13 @@ class ChunkAdapter extends ElementAdapter
 /* *****************************************************************************
    Build Vehicle and Support Functions 
 ***************************************************************************** */
-    final public function buildVehicle()
-    {//Add to the Transport Package
+    final public function buildVehicle() {//Add to the Transport Package
         /* @var $myComponent MyComponentProject */
-        if (parent::buildVehicle())
-        {//Return Success
+        if (parent::buildVehicle()) {//Return Success
             $myComponent->log(modX::LOG_LEVEL_INFO, 'Packaged Resource: '.$this->properties['pagetitle']);
             return true;
+        } else {
+            return false;
         }
     }
 }
