@@ -77,6 +77,8 @@ class MyComponentProject {
 
     }
     public function init() {
+        require dirname(__FILE__) . '/mcautoload.php';
+        spl_autoload_register('mc_auto_load');
         // Get the project config file
         include dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/_build/config/current.project.php';
         if (! isset($configPath)) {
@@ -105,8 +107,6 @@ class MyComponentProject {
             die('targetRoot is not set');
         }
         $this->props = $properties;
-        $helpersPath = $this->props['mycomponentCore'] . 'model/mycomponent/helpers.class.php';
-        require_once $helpersPath;
         $helpers = new Helpers($this->modx, $this->props);
         $this->helpers = $helpers;
         $this->helpers->init();
@@ -1240,8 +1240,10 @@ public function initPaths() { //For Quick Access
 
 }
 
+/* autoload should do these */
+
 // Include Base Classes
-    require_once('objectadapter.class.php');
+//    require_once('objectadapter.class.php');
 // Include Class Hierarchy
-    require_once('namespaceadapter.class.php');
-    require_once('categoryadapter.class.php');
+//    require_once('namespaceadapter.class.php');
+//    require_once('categoryadapter.class.php');
