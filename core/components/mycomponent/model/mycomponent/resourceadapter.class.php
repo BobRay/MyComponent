@@ -4,57 +4,46 @@ require_once('objectadapter.class.php');
 
 class ResourceAdapter extends ObjectAdapter
 {//These will never change.
-    final static protected $dbClass = 'modResource';
-    final static protected $dbClassIDKey = 'id';
-    final static protected $dbClassNameKey = 'pagetitle';
-    final static protected $dbClassParentKey = 'parent';
-    final static protected $dbTransportAttributes = array(
-        xPDOTransport::PRESERVE_KEYS => false,
-        xPDOTransport::UPDATE_OBJECT => true,
-        xPDOTransport::UNIQUE_KEY => 'pagetitle',
-        xPDOTransport::RELATED_OBJECTS => true,
-        xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array
-        (   'ContentType' => array
-            (   xPDOTransport::PRESERVE_KEYS => false,
-                xPDOTransport::UPDATE_OBJECT => true,
-                xPDOTransport::UNIQUE_KEY => 'name',
-            ),
-        )
-    );
-    
-    static private $init_published = '';
+    static protected $dbClass = 'modResource';
+    static protected $dbClassIDKey = 'id';
+    static protected $dbClassNameKey = 'pagetitle';
+    static protected $dbClassParentKey = 'parent';
+    static protected $defaults = array();
+    /*static private $init_published = '';
     static private $init_richtext = '';
     static private $init_hidemenu = '';
     static private $init_cacheable = '';
     static private $init_searchable = '';
     static private $init_context = '';
-    static private $init_template = '';
+    static private $init_template = '';*/
     
 // Database Columns for the XPDO Object
     protected $myFields;
     protected $myObjects = array();
 
-    final function __construct(&$forComponent, $columns)
-    {   parent::__construct(&$forComponent);
-        if (is_array($columns))
-            $this->myFields = $columns;
+    final function __construct(&$mc, $fields) {
+        /* @var $modx modX */
+        parent::__construct($mc);
+
             
     // Set defaults if they are not already set
-        $modx = $this->myComponent->modx;
-        if (empty($init_published))
-            $init_published => $modx->getOption('publish_default', null);
-        if (empty($init_richtext))
-            $init_richtext => $modx->getOption('richtext_default',null);
-        if (empty($init_hidemenu))
-            $init_hidemenu => $modx->getOption('hidemenu_default', null);
-        if (empty($init_cacheable))
-            $init_cacheable => $modx->getOption('cache_default', null);
-        if (empty($init_searchable))
-            $init_searchable => $modx->getOption('search_default', null);
-        if (empty($init_context))
-            $init_context => $modx->getOption('default_context', null);
-        if (empty($init_template))
-            $init_template => $modx->getOption('default_template', null);
+        $modx =& $mc->modx;
+        $this->modx =&  $mc->modx;
+
+        $this->defaults['published'] = $modx->getOption('publish_default', null);
+        $this->defaults['richtext'] = $modx->getOption('richtext_default',null);
+        $this->defaults['hidemenu'] = $modx->getOption('hidemenu_default', null);
+        $this->defaults['cacheable'] = $modx->getOption('cache_default', null);
+        $this->defaults['searchable'] = $modx->getOption('search_default', null);
+        $this->defaults['context'] = $modx->getOption('default_context', null);
+        $this->defaults['template'] = $modx->getOption('default_template', null);
+        foreach ($this->defaults as $field => $value) {
+            $fields[$field] = isset($fields[$field])
+                ? $fields[$field]
+                : $value;
+        }
+        $fields['content'] = $mc->helpers->getTpl('modresource');
+        $this->myFields = $fields;
     }
     
 /* *****************************************************************************
@@ -64,7 +53,7 @@ class ResourceAdapter extends ObjectAdapter
     public function newTransport() 
     {//Validate Page's Title
         if (empty($this->myFields['pagetitle']))
-        {   $this->myComponent->sendLog(MODX::LOG_LEVEL_INFO, 'A Resource must have a valid page title!')
+        {   $this->myComponent->sendLog(MODX::LOG_LEVEL_INFO, 'A Resource must have a valid page title!');
             return false;
         }
         
@@ -72,13 +61,13 @@ class ResourceAdapter extends ObjectAdapter
         $this->myFields['alias'] = str_replace(' ', '-', strtolower($this->myFields['pagetitle']));
 
     // Set default properties
-        $this->myFields['published'] => $init_published;
-        $this->myFields['richtext'] => $init_richtext;
-        $this->myFields['hidemenu'] => $init_hidemenu;
-        $this->myFields['cacheable'] => $init_cacheable;
-        $this->myFields['searchable'] => $init_searchable;
-        $this->myFields['context'] => $init_context;
-        $this->myFields['template'] => $init_template;
+        $this->myFields['published'] = $init_published;
+        $this->myFields['richtext'] = $init_richtext;
+        $this->myFields['hidemenu'] = $init_hidemenu;
+        $this->myFields['cacheable'] = $init_cacheable;
+        $this->myFields['searchable'] = $init_searchable;
+        $this->myFields['context'] = $init_context;
+        $this->myFields['template'] = $init_template;
 
     // Set default Content
         $this->myFields['content'] = 'Enter your page\'s content here';
@@ -86,7 +75,7 @@ class ResourceAdapter extends ObjectAdapter
     // Create the Transport File
         if (parent::newTransport())
         // Create the Code File
-            $this->newCodeFile();
+            $this->newCodeFile($this->myFields['pagetitle'], 'modResource');
     }
 
     /**
@@ -102,7 +91,7 @@ class ResourceAdapter extends ObjectAdapter
         $fileName = $this->helpers->getFileName($name, $type);
         // echo "\nDIR: " . $dir . "\n" . 'FILENAME: ' . $fileName . "\n" . "TYPE: " . $type . "\n";
         if (empty($fileName)) {
-            $mc->sendLog(MODX::LOG_LEVEL_INFO, '    skipping ' . $type . ' file -- needs no code file');
+            $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    skipping ' . $type . ' file -- needs no code file');
         } else {
             if (!file_exists($dir . '/' . $fileName)) {
                 $tpl = $this->getTpl($type);
@@ -118,7 +107,7 @@ class ResourceAdapter extends ObjectAdapter
                 }
                 $this->helpers->writeFile($dir, $fileName, $tpl);
             } else {
-                $mc->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' file already exists');
+                $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' file already exists');
             }
         }
     }
@@ -130,6 +119,7 @@ class ResourceAdapter extends ObjectAdapter
     final public function addToMODx($overwrite = false)
     {//Perform default export implementation
         $id = parent::addToMODx($overwrite);
+        return;
     // If MODx accepted the object
         if ($id)
         {//Set the new ID
@@ -139,7 +129,7 @@ class ResourceAdapter extends ObjectAdapter
             $children = $this->myObjects();
             foreach ($children as $child)
             {//Link the child and parent in database
-                $child->myFields[get_class($child)::dbClassParentKey] = $id;
+               // $child->myFields[get_class($child)::[dbClassParentKey] = $id;
                 $child->addToMODx($overwrite);
             }
         }
@@ -159,11 +149,11 @@ class ResourceAdapter extends ObjectAdapter
         $mc->createIntersects($data, 'resourceTemplates', 'modTemplate', 'modResource','','');
         /* Create resource.resolver.php resolver */
         if (!empty($data)) {
-            $mc->sendLog(MODX::LOG_LEVEL_INFO, 'Creating resource resolver');
+            $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating resource resolver');
             $tpl = $this->getTpl('resourceresolver.php');
             $tpl = $mc->replaceTags($tpl);
             if (empty($tpl)) {
-                $mc->sendLog(MODX::LOG_LEVEL_ERROR, 'resourceresolver tpl is empty');
+                $mc->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'resourceresolver tpl is empty');
             }
             
             $fileName = 'resource.resolver.php';
@@ -183,7 +173,7 @@ class ResourceAdapter extends ObjectAdapter
 
                 $mc->writeFile($dir, $fileName, $tpl);
             } else {
-                $mc->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+                $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
             }
         }
     }
@@ -208,11 +198,11 @@ class ResourceAdapter extends ObjectAdapter
         $name = $this->getName();
         
     // Perform default export implementation
-        if (!parent::exportObject())
-        {   $mc->sendLog(modX::LOG_LEVEL_INFO, 'Transport File created for Resource: ' . $name);
+        if (!parent::exportObject($name))
+        {   $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Transport File created for Resource: ' . $name);
             return false;
         }
-        $mc->sendLog(modX::LOG_LEVEL_INFO, 'Transport File created for Resource: ' . $name);
+        $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Transport File created for Resource: ' . $name);
     // Special fuctionality for Resources
         $this->exportCode($overwrite);
         $this->exportProperties($overwrite);
@@ -233,8 +223,9 @@ class ResourceAdapter extends ObjectAdapter
      */
     protected function exportChildren($overwrite = false) 
     {//For Quick Access
+        /* @var $modx modX */
         $mc = $this->myComponent;
-        $modx = $mc->modx;
+        $modx =& $mc->modx;
     
     // We DO NOT trust project.config for exporting.
         $tempObj = array();
@@ -247,12 +238,12 @@ class ResourceAdapter extends ObjectAdapter
                     $tempObj[] = $obj;
                 }
     // Clean up some memory
-        unset $children
+        unset ($children);
         
     // Export all VALID Children
         foreach ($tempObj as $obj)
             if (!empty($obj))
-                $obj->exportObject($overwrite)
+                $obj->exportObject($overwrite);
 
     // Align the Children array
         $this->myObjects = $tempObj;

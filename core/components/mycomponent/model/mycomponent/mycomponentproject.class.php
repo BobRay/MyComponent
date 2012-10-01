@@ -19,6 +19,7 @@ class MyComponentProject {
     /* @var $helpers Helpers */
     public $helpers;
     public $dirPermission;
+    public $objects;
 
 
 /* *****************************************************************************
@@ -117,54 +118,61 @@ class MyComponentProject {
 
     }
 
-    public function initComponent() {
-    // Initialize Component
-        $this->copyAssets = file_exists($this->assets);
-        $this->copyCore = file_exists($this->core);
-        $this->runBuild = file_exists($this->build);
+    /* Creates an array of objects from the project config file */
+    public function getObjectsFromConfig() {
+        $config = $this->props;
+        $objects = array();
 
-        $hasPropertySets = !empty($props['propertySets']);
-        $hasMenu = !empty($props['menus']); /* Add items to the MODx Top Menu */
-    // This will only work if we have a Core directory
-        if ($this->copyCore)
-        {
-        // Copy Documents
-            $this->copyDocuments = file_exists($this->core.'docs/');
-        // Copy the Lexicon
-            $this->copyLexicon = file_exists($this->core.'lexicon/');
-        // Copy and Install Dependencies
-            $this->copyDependencies = file_exists($this->core.'packages/');
-        }
-    // This will only work if we have a Build directory
-        if ($this->runBuild)
-        {   $this->pathData = $this->build.'data/';
+        /* get resources */
+        $resources = isset($config['resources'])
+            ? $config['resources']
+            : array();
 
-            $this->addValidators = file_exists($this->build.'validators/');
+        if (!empty($resources)) {
+            $this->hasResources = true;
+            foreach($resources as $resource => $fields) {
 
-            $hasSettings = true;
-            $hasTemplateVariables = !empty($props['elements']['modTemplateVar']);
+                $fields['pagetitle'] = isset($fields['pagetitle'])
+                    ? $fields['pagetitle']
+                    : $resource;
+                $objects['Resource'][] = $fields;
+            }
+        }
+        /* get elements */
+        $elements = isset($config['elements'])
+            ? $config['elements']
+            : array();
+        if (!empty($elements)) {
+            $this->hasElements = true;
+            foreach($elements as $element => $fields) {
+                $type = $fields['type'];
+                $category = $fields['category'];
 
-            $hasSetupOptions = !empty($props['install.options']); /* HTML/PHP script to interact with user */
-            $hasResources = !empty($props['resources']);
+                if ($type == 'modTemplate') {
+                    if (! isset($fields['templatename'])) {
+                        $fields['templatename'] = isset($fields['name'])
+                            ? $fields['name']
+                            : $element;
+                    }
+                    unset($fields['name']);
+                } else {
+                    $fields['name'] = isset($fields['name'])
+                        ? $fields['name']
+                        : $element;
+                }
+                unset ($fields['type'], $fields['category']);
+                if (isset($config['allStatic']) && !empty($config['allStatic'])) {
+                    $fields['static'] = true;
+                } else {
+                    $fields['static'] = (bool) isset($fields['static']) && !empty($fields['static']);
+                }
+                $groupName = substr($type, 3);
+                $objects['categories'][$category][$groupName][$element] = $fields;
+            }
         }
-    // This will only work if we have a Core AND Build directory
-        if ($this->copyCore
-        &&  $this->runBuild)
-        {
-            $hasSnippets = !empty($props['elements']['modSnippet']);
-            $hasChunks = !empty($props['elements']['modChunk']);
-            $hasTemplates = !empty($props['elements']['modTemplate']);
-            $hasPlugins = !empty($props['elements']['modPlugin']);
-        }
-    // This will only work if we have Assets
-        if ($this->copyAssets)
-        {
-            $this->minify = $props['minifyJS'];
-        }
-        else
-        {
-            $this->minify = false;
-        }
+        //die(print_r($objects, true));
+
+        $this->objects = $objects;
     }
 
     /**
@@ -218,7 +226,7 @@ public function initPaths() { //For Quick Access
         $this->myPaths = $paths;
     }
 
-
+    /* Not used */
     public function loadChildren()
     {   if ($this->runBuild)
         {//For quick access
@@ -289,6 +297,13 @@ public function initPaths() { //For Quick Access
         }
 
     $this->createBasics();
+    $this->getObjectsFromConfig();
+    // die(print_r($this->objects, true));
+    foreach($this->objects['Resource'] as $resource => $fields) {
+        $r = new ResourceAdapter($this, $fields);
+        $r->addToMODx();
+    }
+
         // $this->newPaths();
 
     // Installation Options Scripts

@@ -1,11 +1,13 @@
 <?php
 abstract class ObjectAdapter
 {//Base required     
-    static protected $dbClass = '';
-    static protected $dbClassIDKey = '';
-    static protected $dbClassNameKey = '';
-    static protected $dbClassParentKey = '';
-    static protected $dbTransportAttributes = '';
+    static protected $dbClass;
+    static protected $dbClassIDKey;
+    static protected $dbClassNameKey;
+    static protected $dbClassParentKey;
+    // protected $dbTransportAttributes = '';
+    /* @var $modx modX */
+    public $modx;
     
 // MyComponent Object
     protected $myComponent;
@@ -34,7 +36,7 @@ abstract class ObjectAdapter
      */
     public function getNameField() 
     {//Simple Getter Function
-        return static::dbClassNameKey;
+        return static::$dbClassNameKey;
     }
 
     /**
@@ -45,7 +47,7 @@ abstract class ObjectAdapter
      */
     public function getName()
     {//Simple Getter Function
-        return $this->myFields[static::dbClassNameKey];
+        return $this->myFields[static::$dbClassNameKey];
     }
     
     /**
@@ -56,7 +58,7 @@ abstract class ObjectAdapter
      */
     public function getSafeName()
     {//Simple Getter Function
-        $name = $this->myFields[static::dbClassNameKey];
+        $name = static::$dbClassNameKey;
         $name = strtolower($name);
         $name = $output = str_replace(' ', '', $name);
     // Return the new name
@@ -71,7 +73,7 @@ abstract class ObjectAdapter
      */
     public function getClass()
     {//Simple Getter Function
-        return static::dbClass; 
+        return static::$dbClass;
     }
     
     /**
@@ -82,7 +84,7 @@ abstract class ObjectAdapter
      */
     public function getSafeClass()
     {//Simple Getter Function
-        $class = substr(strtolower(static::dbClass), 3);
+        $class = substr(strtolower(static::$dbClass), 3);
         if ($class == 'templatevar')
             return 'tv';
         elseif ($class == 'systemsettings')
@@ -93,7 +95,7 @@ abstract class ObjectAdapter
     
     public function getAttributes()
     {//Simple Getter Function
-        return static::dbTransportAttributes;
+        // return static::dbTransportAttributes;
     }
 
     /**
@@ -190,12 +192,12 @@ abstract class ObjectAdapter
         $path = $data . $this->getSafeClass() . '/';
     // If data directory does not exist, create it
         if (!$mc->makeDir($data, false))
-        {   $mc->sendLog(MODX::LOG_LEVEL_INFO,'Could not create Transport: Data directory was not created!');
+        {   $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO,'Could not create Transport: Data directory was not created!');
             return false;
         }
     // If Object directory does not exist, create it
         if (!$mc->makeDir($path, false))
-        {   $mc->sendLog(MODX::LOG_LEVEL_INFO,'Could not create Transport: Object directory was not created!');
+        {   $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO,'Could not create Transport: Object directory was not created!');
             return false;
         }
     // Now that we know all directories exist...
@@ -221,7 +223,7 @@ abstract class ObjectAdapter
         $resolvers = $this->myResolvers;
     
         if (!empty($resolvers)) 
-        {   $mc->sendLog(MODX::LOG_LEVEL_INFO, 'Creating extra resolvers');
+        {   $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating extra resolvers');
             foreach ($resolvers as $resolver) 
             {
                 if ($resolver == 'default') 
@@ -230,7 +232,7 @@ abstract class ObjectAdapter
                     $fileName = $resolver . '.resolver.php';
                 
                 if (file_exists($path . $fileName))
-                    $mc->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+                    $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
                 else 
                 {
                     $tpl = $this->getTpl('genericresolver.php');
@@ -246,12 +248,13 @@ abstract class ObjectAdapter
 ***************************************************************************** */
     public function addToMODx($overwrite = false)
     {//Quick Access
+        /* @var $modx modX */
         $mc = $this->myComponent;
-        $modx = $mc->modx;
+        $modx =& $mc->modx;
     // MODx Class
         $objClass = $this->getClass();
     // Class ID Key, Name Key => Name Value Pair
-        $idKey = static::dbClassIDKey;
+        $idKey = static::$dbClassIDKey;
         $name = $this->getName();
         $nameKey = $this->getNameField();
         
@@ -259,7 +262,7 @@ abstract class ObjectAdapter
         $obj = $modx->getObject($objClass, array($nameKey => $name));
     // Object exists/Cannot Overwrite
         if ($obj && !$overwrite) 
-        {   $mc->sendLog(MODX::LOG_LEVEL_INFO, $objClass . ' already exists: ' . $name);
+        {   $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, $objClass . ' already exists: ' . $name);
             return -1;
         }
     // Object exists/Can Overwrite
@@ -269,13 +272,13 @@ abstract class ObjectAdapter
             if ($idKey != $nameKey)
                 unset($this->myFields[$nameKey]);
         // Set all Columns
-            $obj->fromArray($this->myFields);
+            $obj->fromArray($this->myFields, '', true, true);
         // Realign (just in case)
             $this->myFields[$nameKey] = $name;
         // Save Object
             if ($obj->save())
             // Report success
-                $mc->sendLog(MODX::LOG_LEVEL_INFO, 'Updated '. $objClass .': ' . $name);
+                $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Updated '. $objClass .': ' . $name);
             else
             // Report failure
                 return -1;
@@ -287,10 +290,17 @@ abstract class ObjectAdapter
                 unset($this->myFields[$idKey]);
         //Create the new MODx Object
             $obj = $modx->newObject($objClass, array($nameKey => $name));
-            $obj->fromArray($this->myFields);
+            if ($obj && $obj instanceof $objClass) {
+                $obj->fromArray($this->myFields, '', true, true);
+                // die(print_r($this->myFields, true));
+            } else {
+                $msg = "\nFailed to create object \nclass: " . $objClass . "\nnameKey: " . $nameKey . "\nname: " . $name;
+                $mc->helpers->sendLog(MODX::LOG_LEVEL_ERROR,$msg);
+                die();
+            }
             if ($obj->save())
             // Report success
-                $mc->sendLog(MODX::LOG_LEVEL_INFO, 'Created '. $objClass .': ' . $name);
+                $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Created '. $objClass .': ' . $name);
             else
             // Report failure
                 return -1;
@@ -302,7 +312,7 @@ abstract class ObjectAdapter
     public function toDBObject()
     {///Use MODx to create the object
         $object = $this->myComponent->modx->newObject($this->getClass());
-        $object->fromArray($this->myFields);
+        $object->fromArray($this->myFields, '', true, true);
     // Return the XPDOObject
         return $object;
     }
@@ -331,10 +341,10 @@ abstract class ObjectAdapter
             $element='Actions';
         }
 
-        $mc->sendLog(modX::LOG_LEVEL_INFO, "\n\nProcessing " . $safetype . ': ' . $name);
+        $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n\nProcessing " . $safetype . ': ' . $name);
         
-        $mc->sendLog(modX::LOG_LEVEL_INFO, 'Category: ' . $this->category);
-        $mc->sendLog(modX::LOG_LEVEL_INFO, 'Element Type: ' . $type);
+        $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Category: ' . $this->category);
+        $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Element Type: ' . $type);
         
         /* use namespace rather than category for these */
         $key = $type == 'modSystemSetting' ||  $type =='modAction' 
@@ -358,7 +368,7 @@ abstract class ObjectAdapter
         }
 
         if (empty($this->elements)) {
-            $mc->sendLog(modX::LOG_LEVEL_ERROR, 'No objects found in category: ' . $this->category);
+            $mc->helpers->sendLog(modX::LOG_LEVEL_ERROR, 'No objects found in category: ' . $this->category);
             return;
         }
         
@@ -382,7 +392,7 @@ abstract class ObjectAdapter
         $tpl .= 'return $' . strtolower($element) . ";\n";
 
         $mc->writeFile($path, $transportFile, $tpl, $this->dryRun);
-        $mc->sendLog(modX::LOG_LEVEL_INFO, 'Finished processing: ' . $element);
+        $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Finished processing: ' . $element);
         
         unset($tpl);
     }
@@ -573,27 +583,27 @@ abstract class ObjectAdapter
     // Make sure we have column values to export
         if (empty($this->myFields)
         ||  !is_array($this->myFields))
-        {   $mc->sendLog(modX::LOG_LEVEL_ERROR, 'Vehicle has no database values');
+        {   $mc->helpers->sendLog(modX::LOG_LEVEL_ERROR, 'Vehicle has no database values');
             return false;
         }
     // We must have Attributes in order to Package
         $attr = $this->getAttributes();
         if (empty($attr)
         ||  is_array($attr))
-        {   $mc->sendLog(modX::LOG_LEVEL_ERROR, 'Could not package Vehicle: ' . $this->getClass());
+        {   $mc->helpers->sendLog(modX::LOG_LEVEL_ERROR, 'Could not package Vehicle: ' . $this->getClass());
             return false;
         }
         else
         {//Update for Validators
-            if (is_array($this->myValidators)) 
-                $attr[xPDOTransport::ABORT_INSTALL_ON_VEHICLE_FAIL] = true;
+            // if (is_array($this->myValidators))
+               // $attr[xPDOTransport::ABORT_INSTALL_ON_VEHICLE_FAIL] = true;
         // Update for 
         }
         
     // We must have a valid xPDO Object to Package
         $obj = $this->toDBObject($modx);
         if (empty($obj))
-        {   $mc->sendLog(modX::LOG_LEVEL_ERROR, 'Could not create xPDO object: ' . $this->getDBClass());
+        {   $mc->helpers->sendLog(modX::LOG_LEVEL_ERROR, 'Could not create xPDO object: ' . $this->getDBClass());
             return false;
         }
     // Create the Vehicle
