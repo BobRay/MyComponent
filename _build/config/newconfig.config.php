@@ -47,7 +47,7 @@ $components = array(
 
     /* ************************* ELEMENTS **************************** */
     
-    /* Array containing the actual Element Names used in your extra */
+    /* Array containing elements for your extra. 'type' and 'category are required */
     'elements' => array(
         'Snippet1' => array(
             'type' => 'modSnippet',
@@ -173,28 +173,21 @@ $components = array(
 
     /* ************************* RESOURCES **************************** */
 
-    /* Array of Resource pagetitles for your Extra; alias is optional. (set other fields here as needed. Do not set parent)
+    /* Array of Resource pagetitles for your Extra; alias is optional.
+       Set other fields here as needed. Do not set parent!
         */
     'resources' => array(
         'Resource1' => array(
+            'pagetitle' => 'Resource1',
             'alias' => 'resource1',
         ),
         'Resource2' => array(
+            'pagetitle' => 'Resource2',
             'alias' => 'resource2',
-            
         )
     ),
 
-    /* set these only if you want to override system defaults . Note: this will not change the system defaults,
-       it will only be used for the settings of your Resources */
-    'resource_defaults' => array( //'published' => false,
-        //'richtext' => false,
-        //'hidemenu' => true,
-        //'cacheable' => false,
-        //'searchable' => true,
-        //'context' => 'web',
-    ),
-    
+
     /* Array of template names and the pagetitles of resources that use them.
     * Only necessary if you want to connect package resources to package
     * templates. A resolver will be created to connect them.
