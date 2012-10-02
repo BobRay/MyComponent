@@ -115,6 +115,7 @@ class MyComponentProject {
         $this->dirPermission = $this->props['dirPermission'];
         $this->packageNameLower = $this->props['packageNameLower'];
 
+        $this->getObjectsFromConfig();
 
     }
 
@@ -135,7 +136,20 @@ class MyComponentProject {
                 $fields['pagetitle'] = isset($fields['pagetitle'])
                     ? $fields['pagetitle']
                     : $resource;
-                $objects['Resource'][] = $fields;
+                $objects['Resource'][$resource] = $fields;
+                if (isset($fields['parent'])) {
+                    $objects['resourceParents'][$fields['pagetitle']] = $fields['parent'];
+                }
+                if (isset($fields['template'])) {
+                    $objects['resourceTemplates'][$fields['pagetitle']] = $fields['template'];
+                }
+                if (isset($fields['TvValues'])) {
+                    if (is_array($fields['TvValues'])) {
+                        foreach ($fields['TvValues'] as $k => $v) {
+                            $objects['resourceTvs'][$k] = $v;
+                        }
+                    }
+                }
             }
         }
         /* get elements */
@@ -170,7 +184,7 @@ class MyComponentProject {
                 $objects['categories'][$category][$groupName][$element] = $fields;
             }
         }
-        //die(print_r($objects, true));
+        // die(print_r($objects, true));
 
         $this->objects = $objects;
     }
@@ -192,6 +206,7 @@ public function initPaths() { //For Quick Access
         //$ns = $this->modx->getObject('modNamespace', array('key' => 'mycomponent'));
         $paths['mcCore'] = $this->mcRoot . 'core/components/mycomponent/';
         $paths['mcModel'] = $paths['mcCore'] . 'model/mycomponent/';
+        $paths['mcBuild'] = $this->mcRoot . '_build/';
         /* $paths['mcNew'] = $paths['mc-core'] != ''
             ? $paths['mc-model'] . 'model/mycomponent/newbuild/'
             : ''; */
@@ -224,7 +239,19 @@ public function initPaths() { //For Quick Access
                 $paths['targetValidate']  = $paths['targetBuild'] . 'validators/';
     // Set to Class Member
         $this->myPaths = $paths;
+    /* dump object array to file for reference */
+    $objectArray = print_r($this->objects, true);
+    $fp = fopen($this->myPaths['mcBuild'] . 'objectarray.txt', "w");
+    if ($fp) {
+        fwrite($fp, $objectArray);
+        fclose($fp);
+        $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Created ' . $this->myPaths['mcBuild'] . 'objectarray.txt');
     }
+    else {
+        $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Could not open ' . $this->myPaths['mcBuild'] . 'objectarray.txt');
+    }
+
+}
 
     /* Not used */
     public function loadChildren()
@@ -297,11 +324,18 @@ public function initPaths() { //For Quick Access
         }
 
     $this->createBasics();
-    $this->getObjectsFromConfig();
-    // die(print_r($this->objects, true));
-    foreach($this->objects['Resource'] as $resource => $fields) {
-        $r = new ResourceAdapter($this, $fields);
-        $r->addToMODx();
+
+    /* create category */
+    /* create system settings */
+    /* create new system events */
+    /* create elements  */
+
+    if (!empty($this->objects['Resource'])) {
+        $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating Resources');
+        foreach($this->objects['Resource'] as $resource => $fields) {
+            $r = new ResourceAdapter($this, $fields);
+            $r->addToMODx();
+        }
     }
 
         // $this->newPaths();

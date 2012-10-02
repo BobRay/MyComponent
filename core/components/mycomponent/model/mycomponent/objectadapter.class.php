@@ -262,7 +262,7 @@ abstract class ObjectAdapter
         $obj = $modx->getObject($objClass, array($nameKey => $name));
     // Object exists/Cannot Overwrite
         if ($obj && !$overwrite) 
-        {   $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, $objClass . ' already exists: ' . $name);
+        {   $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $objClass . ' already exists: ' . $name);
             return -1;
         }
     // Object exists/Can Overwrite
@@ -276,10 +276,10 @@ abstract class ObjectAdapter
         // Realign (just in case)
             $this->myFields[$nameKey] = $name;
         // Save Object
-            if ($obj->save())
+            if ($obj->save()) {
             // Report success
-                $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Updated '. $objClass .': ' . $name);
-            else
+                $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Updated '. $objClass .': ' . $name);
+            } else
             // Report failure
                 return -1;
         }
@@ -300,13 +300,14 @@ abstract class ObjectAdapter
             }
             if ($obj->save())
             // Report success
-                $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Created '. $objClass .': ' . $name);
-            else
+                $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Created '. $objClass .': ' . $name);
+            } else {
             // Report failure
                 return -1;
-        }
+            }
     // Return the ID of the object
-        return $obj->get($idKey);
+        // return $obj->get($idKey);
+        return $obj;
     }
     
     public function toDBObject()

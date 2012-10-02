@@ -9,6 +9,7 @@ class ResourceAdapter extends ObjectAdapter
     static protected $dbClassNameKey = 'pagetitle';
     static protected $dbClassParentKey = 'parent';
     static protected $defaults = array();
+    protected $resourceId = 0;
     /*static private $init_published = '';
     static private $init_richtext = '';
     static private $init_hidemenu = '';
@@ -37,6 +38,7 @@ class ResourceAdapter extends ObjectAdapter
         $this->defaults['searchable'] = $modx->getOption('search_default', null);
         $this->defaults['context'] = $modx->getOption('default_context', null);
         $this->defaults['template'] = $modx->getOption('default_template', null);
+
         foreach ($this->defaults as $field => $value) {
             $fields[$field] = isset($fields[$field])
                 ? $fields[$field]
@@ -118,36 +120,91 @@ class ResourceAdapter extends ObjectAdapter
 
     final public function addToMODx($overwrite = false)
     {//Perform default export implementation
-        $id = parent::addToMODx($overwrite);
-        return;
+        $fields =& $this->myFields;
+        $tvValues = array();
+
+        if (! is_numeric($fields['template'])) { /* user sent a template name */
+            /* @var $templateObj modTemplate */
+            $templateName = $fields['template'];
+            $templateObj = $this->modx->getObject('modTemplate', array('templateName'=> $fields['template']));
+            if ($templateObj) {
+                $fields['template'] = $templateObj->get('id');
+            } else {
+                $this->modx->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find template: ' . $templateName);
+                $fields['template'] = $this->defaults['template'];
+            }
+
+        }
+        if (isset($fields['parent'])) {
+            /* @var $parentObj modResource */
+            $parentName = $fields['parent'];
+            $parentObj = $this->modx->getObject('modResource', array('pagetitle' => $parentName));
+            if ($parentObj) {
+                $fields['parent'] = $parentObj->get('id');
+            } else {
+                $this->modx->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find parent resource: ' . $parentName);
+                $fields['parent'] = 0;
+            }
+
+        }
+        if (isset($fields['tvValues'])) {
+            $tvValues = $fields['tvValues'];
+            unset($fields['tvValues']);
+        }
+        $obj = parent::addToMODx($overwrite);
+
+
     // If MODx accepted the object
-        if ($id)
-        {//Set the new ID
-            $this->myFields[self::dbClassIDKey] = $id;
-            attachTemplate();
-        // Account for children resources
-            $children = $this->myObjects();
-            foreach ($children as $child)
-            {//Link the child and parent in database
-               // $child->myFields[get_class($child)::[dbClassParentKey] = $id;
-                $child->addToMODx($overwrite);
+        if ($obj && $obj instanceof modResource) {
+            /* Set the new ID */
+            $this->resourceId = $obj->get('id');
+
+            if (!empty ($tvValues)) {
+                $this->attachTvs($obj, $tvValues);
             }
         }
     }
 
-    /**
+    /*  NOT USED
      * Connects Resources to package templates and creates a resolver to
      * connect them during the install.
      */
-    public function attachTemplate() 
-    {//For Quick Access
-        $mc = $this->myComponent;
-        $modx = $mc->modx;
-        $dir = $mc->getPath('resolve');
-    
-        $data = $modx->getOption('resourceTemplates', $this->props, '');
-        $mc->createIntersects($data, 'resourceTemplates', 'modTemplate', 'modResource','','');
+    public function attachTemplate(&$resourceObj, $templateName) {
+        /* @var $modx modX */
+        /* @var $mc MyComponentProject */
+        /* @var $resourceObj modResource */
+
+        $mc =& $this->myComponent;
+        $modx =& $mc->modx;
+
+        /* Set resource Template */
+        if (!empty($templateName)) {
+            $template = $modx->getObject('modTemplate', array('templatename' => $templateName));
+            if ($template) {
+                $templateId = $template->get('id');
+                $resourceObj->set('template', $templateId);
+                if ($resourceObj->save()) {
+                    $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, '         Connected Resource ' .
+                        $resourceObj->get('pagetitle') . ' to ' .
+                        $templateName . ' Template');
+                }
+
+            } else {
+                $mc->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '        Could not find template: ' . $templateName);
+            }
+        }
+
+        // $data = $modx->getOption('resourceTemplates', $this->props, '');
+        // $mc->createIntersects($data, 'resourceTemplates', 'modTemplate', 'modResource','','');
+
+        return;
+
+        /* resource resolver will be created elewhere - this object will return it's own bit
+          of the resolver code in another function
+        */
+
         /* Create resource.resolver.php resolver */
+        $dir = $mc->getPath('resolve');
         if (!empty($data)) {
             $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating resource resolver');
             $tpl = $this->getTpl('resourceresolver.php');
@@ -177,7 +234,18 @@ class ResourceAdapter extends ObjectAdapter
             }
         }
     }
+    /* Not used */
+    public function attachParent(&$obj, $parentName) {
 
+    }
+    public function attachTvs(&$obj, $tvValues) {
+        /* @var $obj modResource */
+        foreach($tvValues as $k => $v) {
+            $obj->setTVValue($k, $v);
+
+        }
+
+    }
 /* *****************************************************************************
    Export Objects and Support Functions
 ***************************************************************************** */
