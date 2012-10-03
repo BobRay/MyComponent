@@ -141,18 +141,32 @@ class MyComponentProject {
                                 : $element;
                         }
                         unset($fields['name']);
-                    }
-                    else {
+                    } else {
                         $fields['name'] = isset($fields['name'])
                             ? $fields['name']
                             : $element;
                     }
                     unset ($fields['category']);
+
                     if (isset($config['allStatic']) && !empty($config['allStatic'])) {
                         $fields['static'] = true;
-                    }
-                    else {
+                    } else {
                         $fields['static'] = (bool)isset($fields['static']) && !empty($fields['static']);
+                    }
+
+                    if ($type == 'plugins' || isset($fields['events'])) {
+                        if (is_array($fields['events'])) {
+                            foreach($fields['events'] as $event => $eventFields) {
+                                $eventFields['priority'] = isset($eventFields['priority']) && ! empty($eventFields['priority'])
+                                    ? $eventFields['priority']
+                                    : '0';
+                                $eventFields['group'] = isset($eventFields['group']) && ! empty($eventFields['priority'])
+                                    ? $eventFields['group']
+                                    : 'plugins';
+
+                                $objects['pluginEvents'][$element][$event] = $eventFields;
+                            }
+                        }
                     }
 
                     $objects['categories'][$category][$type][$element] = $fields;
