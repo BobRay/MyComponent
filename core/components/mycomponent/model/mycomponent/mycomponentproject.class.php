@@ -121,9 +121,15 @@ class MyComponentProject {
 
     /* Creates an array of objects from the project config file */
     public function getObjectsFromConfig() {
-        $config = $this->props;
+        $config =& $this->props;
         $objects = array();
 
+        /* get new System Settings */
+        if (isset($config['newSystemSettings']) && ! empty($config['newSystemSettings'])) {
+            foreach($config['newSystemSettings'] as $settingName => $settingFields) {
+                $objects['newSystemSettings'][$settingName] = $settingFields;
+            }
+        }
         /* get elements */
         $elementList = isset($config['elements'])
             ? $config['elements']
@@ -157,13 +163,6 @@ class MyComponentProject {
                     if ($type == 'plugins' || isset($fields['events'])) {
                         if (is_array($fields['events'])) {
                             foreach($fields['events'] as $event => $eventFields) {
-                                $eventFields['priority'] = isset($eventFields['priority']) && ! empty($eventFields['priority'])
-                                    ? $eventFields['priority']
-                                    : '0';
-                                $eventFields['group'] = isset($eventFields['group']) && ! empty($eventFields['priority'])
-                                    ? $eventFields['group']
-                                    : 'plugins';
-
                                 $objects['pluginEvents'][$element][$event] = $eventFields;
                             }
                         }
