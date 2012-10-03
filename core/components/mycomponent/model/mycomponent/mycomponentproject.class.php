@@ -130,6 +130,13 @@ class MyComponentProject {
                 $objects['newSystemSettings'][$settingName] = $settingFields;
             }
         }
+
+        /* get new System Events */
+        if (isset($config['newSystemEvents']) && !empty($config['newSystemEvents'])) {
+            foreach ($config['newSystemEvents'] as $settingName => $settingFields) {
+                $objects['newSystemEvents'][$settingName] = $settingFields;
+            }
+        }
         /* get elements */
         $elementList = isset($config['elements'])
             ? $config['elements']
