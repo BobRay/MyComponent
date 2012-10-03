@@ -72,8 +72,8 @@ $components = array(
      * Warning: Do *not* list regular MODX System Events here !!! */
 
     'newSystemEvents' => array(
-        'OnMyEvent1',
-        'OnMyEvent2',
+        'OnMyEvent1' => array(),
+        'OnMyEvent2' => array(),
     ),
 
     /* ************************* PROPERTY SETS **************************** */
@@ -84,8 +84,8 @@ $components = array(
      * Create the properties in the Manager and export them with exportObjects */
 
     'propertySets' => array(
-        'PropertySet1',
-        'PropertySet2'
+        'PropertySet1' => array(),
+        'PropertySet2' => array(),
     ),
 
     /* ************************* ELEMENTS **************************** */
