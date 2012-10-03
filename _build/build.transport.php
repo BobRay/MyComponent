@@ -384,6 +384,7 @@ foreach ($resolvers as $resolver) {
  */
 
 if ($hasCore) {
+    $modx->log(modX::LOG_LEVEL_INFO, 'Adding in core files');
     $vehicle->resolve('file',array(
             'source' => $sources['source_core'],
             'target' => "return MODX_CORE_PATH . 'components/';",
