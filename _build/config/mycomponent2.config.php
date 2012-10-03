@@ -1,22 +1,22 @@
 <?php
 
-$packageNameLower = 'example'; /* No spaces, no dashes */
+$packageNameLower = 'mycomponent'; /* No spaces, no dashes */
 
 $components = array(
     /* These are used to define the package and set values for placeholders */
-    'packageName' => 'Example',  /* No spaces, no dashes */
+    'packageName' => 'MyComponent',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
-    'packageDescription' => 'Example extra for MODX Revolution - a tool for building MODX Transport Packages',
+    'packageDescription' => 'MyComponent extra for MODX Revolution - a tool for building MODX Transport Packages',
     'version' => '1.0.0',
     'release' => 'beta1',
     'categories' => array( /* usually just one and the same as the package name */
-        'Example,'
+        'MyComponent2,'
     ),
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
     'authorUrl' => 'http://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
-    'packageDocumentationUrl' => 'http://bobsguides.com/example-tutorial.html',
+    'packageDocumentationUrl' => 'http://bobsguides.com/mycomponent-tutorial.html',
     'copyright' => '2012',
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
