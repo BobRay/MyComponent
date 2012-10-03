@@ -168,6 +168,11 @@ class MyComponentProject {
                             }
                         }
                     }
+                    if (isset($fields['propertySets']) && !empty($fields['propertySets'])) {
+                        foreach($fields['propertySets'] as $k => $setName) {
+                            $objects['elementPropertySets'][$type][$element] = $setName;
+                        }
+                    }
 
                     $objects['categories'][$category][$type][$element] = $fields;
                 }
