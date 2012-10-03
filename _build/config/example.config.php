@@ -4,10 +4,9 @@ $packageNameLower = 'example'; /* No spaces, no dashes */
 
 $components = array(
     /* These are used to define the package and set values for placeholders */
-    'packageName' => 'Example',
-    /* No spaces, no dashes */
+    'packageName' => 'Example',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
-    'packageDescription' => 'Example extra for MODX Revolution - a tool for building MODX Transport Packages',
+    'packageDescription' => 'Example project for MyComponent extra',
     'version' => '1.0.0',
     'release' => 'beta1',
     'categories' => array( /* usually just one and the same as the package name */
@@ -27,14 +26,12 @@ $components = array(
     'requireLogin' => false,
 
     'gitHubUsername' => 'BobRay',
-    'gitHubRepository' => 'Mycomponent',
+    'gitHubRepository' => 'Example',
     /* two-letter code of your primary language */
     'primaryLanguage' => 'en',
     /* Set directory and file permissions for project directories */
-    'dirPermission' => 0755,
-    /* No quotes!! */
-    'filePermission' => 0644,
-    /* No quotes!! */
+    'dirPermission' => 0755,  /* No quotes!! */
+    'filePermission' => 0644, /* No quotes!! */
 
     /* Define source and target directories (mycomponent root and core directories) */
     'mycomponentRoot' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/',
@@ -51,7 +48,7 @@ $components = array(
      * and export them with exportObjects. If you do that, be sure to set
      * their namespace and area to the lowercase package name of your extra */
 
-    /*'newSystemSettings' => array(
+    'newSystemSettings' => array(
         'example_system_setting1' => array( // key
             'namespace' => 'example',
             'xtype' => 'textField',
@@ -64,7 +61,7 @@ $components = array(
             'value' => true,
             'area' => 'area2',
         ),
-    ),*/
+    ),
 
     /* ************************ NEW SYSTEM EVENTS ************************* */
 
@@ -74,10 +71,10 @@ $components = array(
      *
      * Warning: Do *not* list regular MODX System Events here !!! */
 
-    /*   'newSystemEvents' => array(
+    'newSystemEvents' => array(
         'OnMyEvent1',
         'OnMyEvent2',
-    ),*/
+    ),
 
     /* ************************* PROPERTY SETS **************************** */
 
@@ -86,23 +83,22 @@ $components = array(
      * properties and will be connected to any elements yous specify below.
      * Create the properties in the Manager and export them with exportObjects */
 
-    /*   'propertySets' => array(
+    'propertySets' => array(
         'PropertySet1',
         'PropertySet2'
-    ),*/
+    ),
 
     /* ************************* ELEMENTS **************************** */
 
     /* If your extra needs Menus, set this to true, create them
      * in the Manager, and export them with exportObjects. Be sure
      * to set their namespace to the lowercase package name of your extra */
-
-    //'menus' => true,
+    'menus' => true,
 
     /* ************************* ELEMENTS **************************** */
 
     /* Array containing elements for your extra. 'category' is required
-all other fields are optional */
+       all other fields are optional */
 
 
     'elements' => array(
@@ -135,10 +131,8 @@ all other fields are optional */
                     'OnUserFormSave' => array(),
                     /* minimal example - no fields */
                     'OnMyEvent1' => array( /* example with fields set */
-                        'priority' => '0',
-                        /* priority of the event -- 0 is highest priority */
-                        'group' => 'plugins',
-                        /* should generally be set to 'plugins' */
+                        'priority' => '0', /* priority of the event -- 0 is highest priority */
+                        'group' => 'plugins', /* should generally be set to 'plugins' */
                         'propertySet' => 'PropertySet1',
                     ),
                     'OnMyEvent2' => array(
@@ -292,7 +286,7 @@ all other fields are optional */
     * Do not include default template here!
     */
 
-    /*   'resourceTemplates' => array(
+ /*   'resourceTemplates' => array(
         'Template1' => array(
             'Resource1',
             'Resource2'
@@ -307,7 +301,7 @@ all other fields are optional */
      *       'pagetitle' => 'value'
      *    ),
      *     */
-    /*    'TvResourceValues' => array(
+/*    'TvResourceValues' => array(
         'Tv1' => array(
             'Resource1' => 'someValue',
             'Resource2' => 'someOtherValue',
@@ -320,15 +314,18 @@ all other fields are optional */
 
     /* Resource Parents - array of 'resource pagetitle' => 'resource parent pagetitle'
        Resources no listed here will be placed in the web root */
-    /*    'resourceParents' => array(
+/*    'resourceParents' => array(
         'Resource1' => '',
         'Resource2' => 'Resource1',
     ),*/
 
 
+
+
+
     /* Array of languages for which you will have language files,
-*  and comma-separated list of topics
-*  ('.inc.php' will be added as a suffix). */
+     *  and comma-separated list of topics
+     *  ('.inc.php' will be added as a suffix). */
     'languages' => array(
         'en' => array(
             'default',
@@ -343,8 +340,8 @@ all other fields are optional */
      * Set to hasAssets = false to skip.
      * Empty js and/or css files will be created.
      */
-    'hasAssets' => false,
-    'minifyJS' => false,
+    'hasAssets' => true,
+    'minifyJS' => true,
     /* minify any JS files */
     'assetsDirs' => array(
         'css' => true,
@@ -447,10 +444,8 @@ all other fields are optional */
        will report what it would have done withougt changing anything  */
 
     'dryRun' => '0',
-    'createTransportFiles' => '1',
-    // remove??
-    'createObjectFiles' => '1',
-    // remove??
+    'createTransportFiles' => '1', // remove??
+    'createObjectFiles' => '1',  // remove??
 
     /* Array of elements to export. All elements set above will be handled.
      *
@@ -470,12 +465,11 @@ all other fields are optional */
     ),
     /*  Array  of pagetitles of resources to process. */
     'pagetitles' => array(
-        'Example1',
-        'Example2'
+        'Resource1',
+        'Resource2'
     ),
     /* Array of resource parent IDs to get children of. */
-    'parents' => array(),
-    /* ToDo: Add is_numeric check */
+    'parents' => array(), /* ToDo: Add is_numeric check */
     /* Also export the listed parent resources
       (set to false to include just the children) */
     'includeParents' => false,
