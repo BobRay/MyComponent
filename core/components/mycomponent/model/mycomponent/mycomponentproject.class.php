@@ -124,6 +124,42 @@ class MyComponentProject {
         $config = $this->props;
         $objects = array();
 
+        /* get elements */
+        $elementList = isset($config['elements'])
+            ? $config['elements']
+            : array();
+        if (!empty($elementList)) {
+            $this->hasElements = true;
+            foreach ($elementList as $type => $elements) {
+                foreach ($elements as $element => $fields) {
+                    $category = $fields['category'];
+
+                    if ($type == 'templates') {
+                        if (!isset($fields['templatename'])) {
+                            $fields['templatename'] = isset($fields['name'])
+                                ? $fields['name']
+                                : $element;
+                        }
+                        unset($fields['name']);
+                    }
+                    else {
+                        $fields['name'] = isset($fields['name'])
+                            ? $fields['name']
+                            : $element;
+                    }
+                    unset ($fields['category']);
+                    if (isset($config['allStatic']) && !empty($config['allStatic'])) {
+                        $fields['static'] = true;
+                    }
+                    else {
+                        $fields['static'] = (bool)isset($fields['static']) && !empty($fields['static']);
+                    }
+
+                    $objects['categories'][$category][$type][$element] = $fields;
+                }
+            }
+        }
+
         /* get resources */
         $resources = isset($config['resources'])
             ? $config['resources']
@@ -152,39 +188,7 @@ class MyComponentProject {
                 }
             }
         }
-        /* get elements */
-        $elementList = isset($config['elements'])
-            ? $config['elements']
-            : array();
-        if (!empty($elementList)) {
-            $this->hasElements = true;
-            foreach($elementList as $type => $elements) {
-                foreach($elements as $element => $fields) {
-                    $category = $fields['category'];
 
-                    if ($type == 'templates') {
-                        if (! isset($fields['templatename'])) {
-                            $fields['templatename'] = isset($fields['name'])
-                                ? $fields['name']
-                                : $element;
-                        }
-                        unset($fields['name']);
-                    } else {
-                        $fields['name'] = isset($fields['name'])
-                            ? $fields['name']
-                            : $element;
-                    }
-                    unset ($fields['category']);
-                    if (isset($config['allStatic']) && !empty($config['allStatic'])) {
-                        $fields['static'] = true;
-                    } else {
-                        $fields['static'] = (bool) isset($fields['static']) && !empty($fields['static']);
-                    }
-
-                    $objects['categories'][$category][$type][$element] = $fields;
-                }
-            }
-        }
         // die(print_r($objects, true));
 
         $this->objects = $objects;
