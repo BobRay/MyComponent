@@ -8,7 +8,7 @@
  * assets/mycomponents/mycomponent/_build/config directory
  * if not, change the MYCOMPONENT_ROOT define below.
  */
-$configFileName = 'example.config.php';
+$configFileName = 'mycomponent2.config.php';
 
 /* This path is used below. Edit if necessary */
 
