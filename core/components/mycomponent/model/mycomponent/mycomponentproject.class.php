@@ -180,7 +180,7 @@ class MyComponentProject {
                     } else {
                         $fields['static'] = (bool) isset($fields['static']) && !empty($fields['static']);
                     }
-                    $groupName = substr($type, 3);
+
                     $objects['categories'][$category][$type][$element] = $fields;
                 }
             }
