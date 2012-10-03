@@ -133,17 +133,19 @@ $components = array(
                     'OnMyEvent1' => array( /* example with fields set */
                         'priority' => '0', /* priority of the event -- 0 is highest priority */
                         'group' => 'plugins', /* should generally be set to 'plugins' */
-                        'propertySet' => 'PropertySet1',
+                        'propertySets' => array(
+                            'PropertySet1',
+                        )
                     ),
                     'OnMyEvent2' => array(
                         'priority' => '',
                         'group' => 'plugins',
-                        'propertySet' => '',
+                        'propertySets' => '',
                     ),
                     'OnDocFormSave' => array(
                         'priority' => '0',
                         'group' => 'plugins',
-                        'propertySet' => '',
+                        'propertySets' => '',
                     ),
 
 
