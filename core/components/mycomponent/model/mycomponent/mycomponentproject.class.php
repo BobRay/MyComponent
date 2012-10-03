@@ -136,7 +136,7 @@ class MyComponentProject {
                 $fields['pagetitle'] = isset($fields['pagetitle'])
                     ? $fields['pagetitle']
                     : $resource;
-                $objects['Resource'][$resource] = $fields;
+                $objects['resources'][$resource] = $fields;
                 if (isset($fields['parent'])) {
                     $objects['resourceParents'][$fields['pagetitle']] = $fields['parent'];
                 }
@@ -153,35 +153,36 @@ class MyComponentProject {
             }
         }
         /* get elements */
-        $elements = isset($config['elements'])
+        $elementList = isset($config['elements'])
             ? $config['elements']
             : array();
-        if (!empty($elements)) {
+        if (!empty($elementList)) {
             $this->hasElements = true;
-            foreach($elements as $element => $fields) {
-                $type = $fields['type'];
-                $category = $fields['category'];
+            foreach($elementList as $type => $elements) {
+                foreach($elements as $element => $fields) {
+                    $category = $fields['category'];
 
-                if ($type == 'modTemplate') {
-                    if (! isset($fields['templatename'])) {
-                        $fields['templatename'] = isset($fields['name'])
+                    if ($type == 'templates') {
+                        if (! isset($fields['templatename'])) {
+                            $fields['templatename'] = isset($fields['name'])
+                                ? $fields['name']
+                                : $element;
+                        }
+                        unset($fields['name']);
+                    } else {
+                        $fields['name'] = isset($fields['name'])
                             ? $fields['name']
                             : $element;
                     }
-                    unset($fields['name']);
-                } else {
-                    $fields['name'] = isset($fields['name'])
-                        ? $fields['name']
-                        : $element;
+                    unset ($fields['category']);
+                    if (isset($config['allStatic']) && !empty($config['allStatic'])) {
+                        $fields['static'] = true;
+                    } else {
+                        $fields['static'] = (bool) isset($fields['static']) && !empty($fields['static']);
+                    }
+                    $groupName = substr($type, 3);
+                    $objects['categories'][$category][$type][$element] = $fields;
                 }
-                unset ($fields['type'], $fields['category']);
-                if (isset($config['allStatic']) && !empty($config['allStatic'])) {
-                    $fields['static'] = true;
-                } else {
-                    $fields['static'] = (bool) isset($fields['static']) && !empty($fields['static']);
-                }
-                $groupName = substr($type, 3);
-                $objects['categories'][$category][$groupName][$element] = $fields;
             }
         }
         // die(print_r($objects, true));

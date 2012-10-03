@@ -102,7 +102,7 @@ $components = array(
        all other fields are optional */
 
 
-    'xxxelements' => array(
+    'elements' => array(
         'snippets' => array(
             'Snippet1' => array(  /* minimal example */
                 'category' => 'Example',
@@ -129,7 +129,7 @@ $components = array(
                     'PropertySet1',
                 ),
                 'events' => array(
-                    'OnUserFormSave', /* minimal example */
+                    'OnUserFormSave' => array(), /* minimal example - no fields */
                     'OnMyEvent1' => array( /* example with fields set */
                         'priority' => '0', /* priority of the event -- 0 is highest priority */
                         'group' => 'plugins', /* should generally be set to 'plugins' */
@@ -260,7 +260,7 @@ $components = array(
 
     /* Array of Resource pagetitles for your Extra; All other fields optional.
        You can set any resource field here */
-    'xxresources' => array(
+    'resources' => array(
         'Resource1' => array( /* minimal example */
             'pagetitle' => 'Resource1',
         ),
@@ -326,7 +326,7 @@ $components = array(
     /* Array of languages for which you will have language files,
      *  and comma-separated list of topics
      *  ('.inc.php' will be added as a suffix). */
-    'xxlanguages' => array(
+    'languages' => array(
         'en' => array(
             'default',
             'properties',
@@ -343,7 +343,7 @@ $components = array(
     'hasAssets' => false,
     'minifyJS' => false,
     /* minify any JS files */
-    'xxassetsDirs' => array(
+    'assetsDirs' => array(
         'css' => true,
         /* If true, a default (empty) CSS file will be created */
         'js' => true,
@@ -379,7 +379,7 @@ $components = array(
      * 'default' creates a default resolver named after the package.
      * (other resolvers may be created above for TVs and plugins).
      * Suffix 'resolver.php' will be added automatically */
-    'xxresolvers' => array(
+    'resolvers' => array(
         'default',
         'addUsers'
     ),
@@ -389,7 +389,7 @@ $components = array(
      * prefix of suffix) or '' 'default' creates a default resolver
      *  named after the package suffix 'validator.php' will be added */
 
-    'xxvalidators' => array(
+    'validators' => array(
         'default',
         'hasGdLib'
     ),
@@ -400,7 +400,7 @@ $components = array(
      * Set this to 'install.options' or ''
      * The file will be created as _build/install.options/user.input.php
      * Don't change the filename or directory name. */
-    'xxinstall.options' => 'install.options',
+    'install.options' => 'install.options',
 
 
     /* Suffixes to use for resource and element code files (not implemented)  */
@@ -432,7 +432,7 @@ $components = array(
      * yourcomponent/core/components/yourcomponent/model/[directory/]{filename}.class.php
      *
      * Set to array() if there are no classes. */
-    'xxclasses' => array(
+    'classes' => array(
         'Example' => 'example:example',
     ),
 
@@ -452,7 +452,7 @@ $components = array(
      * To export resources, be sure to list pagetitles and/or IDs of parents
      * of desired resources
     */
-    'xxprocess' => array(
+    'process' => array(
         'snippets',
         'plugins',
         'templateVars',
@@ -464,7 +464,7 @@ $components = array(
         'menus'
     ),
     /*  Array  of pagetitles of resources to process. */
-    'xxpagetitles' => array(
+    'pagetitles' => array(
         'Example1',
         'Example2'
     ),
