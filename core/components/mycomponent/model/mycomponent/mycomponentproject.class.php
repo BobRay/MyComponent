@@ -114,9 +114,7 @@ class MyComponentProject {
             }
         }
     }
-    protected function login() {
 
-    }
     public function init() {
         require dirname(__FILE__) . '/mcautoload.php';
         spl_autoload_register('mc_auto_load');
