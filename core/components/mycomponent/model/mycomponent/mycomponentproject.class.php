@@ -54,8 +54,7 @@ class MyComponentProject {
     /* Instantiate MODx -- if this require fails, check your
      * _build/build.config.php file
      */
-    public function initMODx()
-    {//Only redefine if not defined
+    public function initMODx() { /* Initialize MODX if not already done */
         if (!defined('MODX_CORE_PATH')){
 
             require_once dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) .'/_build/build.config.php';
@@ -70,11 +69,52 @@ class MyComponentProject {
             $modx= new modX();
         }
         $this->modx =& $modx;
-    // Initialize and set up logging
-        $this->modx->initialize('mgr');
-        $this->modx->setLogLevel(xPDO::LOG_LEVEL_INFO);
-        $this->modx->setLogTarget(XPDO_CLI_MODE ? 'ECHO' : 'HTML');
-    // Point to modx
+        /* Initialize and set up logging */
+        $modx->initialize('mgr');
+        $modx->setLogLevel(xPDO::LOG_LEVEL_INFO);
+        $modx->setLogTarget(XPDO_CLI_MODE ? 'ECHO' : 'HTML');
+
+        /* This section will only run when operating outside of MODX */
+        if (php_sapi_name() == 'cli') {
+            /* @var $loginFile string - set in build.config.php */
+            /* @var $fields string - set in login file at the path $loginFile */
+            include $loginFile;
+            $modx->getRequest();
+            /* Log in */
+            $response = $modx->runProcessor('security/login', $fields);
+            /* Check login success */
+            if ($response->isError()) {
+                if ($response->hasFieldErrors()) {
+                    $fieldErrors = $response->getAllErrors();
+                    $errorMessage = implode("\n", $fieldErrors);
+                } else {
+                    $errorMessage = 'An error occurred: ' . $response->getMessage();
+                }
+                die($errorMessage);
+            }
+
+            /* Set $modx->resource and $modx->user */
+            $user = $modx->getObject('modUser', array('username' => $fields['username']));
+            if ($user instanceof modUser) {
+                $modx->user =& $user;
+            } else {
+                echo "\nNo User\n";
+            }
+            $homeId = $modx->getOption('site_start');
+            $homeResource = $modx->getObject('modResource', $homeId);
+
+            if ($homeResource instanceof modResource) {
+                $modx->resource &= $homeResource;
+            } else {
+                echo "\nNo Resource";
+            }
+            /* One last check */
+            if (! $modx->user->hasSessionContext('mgr')) {
+                die ('User is not logged in');
+            }
+        }
+    }
+    protected function login() {
 
     }
     public function init() {
@@ -145,7 +185,7 @@ class MyComponentProject {
             }
         }
 
-        /* get elements */
+        /* get elements -- all are placed in their own category */
         $elementList = isset($config['elements'])
             ? $config['elements']
             : array();
@@ -155,6 +195,7 @@ class MyComponentProject {
                 foreach ($elements as $element => $fields) {
                     $category = $fields['category'];
 
+                    /* ToDo: Move to TemplateAdapter */
                     if ($type == 'templates') {
                         if (!isset($fields['templatename'])) {
                             $fields['templatename'] = isset($fields['name'])
@@ -167,6 +208,7 @@ class MyComponentProject {
                             ? $fields['name']
                             : $element;
                     }
+                    /* ToDo: Move to TemplateAdapter */
                     unset ($fields['category']);
 
                     if (isset($config['allStatic']) && !empty($config['allStatic'])) {
@@ -368,9 +410,17 @@ public function initPaths() { //For Quick Access
     /* create new system events */
     /* create elements  */
 
-    if (!empty($this->objects['Resource'])) {
+
+    if (!empty($this->objects['newSystemSettings'])) {
+        foreach($this->objects['newSystemSettings'] as $key => $fields) {
+            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Settings');
+            $r = new SystemSettingAdapter($this, $fields);
+            $r -> addToModx();
+        }
+    }
+    if (!empty($this->objects['resources'])) {
         $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating Resources');
-        foreach($this->objects['Resource'] as $resource => $fields) {
+        foreach($this->objects['resources'] as $resource => $fields) {
             $r = new ResourceAdapter($this, $fields);
             $r->addToMODx();
         }

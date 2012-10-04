@@ -50,12 +50,18 @@ $components = array(
 
     'newSystemSettings' => array(
         'example_system_setting1' => array( // key
+            'key' => 'example_system_setting1',
+            'name' => 'Example Setting One',
+            'desc' => 'Description for setting one',
             'namespace' => 'example',
             'xtype' => 'textField',
             'value' => 'value1',
             'area' => 'area1',
         ),
         'example_system_setting2' => array( // key
+            'key' => 'example_system_setting2',
+            'name' => 'Example Setting Two',
+            'desc' => 'Description for setting two',
             'namespace' => 'example',
             'xtype' => 'combo-boolean',
             'value' => true,

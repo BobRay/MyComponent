@@ -8,7 +8,8 @@ abstract class ObjectAdapter
     // protected $dbTransportAttributes = '';
     /* @var $modx modX */
     public $modx;
-    
+   /* @var $createProcessor modObjectCreateProcessor */
+    public $createProcessor;
 // MyComponent Object
     protected $myComponent;
 // Database Columns/Properties
@@ -264,10 +265,7 @@ abstract class ObjectAdapter
         if ($obj && !$overwrite) 
         {   $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $objClass . ' already exists: ' . $name);
             return -1;
-        }
-    // Object exists/Can Overwrite
-        elseif ($obj && $overwrite)
-        {//Avoid trouble
+        } elseif ($obj && $overwrite) { /* Object exists/Can Overwrite */
             unset($this->myFields[$idKey]);
             if ($idKey != $nameKey)
                 unset($this->myFields[$nameKey]);
@@ -282,10 +280,7 @@ abstract class ObjectAdapter
             } else
             // Report failure
                 return -1;
-        }
-    // Object does not exist
-        elseif (!$obj)
-        {//Avoid trouble
+        } elseif (!$obj) { /* Object does not exist */
             if ($idKey != $nameKey)
                 unset($this->myFields[$idKey]);
         //Create the new MODx Object

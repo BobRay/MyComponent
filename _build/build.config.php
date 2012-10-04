@@ -1,23 +1,18 @@
 <?php
 
+  /* next line require only for operating outside of MODX
+    Create a file outside of the MODX web root with this content:
+     <?php
+     $fields = array();
+     $fields['username'] = 'your_MODX_username';
+     $fields['password'] = 'your_MODX_password';
+     $fields['login_context'] = 'mgr';
+     $fields['add_contexts'] = 'mgr';
 
-/* Location of config file for current project.
- * Change this when you start work on a different project!!!
- *
- * This assumes that all your project config files are in the
- * assets/mycomponents/mycomponent/_build/config directory
- * if not, change the MYCOMPONENT_ROOT define below.
- */
-$configFileName = 'mycomponent2.config.php';
+     Put the full path to the file in the next line
+  */
 
-/* This path is used below. Edit if necessary */
-
-$configFile = dirname(__FILE__) . '/config/' . $configFileName;
-
-if (! file_exists($configFile)) {
-    die( 'No project config file at: ' . $configFile);
-}
-
+  $loginFile = 'c:\Users\Bob Ray\mc_auth.php';
 
 /* Define the MODX path constants necessary for connecting to your core and other directories.
  * If you have not moved the core, the current values should work.
@@ -38,4 +33,3 @@ if (!defined('MODX_BASE_URL')) {
     define('MODX_CONNECTORS_URL', 'http://localhost/addons/connectors/');
 }
 
-return require $configFile;
