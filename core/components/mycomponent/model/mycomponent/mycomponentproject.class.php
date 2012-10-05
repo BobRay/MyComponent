@@ -271,63 +271,55 @@ class MyComponentProject {
      * Sets up the Path variables for the Component Project. Runs automatically
      * on __construct.
      */
-public function initPaths() { //For Quick Access
-        // Init as blank array()
-            $paths = array();
-        // Set the MODx path
-            $paths['modx'] = '';
-        // Set the Root paths for MyComponent
+public function initPaths() {
 
-        $name = $this->props['packageNameLower'];
-        /* @var $ns modNameSpace */
-        $ns = null;
-        //$ns = $this->modx->getObject('modNamespace', array('key' => 'mycomponent'));
-        $paths['mcCore'] = $this->mcRoot . 'core/components/mycomponent/';
-        $paths['mcModel'] = $paths['mcCore'] . 'model/mycomponent/';
-        $paths['mcBuild'] = $this->mcRoot . '_build/';
-        /* $paths['mcNew'] = $paths['mc-core'] != ''
-            ? $paths['mc-model'] . 'model/mycomponent/newbuild/'
-            : ''; */
+    $paths = array();
 
-        $paths['mcElements'] = $paths['mcCore'] . 'elements/';
-        $paths['mcTpl'] = $paths['mcElements'] . 'chunks/';
-        /*$paths['mcAssets'] = $paths['mcCore] . 'assets/comp!empty($ns)
-            ? $ns->get('assets_path')
-            : is_dir(MODX_ASSETS_PATH . 'mycomponents/mycomponent/assets/components/mycomponent/')
-                ? MODX_ASSETS_PATH . 'mycomponents/mycomponent/assets/components/mycomponent/'
-                : '';*/
-        // Set the Root path for this Component
-        $paths['targetRoot'] = $this->targetRoot;
-        // Set the Basic Necessary Paths
-            $paths['targetCore']      = $paths['targetRoot'] . 'core/components/' . $name . '/';
-                $paths['targetControl']   = $paths['targetCore'] . 'controllers/';
-                $paths['targetDocs']      = $paths['targetCore'] . 'docs/';
-                $paths['targetElements']  = $paths['targetCore'] . 'elements/';
-                $paths['targetLexicon']   = $paths['targetCore'] . 'lexicon/';
-                $paths['targetModel']     = $paths['targetCore'] . 'model/' . $name . '/';
-                $paths['targetProcess']   = $paths['targetCore'] . 'processors/';
-            $paths['targetAssets']    = $paths['targetCore'] . 'assets/components/' . $name . '/';
-                $paths['targetCss']       = $paths['targetAssets'] . 'css/';
-                $paths['targetJs']        = $paths['targetAssets'] . 'js/';
-                $paths['targetImages']    = $paths['targetAssets'] . 'images/';
-            $paths['targetBuild']     = $paths['targetRoot'] . '_build/';
-                $paths['targetData']      = $paths['targetBuild'] . 'data/';
-                $paths['targetProperties'] = $paths['targetData'] . 'properties/';
-                $paths['targetResolve']   = $paths['targetBuild'] . 'resolvers/';
-                $paths['targetValidate']  = $paths['targetBuild'] . 'validators/';
-    // Set to Class Member
+    $name = $this->props['packageNameLower'];
+    // @var $ns modNameSpace
+    // $ns = null;
+    //$ns = $this->modx->getObject('modNamespace', array('key' => 'mycomponent'));
+    $paths['mcRoot'] = $this ->mcRoot;
+    $paths['mcCore'] = $this->mcRoot . 'core/components/mycomponent/';
+    $paths['mcModel'] = $paths['mcCore'] . 'model/mycomponent/';
+    $paths['mcBuild'] = $this->mcRoot . '_build/';
+    $paths['mcElements'] = $paths['mcCore'] . 'elements/';
+    $paths['mcTpl'] = $paths['mcElements'] . 'chunks/';
+
+    /*  Set the Root path for this Component */
+    $paths['targetRoot'] = $this->targetRoot;
+    /* Basic Paths */
+        $paths['targetCore']      = $paths['targetRoot'] . 'core/components/' . $name . '/';
+            $paths['targetControl']   = $paths['targetCore'] . 'controllers/';
+            $paths['targetDocs']      = $paths['targetCore'] . 'docs/';
+            $paths['targetElements']  = $paths['targetCore'] . 'elements/';
+            $paths['targetLexicon']   = $paths['targetCore'] . 'lexicon/';
+            $paths['targetModel']     = $paths['targetCore'] . 'model/' . $name . '/';
+            $paths['targetProcess']   = $paths['targetCore'] . 'processors/';
+        $paths['targetAssets']    = $paths['targetCore'] . 'assets/components/' . $name . '/';
+            $paths['targetCss']       = $paths['targetAssets'] . 'css/';
+            $paths['targetJs']        = $paths['targetAssets'] . 'js/';
+            $paths['targetImages']    = $paths['targetAssets'] . 'images/';
+        $paths['targetBuild']     = $paths['targetRoot'] . '_build/';
+            $paths['targetData']      = $paths['targetBuild'] . 'data/';
+            $paths['targetProperties'] = $paths['targetData'] . 'properties/';
+            $paths['targetResolve']   = $paths['targetBuild'] . 'resolvers/';
+            $paths['targetValidate']  = $paths['targetBuild'] . 'validators/';
+    /* Set to $myPathcs Class Member */
         $this->myPaths = $paths;
+
     /* dump object array to file for reference */
     $objectArray = print_r($this->objects, true);
-    $fp = fopen($this->myPaths['mcBuild'] . 'objectarray.txt', "w");
-    if ($fp) {
+    $this->helpers->writeFile($paths['mcBuild'], 'objectarray.txt', $objectArray);
+    //$fp = fopen($this->myPaths['mcBuild'] . 'objectarray.txt', "w");
+    /*if ($fp) {
         fwrite($fp, $objectArray);
         fclose($fp);
         $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Created ' . $this->myPaths['mcBuild'] . 'objectarray.txt');
     }
     else {
         $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Could not open ' . $this->myPaths['mcBuild'] . 'objectarray.txt');
-    }
+    }*/
 
 }
 
@@ -401,7 +393,7 @@ public function initPaths() { //For Quick Access
             return;
         }
 
-    $this->createBasics();
+    // $this->createBasics();
 
     /* create category */
     /* create system settings */
@@ -409,17 +401,17 @@ public function initPaths() { //For Quick Access
     /* create elements  */
 
 
-    if (!empty($this->objects['newSystemSettings'])) {
+   /* if (!empty($this->objects['newSystemSettings'])) {
         foreach($this->objects['newSystemSettings'] as $key => $fields) {
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Settings');
             $r = new SystemSettingAdapter($this, $fields);
             $r -> addToModx();
         }
-    }
+    }*/
     if (!empty($this->objects['resources'])) {
         $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating Resources');
         foreach($this->objects['resources'] as $resource => $fields) {
-            $r = new ResourceAdapter($this, $fields);
+            $r = new ResourceAdapter($this->modx, $this->helpers, $fields);
             $r->addToMODx();
         }
     }

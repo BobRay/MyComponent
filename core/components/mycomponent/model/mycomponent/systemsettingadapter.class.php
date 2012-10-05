@@ -3,10 +3,10 @@
 
 class SystemSettingAdapter extends ObjectAdapter
 {//These will never change.
-    static protected $dbClass = 'modSystemSetting';
-    static protected $dbClassIDKey = 'id';
-    static protected $dbClassNameKey = 'key';
-    static protected $dbClassParentKey = 'namespace';
+    protected $dbClass = 'modSystemSetting';
+    protected $dbClassIDKey = 'id';
+    protected $dbClassNameKey = 'key';
+    protected $dbClassParentKey = 'namespace';
 
     static protected $xPDOClassParentKey = 'namespace';
     /*final static protected $xPDOTransportAttributes = array

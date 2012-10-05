@@ -271,10 +271,10 @@ $components = array(
     'resources' => array(
         'Resource1' => array( /* minimal example */
             'pagetitle' => 'Resource1',
+            'alias' => 'resource1',
         ),
         'Resource2' => array( /* example with other fields */
             'pagetitle' => 'Resource2',
-            'alias' => 'resource2',
             'parent' => 'Resource1',
             'template' => 'Template1',
             'richtext' => false,

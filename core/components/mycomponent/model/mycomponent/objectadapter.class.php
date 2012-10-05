@@ -1,32 +1,37 @@
 <?php
 abstract class ObjectAdapter
-{//Base required     
-    static protected $dbClass;
-    static protected $dbClassIDKey;
-    static protected $dbClassNameKey;
-    static protected $dbClassParentKey;
-    // protected $dbTransportAttributes = '';
-    /* @var $modx modX */
-    public $modx;
-   /* @var $createProcessor modObjectCreateProcessor */
-    public $createProcessor;
-// MyComponent Object
-    protected $myComponent;
-// Database Columns/Properties
+{
+    protected $dbClass = ''; /* modResource, modChunk, etc. */
+    protected $dbClassIDKey = 'id'; /* not ID for a few elements (e.g. System Event) */
+    protected $dbClassNameKey = ''; /* pagetitle, templatename, name, etc. */
+    protected $dbClassParentKey = ''; /* parent, category, etc. */
+
+    /* @var $mc  MyComponentProject  - project Object */
+    // public $mc;
+// Database Fields
     protected $myFields;
 // Vehicle Resolution
-    protected $myResolvers;
-    protected $myValidators;
-    protected $myFileTrees;
+    public $myResolvers;
+    public $myValidators;
+    public $myFileTrees;
+    /* @var $helpers Helpers */
+    public $helpers;
+    /* @var $modx modX */
+    public $modx;
     
-    public function __construct(&$forComponent)
-    {//Set the component
-        $this->myComponent =& $forComponent;
+    public function __construct(&$modx, &$helpers) {/* Set the component */
+        $this->modx =& $modx;
+        $this->helpers =& $helpers;
+
     }
-    
-/* *****************************************************************************
-   Property Getter and Setters
-***************************************************************************** */
+
+    abstract function getProcessor($mode);
+
+    abstract function getName();
+
+    /* *****************************************************************************
+       Property Getter and Setters
+    ***************************************************************************** */
 
     /**
      * Convenience Method for getting the name of the 'name' field for the object.
@@ -37,32 +42,19 @@ abstract class ObjectAdapter
      */
     public function getNameField() 
     {//Simple Getter Function
-        return static::$dbClassNameKey;
+        return $this->dbClassNameKey;
     }
 
-    /**
-     * Convenience Method for getting the Name of the current object. This serves
-     * the purpose of accessing the $name variable.
-     * 
-     * @return String - The unmodified Name.
-     */
-    public function getName()
-    {//Simple Getter Function
-        return $this->myFields[static::$dbClassNameKey];
-    }
-    
+
     /**
      * Convenience Method for getting the File System Safe Name of the current
      * object. This serves the purpose of accessing the $name variable.
      *
      * @return string - modified lowercase Name with no spaces.
      */
-    public function getSafeName()
-    {//Simple Getter Function
-        $name = static::$dbClassNameKey;
-        $name = strtolower($name);
-        $name = $output = str_replace(' ', '', $name);
-    // Return the new name
+    public function getSafeName() {
+        $name = $this->dbClassNameKey;
+        $name = strtolower(str_replace(' ', '', $name));
         return $name;
     }
     
@@ -74,18 +66,20 @@ abstract class ObjectAdapter
      */
     public function getClass()
     {//Simple Getter Function
-        return static::$dbClass;
+        return $this->dbClass;
     }
     
     /**
      * Convenience Method for getting the File System Safe xPDO Class of the 
-     * current object. This serves the purpose of accessing the $class variable.
+     * current object.
+     *
+     * This is for use in file names (e.g.'snippet' for use in snippet1.snippet.php)
      *
      * @return string - The lowercase class without the 'mod' prefix.
      */
     public function getSafeClass()
     {//Simple Getter Function
-        $class = substr(strtolower(static::$dbClass), 3);
+        $class = substr(strtolower($this->getDbClass()), 3);
         if ($class == 'templatevar')
             return 'tv';
         elseif ($class == 'systemsettings')
@@ -94,10 +88,10 @@ abstract class ObjectAdapter
             return $class;
     }
     
-    public function getAttributes()
+    /*public function getAttributes()
     {//Simple Getter Function
         // return static::dbTransportAttributes;
-    }
+    }*/
 
     /**
      * Returns the correct filename for a given file
@@ -106,12 +100,11 @@ abstract class ObjectAdapter
      * @return string
      *
      * Example returns for MyObject plugin-type object
-     *    code:  myobject.plugin.php
+     *    code:  plugin1.plugin.php
      *    transport: transport.plugin.myobject.php
      *    properties: properties.myobject.plugin.php
      */
-    public function getFileName($fileType = 'code') 
-    {//Forward the Calls
+    public function getFileName($fileType = 'code') {
         if ($fileType == 'transport') 
             return $this->getTransportFileName();
         elseif ($fileType == 'code') 
@@ -122,17 +115,17 @@ abstract class ObjectAdapter
             return '';
     }
 
-    public function getCodeFileName()
-    {//For Quick Access
+
+    public function getCodeFileName() {//For Quick Access
         $type = $this->getClass();
         $name = $this->getSafeName();
         $suffix = $this->getSafeClass();
         
-    // Initialize Defaults
+    /* Initialize Defaults */
         $output = '';
         $extension = 'php';
             
-    // Run the list...
+    /* fall-throughs are intentional */
         switch ($type) 
         {   case 'modResource':
                 $suffix = 'content';
@@ -149,46 +142,42 @@ abstract class ObjectAdapter
         }
         return $output;
     }
-    public function getTransportFileName()
-    {//Simple Calculation
+    public function getTransportFileName() {
         return 'transport.' . $this->getSafeClass() . '.' . $this->getSafeName() . '.php';
     }
-    public function getPropertiesFileName()
-    {//Simple Calculation
+    public function getPropertiesFileName() {
         return 'properties.' . $this->getSafeName() . '.' . $this->getSafeClass() . '.php';
     }
     
-    public function setResolvers($resolvers)
-    {//We accept an array or a comma-delimited list.
+   /* public function setResolvers($resolvers) {
         if (is_array($resolvers))
             $this->myResolvers = $resolvers;
         else
             $this->myResolvers = explode(',', $resolvers);
-    }
+    }*/
     
-    public function setValidators($validators)
-    {//We accept an array or a comma-delimited list.
+ /*   public function setValidators($validators) {
         if (is_array($validators))
-            $this->myValidators = $resolvers;
+            $this->myValidators = $validators;
         else
             $this->myValidators = explode(',', $validators);
-    }
+    }*/
     
-    public function setFileTrees($directories)
+/*    public function setFileTrees($directories)
     {//We accept an array or a comma-delimited list.
         if (is_array($directories))
             $this->myFileTrees = $directories;
         else
             $this->myFileTrees = explode(',', $directories);
-    }
+    }*/
 
 /* *****************************************************************************
    Bootstrap and Support Functions 
 ***************************************************************************** */
 
-    public function newTransport()
+/*    public function newTransport()
     {//Get the Build path
-        $mc = $this->myComponent;
+        $mc = $this->mc;
         $data = $mc->getPath('data');
         $path = $data . $this->getSafeClass() . '/';
     // If data directory does not exist, create it
@@ -203,115 +192,81 @@ abstract class ObjectAdapter
         }
     // Now that we know all directories exist...
         $filename = $this->getTransportFileName();
-        //$mc->
-        
-    // Do some post-processing
-        $this->createResolvers();
-    }
-    
-    /** Creates additional resolvers specified in project config file */
-    public function createResolvers() 
-    {//For Quick Access
-        $mc = $this->myComponent;
-        $modx = $mc->modx;
-        $path = $mc->getPath('resolve');
 
-/*            if (!is_dir($dir)) {
-                mkdir($dir, $this->dirPermission, true);
-            }
-*/
-        //$resolvers = $modx->getOption('resolvers', $this->props, '');
-        $resolvers = $this->myResolvers;
-    
-        if (!empty($resolvers)) 
-        {   $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating extra resolvers');
-            foreach ($resolvers as $resolver) 
-            {
-                if ($resolver == 'default') 
-                    $fileName = $this->packageNameLower . '.resolver.php';
-                elseif (!empty($resolver))
-                    $fileName = $resolver . '.resolver.php';
-                
-                if (file_exists($path . $fileName))
-                    $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
-                else 
-                {
-                    $tpl = $this->getTpl('genericresolver.php');
-                    $tpl = $mc->replaceTags($tpl);
-                    $mc->writeFile($dir, $fileName, $tpl);
-                }
-            }
-        }
+
     }
-    
+    */
+
 /* *****************************************************************************
    Import Objects and Support Functions 
 ***************************************************************************** */
-    public function addToMODx($overwrite = false)
-    {//Quick Access
+    /**
+     * Add a new object to MODX
+     *
+     * @param bool $overwrite - if set allows overwriting existing objects
+     * @return bool|int - true=success, false=failure, -1=object already exists & !overwrite
+     */
+    public function addToMODx($overwrite = false) {
         /* @var $modx modX */
-        $mc = $this->myComponent;
-        $modx =& $mc->modx;
-    // MODx Class
+        $modx =& $this->modx;
+        $retVal = false;
         $objClass = $this->getClass();
     // Class ID Key, Name Key => Name Value Pair
-        $idKey = static::$dbClassIDKey;
+        $idKey = $this->dbClassIDKey;
         $name = $this->getName();
         $nameKey = $this->getNameField();
         
     // See if the object exists        
-        $obj = $modx->getObject($objClass, array($nameKey => $name));
-    // Object exists/Cannot Overwrite
-        if ($obj && !$overwrite) 
-        {   $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $objClass . ' already exists: ' . $name);
+        $obj = $this->modx->getObject($objClass, array($nameKey => $name));
+    /* Object exists/Cannot Overwrite */
+        if ($obj && !$overwrite) {
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $objClass . ' already exists: ' . $name);
             return -1;
-        } elseif ($obj && $overwrite) { /* Object exists/Can Overwrite */
+    /* Object exists/Can Overwrite */
+        } elseif ($obj && $overwrite) {
             unset($this->myFields[$idKey]);
-            if ($idKey != $nameKey)
+            if ($idKey != $nameKey) {
                 unset($this->myFields[$nameKey]);
-        // Set all Columns
-            $obj->fromArray($this->myFields, '', true, true);
-        // Realign (just in case)
-            $this->myFields[$nameKey] = $name;
-        // Save Object
-            if ($obj->save()) {
-            // Report success
-                $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Updated '. $objClass .': ' . $name);
-            } else
-            // Report failure
-                return -1;
-        } elseif (!$obj) { /* Object does not exist */
-            if ($idKey != $nameKey)
+            }
+
+            $processor = $this->getProcessor('update');
+            $response = $modx->runProcessor($processor, $this->myFields);
+            if (empty($response) || $response->isError()) {
+                $msg = "Failed to create object \n    class: " . $objClass .
+                    "\n    nameKey: " . $nameKey . "\n    name: " . $name;
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, $msg);
+                $retVal =  -1;
+            } else {
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Created ' . $objClass . ': ' . $name);
+                /* ToDo: might need to return object or ID here */
+                //$this->modx->reloadContext();
+                $retVal = true;
+            }
+
+    /* Object does not exist - create it */
+        } elseif (!$obj) {
+            if ($idKey != $nameKey) {
                 unset($this->myFields[$idKey]);
-        //Create the new MODx Object
-            $obj = $modx->newObject($objClass, array($nameKey => $name));
-            if ($obj && $obj instanceof $objClass) {
-                $obj->fromArray($this->myFields, '', true, true);
-                // die(print_r($this->myFields, true));
-            } else {
-                $msg = "\nFailed to create object \nclass: " . $objClass . "\nnameKey: " . $nameKey . "\nname: " . $name;
-                $mc->helpers->sendLog(MODX::LOG_LEVEL_ERROR,$msg);
-                die();
             }
-            if ($obj->save())
-            // Report success
-                $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Created '. $objClass .': ' . $name);
+
+            $processor = $this->getProcessor('create');
+            $response = $modx->runProcessor($processor, $this->myFields);
+            if (empty($response) || $response->isError()) {
+                $msg = "Failed to create object \n    class: " . $objClass .
+                    "\n    nameKey: " . $nameKey . "\n    name: " . $name;
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, $msg);
+                $retVal = false;
             } else {
-            // Report failure
-                return -1;
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Created ' . $objClass . ': ' . $name);
+                /* ToDo: might need to return object or ID here */
+                //$this->modx->reloadContext();
+                $retVal = true;
+
             }
-    // Return the ID of the object
-        // return $obj->get($idKey);
-        return $obj;
+        }
+        return $retVal;
     }
     
-    public function toDBObject()
-    {///Use MODx to create the object
-        $object = $this->myComponent->modx->newObject($this->getClass());
-        $object->fromArray($this->myFields, '', true, true);
-    // Return the XPDOObject
-        return $object;
-    }
 
 /* *****************************************************************************
    Export Objects and Support Functions 
@@ -326,7 +281,7 @@ abstract class ObjectAdapter
      */
     public function exportObject($element, $overwrite = false)
     {//For Quick Access
-        $mc = $this->myComponent;
+        $mc = $this->mc;
         $name = $this->getName();
         $type = $this->getClass();
         $safetype = $this->getSafeClass();
@@ -517,7 +472,7 @@ abstract class ObjectAdapter
     public function exportCode ($elementObj, $element) 
     {//For Quick Access
         /* @var $mc MyComponentProject */
-        $mc = $this->myComponent;
+        $mc = $this->mc;
         $name = $this->getName();
         $class = $this->getSafeClass();
         
@@ -568,7 +523,7 @@ abstract class ObjectAdapter
 ***************************************************************************** */
     public function buildVehicle()
     {//Quick Access
-        $mc = $this->myComponent;
+        $mc = $this->mc;
         $modx = $mc->modx;
         $builder = $mc->builder;
         $validate = $this->myValidators;
@@ -599,7 +554,7 @@ abstract class ObjectAdapter
     // We must have a valid xPDO Object to Package
         $obj = $this->toDBObject($modx);
         if (empty($obj))
-        {   $mc->helpers->sendLog(modX::LOG_LEVEL_ERROR, 'Could not create xPDO object: ' . $this->getDBClass());
+        {   $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, 'Could not create xPDO object: ' . $this->getDBClass());
             return false;
         }
     // Create the Vehicle
@@ -640,7 +595,7 @@ abstract class ObjectAdapter
         $text = '';
         $name = strtolower($name);
     // For Quick Access
-        $mc = $this->myComponent;
+        $mc = $this->mc;
         $path = $mc->getPath('mcTpl');
         $modx = $mc->modx;
         

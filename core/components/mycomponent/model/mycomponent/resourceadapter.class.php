@@ -4,32 +4,37 @@ require_once('objectadapter.class.php');
 
 class ResourceAdapter extends ObjectAdapter
 {//These will never change.
-    static protected $dbClass = 'modResource';
-    static protected $dbClassIDKey = 'id';
-    static protected $dbClassNameKey = 'pagetitle';
-    static protected $dbClassParentKey = 'parent';
-    static protected $defaults = array();
+
+    protected $dbClass = 'modResource';
+    protected $dbClassIDKey = 'id';
+    protected $dbClassNameKey = 'pagetitle';
+    protected $dbClassParentKey = 'parent';
+    protected $createProcessor = 'resource/create';
+    protected $updateProcessor = 'resource/update';
+    protected $defaults = array();
     protected $resourceId = 0;
-    /*static private $init_published = '';
-    static private $init_richtext = '';
-    static private $init_hidemenu = '';
-    static private $init_cacheable = '';
-    static private $init_searchable = '';
-    static private $init_context = '';
-    static private $init_template = '';*/
-    
+    protected $name;
+    /* @var $helpers Helpers */
+    public $helpers;
+    /* @var $modx modX */
+    public $modx;
+
 // Database Columns for the XPDO Object
     protected $myFields;
     protected $myObjects = array();
 
-    final function __construct(&$mc, $fields) {
+    final function __construct(&$modx, &$helpers, &$fields) {
         /* @var $modx modX */
-        parent::__construct($mc);
+        $this->modx =& $modx;
+        $this->helpers =& $helpers;
+        $this->name = $fields['pagetitle'];
+
+        parent::__construct($this->modx, $this->helpers);
 
             
     // Set defaults if they are not already set
-        $modx =& $mc->modx;
-        $this->modx =&  $mc->modx;
+        //$modx =& $mc->modx;
+        //$this->modx =&  $mc->modx;
 
         $this->defaults['published'] = $modx->getOption('publish_default', null);
         $this->defaults['richtext'] = $modx->getOption('richtext_default',null);
@@ -44,10 +49,19 @@ class ResourceAdapter extends ObjectAdapter
                 ? $fields[$field]
                 : $value;
         }
-        $fields['content'] = $mc->helpers->getTpl('modresource');
+        $fields['content'] = $this->helpers->getTpl('modresource');
         $this->myFields = $fields;
     }
-    
+
+    public function getName() {
+        return $this->name;
+    }
+
+    public function getProcessor($mode) {
+        return $mode == 'create'
+            ? $this->createProcessor
+            : $this->updateProcessor;
+    }
 /* *****************************************************************************
    Bootstrap and Support Functions
 ***************************************************************************** */
@@ -55,7 +69,7 @@ class ResourceAdapter extends ObjectAdapter
     public function newTransport() 
     {//Validate Page's Title
         if (empty($this->myFields['pagetitle']))
-        {   $this->myComponent->sendLog(MODX::LOG_LEVEL_INFO, 'A Resource must have a valid page title!');
+        {   $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'A Resource must have a valid page title!');
             return false;
         }
         
@@ -120,6 +134,7 @@ class ResourceAdapter extends ObjectAdapter
 
     final public function addToMODx($overwrite = false)
     {//Perform default export implementation
+        /* @var $modx modX */
         $fields =& $this->myFields;
         $tvValues = array();
 
@@ -130,7 +145,7 @@ class ResourceAdapter extends ObjectAdapter
             if ($templateObj) {
                 $fields['template'] = $templateObj->get('id');
             } else {
-                $this->modx->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find template: ' . $templateName);
+                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find template: ' . $templateName);
                 $fields['template'] = $this->defaults['template'];
             }
 
@@ -142,7 +157,7 @@ class ResourceAdapter extends ObjectAdapter
             if ($parentObj) {
                 $fields['parent'] = $parentObj->get('id');
             } else {
-                $this->modx->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find parent resource: ' . $parentName);
+                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find parent resource: ' . $parentName);
                 $fields['parent'] = 0;
             }
 
@@ -151,6 +166,10 @@ class ResourceAdapter extends ObjectAdapter
             $tvValues = $fields['tvValues'];
             unset($fields['tvValues']);
         }
+        if (!isset($fields['alias']) || empty($fields['alias'])) {
+            $fields['alias'] = str_replace(' ', '-', strtolower($fields['pagetitle']));
+        }
+        $this->myFields = &$fields;
         $obj = parent::addToMODx($overwrite);
 
 
@@ -164,6 +183,7 @@ class ResourceAdapter extends ObjectAdapter
             }
         }
     }
+
 
     /*  NOT USED
      * Connects Resources to package templates and creates a resolver to
@@ -206,11 +226,11 @@ class ResourceAdapter extends ObjectAdapter
         /* Create resource.resolver.php resolver */
         $dir = $mc->getPath('resolve');
         if (!empty($data)) {
-            $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating resource resolver');
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating resource resolver');
             $tpl = $this->getTpl('resourceresolver.php');
-            $tpl = $mc->replaceTags($tpl);
+            $tpl = $this->helpers->replaceTags($tpl);
             if (empty($tpl)) {
-                $mc->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'resourceresolver tpl is empty');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'resourceresolver tpl is empty');
             }
             
             $fileName = 'resource.resolver.php';
