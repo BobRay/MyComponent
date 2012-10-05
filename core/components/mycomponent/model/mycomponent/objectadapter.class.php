@@ -2,7 +2,7 @@
 abstract class ObjectAdapter
 {
     protected $dbClass = ''; /* modResource, modChunk, etc. */
-    protected $dbClassIDKey = 'id'; /* not ID for a few elements (e.g. System Event) */
+    protected $dbClassIDKey = 'id'; /* default; it's not ID for a few objects (e.g. System Event) */
     protected $dbClassNameKey = ''; /* pagetitle, templatename, name, etc. */
     protected $dbClassParentKey = ''; /* parent, category, etc. */
 
