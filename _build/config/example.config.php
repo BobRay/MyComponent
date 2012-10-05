@@ -82,30 +82,9 @@ $components = array(
         'OnMyEvent2' => array(),
     ),
 
-    /* ************************* PROPERTY SETS **************************** */
 
-    /* Array of property set names to create.
-     * They will be crested with no properties and can be connected to
-     * any elements yous specify below.
-     *
-     * Create the properties in the Manager and export them with exportObjects
-     *  
-     * The fields: name, description, and category are required */
 
-    'propertySets' => array(
-        'PropertySet1' => array(
-            'name' => 'PropertySet1',
-            'description' => 'Description for PropertySet1',
-            'category' => 'Example',
-        ),
-        'PropertySet2' => array(
-            'name' => 'PropertySet2',
-            'description' => 'Description for PropertySet2',
-            'category' => 'Example',
-        ),
-    ),
-
-    /* ************************* ELEMENTS **************************** */
+    /* ************************* MENUS **************************** */
 
     /* If your extra needs Menus, set this to true, create them
      * in the Manager, and export them with exportObjects. Be sure
@@ -119,6 +98,20 @@ $components = array(
 
 
     'elements' => array(
+
+        'propertySets' => array( /* all three fields are required */
+            'PropertySet1' => array(
+                'name' => 'PropertySet1',
+                'description' => 'Description for PropertySet1',
+                'category' => 'Example',
+            ),
+            'PropertySet2' => array(
+                'name' => 'PropertySet2',
+                'description' => 'Description for PropertySet2',
+                'category' => 'Example',
+            ),
+        ),
+
         'snippets' => array(
             'Snippet1' => array( /* minimal example */
                 'category' => 'Example',
