@@ -393,6 +393,9 @@ public function initPaths() {
             return;
         }
 
+    $modx =& $this->modx;
+    $helpers =& $this->helpers;
+
     // $this->createBasics();
 
     /* create category */
@@ -401,17 +404,21 @@ public function initPaths() {
     /* create elements  */
 
 
-   /* if (!empty($this->objects['newSystemSettings'])) {
+    if (!empty($this->objects['newSystemSettings'])) {
         foreach($this->objects['newSystemSettings'] as $key => $fields) {
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Settings');
-            $r = new SystemSettingAdapter($this, $fields);
+            $r = new SystemSettingAdapter($modx, $helpers, $fields);
             $r -> addToModx();
         }
-    }*/
+    }
     if (!empty($this->objects['resources'])) {
         $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating Resources');
         foreach($this->objects['resources'] as $resource => $fields) {
-            $r = new ResourceAdapter($this->modx, $this->helpers, $fields);
+            $fields['pagetitle'] = empty($fields['pagetitle'])
+                ? $resource
+                : $fields['pagetitle'];
+
+            $r = new ResourceAdapter($modx, $helpers, $fields);
             $r->addToMODx();
         }
     }
