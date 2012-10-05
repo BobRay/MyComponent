@@ -1,29 +1,79 @@
 <?php
 // Include the Base Class (only once)
-require_once('modxobjectadapter.class.php');
 
-class SystemEventAdapter extends MODxObjectAdapter
+class SystemEventAdapter extends ObjectAdapter
 {//This will never change.
-    final static protected $xPDOClass = 'modEvent';
-    final static protected $xPDOTransportAttributes = array
-    (   xPDOTransport::UNIQUE_KEY => 'key',
-        xPDOTransport::PRESERVE_KEYS => true,
-        xPDOTransport::UPDATE_OBJECT => false,
-    );
+    protected $dbClass = 'modEvent';
+    public $modx;
+    public $helpers;
+
 
 // Database Columns for the XPDO Object
-    protected $myColumns;
+    protected $myFields;
+    protected $name;
 
-    final public function __construct(&$forComponent, $columns)
-    {   parent::__construct(&$forComponent);
-        if (is_array($columns))
-            $this->myColumns = $columns;
+    final public function __construct(&$modx, &$helpers, $fields)
+    {   // parent::__construct($modx, $helpers);
+        $this->name = $fields['name'];
+        $this->modx =& $modx;
+        $this->helpers =& $helpers;
+        if (empty($fields['groupname'])) {
+            $fields['groupname'] = $this->helpers->props['packageName'];
+        }
+        if (empty($fields['service'])) {
+            $fields['service'] = 1;
+        }
+        $this->myFields = $fields;
+    }
+
+    public function getName() {
+        return $this->name;
+    }
+
+    /* Not used -- no processor for these */
+    public function getProcessor($mode) {
+        return null;
     }
     
 /* *****************************************************************************
    Bootstrap and Support Functions (in MODxObjectAdapter)
 ***************************************************************************** */
 
+    /* Move to ObjectAdapter as alternate method? */
+    public function addToMODx($overwrite = false) {
+        $name = $this->getName();
+        $retVal = false;
+        $obj = $this->modx->getObject('modEvent', array('name'=> $name));
+        if (! $obj) {
+            $event = $this->modx->newObject('modEvent');
+            if ($event && $event instanceof modEvent) {
+                $event->fromArray($this->myFields, "", true, true);
+                if ($event->save()) {
+                    $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    Created System Event: ' . $name);
+                    $retVal = true;
+                } else {
+                    $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '    Could not save System Event: ' . $name);
+                }
+            } else {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '    Could not create System Event: ' . $name);
+            }
+        } elseif ($overwrite) {
+            foreach($this->myFields as $field => $value) {
+                $obj->set($field, $value);
+            }
+            if ($obj->save()) {
+                $retVal = true;
+                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    Updated System Event: ' . $name);
+            } else {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    Failed to updated System Event: ' . $name);
+            }
+
+        } else {
+            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    System Event already exists: ' . $name);
+            $retVal = -1;
+        }
+        return $retVal;
+    }
 /* *****************************************************************************
    Import Objects and Support Functions (in MODxObjectAdapter) 
 ***************************************************************************** */

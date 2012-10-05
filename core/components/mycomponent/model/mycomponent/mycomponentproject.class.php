@@ -399,18 +399,29 @@ public function initPaths() {
     // $this->createBasics();
 
     /* create category */
-    /* create system settings */
-    /* create new system events */
+
+
     /* create elements  */
 
-
+    /* create system settings */
     if (!empty($this->objects['newSystemSettings'])) {
         foreach($this->objects['newSystemSettings'] as $key => $fields) {
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Settings');
             $r = new SystemSettingAdapter($modx, $helpers, $fields);
-            $r -> addToModx();
+            $r->addToModx();
         }
     }
+    /* create new system events */
+    if (!empty($this->objects['newSystemEvents'])) {
+        $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Events');
+        foreach($this->objects['newSystemEvents'] as $key => $fields) {
+            $fields['name'] = $key;
+            $r = new SystemEventAdapter($modx, $helpers, $fields);
+            $r->addToMODx();
+        }
+    }
+
+    /* Create resources */
     if (!empty($this->objects['resources'])) {
         $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating Resources');
         foreach($this->objects['resources'] as $resource => $fields) {
