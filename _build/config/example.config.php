@@ -85,7 +85,7 @@ $components = array(
     /* ************************* PROPERTY SETS **************************** */
 
     /* Array of property set names to create.
-     * List just the names of property sets. They will be creted with no
+     * List just the names of property sets. They will be crested with no
      * properties and will be connected to any elements yous specify below.
      * Create the properties in the Manager and export them with exportObjects */
 
