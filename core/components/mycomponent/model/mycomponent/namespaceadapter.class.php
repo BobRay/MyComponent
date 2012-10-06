@@ -15,25 +15,50 @@
  *
  * @package mycomponent
  **/
-class NamespaceAdapter {
-/* @var $myComponent Component - The Component that this ComponentNamespace belongs to. */
-    public $myComponent;
-    
-/* @var $myKey string - The Key of the ComponentNamespace. */
-   public $myKey;
-   
-/* @var $systemSettings array - An array of ComponentSystemSettings. */
-   public $mySettings = array();
+class NamespaceAdapter extends ObjectAdapter {
 
-    function __construct(&$component, $name)
-    {
+    protected $dbClass = 'modNamespace';
+    protected $dbClassIDKey = 'name';
+    protected $dbClassNameKey = 'name';
+    protected $dbClassParentKey = '';
+    protected $createProcessor = 'workspace/namespace/create';
+    protected $updateProcessor = 'workspace/namespace/update';
+    /* @var $modx modX */
+    public $modx;
+    /* @var $helpers Helpers */
+    public $helpers;
+
+
+    function __construct(&$modx, &$helpers, $fields, $createChildren = false) {
+        /* @var $helpers Helpers */
         $this->myComponent =& $component;
-        $this->myKey = $name;
+        $this->modx =&$modx;
+
+        $this->helpers =& $helpers;
+        $this->myFields = $fields;
+
+
+        parent::__construct($modx, $helpers);
+    }
+
+    public function getName() {
+        return $this->myFields['name'];
+    }
+
+    public function getProcessor($mode) {
+        return $mode == 'create'
+            ? $this->createProcessor
+            : $this->updateProcessor;
+    }
+
+    public function addToMODx($overwrite = false) {
+
+        parent::addToMODx($overwrite);
     }
 
     public function getFromDatabase()
     {//Get MODx from the Component Object
-        $modx = $this->myComponent->modx;
+        $modx = $this->modx;
     // Get the Namespace
         $fromDB = $modx->getObject('modNamespace', array('' => $this->myName));
         if ($fromDB)
@@ -41,6 +66,7 @@ class NamespaceAdapter {
 
         }
     }
+
 
     public function build(&$useBuilder)
     {

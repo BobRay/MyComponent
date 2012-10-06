@@ -4,46 +4,66 @@ require_once('elementadapter.class.php');
 
 class CategoryAdapter extends ElementAdapter
 {//These will never change.
-    static protected $dbClass = 'modCategory';
-    static protected $dbClassIDKey = 'id';
-    static protected $dbClassNameKey = 'category';
-    static protected $dbClassParentKey = 'parent';
-    static protected $dbTransportAttributes = array
+    protected $dbClass = 'modCategory';
+    protected $dbClassIDKey = 'id';
+    protected $dbClassNameKey = 'category';
+    protected $dbClassParentKey = 'parent';
+    /*static protected $dbTransportAttributes = array
     (   xPDOTransport::UNIQUE_KEY => 'id',
         xPDOTransport::PRESERVE_KEYS => false,
         xPDOTransport::UPDATE_OBJECT => true,
         xPDOTransport::RELATED_OBJECTS => true,
         xPDOTransport::ABORT_INSTALL_ON_VEHICLE_FAIL => true,
         
-    );
+    );*/
     
 // Database Columns for the XPDO Object
     protected $myFields;
     protected $myObjects = array();
+    protected $name;
+    protected $createProcessor = 'element/category/create';
+    protected $updateProcessor = 'element/category/update';
   
-    final public function __construct(&$forComponent, $columns)
-    {   parent::__construct(&$forComponent);
-        if (is_array($columns))
-            $this->myFields = $columns;
+    final public function __construct(&$modx, &$helpers, $fields) {
+        /* @var $modx modX */
+        $fields = is_array($fields) ? $fields : array();
+        parent::__construct($modx, $helpers);
+        $this->name = $fields['category'];
+
+        if (isset($fields['parent'])) {
+            $pn = $fields['parent'];
+            if (!is_numeric($fields['parent'])) {
+                $p = $modx->getObject('modCategory', array('category' => $pn));
+                if ($p) {
+                    $fields['parent'] = $p->get('id');
+                }
+            }
+        }
+
+        if (is_array($fields)) {
+            $this->myFields = $fields;
+        }
     }
+
+    public function getName() {
+        return ($this->name);
+    }
+
+    public function getProcessor($mode) {
+        return $mode == 'create'
+            ? $this->createProcessor
+            : $this->updateProcessor;
+
+    }
+
 /* *****************************************************************************
    Bootstrap and Support Functions (in MODxObjectAdapter)
 ***************************************************************************** */
 
-    public function newTransport()
-    {//Call the parent function first
-        parent::newTransport();
-    }
-    
-/* *****************************************************************************
-   Import Objects and Support Functions (in MODxObjectAdapter) 
-***************************************************************************** */
     public function addToMODx($overwrite = false)
     {//Perform default export implementation
-        $id = parent::addToMODx($overwrite);
-        $this->myFields[static::dbClassIDKey] = $id;
-        if ($id > -1)
-        {//Align Children to ID, and add them to MODx
+        $result = parent::addToMODx($overwrite);
+        if ($result === true || $result ==  -1) {//Align Children to ID, and add them to MODx
             $objects = $this->myObjects;
             foreach ($objects as $obj)
             {//In all Elements, this sets the Category
@@ -57,8 +77,33 @@ class CategoryAdapter extends ElementAdapter
             //    $class::$property
             //    
             //}
-            connectTvsToTemplates();
-            
+            $this->connectTvsToTemplates();
+        }
+    }
+
+    public function quickCreate($overwrite = false) {
+        $fields = $this->myFields;
+        $categoryName = $fields['category'];
+        $categoryObj = $this->modx->getObject('modCategory', array('category' => $categoryName ));
+
+        if (! $categoryObj) {
+            $categoryObj = $this->modx->newObject('modCategory');
+
+        /* set any fields that are not already set */
+            if ($categoryObj) {
+                foreach ($fields as $k => $v) {
+                    if (! $categoryObj->get($k)) {
+                        $categoryObj->set($k, $v);
+                    }
+                }
+                if ($categoryObj->save()) {
+                    $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Quick-created category: ' . $categoryName);
+                }
+            } else {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Could not find or create category: ' . $categoryName);
+            }
+        } else {
+            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Category already exists: ' . $categoryName);
         }
     }
     

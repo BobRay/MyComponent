@@ -19,7 +19,10 @@ class MyComponentProject {
     /* @var $helpers Helpers */
     public $helpers;
     public $dirPermission;
-    public $objects;
+    /* Array of object names and fields created for bootstrap */
+    protected $bootstrapObjects;
+    /* Array of object names and fields created for exportObjects */
+    protected $exportObjects;
 
 
 /* *****************************************************************************
@@ -153,19 +156,40 @@ class MyComponentProject {
         $this->dirPermission = $this->props['dirPermission'];
         $this->packageNameLower = $this->props['packageNameLower'];
 
-        $this->getObjectsFromConfig();
+        $this->bootstrapObjects = $this->getBootstrapObjects();
 
     }
 
-    /* Creates an array of objects from the project config file */
-    public function getObjectsFromConfig() {
-        $config =& $this->props;
+    /* Creates an array of object names and fields from the project config file */
+    public function getBootstrapObjects() {
+        $config = $this->props;
         $objects = array();
+
+        /* get Categories for quick create */
+        if (isset($config['categoryNames'])) {
+            foreach($config['categoryNames'] as $category => $fields) {
+                if (!isset($fields['category'])) {
+                    $fields['category'] = $category;
+                }
+                $objects['categoryNames'][$category] = $fields;
+            }
+        }
+
+        /* get namespace(s) */
+        if (isset($config['namespaces']) && !empty($config['namespaces'])) {
+            foreach ($config['namespaces'] as $settingName => $settingFields) {
+                $objects['namespaces'][$settingName] = $settingFields;
+            }
+        }
 
         /* get new System Settings */
         if (isset($config['newSystemSettings']) && ! empty($config['newSystemSettings'])) {
             foreach($config['newSystemSettings'] as $settingName => $settingFields) {
                 $objects['newSystemSettings'][$settingName] = $settingFields;
+                /* add namespaces set as field to namespaces member */
+                if (isset($settingFields['namespace'])) {
+                    $objects['namespaces'][$settingFields['namespace']]['name'] = $settingFields['namespace'];
+                }
             }
         }
 
@@ -188,10 +212,15 @@ class MyComponentProject {
             ? $config['elements']
             : array();
         if (!empty($elementList)) {
-            $this->hasElements = true;
             foreach ($elementList as $type => $elements) {
                 foreach ($elements as $element => $fields) {
+                    if (! isset($fields['category'])) {
+                        die("ERROR -- All Elements must have a category");
+                    }
                     $category = $fields['category'];
+                    if (! in_array($fields['category'], array_keys($objects['categoryNames']))) {
+                        $objects['categoryNames'][$fields['category']]['category'] = $fields['category'];
+                    }
 
                     /* ToDo: Move to TemplateAdapter */
                     if ($type == 'templates') {
@@ -263,8 +292,20 @@ class MyComponentProject {
         }
 
         // die(print_r($objects, true));
+        //$this->bootstrapObjects = $objects;
+        return $objects;
+    }
 
-        $this->objects = $objects;
+
+    /* Creates an array of object names and fields from MODX based on criteria
+     * set by the ExportObjects section of the project config file. */
+    public function getExportObjects() {
+        $objects = array();
+
+
+        $this->exportObjects = $objects;
+        return $objects;
+
     }
 
     /**
@@ -309,7 +350,7 @@ public function initPaths() {
         $this->myPaths = $paths;
 
     /* dump object array to file for reference */
-    $objectArray = print_r($this->objects, true);
+    $objectArray = print_r($this->bootstrapObjects, true);
     $this->helpers->writeFile($paths['mcBuild'], 'objectarray.txt', $objectArray);
     //$fp = fopen($this->myPaths['mcBuild'] . 'objectarray.txt', "w");
     /*if ($fp) {
@@ -386,59 +427,91 @@ public function initPaths() {
    Bootstrap and Support Functions
 ***************************************************************************** */
 
-    public function bootstrap()
-    {//Only run if MC is installed
-        if (!$this->isMCInstalled())
+    public function bootstrap() {
+        /* enable garbage collection() */
+        // gc_enable();
+        if (!$this->isMCInstalled()) /* Only run if MC is installed */
         {   $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'MyComponent must be installed to create a new MyComponent Project!');
             return;
         }
 
-    $modx =& $this->modx;
-    $helpers =& $this->helpers;
+        $modx = $this->modx;
+        $helpers = $this->helpers;
+        $objects = $this->bootstrapObjects;
 
+    /* Create basic files (no transport files or code files) */
     // $this->createBasics();
 
-    /* create category */
+    /*  Create namespace */
+        if (!empty($objects['namespaces'])) {
+            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating namespace(s)');
+            foreach ($objects['namespaces'] as $namespace => $fields) {
+                $this->addToModx('NameSpaceAdapter', $fields);
+                /*$n = new NamespaceAdapter($modx, $helpers, $fields);
+                $n ->addToModx();*/
+            }
+       }
+echo "\n" . memory_get_usage();
 
+    /* quick create category or categories*/
+        if (!empty($objects['categoryNames'])) {
+            foreach($objects['categoryNames'] as $categoryName => $fields) {
+                if (empty($fields['category'])) {
+                    $fields['category'] = $categoryName;
+                }
+                $o = new CategoryAdapter($modx, $helpers, $fields);
+                $o->quickCreate();
+            }
+        }
+echo "\n" . memory_get_usage();
 
     /* create elements  */
 
     /* create system settings */
-    if (!empty($this->objects['newSystemSettings'])) {
-        foreach($this->objects['newSystemSettings'] as $key => $fields) {
-            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Settings');
-            $r = new SystemSettingAdapter($modx, $helpers, $fields);
-            $r->addToModx();
+        if (!empty($objects['newSystemSettings'])) {
+            foreach($objects['newSystemSettings'] as $key => $fields) {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Settings');
+                $this->addToModx('SystemSettingAdapter', $fields);
+                /*$r = new SystemSettingAdapter($modx, $helpers, $fields);
+                $r->addToModx();*/
+            }
         }
-    }
+echo "\n" . memory_get_usage();
     /* create new system events */
-    if (!empty($this->objects['newSystemEvents'])) {
-        $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Events');
-        foreach($this->objects['newSystemEvents'] as $key => $fields) {
-            $fields['name'] = $key;
-            $r = new SystemEventAdapter($modx, $helpers, $fields);
-            $r->addToMODx();
+        if (!empty($objects['newSystemEvents'])) {
+            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Events');
+            foreach($objects['newSystemEvents'] as $key => $fields) {
+                $fields['name'] = $key;
+                $this->addToModx('SystemEventAdapter', $fields);
+                /*$r = new SystemEventAdapter($modx, $helpers, $fields);
+                $r->addToMODx();*/
+            }
         }
-    }
-
+echo "\n" . memory_get_usage();
     /* Create resources */
-    if (!empty($this->objects['resources'])) {
-        $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating Resources');
-        foreach($this->objects['resources'] as $resource => $fields) {
-            $fields['pagetitle'] = empty($fields['pagetitle'])
-                ? $resource
-                : $fields['pagetitle'];
+        if (!empty($objects['resources'])) {
+            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating Resources');
+            foreach($objects['resources'] as $resource => $fields) {
+                $fields['pagetitle'] = empty($fields['pagetitle'])
+                    ? $resource
+                    : $fields['pagetitle'];
 
-            $r = new ResourceAdapter($modx, $helpers, $fields);
-            $r->addToMODx();
+                $this->addToModx('ResourceAdapter', $fields);
+                /*$r = new ResourceAdapter($modx, $helpers, $fields);
+                $r->addToMODx();*/
+            }
         }
+echo "\n" . memory_get_usage();
+
     }
 
-        // $this->newPaths();
+    /* add to MODx function -- separating this allows
+     * more frequent garbage collection */
+    protected function addToModx($adapter, $fields, $overwrite = false) {
+        /* @var $o ObjectAdapter */
+        $o = new $adapter($this->modx, $this->helpers, $fields);
+        $o->addToMODx();
 
-    // Installation Options Scripts
-
-       // $this->newInstallOptions();
     }
 
     public function newPaths()
@@ -511,8 +584,9 @@ public function initPaths() {
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '--------------------------------------------------');
     }
 
-    /** Creates build transport and config files, (optionally) lexicon files, doc file,
-     *  readme.md, and full _build directory with utilities if set in project config file */
+    /** Creates main build.transport.php, build.config.php and
+     * starter project config files, (optionally) lexicon files, doc file,
+     *  readme.md -- files only, creates no objects in the DB */
     public function createBasics() {
 
         /* Transfer build and build config files */
