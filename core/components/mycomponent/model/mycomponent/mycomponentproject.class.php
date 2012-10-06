@@ -215,7 +215,7 @@ class MyComponentProject {
             foreach ($elementList as $type => $elements) {
                 foreach ($elements as $element => $fields) {
                     if (! isset($fields['category'])) {
-                        die("ERROR -- All Elements must have a category");
+                        die("\n\nERROR -- All Elements must have a category");
                     }
                     $category = $fields['category'];
                     if (! in_array($fields['category'], array_keys($objects['categoryNames']))) {
@@ -469,8 +469,8 @@ echo "\n" . memory_get_usage();
 
     /* create system settings */
         if (!empty($objects['newSystemSettings'])) {
+            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Settings');
             foreach($objects['newSystemSettings'] as $key => $fields) {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Settings');
                 $this->addToModx('SystemSettingAdapter', $fields);
                 /*$r = new SystemSettingAdapter($modx, $helpers, $fields);
                 $r->addToModx();*/
