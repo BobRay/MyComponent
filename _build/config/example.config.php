@@ -96,7 +96,24 @@ $components = array(
 
     ),
 
-    /* ************************* MENUS **************************** */
+    /* ************************* CATEGORIES *************************** */
+    /* (optional) List of categories. This is only necessary if you
+     * need to categories other than the one named for packageNameLower
+     * or want to nest categories.
+    */
+
+    'categoryNames' => array(
+        'Example' => array(
+            'category' => 'Example2',
+            'parent' => '',  /* top level category */
+        ),
+        'category2' => array(
+            'category' => 'Category2',
+            'parent' => 'Example', /* nested under Example */
+        )
+    ),
+
+    /* *************************** MENUS ****************************** */
 
     /* If your extra needs Menus, set this to true, create them
      * in the Manager, and export them with exportObjects. Be sure
@@ -106,7 +123,7 @@ $components = array(
     /* ************************* ELEMENTS **************************** */
 
     /* Array containing elements for your extra. 'category' is required
-       all other fields are optional */
+       for each element, all other fields are optional */
 
 
     'elements' => array(
@@ -215,7 +232,7 @@ $components = array(
 
     /* Element Connections */
 
-    /* Array of plugin names and events (optionally) each one's prority.
+    /* Array of plugin names and events (optionally) each one's priority.
      * By default, priority will be 0.
      * Automatically generates resolver to connect and/or create them. */
     /*   'pluginEvents' => array(
