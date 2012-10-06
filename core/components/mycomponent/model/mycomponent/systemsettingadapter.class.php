@@ -32,7 +32,7 @@ class SystemSettingAdapter extends ObjectAdapter
         parent::__construct($modx, $helpers);
     }
 
-    public function getName() {
+    /*public function getName() {
         return $this->name;
     }
 
@@ -40,7 +40,7 @@ class SystemSettingAdapter extends ObjectAdapter
         return $mode == 'create'
             ? $this->createProcessor
             : $this->updateProcessor;
-    }
+    }*/
 /* *****************************************************************************
    Bootstrap and Support Functions (in MODxObjectAdapter)
 ***************************************************************************** */

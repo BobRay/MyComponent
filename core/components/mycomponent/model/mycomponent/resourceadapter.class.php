@@ -53,7 +53,7 @@ class ResourceAdapter extends ObjectAdapter
         $this->myFields = $fields;
     }
 
-    public function getName() {
+   /* public function getName() {
         return $this->name;
     }
 
@@ -61,7 +61,7 @@ class ResourceAdapter extends ObjectAdapter
         return $mode == 'create'
             ? $this->createProcessor
             : $this->updateProcessor;
-    }
+    }*/
 /* *****************************************************************************
    Bootstrap and Support Functions
 ***************************************************************************** */

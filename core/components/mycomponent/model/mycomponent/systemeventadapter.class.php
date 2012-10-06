@@ -26,14 +26,14 @@ class SystemEventAdapter extends ObjectAdapter
         $this->myFields = $fields;
     }
 
-    public function getName() {
+   /* public function getName() {
         return $this->name;
     }
 
-    /* Not used -- no processor for these */
+
     public function getProcessor($mode) {
         return null;
-    }
+    }*/
     
 /* *****************************************************************************
    Bootstrap and Support Functions (in MODxObjectAdapter)

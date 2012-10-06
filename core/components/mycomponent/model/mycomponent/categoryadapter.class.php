@@ -45,7 +45,7 @@ class CategoryAdapter extends ElementAdapter
         }
     }
 
-    public function getName() {
+   /* public function getName() {
         return ($this->name);
     }
 
@@ -54,7 +54,7 @@ class CategoryAdapter extends ElementAdapter
             ? $this->createProcessor
             : $this->updateProcessor;
 
-    }
+    }*/
 
 /* *****************************************************************************
    Bootstrap and Support Functions (in MODxObjectAdapter)

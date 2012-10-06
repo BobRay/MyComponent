@@ -18,6 +18,9 @@ abstract class ObjectAdapter
     public $helpers;
     /* @var $modx modX */
     public $modx;
+    protected $name = '';
+    protected $createProcessor = '';
+    protected $updateProcessor = '';
     
     public function __construct(&$modx, &$helpers) {/* Set the component */
         $this->modx =& $modx;
@@ -25,9 +28,20 @@ abstract class ObjectAdapter
 
     }
 
-    abstract function getProcessor($mode);
+    /*abstract function getProcessor($mode);
 
-    abstract function getName();
+    abstract function getName();*/
+
+    public function getName() {
+        return ($this->name);
+    }
+
+    public function getProcessor($mode) {
+        return $mode == 'create'
+            ? $this->createProcessor
+            : $this->updateProcessor;
+
+    }
 
     /* *****************************************************************************
        Property Getter and Setters
