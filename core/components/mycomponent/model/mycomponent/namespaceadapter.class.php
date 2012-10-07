@@ -36,20 +36,12 @@ class NamespaceAdapter extends ObjectAdapter {
 
         $this->helpers =& $helpers;
         $this->myFields = $fields;
+        $this->name = $fields['name'];
 
 
         parent::__construct($modx, $helpers);
     }
-
-   /* public function getName() {
-        return $this->myFields['name'];
-    }
-
-    public function getProcessor($mode) {
-        return $mode == 'create'
-            ? $this->createProcessor
-            : $this->updateProcessor;
-    }*/
+   
 
     public function addToMODx($overwrite = false) {
 
