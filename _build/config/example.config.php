@@ -220,9 +220,9 @@ $components = array(
                 'static' => false,
                 'default_text' => '@INHERIT',
                 'templates' => array(
-                    'default',
-                    'Template1',
-                    'Template2',
+                    'default' => 3, /* second value is rank -- for ordering TVs when editing resource */
+                    'Template1' => 4,
+                    'Template2' => 1,
                 ),
             ),
         ),
