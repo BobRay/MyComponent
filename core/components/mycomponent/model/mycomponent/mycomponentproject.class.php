@@ -506,7 +506,9 @@ echo "\n" . memory_get_usage();
                 $fields['category'] = $category;
                 /* @var $catAdapter CategoryAdapter */
                 $catAdapter = $this->addToModx('CategoryAdapter', $fields);
-                $catAdapter->addChildren($fields);
+                $catAdapter->addChildren($fields, true);
+
+
 
             }
         }
@@ -762,8 +764,7 @@ echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
         }
     }
 
-    /** Deprecated: Called from NamespaceAdapter->addToMODx */
-    public function createNewSystemSettings() {    }
+
 
     /** Creates example file for user input during install if set in project config file */
     public function createInstallOptions() {

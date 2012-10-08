@@ -235,6 +235,15 @@ abstract class ObjectAdapter
         if ($obj && !$overwrite) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $objClass . ' already exists: ' . $name);
             $retVal = $obj->get('id');
+            $oldCat = $obj->get('category');
+            if ($oldCat && $oldCat != $this->myFields['category']) {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, "Outdated Category " . $this->myFields['category']);
+                if (is_numeric($this->myFields['category'])) {
+                    $obj->set('category', $this->myFields['category']);
+                    $obj->save();
+                    $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, "Updated category for " . $name);
+                }
+            }
     /* Object exists/Can Overwrite */
         } elseif ($obj && $overwrite) {
             unset($this->myFields[$idKey]);
@@ -266,7 +275,7 @@ abstract class ObjectAdapter
             if ($idKey != $nameKey) {
                 unset($this->myFields[$idKey]);
             }
-
+            $this->getTplCode();
             $processor = $this->getProcessor('create');
             $response = $modx->runProcessor($processor, $this->myFields);
             if (empty($response) || $response->isError()) {
@@ -286,8 +295,56 @@ abstract class ObjectAdapter
         }
         return $retVal;
     }
-    
+    public function getTplCode() {
+        $code = '';
+        $field = '';
 
+        $tplName = strtolower($this->dbClass);
+        if ($tplName == 'modplugin' || $tplName == 'modsnippet') {
+            $tplName = 'phpfile.php';
+        }
+        $tpl = $this->helpers->getTpl($tplName);
+        if (!empty($tpl)) {
+            switch($this->dbClass) {
+                case 'modChunk':
+                case 'modSnippet':
+                    $field = 'snippet';
+                    break;
+                case 'modPlugin':
+                    $field = 'plugincode';
+                    break;
+                case 'modResource':
+                case 'modTemplate':
+                    $field = 'content';
+                    break;
+                default:
+                    break;
+            }
+            $tpl = str_replace('[[+elementType]]', strtolower(substr($this->dbClass, 3)), $tpl);
+            $tpl = str_replace('[[+elementName]]', $this->getName(), $tpl);
+            if (!empty ($tpl)) {
+                $tpl = $this->helpers->replaceTags($tpl);
+                $this->myFields[$field] = $tpl;
+            }
+        }
+        return $tpl;
+    }
+
+    public function createCodeFile($overwrite = false) {
+        $tpl = $this->getTplCode();
+        if (!empty($tpl)) {
+            $dir = $this->helpers->props['targetRoot'] . 'core/components/';
+            $dir .= $this->helpers->props['packageNameLower'] . '/';
+            $dir =  $this->helpers->getCodeDir($dir, $this->dbClass);
+            $file = $this->helpers->getFileName($this->getName(), $this->dbClass);
+            if (! file_exists($dir . '/' . $file)) {
+                $this->helpers->writeFile($dir, $file, $tpl);
+            } else {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'File already exists: ' . $file);
+            }
+
+        }
+    }
 /* *****************************************************************************
    Export Objects and Support Functions 
 ***************************************************************************** */

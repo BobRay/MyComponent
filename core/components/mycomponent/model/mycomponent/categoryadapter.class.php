@@ -73,7 +73,7 @@ class CategoryAdapter extends ObjectAdapter {//These will never change.
              //}
     }
 
-    public function addChildren($fields) {
+    public function addChildren($fields, $createCodeFiles = false) {
         if (is_array($fields) && !empty($fields)) {
             $elements = $fields;
             foreach ($elements as $element => $objects) {
@@ -97,6 +97,9 @@ class CategoryAdapter extends ObjectAdapter {//These will never change.
                     $adapter = substr(ucfirst($element), 0, -1) . 'Adapter';
                     $o = new $adapter($this->modx, $this->helpers, $fields);
                     $o->addToModx();
+                    if ($createCodeFiles) {
+                        $o->createCodeFile();
+                    }
                 }
 
             }

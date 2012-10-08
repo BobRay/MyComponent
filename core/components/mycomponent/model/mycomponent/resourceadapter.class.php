@@ -49,7 +49,7 @@ class ResourceAdapter extends ObjectAdapter
                 ? $fields[$field]
                 : $value;
         }
-        $fields['content'] = $this->helpers->getTpl('modresource');
+
         $this->myFields = $fields;
     }
 
