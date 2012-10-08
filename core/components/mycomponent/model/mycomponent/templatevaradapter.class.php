@@ -1,18 +1,26 @@
 <?php
-// Include the Base Class (only once)
-require_once('elementadapter.class.php');
 
-class TemplateVariableAdapter extends ElementAdapter
+
+class TemplateVarAdapter extends ElementAdapter
 {
-    final static protected $xPDOClass = 'modTemplateVar';
+    protected $dbClass = 'modTemplateVar';
+    protected $dbClassIDKey = 'name';
+    protected $dbClassNameKey = 'name';
+    protected $dbClassParentKey = 'category';
+    protected $createProcessor = 'element/tv/create';
+    protected $updateProcessor = 'element/tv/update';
     
-// Database Columns for the XPDO Object
-    protected $myColumns;
 
-    final public function __construct(&$forComponent, $columns)
-    {   parent::__construct(&$forComponent);
-        if (is_array($columns))
-            $this->myColumns = $columns;
+    protected $fields;
+    protected $name;
+
+    final public function __construct(&$modx, &$helpers, $fields) {
+        $this->name = $fields['name'];
+        if (is_array($fields)) {
+            $this->myFields = $fields;
+        }
+        parent::__construct($modx, $helpers);
+
     }
     
 /* *****************************************************************************

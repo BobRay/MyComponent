@@ -178,6 +178,9 @@ class MyComponentProject {
         /* get namespace(s) */
         if (isset($config['namespaces']) && !empty($config['namespaces'])) {
             foreach ($config['namespaces'] as $settingName => $settingFields) {
+                if (!isset($fields['name'])) {
+                    $fields['name'] = $settingName;
+                }
                 $objects['namespaces'][$settingName] = $settingFields;
             }
         }
@@ -186,6 +189,9 @@ class MyComponentProject {
         if (isset($config['newSystemSettings']) && ! empty($config['newSystemSettings'])) {
             foreach($config['newSystemSettings'] as $settingName => $settingFields) {
                 $objects['newSystemSettings'][$settingName] = $settingFields;
+                if (!isset($fields['key'])) {
+                    $fields['key'] = $settingName;
+                }
                 /* add namespaces set as field to namespaces member */
                 if (isset($settingFields['namespace'])) {
                     $objects['namespaces'][$settingFields['namespace']]['name'] = $settingFields['namespace'];
@@ -196,6 +202,9 @@ class MyComponentProject {
         /* get new System Events */
         if (isset($config['newSystemEvents']) && !empty($config['newSystemEvents'])) {
             foreach ($config['newSystemEvents'] as $settingName => $settingFields) {
+                $settingFields = is_array($settingFields)
+                    ? $settingFields
+                    : array();
                 $objects['newSystemEvents'][$settingName] = $settingFields;
             }
         }
@@ -236,12 +245,14 @@ class MyComponentProject {
                             : $element;
                     }
                     /* ToDo: Move to TemplateAdapter */
-                    unset ($fields['category']);
+                    //unset ($fields['category']);
 
                     if (isset($config['allStatic']) && !empty($config['allStatic'])) {
                         $fields['static'] = true;
                     } else {
-                        $fields['static'] = (bool)isset($fields['static']) && !empty($fields['static']);
+                        if (isset($fields['static'])) {
+                            $fields['static'] = (bool) !empty($fields['static']);
+                        }
                     }
 
                     if ($type == 'plugins' || isset($fields['events'])) {
@@ -434,13 +445,13 @@ public function initPaths() {
         {   $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'MyComponent must be installed to create a new MyComponent Project!');
             return;
         }
-
+echo "\n" . memory_get_usage();
         $modx = $this->modx;
         $helpers = $this->helpers;
         $objects = $this->bootstrapObjects;
 
     /* Create basic files (no transport files or code files) */
-    // $this->createBasics();
+    $this->createBasics();
 
     /*  Create namespace */
         if (!empty($objects['namespaces'])) {
@@ -460,12 +471,10 @@ echo "\n" . memory_get_usage();
                     $fields['category'] = $categoryName;
                 }
                 $o = new CategoryAdapter($modx, $helpers, $fields);
-                $o->quickCreate();
+                $o->addToModx();
             }
         }
 echo "\n" . memory_get_usage();
-
-    /* create elements  */
 
     /* create system settings */
         if (!empty($objects['newSystemSettings'])) {
@@ -487,9 +496,24 @@ echo "\n" . memory_get_usage();
                 $r->addToMODx();*/
             }
         }
+
+    /* Create category and all its elements */
+
+        if (isset($objects['categories']) && !empty($objects['categories'])) {
+            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating category elements');
+            $categories = $objects['categories'];
+            foreach($categories as $category => $fields) {
+                $fields['category'] = $category;
+                /* @var $catAdapter CategoryAdapter */
+                $catAdapter = $this->addToModx('CategoryAdapter', $fields);
+                $catAdapter->addChildren($fields);
+
+            }
+        }
+
 echo "\n" . memory_get_usage();
     /* Create resources */
-        if (!empty($objects['resources'])) {
+        if (isset($objects['resources']) && !empty($objects['resources'])) {
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating Resources');
             foreach($objects['resources'] as $resource => $fields) {
                 $fields['pagetitle'] = empty($fields['pagetitle'])
@@ -497,11 +521,13 @@ echo "\n" . memory_get_usage();
                     : $fields['pagetitle'];
 
                 $this->addToModx('ResourceAdapter', $fields);
+
                 /*$r = new ResourceAdapter($modx, $helpers, $fields);
                 $r->addToMODx();*/
             }
         }
-echo "\n" . memory_get_usage();
+$mem_usage = memory_get_usage();
+echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
 
     }
 
@@ -511,6 +537,7 @@ echo "\n" . memory_get_usage();
         /* @var $o ObjectAdapter */
         $o = new $adapter($this->modx, $this->helpers, $fields);
         $o->addToMODx();
+        return $o;
 
     }
 
@@ -1453,6 +1480,42 @@ echo "\n" . memory_get_usage();
                         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Intersect ' . $intersectType . ' already exists for ' . $mainObjectType . ' ' . $mainObjectName . ' -- ' . $subsidiaryObjectType . ' ' . $subsidiaryObjectName);
                     }
                 }
+            }
+        }
+    }
+    public function removeObjects() {
+        $objects = array(
+            'Resource1' => 'modResource',
+            'Resource2' => 'modResource',
+            'Snippet1' => 'modSnippet',
+            'Snippet2' => 'modSnippet',
+            'Chunk1' => 'modChunk',
+            'Chunk2' => 'modChunk',
+            'Plugin1' => 'modPlugin',
+            'Plugin2' => 'modPlugin',
+            'Template1' => 'modTemplate',
+            'Template2' => 'modTemplate',
+            'Tv1' => 'modTemplateVar',
+            'Tv2' => 'modTemplateVar',
+            'Example' => 'modNamespace',
+            'OnMyEvent1' => 'modEvent',
+            'OnMyEvent2' => 'modEvent',
+        );
+
+        foreach($objects as $object => $type) {
+            $name = 'name';
+            if ($type == 'modTemplate') $name = 'templatename';
+            if ($type == 'modResource') $name = 'pagetitle';
+            if ($type == 'modSystemSetting') $name = 'key';
+            $obj = $this->modx->getObject($type, array($name => $object));
+            if (! $obj) {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find ' . $type . ' ' . $object);
+            } else {
+                $obj->remove();
+            }
+            $c = $this->modx->getObject('modCategory', array('category' => 'Example'));
+            if ($c) {
+                $c->remove();
             }
         }
     }

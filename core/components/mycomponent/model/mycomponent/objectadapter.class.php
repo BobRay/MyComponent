@@ -21,16 +21,14 @@ abstract class ObjectAdapter
     protected $name = '';
     protected $createProcessor = '';
     protected $updateProcessor = '';
+    protected $myId;
+    protected $object;
+
     
     public function __construct(&$modx, &$helpers) {/* Set the component */
         $this->modx =& $modx;
         $this->helpers =& $helpers;
-
     }
-
-    /*abstract function getProcessor($mode);
-
-    abstract function getName();*/
 
     public function getName() {
         return ($this->name);
@@ -232,10 +230,11 @@ abstract class ObjectAdapter
         
     // See if the object exists        
         $obj = $this->modx->getObject($objClass, array($nameKey => $name));
+        $this->object = $obj;
     /* Object exists/Cannot Overwrite */
         if ($obj && !$overwrite) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $objClass . ' already exists: ' . $name);
-            return -1;
+            $retVal = $obj->get('id');
     /* Object exists/Can Overwrite */
         } elseif ($obj && $overwrite) {
             unset($this->myFields[$idKey]);
@@ -244,6 +243,7 @@ abstract class ObjectAdapter
             }
 
             $processor = $this->getProcessor('update');
+            /* @var $response modProcessorResponse */
             $response = $modx->runProcessor($processor, $this->myFields);
             if (empty($response) || $response->isError()) {
                 $msg = "Failed to create object \n    class: " . $objClass .
@@ -251,10 +251,14 @@ abstract class ObjectAdapter
                 $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, $msg);
                 $retVal =  -1;
             } else {
+                /* @var $obj xPDOObject */
+                $obj = $response->getObject();
+                $retVal = $obj->get('id');
+
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Created ' . $objClass . ': ' . $name);
                 /* ToDo: might need to return object or ID here */
                 //$this->modx->reloadContext();
-                $retVal = true;
+
             }
 
     /* Object does not exist - create it */
@@ -271,10 +275,12 @@ abstract class ObjectAdapter
                 $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, $msg);
                 $retVal = false;
             } else {
+                $o = $response->getObject();
+                $this->myId = $o['id'];
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Created ' . $objClass . ': ' . $name);
                 /* ToDo: might need to return object or ID here */
                 //$this->modx->reloadContext();
-                $retVal = true;
+                $retVal = $o['id'];
 
             }
         }
@@ -318,7 +324,7 @@ abstract class ObjectAdapter
         /* category ID or category name, depending on what we're looking for */
         $value = $type =='modAction'  
             ? strtolower($this->category) 
-            : $this->categoryId;
+            : $this->myId;
         /* get the objects */
         $this->elements = $this->modx->getCollection($type, array($key => $value));
 

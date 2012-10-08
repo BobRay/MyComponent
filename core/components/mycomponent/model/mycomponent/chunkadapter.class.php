@@ -1,24 +1,26 @@
 <?php
-// Include the Base Class (only once)
-require_once('elementadapter.class.php');
+
 
 class ChunkAdapter extends ElementAdapter
 {//This will never change.
-    static protected $xPDOClass = 'modChunk';
-    static protected $xPDOTransportAttributes = array
-    (   xPDOTransport::UNIQUE_KEY => 'key',
-        xPDOTransport::PRESERVE_KEYS => true,
-        xPDOTransport::UPDATE_OBJECT => false,
-    );
+    protected $dbClass = 'modChunk';
+    protected $dbClassIDKey = 'name';
+    protected $dbClassNameKey = 'name';
+    protected $dbClassParentKey = 'category';
+    protected $createProcessor = 'element/chunk/create';
+    protected $updateProcessor = 'element/chunk/update';
     
-    
-// Database Columns for the XPDO Object
-    protected $myColumns;
+// Database fields for the XPDO Object
+    protected $myFields;
+    protected $name;
 
-    final function __construct(&$forComponent, $columns)
-    {   parent::__construct(&$forComponent);
-        if (is_array($columns))
-            $this->myColumns = $columns;
+    final function __construct(&$modx, &$helpers, $fields) {
+        $this->name = $fields['name'];
+        if (is_array($fields)) {
+            $this->myFields = $fields;
+        }
+        parent::__construct($modx, $helpers);
+
     }
     
 /* *****************************************************************************

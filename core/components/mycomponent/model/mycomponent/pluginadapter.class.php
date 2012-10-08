@@ -4,19 +4,24 @@ require_once('elementadapter.class.php');
 
 class PluginAdapter extends ElementAdapter
 {
-    final static protected $xPDOClass = 'modPlugin';
-    static protected $xPDOClassIDKey = 'id';
-    static protected $xPDOClassNameKey = 'name';
-    static protected $xPDOClassParentKey = 'category';
+    protected $dbClass = 'modPlugin';
+    protected $dbClassIDKey = 'name';
+    protected $dbClassNameKey = 'name';
+    protected $dbClassParentKey = 'category';
+    protected $createProcessor = 'element/plugin/create';
+    protected $updateProcessor = 'element/plugin/update';
     
-// Database Columns for the XPDO Object
+// Database Fields for the XPDO Object
     protected $myParent;
-    protected $myColumns;
+    protected $myFields;
 
-    final public function __construct(&$forComponent, $columns)
-    {   parent::__construct(&$forComponent);
-        if (is_array($columns))
-            $this->myColumns = $columns;
+    final public function __construct(&$modx, &$helpers, $fields) {
+        $this->name = $fields['name'];
+        if (is_array($fields)) {
+            $this->myFields = $fields;
+        }
+        parent::__construct($modx, $helpers);
+
     }
     
 /* *****************************************************************************
@@ -27,11 +32,9 @@ class PluginAdapter extends ElementAdapter
    Import Objects and Support Functions (in ElementAdapter) 
 ***************************************************************************** */
 
-    protected function addToMODx($overwrite = false)
+    public function addToMODx($overwrite = false)
     {//Perform default export implementation
-        $id = parent::addToMODx($overwrite);
-    // Sets the ID appropriately, for later.
-        $this->myColumns[static::xPDOClassIDKey] = $id;
+        parent::addToMODx($overwrite);
     }
 
     /** Connects System Events to Plugins and creates resolver for connecting them
@@ -41,7 +44,7 @@ class PluginAdapter extends ElementAdapter
         $modx = $myComponent->modx;
         $type = static::xPDOClass;
         $nameKey = static::xPDOClassNameKey;
-        $nameValue = $this->myColumns[$nameKey];
+        $nameValue = $this->myFields[$nameKey];
         
         /* @var $object modElement */
         $lName =strtolower($nameValue);

@@ -7,8 +7,11 @@ $mtime = explode(" ", $mtime);
 $mtime = $mtime[1] + $mtime[0];
 $tstart = $mtime;
 set_time_limit(0);
-
+$mem_usage =  memory_get_usage();
 $project = new MyComponentProject();
+echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
+echo "\nInitial: " . $mem_usage;
+// $project->removeObjects();
 $project->bootstrap();
 
 /* report how long it took */

@@ -1,19 +1,53 @@
 <?php
-// Include the Base Class (only once)
-require_once 'objectadapter.class.php';
 
-abstract class ElementAdapter extends ObjectAdapter
-{
-    
-/* *****************************************************************************
-   Property Getter and Setters
-***************************************************************************** */
+abstract class ElementAdapter extends ObjectAdapter {
+
+    protected $categoryId;
+    // Database fields for the XPDO Object
+    protected $myFields;
+    /* @var $modx modX */
+    public $modx;
+    /* @var $helpers Helpers */
+    public $helpers;
+
+    /* *****************************************************************************
+       Property Getter and Setters
+    ***************************************************************************** */
     /**
      * Gets the directory containing the code files for the element.
      *
      * @return string - full path for element code file (without filename or 
      *         trailing slash)
      */
+
+    public function __construct(&$modx, $helpers) {
+        $x = 1;
+        if (isset($this->myFields['category'])) {
+            /*$category = $this->myFields['category'];
+            $categoryId = $category;*/
+            $this->modx =& $modx;
+            $this->helpers =& $helpers;
+            /*if (!is_numeric($category)) {
+                $categoryObj = $this->modx->getObject('modCategory', array('category' => $category));
+                if (!$categoryObj) {
+                    $categoryObj = $this->modx->newObject('modCategory', array('category' => $category));
+
+                    if ($categoryObj && $categoryObj->save()) {
+                        $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    Created new category ' . $category);
+                    }
+                }
+                $categoryId = $categoryObj
+                    ? $categoryObj->get('id')
+                    : 0;
+            }
+            $this->myFields['category'] = $categoryId;*/
+        }
+
+
+        parent::__construct($modx, $helpers);
+
+
+    }
     public function getCodeDir() 
     {//Get the path...
         $path = $this->myComponent->myPaths['targetCore'] . 'elements/';
@@ -35,13 +69,24 @@ abstract class ElementAdapter extends ObjectAdapter
    Import Objects and Support Functions (in MODxObjectAdapter) 
 ***************************************************************************** */
 
-    public function addToMODx($overwrite = false)
-    {//Perform default export implementation
-        $id = parent::addToMODx($overwrite);
-        if ($id > -1)
-            $this->attachCategory();
-    // Forward the result ID
-        return $id;   
+    public function addToMODx($overwrite = false) {
+        if (isset($this->myFields['propertySets'])) {
+            $pSets = $this->myFields['propertySets'];
+            if (is_array($pSets)) {
+                foreach($pSets as $k => $pName ) {
+                    $fields = array('name' => $pName);
+                    $o = new PropertySetAdapter($this->modx, $this->helpers, $fields);
+                    $o->addToModx();
+                }
+
+            } else {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Property Sets listed under ' . $this->name . ' must be an array');
+            }
+
+            unset($this->myFields['propertySets']);
+        }
+
+        parent::addToMODx($overwrite);
     }
 
     /**
@@ -50,7 +95,7 @@ abstract class ElementAdapter extends ObjectAdapter
      * @param $name string - name of object in MODX install
      * @param $type string - modSnippet, modChunk, etc.
      */
-    public function attachCategory() 
+   /* public function attachCategory()
     {//For Quick Access
         $myComponent = $this->myComponent;
         $modx = $myComponent->modx;
@@ -58,7 +103,7 @@ abstract class ElementAdapter extends ObjectAdapter
         $nameKey = static::xPDOClassNameKey;
         $nameValue = $this->myColumns[$nameKey];
         
-        /* @var $object modElement */
+
         $lName =strtolower($nameValue);
         $alias = $type == 'modTemplate'? 'templatename' : 'name';
         $obj = $modx->getObject($type, array($nameKey => $nameValue));
@@ -70,7 +115,7 @@ abstract class ElementAdapter extends ObjectAdapter
             else
                 $myComponent->sendLog(MODX::LOG_LEVEL_INFO, 'Failed to attach ' . $type . ': ' . $name .  ' to Category (' . $this->categoryId . ')');
         }
-    }
+    }*/
 
 /* *****************************************************************************
    Export Objects and Support Functions (in MODxObjectAdapter)

@@ -1,9 +1,7 @@
 <?php
-// Include the Base Class (only once)
-require_once('elementadapter.class.php');
 
-class CategoryAdapter extends ElementAdapter
-{//These will never change.
+
+class CategoryAdapter extends ObjectAdapter {//These will never change.
     protected $dbClass = 'modCategory';
     protected $dbClassIDKey = 'id';
     protected $dbClassNameKey = 'category';
@@ -23,11 +21,15 @@ class CategoryAdapter extends ElementAdapter
     protected $name;
     protected $createProcessor = 'element/category/create';
     protected $updateProcessor = 'element/category/update';
+    protected $myId;
+
   
     final public function __construct(&$modx, &$helpers, $fields) {
         /* @var $modx modX */
+        $this->modx = $modx;
+        $this->helpers = $helpers;
         $fields = is_array($fields) ? $fields : array();
-        parent::__construct($modx, $helpers);
+
         $this->name = $fields['category'];
 
         if (isset($fields['parent'])) {
@@ -39,55 +41,80 @@ class CategoryAdapter extends ElementAdapter
                 }
             }
         }
-
         if (is_array($fields)) {
             $this->myFields = $fields;
         }
+        parent::__construct($modx, $helpers);
+
     }
 
-   /* public function getName() {
-        return ($this->name);
-    }
-
-    public function getProcessor($mode) {
-        return $mode == 'create'
-            ? $this->createProcessor
-            : $this->updateProcessor;
-
-    }*/
 
 /* *****************************************************************************
    Bootstrap and Support Functions (in MODxObjectAdapter)
 ***************************************************************************** */
 
-    public function addToMODx($overwrite = false)
-    {//Perform default export implementation
-        $result = parent::addToMODx($overwrite);
-        if ($result === true || $result ==  -1) {//Align Children to ID, and add them to MODx
-            $objects = $this->myObjects;
-            foreach ($objects as $obj)
-            {//In all Elements, this sets the Category
-                $obj->setParentID($id);
-            // Add it to the MODx
-                $obj->addToMODx($overwrite);
-            }
+    public function addToMODx($overwrite = false) {
+        /* create category if necessary */
+        $this->myId =  parent::addToModx();
+        /*$categoryObj = $this->modx->getObject('modCategory', array('category' => $this->name));
+        if (! $categoryObj) {
+            $fields['category'] = array('category' => $this->name);
+            $this->quickCreate($fields);
+        }*/
+
+
         // Now we can attach Intersects...
             //foreach ($objects as $obj)
             //{   $class = get_class($thing);
             //    $class::$property
             //    
             //}
-            $this->connectTvsToTemplates();
-        }
+            // $this->connectTvsToTemplates();
+             //}
     }
 
-    public function quickCreate($overwrite = false) {
-        $fields = $this->myFields;
+    public function addChildren($fields) {
+        if (is_array($fields) && !empty($fields)) {
+            $elements = $fields;
+            foreach ($elements as $element => $objects) {
+                if ($element == 'propertySets') {
+                    /* created earlier */
+                    // continue;
+                }
+
+                if ($element == 'category') {
+                    /* don't recreate myself */
+                    continue;
+                }
+
+
+                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating ' . $element);
+                foreach ($objects as $object => $fields) {
+
+                    $fields['category'] = $this->myId;
+
+                    /* @var $o ObjectAdapter */
+                    $adapter = substr(ucfirst($element), 0, -1) . 'Adapter';
+                    $o = new $adapter($this->modx, $this->helpers, $fields);
+                    $o->addToModx();
+                }
+
+            }
+
+
+        }
+    }
+    public function quickCreate($fields, $overwrite = false) {
         $categoryName = $fields['category'];
         $categoryObj = $this->modx->getObject('modCategory', array('category' => $categoryName ));
 
         if (! $categoryObj) {
             $categoryObj = $this->modx->newObject('modCategory');
+            if (isset($fields['parent']) && !empty($fields['parent']) && ! is_numeric($fields['parent']) ) {
+                $p = $this->modx->getObject('modCategory', array('category' => $categoryName));
+                $fields['category'] = $p ? $p->get('id') : 0;
+            }
+
 
         /* set any fields that are not already set */
             if ($categoryObj) {

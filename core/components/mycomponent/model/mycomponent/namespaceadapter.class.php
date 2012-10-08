@@ -41,7 +41,7 @@ class NamespaceAdapter extends ObjectAdapter {
 
         parent::__construct($modx, $helpers);
     }
-   
+
 
     public function addToMODx($overwrite = false) {
 

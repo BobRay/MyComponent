@@ -4,15 +4,25 @@ require_once('elementadapter.class.php');
 
 class SnippetAdapter extends ElementAdapter
 {
-    final static protected $xPDOClass = 'modSnippet';
+    protected $dbClass = 'modSnippet';
+    protected $dbClassIDKey = 'name';
+    protected $dbClassNameKey = 'name';
+    protected $dbClassParentKey = 'category';
+    protected $createProcessor = 'element/snippet/create';
+    protected $updateProcessor = 'element/snippet/update';
     
 // Database Columns for the XPDO Object
-    protected $myColumns;
+    protected $myFields;
+    protected $name;
+    protected $myId;
 
-    final public function __construct(&$forComponent, $columns)
-    {   parent::__construct(&$forComponent);
-        if (is_array($columns))
-            $this->myColumns = $columns;
+    final public function __construct(&$modx, &$helpers, $fields) {
+        $this->name = $fields['name'];
+        if (is_array($fields)) {
+            $this->myFields = $fields;
+        }
+        parent::__construct($modx, $helpers);
+
     }
     
 /* *****************************************************************************

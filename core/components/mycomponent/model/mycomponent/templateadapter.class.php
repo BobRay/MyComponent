@@ -4,26 +4,24 @@ require_once('elementadapter.class.php');
 
 class TemplateAdapter extends ElementAdapter
 {
-    final static protected $dbClass = 'modTemplate';
-    final static protected $dbClassIDKey = 'id';
-    final static protected $dbClassNameKey = 'templatename';
-    final static protected $dbClassParentKey = 'category';
-    final static protected $dbTransportAttributes = array
-    (   xPDOTransport::UNIQUE_KEY => 'category',
-        xPDOTransport::PRESERVE_KEYS => false,
-        xPDOTransport::UPDATE_OBJECT => true,
-        xPDOTransport::RELATED_OBJECTS => true,
-        xPDOTransport::ABORT_INSTALL_ON_VEHICLE_FAIL => true,
-        
-    );
+    protected $dbClass = 'modTemplate';
+    protected $dbClassIDKey = 'id';
+    protected $dbClassNameKey = 'templatename';
+    protected $dbClassParentKey = 'category';
+    protected $createProcessor = 'element/template/create';
+    protected $updateProcessor = 'element/template/update';
     
-// Database Columns for the XPDO Object
+// Database fields for the XPDO Object
     protected $myFields;
+    protected $name;
 
-    final public function __construct(&$forComponent, $columns)
-    {   parent::__construct(&$forComponent);
-        if (is_array($columns))
-            $this->myFields = $columns;
+    final public function __construct(&$modx, &$helpers, $fields) {
+        $this->name = $fields['templatename'];
+        if (is_array($fields)) {
+            $this->myFields = $fields;
+        }
+        parent::__construct($modx, $helpers);
+
     }
     
 /* *****************************************************************************
