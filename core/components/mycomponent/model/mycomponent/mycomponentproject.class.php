@@ -268,6 +268,17 @@ class MyComponentProject {
                         }
                     }
 
+                    if ($type == 'templateVars' && !empty($fields['templates'])) {
+                        foreach($fields['templates'] as $k => $templateName) {
+                            if ($templateName == 'default') {
+                                $t = $this->modx->getOption('default_template');
+                                $template = $this->modx->getObject('modTemplate', $t);
+                                $templateName = $template->get('templatename');
+                            }
+                            $objects['templateVarTemplates'][$element][] = $templateName;
+                        }
+                    }
+
                     $objects['categories'][$category][$type][$element] = $fields;
                 }
             }
@@ -506,6 +517,7 @@ echo "\n" . memory_get_usage();
                 $fields['category'] = $category;
                 /* @var $catAdapter CategoryAdapter */
                 $catAdapter = $this->addToModx('CategoryAdapter', $fields);
+                /* second argument says to create code files too */
                 $catAdapter->addChildren($fields, true);
 
 
