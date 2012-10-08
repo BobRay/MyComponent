@@ -269,13 +269,24 @@ class MyComponentProject {
                     }
 
                     if ($type == 'templateVars' && !empty($fields['templates'])) {
-                        foreach($fields['templates'] as $k => $templateName) {
+                        foreach($fields['templates'] as $templateName => $rank) {
+                            if (is_numeric($templateName)) {
+                                /* user left out rank */
+                                $templateName = $rank;
+                                $rank = 0;
+                            }
                             if ($templateName == 'default') {
                                 $t = $this->modx->getOption('default_template');
                                 $template = $this->modx->getObject('modTemplate', $t);
                                 $templateName = $template->get('templatename');
                             }
-                            $objects['templateVarTemplates'][$element][] = $templateName;
+
+                            //$objects['templateVarTemplates'][$element][$templateName] = $rank;
+                            $objects['templateVarTemplates'][] = array(
+                                'tv' => $element,
+                                'template' => $templateName,
+                                'rank' => $rank,
+                            );
                         }
                     }
 
