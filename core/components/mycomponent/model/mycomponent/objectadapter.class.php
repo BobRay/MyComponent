@@ -231,17 +231,23 @@ abstract class ObjectAdapter
     // See if the object exists        
         $obj = $this->modx->getObject($objClass, array($nameKey => $name));
         $this->object = $obj;
+        if ($obj) {
+            $this->myId = $obj->get('id');
+        }
     /* Object exists/Cannot Overwrite */
         if ($obj && !$overwrite) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $objClass . ' already exists: ' . $name);
             $retVal = $obj->get('id');
-            $oldCat = $obj->get('category');
-            if ($oldCat && $oldCat != $this->myFields['category']) {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, "Outdated Category " . $this->myFields['category']);
-                if (is_numeric($this->myFields['category'])) {
-                    $obj->set('category', $this->myFields['category']);
-                    $obj->save();
-                    $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, "Updated category for " . $name);
+
+            if (isset($this->myFields['category'])) {
+                $oldCat = $obj->get('category');
+                if ($oldCat && $oldCat != $this->myFields['category']) {
+                    $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, "Outdated Category " . $this->myFields['category']);
+                    if (is_numeric($this->myFields['category'])) {
+                        $obj->set('category', $this->myFields['category']);
+                        $obj->save();
+                        $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, "Updated category for " . $name);
+                    }
                 }
             }
     /* Object exists/Can Overwrite */
@@ -262,6 +268,7 @@ abstract class ObjectAdapter
             } else {
                 /* @var $obj xPDOObject */
                 $obj = $response->getObject();
+                $this->myId = $obj->get('id');
                 $retVal = $obj->get('id');
 
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Created ' . $objClass . ': ' . $name);
