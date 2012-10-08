@@ -104,7 +104,7 @@ $components = array(
 
     'categoryNames' => array(
         'Example' => array(
-            'category' => 'Example2',
+            'category' => 'Example',
             'parent' => '',  /* top level category */
         ),
         'category2' => array(
@@ -211,7 +211,7 @@ $components = array(
                 'propertySet' => 'PropertySet2',
             ),
         ),
-        'tvs' => array( /* minimal example */
+        'templateVars' => array( /* minimal example */
             'Tv1' => array(
                 'category' => 'Example',
             ),
