@@ -283,8 +283,8 @@ class MyComponentProject {
 
                             //$objects['templateVarTemplates'][$element][$templateName] = $rank;
                             $objects['templateVarTemplates'][] = array(
-                                'tv' => $element,
-                                'template' => $templateName,
+                                'tmplvarid' => $element,
+                                'templateid' => $templateName,
                                 'rank' => $rank,
                             );
                         }
@@ -330,8 +330,8 @@ class MyComponentProject {
     }
 
 
-    /* Creates an array of object names and fields from MODX based on criteria
-     * set by the ExportObjects section of the project config file. */
+    /* Creates an array just like the one in the previous method, but from the MODX
+     * db based on criteria set by the ExportObjects section of the project config file. */
     public function getExportObjects() {
         $objects = array();
 
@@ -530,9 +530,6 @@ echo "\n" . memory_get_usage();
                 $catAdapter = $this->addToModx('CategoryAdapter', $fields);
                 /* second argument says to create code files too */
                 $catAdapter->addChildren($fields, true);
-
-
-
             }
         }
 
@@ -551,11 +548,21 @@ echo "\n" . memory_get_usage();
                 $r->addToMODx();*/
             }
         }
+
+        /* Create intersects for many-to-many objects */
+        $this->connectTvsToTemplates();
+        // $this->connectPropertySetsToElements();
+        // $this->connectPluginsToEvents();
+
 $mem_usage = memory_get_usage();
 echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
 
     }
 
+    public function connectTvsToTemplates() {
+        $templateVarTemplates = $this->bootstrapObjects['templateVarTemplates'];
+        $this->helpers->createIntersects('modTemplateVarTemplate', $templateVarTemplates);
+    }
     /* add to MODx function -- separating this allows
      * more frequent garbage collection */
     protected function addToModx($adapter, $fields, $overwrite = false) {

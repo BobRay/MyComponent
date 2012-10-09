@@ -1,33 +1,34 @@
 <?php
 
 
-class CategoryAdapter extends ObjectAdapter {//These will never change.
+class CategoryAdapter extends ObjectAdapter {
+    /* These will never change. */
     protected $dbClass = 'modCategory';
     protected $dbClassIDKey = 'id';
     protected $dbClassNameKey = 'category';
     protected $dbClassParentKey = 'parent';
-    /*static protected $dbTransportAttributes = array
-    (   xPDOTransport::UNIQUE_KEY => 'id',
-        xPDOTransport::PRESERVE_KEYS => false,
-        xPDOTransport::UPDATE_OBJECT => true,
-        xPDOTransport::RELATED_OBJECTS => true,
-        xPDOTransport::ABORT_INSTALL_ON_VEHICLE_FAIL => true,
-        
-    );*/
-    
-// Database Columns for the XPDO Object
+    /* ************** */
+
     protected $myFields;
-    protected $myObjects = array();
     protected $name;
     protected $createProcessor = 'element/category/create';
     protected $updateProcessor = 'element/category/update';
     protected $myId;
+    protected $objectArray = array();
+    protected $targetBase;
+    /* @var $modx modX */
+    public $modx;
+    /* @var $helpers Helpers */
+    public $helpers;
+
 
   
-    final public function __construct(&$modx, &$helpers, $fields) {
+    final public function __construct(&$modx, &$helpers, $fields, $objectArray = array()) {
         /* @var $modx modX */
-        $this->modx = $modx;
-        $this->helpers = $helpers;
+        $this->modx =& $modx;
+        $this->helpers =& $helpers;
+        $this->objectArray =& $objectArray;
+        $this->targetRoot = $this->helpers->props['targetRoot'];
         $fields = is_array($fields) ? $fields : array();
 
         $this->name = $fields['category'];
@@ -56,21 +57,6 @@ class CategoryAdapter extends ObjectAdapter {//These will never change.
     public function addToMODx($overwrite = false) {
         /* create category if necessary */
         $this->myId =  parent::addToModx();
-        /*$categoryObj = $this->modx->getObject('modCategory', array('category' => $this->name));
-        if (! $categoryObj) {
-            $fields['category'] = array('category' => $this->name);
-            $this->quickCreate($fields);
-        }*/
-
-
-        // Now we can attach Intersects...
-            //foreach ($objects as $obj)
-            //{   $class = get_class($thing);
-            //    $class::$property
-            //    
-            //}
-            // $this->connectTvsToTemplates();
-             //}
     }
 
     public function addChildren($fields, $createCodeFiles = false) {
@@ -103,65 +89,27 @@ class CategoryAdapter extends ObjectAdapter {//These will never change.
                 }
 
             }
-
-
         }
     }
-    public function quickCreate($fields, $overwrite = false) {
-        $categoryName = $fields['category'];
-        $categoryObj = $this->modx->getObject('modCategory', array('category' => $categoryName ));
-
-        if (! $categoryObj) {
-            $categoryObj = $this->modx->newObject('modCategory');
-            if (isset($fields['parent']) && !empty($fields['parent']) && ! is_numeric($fields['parent']) ) {
-                $p = $this->modx->getObject('modCategory', array('category' => $categoryName));
-                $fields['category'] = $p ? $p->get('id') : 0;
-            }
 
 
-        /* set any fields that are not already set */
-            if ($categoryObj) {
-                foreach ($fields as $k => $v) {
-                    if (! $categoryObj->get($k)) {
-                        $categoryObj->set($k, $v);
-                    }
-                }
-                if ($categoryObj->save()) {
-                    $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Quick-created category: ' . $categoryName);
-                }
-            } else {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Could not find or create category: ' . $categoryName);
-            }
-        } else {
-            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Category already exists: ' . $categoryName);
-        }
-    }
-    
-    
-    
-    /** Connects TVs to templates and creates resolver connecting them in the package
-     * if set in the project config file */
-    public function connectTvsToTemplates()
-    {//For Quick Access
-        $mc = $this->myComponent;
-    
-        $templateVarTemplates = $this->modx->getOption('templateVarTemplates', $this->props, array());
-        $mc->createIntersects($templateVarTemplates, 'modTemplateVarTemplate', 'modTemplate', 'modTemplateVar', 'templateid', 'tmplvarid');
+    public function createTemplateVarTemplateResolver() {
+        $templateVarTemplates = $this->modx->getOption('templateVarTemplates', $this->objectArray, array());
 
         /* Create Resolver */
         if (!empty($templateVarTemplates)) {
-            $mc->sendLog(MODX::LOG_LEVEL_INFO, 'Creating tv resolver');
-            $tpl = $this->getTpl('tvresolver.php');
-            $tpl = $mc->replaceTags($tpl);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating tv resolver');
+            $tpl = $this->helpers->getTpl('tvresolver.php');
+            $tpl = $this->helpers->replaceTags($tpl);
             if (empty($tpl)) {
-                $mc->sendLog(MODX::LOG_LEVEL_ERROR, 'tvresolver tpl is empty');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'tvresolver tpl is empty');
             }
             $dir = $this->targetBase . '_build/resolvers';
             $fileName = 'tv.resolver.php';
 
-            if (! file_exists($dir . '/' . $fileName)) {
+            if (!file_exists($dir . '/' . $fileName)) {
                 $code = '';
-                $codeTpl = $this->getTpl('tvresolvercode.php');
+                $codeTpl = $this->helpers->getTpl('tvresolvercode.php');
                 $codeTpl = str_replace('<?php', '', $codeTpl);
 
                 foreach ($templateVarTemplates as $template => $tvs) {
@@ -170,14 +118,16 @@ class CategoryAdapter extends ObjectAdapter {//These will never change.
                     $code .= "\n" . $tempCodeTpl;
                 }
 
-            $tpl = str_replace('/* [[+code]] */', $code, $tpl);
+                $tpl = str_replace('/* [[+code]] */', $code, $tpl);
 
-            $mc->writeFile($dir, $fileName, $tpl);
-            } else {
-                $mc->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+                $this->helpers->writeFile($dir, $fileName, $tpl);
+            }
+            else {
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
             }
         }
     }
+
     
 /* *****************************************************************************
    Export Objects and Support Functions (in MODxObjectAdapter)

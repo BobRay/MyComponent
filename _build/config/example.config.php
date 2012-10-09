@@ -163,28 +163,27 @@ $components = array(
             'Plugin2' => array( /* example with static, events, and property sets */
                 'category' => 'Example',
                 'static' => false,
-                'propertySets' => array(
-                    'PropertySet1',
+                'propertySets' => array( /* all property sets to be connected to element */
+                    'PropertySet1' => array(),
                 ),
                 'events' => array(
-                    'OnUserFormSave' => array(),
                     /* minimal example - no fields */
-                    'OnMyEvent1' => array( /* example with fields set */
+                    'OnUserFormSave' => array(),
+                    /* example with fields set */
+                    'OnMyEvent1' => array(
                         'priority' => '0', /* priority of the event -- 0 is highest priority */
                         'group' => 'plugins', /* should generally be set to 'plugins' */
-                        'propertySets' => array(
-                            'PropertySet1',
-                        )
+                        'propertySet' => 'PropertySet1', /* property set to be used in this pluginEvent */
                     ),
                     'OnMyEvent2' => array(
                         'priority' => '',
                         'group' => 'plugins',
-                        'propertySets' => '',
+                        'propertySet' => '',
                     ),
                     'OnDocFormSave' => array(
                         'priority' => '0',
                         'group' => 'plugins',
-                        'propertySets' => '',
+                        'propertySet' => '',
                     ),
 
 

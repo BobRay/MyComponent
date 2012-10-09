@@ -319,47 +319,101 @@ class Helpers
     }
 
     /**
-     * @param $values array - array from project config file
+     * @param $values array - array of the intersect's fields
      * @param $intersectType string (modTemplateVarTemplate, modPluginEvent, etc.)
-     * @param $mainObjectType string - (modTemplate, modSnppet, etc.)
+     * @param $mainObjectType string - (modTemplate, modSnippet, etc.)
      * @param $subsidiaryObjectType string - (modTemplate, modSnippet, etc.)
      * @param $fieldName1 string - intersect field name for main object.
      * @param $fieldName2 string - intersect field name for subsidiary object.
      */
-    public function createIntersects($values, $intersectType, $mainObjectType, $subsidiaryObjectType, $fieldName1, $fieldName2 ) {
-        $this->sendLog(MODX::LOG_LEVEL_INFO, 'Creating ' . $intersectType . ' objects');
+    public function createIntersects($intersectType, $intersects) {
+        $mainObjectType = 'missing';
+        $mainObjectName = 'missing';
+        $subsidiaryObjectType = 'missing';
+        $subsidiaryObjectName = 'missing';
 
+        foreach ($intersects as $values) {
+            $this->sendLog(MODX::LOG_LEVEL_INFO, 'Creating ' . $intersectType . ' objects');
 
-        if ($intersectType == 'modPluginEvent') {
-            /* create new System Event Names record, if set in config */
-            /* @var $obj modEvent */
-            $newEvents = $this->props['newSystemEvents'];
-            $newEventNames = empty($newEvents)? array() : explode(',', $newEvents);
-            foreach($newEventNames as $newEventName) {
-                $obj = $this->modx->getObject('modEvent', array('name' => $newEventName));
-                if (!$obj) {
-                    $obj = $this->modx->newObject('modEvent');
-                    {
-                        $obj->set('name', $newEventName);
-                        $obj->set('groupname', $this->props['category']);
-                        $obj->set('service', 1);
+            switch($intersectType) {
+                case 'modTemplateVarTemplate':
+                    $mainObjectType = 'modTemplate';
+                    $subsidiaryObjectType = 'modTemplateVar';
+                    $mainObjectName = $values['templateid'];
+                    $subsidiaryObjectName = $values['tmplvarid'];
+                    break;
+                case 'modPluginEvent':
 
-                        if ($obj && $obj->save()) {
-                            $this->sendLog(MODX::LOG_LEVEL_INFO, '    Created new System Event name: ' . $newEventName);
-                        } else {
-                            $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating System Event name: Could not save  ' . $newEventName);
-                        }
+                    break;
+
+            }
+            $alias = $this->getNameAlias($mainObjectType);
+            $searchFields = array($alias => $mainObjectName);
+            $mainObject = $this->modx->getObject($mainObjectType, $searchFields);
+
+            if (!$mainObject) {
+                $this->sendLog(MODX::LOG_LEVEL_ERROR, '    Error creating intersect ' .
+                        $intersectType . ': Could not get main object ' . $mainObjectName .
+                        "\n    " . implode(',', $searchFields));
+                return false;
+            }
+
+            $alias = $this->getNameAlias($subsidiaryObjectType);
+            $searchFields = array($alias => $subsidiaryObjectName);
+            $subsidiaryObject = $this->modx->getObject($subsidiaryObjectType, $searchFields);
+            if (! $subsidiaryObject) {
+                $this->sendLog(MODX::LOG_LEVEL_ERROR, '    Error creating intersect ' .
+                        $intersectType . ': could not get subsidiary object ' .
+                        $subsidiaryObjectName ."\n    " . implode(', ', $searchFields));
+                return false;
+            }
+
+            // $mainObjectId = $mainObject->get('id');
+            // $subsidiaryObjectId = $subsidiaryObject->get('id');
+
+            switch($intersectType) {
+                case 'modTemplateVarTemplate':
+                    $searchFields = array(
+                        'templateid' => $mainObject->get('id'),
+                        'tmplvarid' => $subsidiaryObject->get('id'),
+                    );
+                    break;
+                default:
+                    break;
+            }
+
+            $intersectObj = $this->modx->getObject($intersectType, $searchFields);
+
+            if ($intersectObj) {
+                $this->sendLog(MODX_LOG_LEVEL_INFO, '    Intersect already exists for ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
+            } else {
+                $intersectObj = $this->modx->newObject($intersectType);
+                if ($intersectObj) {
+                    /* add any extra fields */
+                    $extraValues = array_slice($values, 2);
+                    $values = array_merge($searchFields, $extraValues);
+                    foreach ($values as $k => $v) {
+                        $intersectObj->set($k, $v);
+                    }
+                    if ($intersectObj->save()) {
+                        $this->sendLog(MODX_LOG_LEVEL_INFO, '    Created Intersect ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
+
                     }
                 } else {
-                    $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $newEventName . ': System Event name already exists');
+                    $this->sendLog(MODX_LOG_LEVEL_ERROR, '    Could not create intersect for ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
                 }
             }
+
         }
 
+        if (true) {
+            return true;
+        }
+        /* ********** old code */
 
         if (empty($values)) {
             $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': value array is empty');
-            return;
+            return false;
         }
         foreach ($values as $mainObjectName => $subsidiaryObjectNames) {
             if (empty($mainObjectName)) {
