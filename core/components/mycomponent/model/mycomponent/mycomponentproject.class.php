@@ -231,7 +231,7 @@ class MyComponentProject {
                         $objects['categoryNames'][$fields['category']]['category'] = $fields['category'];
                     }
 
-                    /* ToDo: Move to TemplateAdapter */
+                    /* normalize name field for templates*/
                     if ($type == 'templates') {
                         if (!isset($fields['templatename'])) {
                             $fields['templatename'] = isset($fields['name'])
@@ -244,8 +244,6 @@ class MyComponentProject {
                             ? $fields['name']
                             : $element;
                     }
-                    /* ToDo: Move to TemplateAdapter */
-                    //unset ($fields['category']);
 
                     if (isset($config['allStatic']) && !empty($config['allStatic'])) {
                         $fields['static'] = true;
@@ -258,7 +256,10 @@ class MyComponentProject {
                     if ($type == 'plugins' || isset($fields['events'])) {
                         if (is_array($fields['events'])) {
                             foreach($fields['events'] as $event => $eventFields) {
-                                $objects['pluginEvents'][$element][$event] = $eventFields;
+                                $tempFields['plugin'] = $element;
+                                $tempFields['event'] = $event;
+                                $eventFields = $tempFields + $eventFields;
+                                $objects['pluginEvents'][] = $eventFields;
                             }
                         }
                     }
@@ -552,7 +553,7 @@ echo "\n" . memory_get_usage();
         /* Create intersects for many-to-many objects */
         $this->connectTvsToTemplates();
         // $this->connectPropertySetsToElements();
-        // $this->connectPluginsToEvents();
+        $this->connectPluginsToEvents();
 
 $mem_usage = memory_get_usage();
 echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
@@ -562,6 +563,10 @@ echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
     public function connectTvsToTemplates() {
         $templateVarTemplates = $this->bootstrapObjects['templateVarTemplates'];
         $this->helpers->createIntersects('modTemplateVarTemplate', $templateVarTemplates);
+    }
+    public function connectPluginsToEvents() {
+        $pluginEvents = $this->bootstrapObjects['pluginEvents'];
+        $this->helpers->createIntersects('modPluginEvent', $pluginEvents);
     }
     /* add to MODx function -- separating this allows
      * more frequent garbage collection */

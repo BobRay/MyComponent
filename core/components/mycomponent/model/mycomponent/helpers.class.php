@@ -331,10 +331,11 @@ class Helpers
         $mainObjectName = 'missing';
         $subsidiaryObjectType = 'missing';
         $subsidiaryObjectName = 'missing';
-
+        $this->sendLog(MODX::LOG_LEVEL_INFO, 'Creating ' . $intersectType . ' objects');
         foreach ($intersects as $values) {
-            $this->sendLog(MODX::LOG_LEVEL_INFO, 'Creating ' . $intersectType . ' objects');
 
+            $mainIdField = 'id';
+            $subIdField = 'id';
             switch($intersectType) {
                 case 'modTemplateVarTemplate':
                     $mainObjectType = 'modTemplate';
@@ -343,6 +344,20 @@ class Helpers
                     $subsidiaryObjectName = $values['tmplvarid'];
                     break;
                 case 'modPluginEvent':
+                    $subIdField = 'event';
+                    $mainObjectType = 'modPlugin';
+                    $subsidiaryObjectType = 'modEvent';
+                    $mainObjectName = $values['plugin'];
+                    $subsidiaryObjectName = $values['event'];
+                    if (isset($values['propertyset'])) {
+                        $ps = $this->modx->getObject('modPropertySet', array('name' => $values['propertyset']));
+                        if ($ps) {
+                            $values['propertyset'] = $ps->get('id');
+                        } else {
+                            $this->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find Property Set: ' .
+                                $values['propertyset']);
+                        }
+                    }
 
                     break;
 
@@ -374,8 +389,14 @@ class Helpers
             switch($intersectType) {
                 case 'modTemplateVarTemplate':
                     $searchFields = array(
-                        'templateid' => $mainObject->get('id'),
-                        'tmplvarid' => $subsidiaryObject->get('id'),
+                        'templateid' => $mainObject->get($mainIdField),
+                        'tmplvarid' => $subsidiaryObject->get($subIdField),
+                    );
+                    break;
+                case 'modPluginEvent':
+                    $searchFields = array(
+                        'pluginid' => $mainObject->get($mainIdField),
+                        'event' => $values[$subIdField],
                     );
                     break;
                 default:
@@ -386,6 +407,7 @@ class Helpers
 
             if ($intersectObj) {
                 $this->sendLog(MODX_LOG_LEVEL_INFO, '    Intersect already exists for ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
+
             } else {
                 $intersectObj = $this->modx->newObject($intersectType);
                 if ($intersectObj) {
@@ -393,6 +415,9 @@ class Helpers
                     $extraValues = array_slice($values, 2);
                     $values = array_merge($searchFields, $extraValues);
                     foreach ($values as $k => $v) {
+                        if (empty($v)) {
+                            $v = '';
+                        }
                         $intersectObj->set($k, $v);
                     }
                     if ($intersectObj->save()) {
