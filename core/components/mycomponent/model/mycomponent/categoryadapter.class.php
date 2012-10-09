@@ -23,7 +23,7 @@ class CategoryAdapter extends ObjectAdapter {
 
 
   
-    final public function __construct(&$modx, &$helpers, $fields, $objectArray = array()) {
+    final public function __construct(&$modx, &$helpers, $fields) {
         /* @var $modx modX */
         $this->modx =& $modx;
         $this->helpers =& $helpers;
