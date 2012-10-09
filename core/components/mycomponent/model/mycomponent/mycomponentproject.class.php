@@ -259,13 +259,19 @@ class MyComponentProject {
                                 $tempFields['plugin'] = $element;
                                 $tempFields['event'] = $event;
                                 $eventFields = $tempFields + $eventFields;
+                                unset($eventFields['group']);
                                 $objects['pluginEvents'][] = $eventFields;
                             }
                         }
                     }
                     if (isset($fields['propertySets']) && !empty($fields['propertySets'])) {
                         foreach($fields['propertySets'] as $k => $setName) {
-                            $objects['elementPropertySets'][$type][$element] = $setName;
+                            $objects['elementPropertySets'][] = array(
+                                'element' => $element,
+                                'element_class' => 'mod' . ucfirst(substr($type, 0, -1)),
+                                'property_set' => $setName,
+
+                            );
                         }
                     }
 
@@ -552,11 +558,20 @@ echo "\n" . memory_get_usage();
 
         /* Create intersects for many-to-many objects */
         $this->connectTvsToTemplates();
-        // $this->connectPropertySetsToElements();
         $this->connectPluginsToEvents();
+        $this->connectElementsToPropertySets();
 
 $mem_usage = memory_get_usage();
 echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
+
+    }
+    /* add to MODx function -- separating this allows
+     * more frequent garbage collection */
+    protected function addToModx($adapter, $fields, $overwrite = false) {
+        /* @var $o ObjectAdapter */
+        $o = new $adapter($this->modx, $this->helpers, $fields);
+        $o->addToMODx();
+        return $o;
 
     }
 
@@ -568,14 +583,12 @@ echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
         $pluginEvents = $this->bootstrapObjects['pluginEvents'];
         $this->helpers->createIntersects('modPluginEvent', $pluginEvents);
     }
-    /* add to MODx function -- separating this allows
-     * more frequent garbage collection */
-    protected function addToModx($adapter, $fields, $overwrite = false) {
-        /* @var $o ObjectAdapter */
-        $o = new $adapter($this->modx, $this->helpers, $fields);
-        $o->addToMODx();
-        return $o;
+    public function connectElementsToPropertySets() {
+        $propertySets = $this->bootstrapObjects['elementPropertySets'];
 
+        if (!empty($propertySets)) {
+            $this->helpers->createIntersects('modElementPropertySet', $propertySets);
+        }
     }
 
     public function newPaths()
@@ -915,12 +928,8 @@ echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
      * Connects Property Sets to Elements and creates a resolver to connect them
      * during the install.
      */
-    public function connectPropertySetsToElements() {
-        $propertySets = $this->props['propertySetElements'];
+    public function createElementPropertySetResolver() {
 
-        if (!empty($propertySets)) {
-            $this->createIntersects($propertySets,'modElementPropertySet','modPropertySet','modElement', 'property_set','element');
-        }
         /* Create Resolver */
         if (!empty($propertySets)) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating tv resolver');

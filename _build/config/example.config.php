@@ -164,7 +164,7 @@ $components = array(
                 'category' => 'Example',
                 'static' => false,
                 'propertySets' => array( /* all property sets to be connected to element */
-                    'PropertySet1' => array(),
+                    'PropertySet1',
                 ),
                 'events' => array(
                     /* minimal example - no fields */
@@ -197,7 +197,9 @@ $components = array(
             'Chunk2' => array(
                 'category' => 'Example',
                 'static' => false,
-                'propertySet' => 'PropertySet2',
+                'propertySets' => array(
+                    'PropertySet2',
+                ),
             ),
         ),
         'templates' => array(
@@ -207,12 +209,18 @@ $components = array(
             'Template2' => array(
                 'category' => 'Example',
                 'static' => false,
-                'propertySet' => 'PropertySet2',
+                'propertySets' => array(
+                    'PropertySet2',
+                ),
             ),
         ),
         'templateVars' => array( /* minimal example */
             'Tv1' => array(
                 'category' => 'Example',
+                'propertySets' => array(
+                    'PropertySet1',
+                    'PropertySet2',
+                ),
             ),
             'Tv2' => array( /* example with templates, default, and static specified */
                 'category' => 'Example',

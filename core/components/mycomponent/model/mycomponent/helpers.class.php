@@ -358,8 +358,19 @@ class Helpers
                                 $values['propertyset']);
                         }
                     }
+                    break;
+                case 'modElementPropertySet':
+                    $subIdField = 'id';
+                    $mainObjectType = $values['element_class'];
+                    $mainObjectName = $values['element'];
+                    $subsidiaryObjectType = 'modPropertySet';
+                    $subsidiaryObjectName = $values['property_set'];
 
                     break;
+                default:
+                    $this->sendLog(MODX_LOG_LEVEL_ERROR, 'Asked for unknown intersect type');
+                    break;
+
 
             }
             $alias = $this->getNameAlias($mainObjectType);
@@ -383,8 +394,6 @@ class Helpers
                 return false;
             }
 
-            // $mainObjectId = $mainObject->get('id');
-            // $subsidiaryObjectId = $subsidiaryObject->get('id');
 
             switch($intersectType) {
                 case 'modTemplateVarTemplate':
@@ -399,6 +408,14 @@ class Helpers
                         'event' => $subsidiaryObject->get($subIdField),
                     );
                     break;
+                case 'modElementPropertySet':
+                    $searchFields = array(
+                        'element' => $mainObject->get($mainIdField),
+                        'element_class' => $mainObjectType,
+                        'property_set' => $subsidiaryObject->get($subIdField),
+                    );
+
+                    break;
                 default:
                     break;
             }
@@ -412,12 +429,19 @@ class Helpers
                 $intersectObj = $this->modx->newObject($intersectType);
                 if ($intersectObj) {
                     /* add any extra fields */
-                    $extraValues = array_slice($values, 2);
-                    $values = array_merge($searchFields, $extraValues);
+                    if ($intersectType != 'modElementPropertySet') {
+                        $extraValues = array_slice($values, 2);
+                        $values = array_merge($searchFields, $extraValues);
+                    } else {
+                        $values = $searchFields;
+                    }
+
                     foreach ($values as $k => $v) {
+                        /* make sure no fields are null */
                         if (empty($v)) {
                             $v = '';
                         }
+                        /* set the values */
                         $intersectObj->set($k, $v);
                     }
                     if ($intersectObj->save()) {
