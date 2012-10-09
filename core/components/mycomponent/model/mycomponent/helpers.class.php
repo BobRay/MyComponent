@@ -344,7 +344,7 @@ class Helpers
                     $subsidiaryObjectName = $values['tmplvarid'];
                     break;
                 case 'modPluginEvent':
-                    $subIdField = 'event';
+                    $subIdField = 'name';
                     $mainObjectType = 'modPlugin';
                     $subsidiaryObjectType = 'modEvent';
                     $mainObjectName = $values['plugin'];
@@ -396,7 +396,7 @@ class Helpers
                 case 'modPluginEvent':
                     $searchFields = array(
                         'pluginid' => $mainObject->get($mainIdField),
-                        'event' => $values[$subIdField],
+                        'event' => $subsidiaryObject->get($subIdField),
                     );
                     break;
                 default:
