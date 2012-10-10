@@ -135,6 +135,9 @@ class MyComponentProject {
         if (empty($properties)) {
             die('Config File was not set up correctly: ' . $configPath);
         }
+
+        $this->packageNameLower = $properties['packageNameLower'];
+
         $this->mcRoot = isset($properties['mycomponentRoot'])
             ? $properties['mycomponentRoot']
             : '';
@@ -152,12 +155,44 @@ class MyComponentProject {
         $helpers = new Helpers($this->modx, $this->props);
         $this->helpers = $helpers;
         $this->helpers->init();
-        
+
         $this->dirPermission = $this->props['dirPermission'];
-        $this->packageNameLower = $this->props['packageNameLower'];
 
         $this->bootstrapObjects = $this->getBootstrapObjects();
 
+        /* Create or update projects.php file */
+        $this->updateProjectsFile($configPath);
+
+
+    }
+
+    public function updateProjectsFile($configPath) {
+        $projectsFile = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/_build/config/projects.php';
+        $header = '<' . '?' . 'php' . "\n\n\$projects = array(\n";
+        $footer = ");\nreturn \$projects;\n";
+        $newContent = $this->packageNameLower . "' => '" . $configPath .
+            "',\n";
+        if (file_exists($projectsFile)) {
+            $projects = include $projectsFile;
+            if (!in_array($this->packageNameLower, array_keys($projects))) {
+
+                $content = file_get_contents($projectsFile);
+
+                $content = str_replace($footer, "    '" . $newContent . $footer, $content);
+                $fp = fopen($projectsFile, 'w');
+                fwrite($fp, $content);
+                fclose($fp);
+                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Updated projects.php file');
+            }
+
+        } else {
+            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Created projects.php file');
+            $content = $header . "    '" . $newContent . $footer;
+            $fp = fopen($projectsFile, 'w');
+            fwrite($fp, $content);
+            fclose($fp);
+
+        }
     }
 
     /* Creates an array of object names and fields from the project config file */
