@@ -44,6 +44,10 @@ class ResourceAdapter extends ObjectAdapter
         $this->defaults['context'] = $modx->getOption('default_context', null);
         $this->defaults['template'] = $modx->getOption('default_template', null);
 
+        if (!isset($fields['class_key'])) {
+            $fields['class_key'] = 'modDocument';
+        }
+
         foreach ($this->defaults as $field => $value) {
             $fields[$field] = isset($fields[$field])
                 ? $fields[$field]
@@ -77,13 +81,13 @@ class ResourceAdapter extends ObjectAdapter
         $this->myFields['alias'] = str_replace(' ', '-', strtolower($this->myFields['pagetitle']));
 
     // Set default properties
-        $this->myFields['published'] = $init_published;
+        /*$this->myFields['published'] = $init_published;
         $this->myFields['richtext'] = $init_richtext;
         $this->myFields['hidemenu'] = $init_hidemenu;
         $this->myFields['cacheable'] = $init_cacheable;
         $this->myFields['searchable'] = $init_searchable;
         $this->myFields['context'] = $init_context;
-        $this->myFields['template'] = $init_template;
+        $this->myFields['template'] = $init_template;*/
 
     // Set default Content
         $this->myFields['content'] = 'Enter your page\'s content here';
