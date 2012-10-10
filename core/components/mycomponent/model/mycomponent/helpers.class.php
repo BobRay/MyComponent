@@ -124,10 +124,10 @@ class Helpers
         if (strstr($name, '.php') && !empty($text)) {
             /* make sure the header made it and do alerts if not */
             if (empty($text)) {
-                $this->sendLog(MODX::LOG_LEVEL_ERROR, '    Problem loading Tpl file (text is empty) ' . $name  );
+                $this->sendLog(MODX_LOG_LEVEL_ERROR, '    Problem loading Tpl file (text is empty) ' . $name  );
                 $text = "<?php\n/* empty header */\n\n";
             } elseif (strpos($text, '<' . '?' . 'php') === false) {
-                $this->sendLog(MODX::LOG_LEVEL_ERROR, '    Problem loading Tpl file (text has no PHP tag) ' . $name);
+                $this->sendLog(MODX_LOG_LEVEL_ERROR, '    Problem loading Tpl file (text has no PHP tag) ' . $name);
                 $text = "<?php\n /* inserted PHP tag */\n\n" . $text;
             }
         }

@@ -340,9 +340,14 @@ abstract class ObjectAdapter
     public function createCodeFile($overwrite = false) {
         $tpl = $this->getTplCode();
         if (!empty($tpl)) {
-            $dir = $this->helpers->props['targetRoot'] . 'core/components/';
-            $dir .= $this->helpers->props['packageNameLower'] . '/';
-            $dir =  $this->helpers->getCodeDir($dir, $this->dbClass);
+            if ($this->dbClass == 'modResource') {
+                $dir = $this->helpers->props['targetRoot'] . '_build/data/resources/';
+            } else {
+                $dir = $this->helpers->props['targetRoot'] . 'core/components/';
+                $dir .= $this->helpers->props['packageNameLower'] . '/';
+                $dir = $this->helpers->getCodeDir($dir, $this->dbClass);
+            }
+
             $file = $this->helpers->getFileName($this->getName(), $this->dbClass);
             if (! file_exists($dir . '/' . $file)) {
                 $this->helpers->writeFile($dir, $file, $tpl);

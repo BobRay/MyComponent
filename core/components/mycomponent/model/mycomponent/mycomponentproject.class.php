@@ -158,9 +158,10 @@ class MyComponentProject {
 
         $this->dirPermission = $this->props['dirPermission'];
 
+    /* Create array of objects for bootstrap to use */
         $this->bootstrapObjects = $this->getBootstrapObjects();
 
-        /* Create or update projects.php file */
+    /* Create or update projects.php file */
         $this->updateProjectsFile($configPath);
 
 
@@ -418,6 +419,7 @@ public function initPaths() {
             $paths['targetImages']    = $paths['targetAssets'] . 'images/';
         $paths['targetBuild']     = $paths['targetRoot'] . '_build/';
             $paths['targetData']      = $paths['targetBuild'] . 'data/';
+            $paths['targetResources'] = $paths['targetData'] . '_resources/';
             $paths['targetProperties'] = $paths['targetData'] . 'properties/';
             $paths['targetResolve']   = $paths['targetBuild'] . 'resolvers/';
             $paths['targetValidate']  = $paths['targetBuild'] . 'validators/';
@@ -427,16 +429,6 @@ public function initPaths() {
     /* dump object array to file for reference */
     $objectArray = print_r($this->bootstrapObjects, true);
     $this->helpers->writeFile($paths['mcBuild'], 'objectarray.txt', $objectArray);
-    //$fp = fopen($this->myPaths['mcBuild'] . 'objectarray.txt', "w");
-    /*if ($fp) {
-        fwrite($fp, $objectArray);
-        fclose($fp);
-        $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Created ' . $this->myPaths['mcBuild'] . 'objectarray.txt');
-    }
-    else {
-        $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Could not open ' . $this->myPaths['mcBuild'] . 'objectarray.txt');
-    }*/
-
 }
 
     /* Not used */
@@ -522,8 +514,6 @@ echo "\n" . memory_get_usage();
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating namespace(s)');
             foreach ($objects['namespaces'] as $namespace => $fields) {
                 $this->addToModx('NameSpaceAdapter', $fields);
-                /*$n = new NamespaceAdapter($modx, $helpers, $fields);
-                $n ->addToModx();*/
             }
        }
 echo "\n" . memory_get_usage();
@@ -584,7 +574,8 @@ echo "\n" . memory_get_usage();
                     ? $resource
                     : $fields['pagetitle'];
 
-                $this->addToModx('ResourceAdapter', $fields);
+                $o = $this->addToModx('ResourceAdapter', $fields);
+                $o->createCodeFile();
 
                 /*$r = new ResourceAdapter($modx, $helpers, $fields);
                 $r->addToMODx();*/
