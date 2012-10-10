@@ -319,13 +319,9 @@ class Helpers
     }
 
     /**
-     * @param $values array - array of the intersect's fields
      * @param $intersectType string (modTemplateVarTemplate, modPluginEvent, etc.)
-     * @param $mainObjectType string - (modTemplate, modSnippet, etc.)
-     * @param $subsidiaryObjectType string - (modTemplate, modSnippet, etc.)
-     * @param $fieldName1 string - intersect field name for main object.
-     * @param $fieldName2 string - intersect field name for subsidiary object.
-     */
+     * @param $intersects array  array of intersect objects */
+
     public function createIntersects($intersectType, $intersects) {
         $mainObjectType = 'missing';
         $mainObjectName = 'missing';
@@ -455,104 +451,7 @@ class Helpers
 
         }
 
-        if (true) {
-            return true;
-        }
-        /* ********** old code */
-
-        if (empty($values)) {
-            $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': value array is empty');
-            return false;
-        }
-        foreach ($values as $mainObjectName => $subsidiaryObjectNames) {
-            if (empty($mainObjectName)) {
-                $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': main object name is empty');
-                continue;
-            }
-
-            $alias = $this->getNameAlias($mainObjectType);
-            if ($mainObjectType == 'modTemplate' && ($mainObjectName == 'default' || $mainObjectName == 'Default')) {
-                $defaultTemplateId = $this->modx->getOption('default_template');
-                $mainObject = $this->modx->getObject('modTemplate', $defaultTemplateId);
-            } else {
-                $mainObject = $this->modx->getObject($mainObjectType, array($alias => $mainObjectName) );
-            }
-            if (! $mainObject) {
-                $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': Could not get main object ' . $mainObjectName);
-                continue;
-            }
-            $subsidiaryObjectNames = explode(',', $subsidiaryObjectNames);
-            if (empty($subsidiaryObjectNames)) {
-                $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': subsidiary object name list is empty');
-                continue;
-            }
-            foreach ($subsidiaryObjectNames as $subsidiaryObjectName) {
-                $priority = 0;
-                if (empty($subsidiaryObjectName)) {
-                    $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': subsidiary object name is empty');
-                    continue;
-                }
-
-                if (strstr($subsidiaryObjectName, ':')) {
-                    $s = explode(':', $subsidiaryObjectName);
-                    $subsidiaryObjectName = trim($s[0]);
-                    $subsidiaryObjectType = trim($s[1]);
-                    if ($intersectType == 'modPluginEvent') {
-                        $priority = (integer) trim($s[1]);
-                    }
-                }
-                $alias = $this->getNameAlias($subsidiaryObjectType);
-                $subsidiaryObjectType = $intersectType == 'modPluginEvent' ? 'modEvent' : $subsidiaryObjectType;
-                $subsidiaryObject = $this->modx->getObject($subsidiaryObjectType, array($alias => $subsidiaryObjectName));
-                if (! $subsidiaryObject) {
-                    $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': Could not get subsidiary object ' . $subsidiaryObjectName);
-                    continue;
-                }
-                if ($mainObjectType == 'modTemplate' && $subsidiaryObjectType == 'modResource') {
-                    /* @var $mainObject modTemplate */
-                    /* @var $subsidiaryObject modResource */
-                    if ($subsidiaryObject->get('template') != $mainObject->get('id')) {
-                        $subsidiaryObject->set('template', $mainObject->get('id'));
-                        if ($subsidiaryObject->save()) {
-                            $this->sendLog(MODX::LOG_LEVEL_INFO, '    Connected ' . $mainObjectName . ' Template to ' . $subsidiaryObjectName . ' Resource');
-                        } else {
-                            $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType);
-                        }
-                    } else {
-                        $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $mainObjectName . ' Template is already connected to ' . $subsidiaryObjectName . ' Resource');
-                    }
-                    continue;
-                } else {
-                    $fields = array(
-                        $fieldName1 => $mainObject->get('id'),
-                        $fieldName2 => $intersectType == 'modPluginEvent' ? $subsidiaryObjectName : $subsidiaryObject->get('id'),
-
-                    );
-                    $intersect = $this->modx->getObject($intersectType, $fields);
-                    /* @var $intersect xPDOObject */
-                    if (!$intersect) {
-                        $intersect = $this->modx->newObject($intersectType);
-                        $intersect->set($fieldName1, $mainObject->get('id'));
-                        $intersect->set($fieldName2, $intersectType == 'modPluginEvent' ? $subsidiaryObjectName : $subsidiaryObject->get('id'));
-                        if ($intersectType == 'modPluginEvent') {
-                            $intersect->set('priority', $priority);
-                        }
-                        if ($intersectType == 'modElementPropertySet') {
-                            $intersect->set('element_class', $subsidiaryObjectType);
-                        }
-
-                        if ($intersect && $intersect->save()) {
-                            $this->sendLog(MODX::LOG_LEVEL_INFO, '    Created intersect ' . ' for ' . $mainObjectType . ' ' . $mainObjectName . ' -- ' . $subsidiaryObjectType . ' ' . $subsidiaryObjectName);
-                        } else {
-                            $this->sendLog(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': Failed to save intersect');
-                        }
-                    } else {
-                        $this->sendLog(MODX::LOG_LEVEL_INFO, '    Intersect ' . $intersectType . ' already exists for ' . $mainObjectType . ' ' . $mainObjectName . ' -- ' . $subsidiaryObjectType . ' ' . $subsidiaryObjectName);
-                    }
-
-                }
-            }
-        }
+    return true;
     }
 
     /**
@@ -645,4 +544,29 @@ class Helpers
         $msg .= $message;
         echo $msg;
     }
+
+   /* public function serialize_array(&$array, $root = '$root', $depth = 0) {
+        $items = array();
+
+        foreach ($array as $key => &$value) {
+            if (is_array($value)) {
+                serialize_array($value, $root . '[\'' . $key . '\']', $depth + 1);
+            }
+            else {
+                $items[$key] = $value;
+            }
+        }
+
+        if (count($items) > 0) {
+            echo $root . ' = array(';
+
+            $prefix = '';
+            foreach ($items as $key => &$value) {
+                echo $prefix . '\'' . $key . '\' => \'' . addslashes($value) . '\'';
+                $prefix = ', ';
+            }
+
+            echo ');' . "\n";
+        }
+    }*/
 }
