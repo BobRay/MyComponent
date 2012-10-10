@@ -344,26 +344,32 @@ class MyComponentProject {
             : array();
 
         if (!empty($resources)) {
-            $this->hasResources = true;
             foreach($resources as $resource => $fields) {
 
                 $fields['pagetitle'] = isset($fields['pagetitle'])
                     ? $fields['pagetitle']
                     : $resource;
                 $objects['resources'][$resource] = $fields;
-                if (isset($fields['parent'])) {
-                    $objects['resourceParents'][$fields['pagetitle']] = $fields['parent'];
-                }
-                if (isset($fields['template'])) {
-                    $objects['resourceTemplates'][$fields['pagetitle']] = $fields['template'];
-                }
-                if (isset($fields['TvValues'])) {
-                    if (is_array($fields['TvValues'])) {
-                        foreach ($fields['TvValues'] as $k => $v) {
-                            $objects['resourceTvs'][$k] = $v;
-                        }
+                $parent = isset($fields['parent']) && !empty($fields['parent'])
+                    ? $fields['parent']
+                    : '0';
+                $template = isset($fields['template']) && !empty($fields['template'])
+                    ? $fields['template']
+                    : 'default';
+                $resourceArray = array(
+                    'pagetitle' => $fields['pagetitle'],
+                    'parent' => $parent,
+                    'template' => $template,
+                );
+                if (isset($fields['tvValues'])) {
+                    if (is_array($fields['tvValues']) && !empty($fields['tvValues'])) {
+                        $resourceArray['tvValues'] = $fields['tvValues'];
                     }
                 }
+
+                $objects['resourceResolver'][] = $resourceArray;
+
+
             }
         }
 
@@ -428,6 +434,7 @@ public function initPaths() {
 
     /* dump object array to file for reference */
     $objectArray = print_r($this->bootstrapObjects, true);
+    //$objectArray = var_export($this->bootstrapObjects, true);
     $this->helpers->writeFile($paths['mcBuild'], 'objectarray.txt', $objectArray);
 }
 
@@ -576,10 +583,9 @@ echo "\n" . memory_get_usage();
 
                 $o = $this->addToModx('ResourceAdapter', $fields);
                 $o->createCodeFile();
-
-                /*$r = new ResourceAdapter($modx, $helpers, $fields);
-                $r->addToMODx();*/
             }
+            /* Create Resolver - This only happens once */
+            //$o->createResolver();
         }
 
         /* Create intersects for many-to-many objects */
