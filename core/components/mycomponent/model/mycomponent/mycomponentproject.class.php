@@ -292,9 +292,16 @@ class MyComponentProject {
                     if ($type == 'plugins' || isset($fields['events'])) {
                         if (is_array($fields['events'])) {
                             foreach($fields['events'] as $event => $eventFields) {
-                                $tempFields['plugin'] = $element;
-                                $tempFields['event'] = $event;
-                                $eventFields = $tempFields + $eventFields;
+                                $eventFields['plugin'] = $element;
+                                $eventFields['event'] = $event;
+                                $eventFields['priority'] = isset($eventFields['priority']) &&
+                                    !empty($eventFields['priority'])
+                                    ? $eventFields['priority']
+                                    : '0';
+                                $eventFields['propertyset'] = isset($eventFields['propertyset']) &&
+                                    !empty($eventFields['propertyset'])
+                                    ? $eventFields['propertyset']
+                                    : '0';
                                 unset($eventFields['group']);
                                 $objects['pluginEvents'][] = $eventFields;
                             }
