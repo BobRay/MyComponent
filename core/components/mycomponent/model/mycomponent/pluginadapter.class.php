@@ -37,24 +37,46 @@ class PluginAdapter extends ElementAdapter
         parent::addToMODx($overwrite);
     }
 
-    /** Connects System Events to Plugins and creates resolver for connecting them
+
+    /**
+     * Creates Resolver to for pluginEvents
+     * @param $dir string - resolver directory
+     * @param $intersects  - array array intersect objects
+     * @param $helpers Helpers - helpers class
+     * @return bool
+     */
+    public static function createResolver($dir, $intersects, $helpers) {
+
+        /* Create tv.resolver.php resolver */
+        /* @var $helpers Helpers */
+        if (!empty($dir) && !empty($intersects)) {
+            $helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating plugin resolver');
+            $tpl = $helpers->getTpl('pluginresolver.php');
+            $tpl = $helpers->replaceTags($tpl);
+            if (empty($tpl)) {
+                $helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[PluginAdapter] pluginresolver tpl is empty');
+                return false;
+            }
+
+            $fileName = 'plugin.resolver.php';
+
+            if (!file_exists($dir . '/' . $fileName)) {
+                $intersectArray = $helpers->beautify($intersects);
+                $tpl = str_replace("'[[+intersects]]'", $intersectArray, $tpl);
+
+                $helpers->writeFile($dir, $fileName, $tpl);
+            }
+            else {
+                $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+            }
+        }
+        return true;
+    }
+    /** NOT USED
+     * Connects System Events to Plugins and creates resolver for connecting them
      *  during the build if set in the project config file */
-    protected function attachEvents() 
+    protected function attachEvents()
     {//For Quick Access
-        $modx = $myComponent->modx;
-        $type = static::xPDOClass;
-        $nameKey = static::xPDOClassNameKey;
-        $nameValue = $this->myFields[$nameKey];
-        
-        /* @var $object modElement */
-        $lName =strtolower($nameValue);
-        $alias = $type == 'modTemplate'? 'templatename' : 'name';
-        $obj = $modx->getObject($type, array($nameKey => $nameValue));
-
-        $pluginEvents = $modx->getOption('pluginEvents', $this->props, array());
-        
-        $this->helpers->createIntersects($pluginEvents, 'modPluginEvent', 'modPlugin', 'modSystemEvent', 'pluginid', 'event');
-
         /* create the resolver */
         $pluginEvents = $modx->getOption('pluginEvents', $this->props, array());
         if (! empty($pluginEvents)) {
@@ -62,7 +84,7 @@ class PluginAdapter extends ElementAdapter
             $tpl = $this->helpers->getTpl(('pluginresolver.php'));
             $tpl = $this->helpers->replaceTags($tpl);
             if (empty($tpl)) {
-                $myComponent->sendLog(MODX::LOG_LEVEL_ERROR, 'pluginresolver tpl is empty');
+                $myComponent->sendLog(MODX::LOG_LEVEL_ERROR, '[PluginAdapter] pluginresolver tpl is empty');
             }
             $dir = $this->targetBase . '_build/resolvers';
             $fileName = 'plugin.resolver.php';
@@ -72,7 +94,7 @@ class PluginAdapter extends ElementAdapter
     
                 $codeTpl = $this->helpers->getTpl('pluginresolvercode.php');
                 if (empty($codeTpl)) {
-                    $myComponent->sendLog(MODX::LOG_LEVEL_ERROR, 'pluginresolvercode tpl is empty');
+                    $myComponent->sendLog(MODX::LOG_LEVEL_ERROR, '[PluginAdapter] pluginresolvercode tpl is empty');
                 }
                 $codeTpl = str_replace('<?php', '', $codeTpl);
     

@@ -237,11 +237,19 @@ class MyComponentProject {
 
         /* get new System Events */
         if (isset($config['newSystemEvents']) && !empty($config['newSystemEvents'])) {
-            foreach ($config['newSystemEvents'] as $settingName => $settingFields) {
-                $settingFields = is_array($settingFields)
-                    ? $settingFields
-                    : array();
-                $objects['newSystemEvents'][$settingName] = $settingFields;
+            foreach ($config['newSystemEvents'] as $k => $eventFields) {
+                if (! isset($eventFields['name'])) {
+                    $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '[Config] Malformed new System Event: ' . $k);
+                    continue;
+                }
+                $eventFields['service'] = isset($eventFields['service'])
+                    ? $eventFields['service']
+                    : 1;
+                $eventFields['groupname'] = isset($eventFields['service']) && ! empty($eventFields['groupname'])
+                    ? $eventFields['groupname']
+                    : $config['packageName'];
+
+                $objects['newSystemEvents'][] = $eventFields;
             }
         }
 
@@ -558,7 +566,6 @@ echo "\n" . memory_get_usage();
         if (!empty($objects['newSystemEvents'])) {
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Events');
             foreach($objects['newSystemEvents'] as $key => $fields) {
-                $fields['name'] = $key;
                 $this->addToModx('SystemEventAdapter', $fields);
                 /*$r = new SystemEventAdapter($modx, $helpers, $fields);
                 $r->addToMODx();*/
@@ -579,6 +586,8 @@ echo "\n" . memory_get_usage();
             }
             $intersects = $this->bootstrapObjects['templateVarTemplates'];
             TemplateVarAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $this->helpers);
+            $intersects = $this->bootstrapObjects['pluginEvents'];
+            PluginAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $this->helpers);
         }
 
 echo "\n" . memory_get_usage();

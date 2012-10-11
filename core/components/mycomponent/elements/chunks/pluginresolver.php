@@ -19,32 +19,77 @@
 /* @var $pluginEvent modPluginEvent */
 /* @var $obj modEvent */
 
+function checkFields($required, $objectFields) {
+    $fields = explode(',', $required);
+    foreach ($fields as $field) {
+        if (!isset($objectFields[$field])) {
+            return false;
+        }
+    }
+    return true;
+}
+
 if ($object->xpdo) {
     $modx =& $object->xpdo;
     switch ($options[xPDOTransport::PACKAGE_ACTION]) {
         case xPDOTransport::ACTION_INSTALL:
         case xPDOTransport::ACTION_UPGRADE:
 
-            $newSystemEvents = '[[+newEvents]]';
-            $eventNames = empty($eventNames)? array() : explode(',', $eventNames);
-            foreach($eventNames as $eventName) {
-                $obj = $modx->getObject('modEvent', array('name' => $eventName));
-                if (! $obj) {
-                    $obj = $modx->newObject('modEvent');
-                    {
-                        $obj->set('name', $eventName);
-                        $obj->set('groupname', '[[+category]]');
-                        $obj->set('service', 1);
-                        $obj->save();
+            $newEvents = '[[+newEvents]]';
+
+            foreach($newEvents as $key => $fields) {
+                $name = $key;
+                $event = $modx->getObject('modEvent', array('name' => $name));
+                if (!$event) {
+                    $event = $modx->newObject('modEvent');
+                    if ($event) {
+                        $event->set('name', $name);
+
                     }
                 }
             }
 
-            /* [[+code]] */
+            $intersects = '[[+intersects]]';
+
+            if (is_array($intersects)) {
+                foreach ($intersects as $k => $fields) {
+                    /* make sure we have all fields */
+                    if (!checkFields('plugin,event,priority,propertyset', $fields)) {
+                        continue;
+                    }
+                    $event = $modx->getObject('modEvent', array('name' => $fields['event']));
+
+                    $plugin = $modx->getObject('modPlugin', array('name' => $fields['plugin']));
+                    if (!$plugin || !$event) {
+                        $modx->log(xPDO::LOG_LEVEL_ERROR, 'Could not find Plugin and/or Event ' .
+                            $fields['plugin'] . ' - ' . $fields['event']);
+                        continue;
+                    }
+                    $pluginEvent = $modx->getObject('modPluginEvent', array('name'=>$plugin->get('id'),'event' => $fields['event']) );
+                    
+                    if (!$pluginEvent) {
+                        $pluginEvent = $modx->newObject('modPluginEvent');
+                    }
+                    if ($pluginEvent) {
+                        $pluginEvent->set('plugin', $plugin->get('id'));
+                        $pluginEvent->set('templateid', $template->get('id'));
+                        if (isset($fields['rank'])) {
+                            $pluginEvent->set('rank', $fields['rank']);
+                        } else {
+                            $pluginEvent->set('rank', 0);
+                        }
+                    }
+                    if (! $pluginEvent->save()) {
+                        $modx->log(xPDO::LOG_LEVEL_ERROR, 'Unknown error saving pluginEvent for ' .
+                            $fields['plugin'] . ' - ' . $fields['event']);
+                    }
+                }
+
+            }
             break;
 
         case xPDOTransport::ACTION_UNINSTALL:
-            /* [[+remove_new_events]] */
+            /* Todo: Remove new system events here */
             break;
     }
 }

@@ -78,8 +78,14 @@ $components = array(
      * Warning: Do *not* list regular MODX System Events here !!! */
 
     'newSystemEvents' => array(
-        'OnMyEvent1' => array(),
-        'OnMyEvent2' => array(),
+        'OnMyEvent1' => array(
+            'name' => 'OnMyEvent1',
+        ),
+        'OnMyEvent2' => array(
+            'name' => 'OnMyEvent2',
+            'groupname' => 'Example',
+            'service' => 1,
+        ),
     ),
 
     /* ************************ NAMESPACE(S) ************************* */

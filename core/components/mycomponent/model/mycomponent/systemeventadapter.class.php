@@ -4,7 +4,9 @@
 class SystemEventAdapter extends ObjectAdapter
 {//This will never change.
     protected $dbClass = 'modEvent';
+    /* @var $modx modX */
     public $modx;
+    /* @var $helpers Helpers */
     public $helpers;
 
 
@@ -17,23 +19,16 @@ class SystemEventAdapter extends ObjectAdapter
         $this->name = $fields['name'];
         $this->modx =& $modx;
         $this->helpers =& $helpers;
-        if (empty($fields['groupname'])) {
+        /*if (empty($fields['groupname'])) {
             $fields['groupname'] = $this->helpers->props['packageName'];
         }
         if (empty($fields['service'])) {
             $fields['service'] = 1;
-        }
+        }*/
         $this->myFields = $fields;
     }
 
-   /* public function getName() {
-        return $this->name;
-    }
 
-
-    public function getProcessor($mode) {
-        return null;
-    }*/
     
 /* *****************************************************************************
    Bootstrap and Support Functions (in MODxObjectAdapter)
