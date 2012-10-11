@@ -45,9 +45,13 @@ if($object->xpdo) {
                     if ($resource) {
                         continue;
                     }
-                    $templateObj = $modx->getObject('modTemplate', array('templatename' => $fields['template']));
-                    if ($templateObj) {
-                        $resource->set('template', $templateObj->get('id'));
+                    if ($fields['template'] == 'default') {
+                        $resource->set('template', $modx->getOption('default_template'));
+                    } else {
+                        $templateObj = $modx->getObject('modTemplate', array('templatename' => $fields['template']));
+                        if ($templateObj) {
+                            $resource->set('template', $templateObj->get('id'));
+                        }
                     }
                     if ($fields['parent'] != 0) {
 
