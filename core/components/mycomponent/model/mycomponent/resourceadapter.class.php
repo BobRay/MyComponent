@@ -227,27 +227,28 @@ class ResourceAdapter extends ObjectAdapter
           of the resolver code in another function
         */
     }
-    public function createResolver($dir, $intersects) {
+    public static function createResolver($dir, $intersects, $helpers) {
 
         /* Create resource.resolver.php resolver */
+        /* @var $helpers Helpers */
         if (!empty($dir) && !empty($intersects)) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating resource resolver');
-            $tpl = $this->helpers->getTpl('resourceresolver.php');
-            $tpl = $this->helpers->replaceTags($tpl);
+            $helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating resource resolver');
+            $tpl = $helpers->getTpl('resourceresolver.php');
+            $tpl = $helpers->replaceTags($tpl);
             if (empty($tpl)) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'resourceresolver tpl is empty');
+                $helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'resourceresolver tpl is empty');
                 return false;
             }
 
             $fileName = 'resource.resolver.php';
 
             if (!file_exists($dir . '/' . $fileName)) {
-                $intersectArray = $this->helpers->beautify($intersects);
+                $intersectArray = $helpers->beautify($intersects);
                 $tpl = str_replace("'[[+intersects]]'", $intersectArray, $tpl);
 
-                $this->helpers->writeFile($dir, $fileName, $tpl);
+                $helpers->writeFile($dir, $fileName, $tpl);
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+                $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
             }
         }
         return true;

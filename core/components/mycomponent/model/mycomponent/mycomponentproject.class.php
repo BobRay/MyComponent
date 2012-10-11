@@ -571,7 +571,6 @@ echo "\n" . memory_get_usage();
                 $catAdapter->addChildren($fields, true);
             }
             $intersects = $this->bootstrapObjects['templateVarTemplates'];
-            //$o = new TemplateVarAdapter($this->modx, $this->helpers, array());
             TemplateVarAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $this->helpers);
         }
 
@@ -592,7 +591,7 @@ echo "\n" . memory_get_usage();
             /* Create Resolver - This only happens once */
             if ($o) {
                 $intersects = $this->bootstrapObjects['resourceResolver'];
-                $o->createResolver($this->myPaths['targetResolve'], $intersects);
+                ResourceAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $helpers);
             }
         }
 
