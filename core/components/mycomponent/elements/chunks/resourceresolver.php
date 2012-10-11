@@ -42,7 +42,7 @@ if($object->xpdo) {
                         continue;
                     }
                     $resource = $modx->getObject('modResource', array('pagetitle' => $fields['pagetitle']));
-                    if ($resource) {
+                    if (! $resource) {
                         continue;
                     }
                     if ($fields['template'] == 'default') {
