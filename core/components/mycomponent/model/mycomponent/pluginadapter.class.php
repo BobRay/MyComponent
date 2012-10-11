@@ -45,7 +45,7 @@ class PluginAdapter extends ElementAdapter
      * @param $helpers Helpers - helpers class
      * @return bool
      */
-    public static function createResolver($dir, $intersects, $helpers) {
+    public static function createResolver($dir, $intersects, $helpers, $newEvents) {
 
         /* Create tv.resolver.php resolver */
         /* @var $helpers Helpers */
@@ -63,7 +63,8 @@ class PluginAdapter extends ElementAdapter
             if (!file_exists($dir . '/' . $fileName)) {
                 $intersectArray = $helpers->beautify($intersects);
                 $tpl = str_replace("'[[+intersects]]'", $intersectArray, $tpl);
-
+                $newEventArray = $helpers->beautify($newEvents);
+                $tpl = str_replace("'[[+newEvents]]'", $newEventArray, $tpl);
                 $helpers->writeFile($dir, $fileName, $tpl);
             }
             else {

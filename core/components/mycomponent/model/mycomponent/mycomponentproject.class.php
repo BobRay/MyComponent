@@ -586,8 +586,10 @@ echo "\n" . memory_get_usage();
             }
             $intersects = $this->bootstrapObjects['templateVarTemplates'];
             TemplateVarAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $this->helpers);
+
             $intersects = $this->bootstrapObjects['pluginEvents'];
-            PluginAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $this->helpers);
+            $newEvents = $this->bootstrapObjects['newSystemEvents'];
+            PluginAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $this->helpers, $newEvents);
         }
 
 echo "\n" . memory_get_usage();

@@ -17,7 +17,7 @@
 /* @var $modx modX */
 /* @var $pluginObj modPlugin */
 /* @var $pluginEvent modPluginEvent */
-/* @var $obj modEvent */
+/* @var $newEvents array */
 
 function checkFields($required, $objectFields) {
     $fields = explode(',', $required);
@@ -37,14 +37,14 @@ if ($object->xpdo) {
 
             $newEvents = '[[+newEvents]]';
 
-            foreach($newEvents as $key => $fields) {
+            foreach($newEvents as $k => $fields) {
                 $name = $key;
                 $event = $modx->getObject('modEvent', array('name' => $name));
                 if (!$event) {
                     $event = $modx->newObject('modEvent');
                     if ($event) {
-                        $event->set('name', $name);
-
+                        $event->fromArray($fields, "", true, true);
+                        $event->save();
                     }
                 }
             }
@@ -84,12 +84,16 @@ if ($object->xpdo) {
                             $fields['plugin'] . ' - ' . $fields['event']);
                     }
                 }
-
             }
             break;
 
         case xPDOTransport::ACTION_UNINSTALL:
-            /* Todo: Remove new system events here */
+            foreach($newEvents as $k => $fields) {
+                $event = $modx->getObject('modEvent', array('name' => $fields['name']));
+                if ($event) {
+                    $event->remove();
+                }
+            }
             break;
     }
 }
