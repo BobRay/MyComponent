@@ -42,11 +42,20 @@ if ($object->xpdo) {
                         continue;
                     }
                     $tv = $modx->getObject('modTemplateVar', array('name' => $fields['tmplvarid']));
-                    $template = $modx->getObject('modTemplate', array('templatename' => $fields['templateid']));
+                    if ('templatename' == 'default') {
+                        $template = $modx->getObject('modTemplate', $modx->getOption('default_template'));
+                    } else {
+                        $template = $modx->getObject('modTemplate', array('templatename' => $fields['templateid']));
+                    }
                     if (!$tv || !$template) {
+                        $modx->log(xPDO::LOG_LEVEL_ERROR, 'Could not find Template and/or TV ' .
+                            $fields['templateid'] . ' - ' . $fields['tmplvarid']);
                         continue;
                     }
-                    $tvt = $modx->newObject('modTemplateVarTemplate');
+                    $tvt = $modx->getObject('modTemplateVarTemplate', array('templateid' => $template->get('id'), 'tmplvarid' => $tv->get('id')));
+                    if (! $tvt) {
+                        $tvt = $modx->newObject('modTemplateVarTemplate');
+                    }
                     if ($tvt) {
                         $tvt->set('tmplvarid', $tv->get('id'));
                         $tvt->set('templateid', $template->get('id'));
@@ -55,9 +64,16 @@ if ($object->xpdo) {
                         } else {
                             $tvt->set('rank', 0);
                         }
+                        if (!$tvt->save()) {
+                            $modx->log(xPDO::LOG_LEVEL_ERROR, 'Unknown error creating templateVarTemplate for ' .
+                                $fields['templateid'] . ' - ' . $fields['tmplvarid']);
+                        }
+                    } else {
+                        $modx->log(xPDO::LOG_LEVEL_ERROR, 'Unknown error creating templateVarTemplate for ' .
+                            $fields['templateid'] . ' - ' . $fields['tmplvarid']);
                     }
 
-                    $tvt->save();
+
                 }
 
             }
