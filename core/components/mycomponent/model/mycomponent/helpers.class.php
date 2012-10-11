@@ -345,12 +345,12 @@ class Helpers
                     $subsidiaryObjectType = 'modEvent';
                     $mainObjectName = $values['plugin'];
                     $subsidiaryObjectName = $values['event'];
-                    if (isset($values['propertyset'])) {
+                    if (isset($values['propertyset']) && !empty($values['propertyset'])) {
                         $ps = $this->modx->getObject('modPropertySet', array('name' => $values['propertyset']));
                         if ($ps) {
                             $values['propertyset'] = $ps->get('id');
                         } else {
-                            $this->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find Property Set: ' .
+                            $this->sendLog(MODX_LOG_LEVEL_ERROR, '[Helpers] Could not find Property Set: ' .
                                 $values['propertyset']);
                         }
                     }
