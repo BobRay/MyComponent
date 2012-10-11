@@ -570,6 +570,9 @@ echo "\n" . memory_get_usage();
                 /* second argument says to create code files too */
                 $catAdapter->addChildren($fields, true);
             }
+            $intersects = $this->bootstrapObjects['templateVarTemplates'];
+            //$o = new TemplateVarAdapter($this->modx, $this->helpers, array());
+            TemplateVarAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $this->helpers);
         }
 
 echo "\n" . memory_get_usage();
