@@ -575,6 +575,8 @@ echo "\n" . memory_get_usage();
 echo "\n" . memory_get_usage();
     /* Create resources */
         if (isset($objects['resources']) && !empty($objects['resources'])) {
+            /* @var $o ResourceAdapter */
+            $o = null;
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating Resources');
             foreach($objects['resources'] as $resource => $fields) {
                 $fields['pagetitle'] = empty($fields['pagetitle'])
@@ -585,7 +587,10 @@ echo "\n" . memory_get_usage();
                 $o->createCodeFile();
             }
             /* Create Resolver - This only happens once */
-            //$o->createResolver();
+            if ($o) {
+                $intersects = $this->bootstrapObjects['resourceResolver'];
+                $o->createResolver($this->myPaths['targetResolve'], $intersects);
+            }
         }
 
         /* Create intersects for many-to-many objects */

@@ -226,50 +226,33 @@ class ResourceAdapter extends ObjectAdapter
         /* resource resolver will be created elewhere - this object will return it's own bit
           of the resolver code in another function
         */
+    }
+    public function createResolver($dir, $intersects) {
 
         /* Create resource.resolver.php resolver */
-        $dir = $mc->getPath('resolve');
-        if (!empty($data)) {
+        if (!empty($dir) && !empty($intersects)) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating resource resolver');
-            $tpl = $this->getTpl('resourceresolver.php');
+            $tpl = $this->helpers->getTpl('resourceresolver.php');
             $tpl = $this->helpers->replaceTags($tpl);
             if (empty($tpl)) {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'resourceresolver tpl is empty');
+                return false;
             }
-            
+
             $fileName = 'resource.resolver.php';
 
             if (!file_exists($dir . '/' . $fileName)) {
-                $code = '';
-                $codeTpl = $this->getTpl('resourceresolvercode.php');
-                $codeTpl = str_replace('<?php', '', $codeTpl);
+                $intersectArray = $this->helpers->beautify($intersects);
+                $tpl = str_replace("'[[+intersects]]'", $intersectArray, $tpl);
 
-                foreach ($data as $template => $resources) {
-                    $tempCodeTpl = str_replace('[[+template]]', $template, $codeTpl);
-                    $tempCodeTpl = str_replace('[[+resources]]', $resources, $tempCodeTpl);
-                    $code .= "\n" . $tempCodeTpl;
-                }
-
-                $tpl = str_replace('/* [[+code]] */', $code, $tpl);
-
-                $mc->writeFile($dir, $fileName, $tpl);
+                $this->helpers->writeFile($dir, $fileName, $tpl);
             } else {
-                $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
             }
         }
+        return true;
     }
-    /* Not used */
-    public function attachParent(&$obj, $parentName) {
 
-    }
-    public function attachTvs(&$obj, $tvValues) {
-        /* @var $obj modResource */
-        foreach($tvValues as $k => $v) {
-            $obj->setTVValue($k, $v);
-
-        }
-
-    }
 /* *****************************************************************************
    Export Objects and Support Functions
 ***************************************************************************** */
