@@ -642,7 +642,7 @@ echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
     protected function addToModx($adapter, $fields, $overwrite = false) {
         /* @var $o ObjectAdapter */
         $o = new $adapter($this->modx, $this->helpers, $fields);
-        $o->addToMODx();
+        $o->addToMODx($overwrite);
         return $o;
 
     }
