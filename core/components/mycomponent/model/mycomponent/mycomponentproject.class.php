@@ -621,8 +621,10 @@ echo "\n" . memory_get_usage();
             }
             /* Create Resolver - This only happens once */
             if ($o) {
-                $intersects = $this->bootstrapObjects['resourceResolver'];
-                ResourceAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $helpers);
+                if (isset($this->bootstrapObjects['resourceResolver'])) {
+                    $intersects = $this->bootstrapObjects['resourceResolver'];
+                    ResourceAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $helpers);
+                }
             }
         }
 
