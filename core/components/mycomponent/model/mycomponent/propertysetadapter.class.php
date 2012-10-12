@@ -25,6 +25,33 @@ class PropertySetAdapter extends ElementAdapter { //This will never change.
        Bootstrap and Support Functions (in ElementAdapter)
     ***************************************************************************** */
 
+    public static function createResolver($dir, $intersects, $helpers) {
+
+        /* Create tv.resolver.php resolver */
+        /* @var $helpers Helpers */
+        if (!empty($dir) && !empty($intersects)) {
+            $helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating elementPropertySet resolver');
+            $tpl = $helpers->getTpl('propertysetresolver.php');
+            $tpl = $helpers->replaceTags($tpl);
+            if (empty($tpl)) {
+                $helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'propertysetresolver tpl is empty');
+                return false;
+            }
+
+            $fileName = 'propertyset.resolver.php';
+
+            if (!file_exists($dir . '/' . $fileName)) {
+                $intersectArray = $helpers->beautify($intersects);
+                $tpl = str_replace("'[[+intersects]]'", $intersectArray, $tpl);
+
+                $helpers->writeFile($dir, $fileName, $tpl);
+            } else {
+                $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+            }
+        }
+        return true;
+    }
+
     /* *****************************************************************************
        Import Objects and Support Functions (in ElementAdapter)
     ***************************************************************************** */

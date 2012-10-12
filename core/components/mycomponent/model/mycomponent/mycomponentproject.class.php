@@ -584,12 +584,16 @@ echo "\n" . memory_get_usage();
                 /* second argument says to create code files too */
                 $catAdapter->addChildren($fields, true);
             }
+            $resolveDir = $this->myPaths['targetResolve'];
             $intersects = $this->bootstrapObjects['templateVarTemplates'];
-            TemplateVarAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $this->helpers);
+            TemplateVarAdapter::createResolver($resolveDir, $intersects, $this->helpers);
 
             $intersects = $this->bootstrapObjects['pluginEvents'];
             $newEvents = $this->bootstrapObjects['newSystemEvents'];
-            PluginAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $this->helpers, $newEvents);
+            PluginAdapter::createResolver($resolveDir, $intersects, $this->helpers, $newEvents);
+
+            $intersects = $this->bootstrapObjects['elementPropertySets'];
+            PropertySetAdapter::createResolver($resolveDir, $intersects, $this->helpers);
         }
 
 echo "\n" . memory_get_usage();

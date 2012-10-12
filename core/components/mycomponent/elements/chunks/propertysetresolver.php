@@ -38,13 +38,59 @@ if (!function_exists('getNameAlias')) {
     }
 }
 
-
+if (!function_exists('checkFields')) {
+    function checkFields($required, $objectFields) {
+        $fields = explode(',', $required);
+        foreach ($fields as $field) {
+            if (!isset($objectFields[$field])) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
 if ($object->xpdo) {
     $modx =& $object->xpdo;
     switch ($options[xPDOTransport::PACKAGE_ACTION]) {
         case xPDOTransport::ACTION_INSTALL:
         case xPDOTransport::ACTION_UPGRADE:
-            /* [[+code]] */
+        $intersects = '[[+intersects]]';
+
+        if (is_array($intersects)) {
+            foreach ($intersects as $k => $fields) {
+                /* make sure we have all fields */
+                if (!checkFields('element,element_class,property_set', $fields)) {
+                    continue;
+                }
+                $elementObj = $modx->getObject($fields['element_class'],
+                    array(getNameAlias($fields['element_class']) => $fields['element']));
+
+                $propertySetObj = $modx->getObject('modPropertySet', array('name' => $fields['property_set']));
+
+                if (!$elementObj || !$propertySetObj) {
+                    $modx->log(xPDO::LOG_LEVEL_ERROR, 'Could not find Element and/or Property Set ' .
+                        $fields['element'] . ' - ' . $fields['property_set']);
+                    continue;
+                }
+                $tvt = $modx->getObject('modElementPropertySet', $fields);
+                if (!$tvt) {
+                    $tvt = $modx->newObject('modElementPropertySet');
+                }
+                if ($tvt) {
+                    foreach($fields as $key => $value) {
+                        $tvt->set($key, $value);
+                    }
+                    if (!$tvt->save()) {
+                        $modx->log(xPDO::LOG_LEVEL_ERROR, 'Unknown error creating elementPropertySet intersect for ' .
+                            $fields['element'] . ' - ' . $fields['property_set']);
+                    }
+
+                } else {
+                    $modx->log(xPDO::LOG_LEVEL_ERROR, 'Unknown error creating elementPropertySet intersect for ' .
+                        $fields['element'] . ' - ' . $fields['property_set']);
+                }
+            }
+        }
             break;
 
         case xPDOTransport::ACTION_UNINSTALL:
