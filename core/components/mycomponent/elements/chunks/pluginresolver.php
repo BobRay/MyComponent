@@ -19,14 +19,16 @@
 /* @var $pluginEvent modPluginEvent */
 /* @var $newEvents array */
 
-function checkFields($required, $objectFields) {
-    $fields = explode(',', $required);
-    foreach ($fields as $field) {
-        if (!isset($objectFields[$field])) {
-            return false;
+if (!function_exists('checkFields')) {
+    function checkFields($required, $objectFields) {
+        $fields = explode(',', $required);
+        foreach ($fields as $field) {
+            if (!isset($objectFields[$field])) {
+                return false;
+            }
         }
+        return true;
     }
-    return true;
 }
 
 if ($object->xpdo) {
