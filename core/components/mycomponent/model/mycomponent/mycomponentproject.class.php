@@ -585,15 +585,24 @@ echo "\n" . memory_get_usage();
                 $catAdapter->addChildren($fields, true);
             }
             $resolveDir = $this->myPaths['targetResolve'];
-            $intersects = $this->bootstrapObjects['templateVarTemplates'];
-            TemplateVarAdapter::createResolver($resolveDir, $intersects, $this->helpers);
 
-            $intersects = $this->bootstrapObjects['pluginEvents'];
-            $newEvents = $this->bootstrapObjects['newSystemEvents'];
-            PluginAdapter::createResolver($resolveDir, $intersects, $this->helpers, $newEvents);
+            if (isset($this->bootstrapObjects['templateVarTemplates'])) {
+                $intersects = $this->bootstrapObjects['templateVarTemplates'];
+                TemplateVarAdapter::createResolver($resolveDir, $intersects, $this->helpers);
+            }
 
-            $intersects = $this->bootstrapObjects['elementPropertySets'];
-            PropertySetAdapter::createResolver($resolveDir, $intersects, $this->helpers);
+            if (isset($this->bootstrapObjects['pluginEvents'])) {
+                $intersects = $this->bootstrapObjects['pluginEvents'];
+                $newEvents = isset($this->bootstrapObjects['newSystemEvents'])
+                    ? $this->bootstrapObjects['newSystemEvents']
+                    : array();
+                PluginAdapter::createResolver($resolveDir, $intersects, $this->helpers, $newEvents);
+            }
+
+            if (isset($this->bootstrapObjects['elementPropertySets'])) {
+                $intersects = $this->bootstrapObjects['elementPropertySets'];
+                PropertySetAdapter::createResolver($resolveDir, $intersects, $this->helpers);
+            }
         }
 
 echo "\n" . memory_get_usage();
