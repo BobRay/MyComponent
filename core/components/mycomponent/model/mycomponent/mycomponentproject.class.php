@@ -289,6 +289,9 @@ class MyComponentProject {
                             $fields['static'] = (bool) !empty($fields['static']);
                         }
                     }
+                    if ($type == 'templateVars') {
+                        $fields['static'] = false;
+                    }
 
                     if ($type == 'plugins' || isset($fields['events'])) {
                         if (is_array($fields['events'])) {

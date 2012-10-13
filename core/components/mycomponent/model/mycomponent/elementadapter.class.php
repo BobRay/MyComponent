@@ -27,20 +27,6 @@ abstract class ElementAdapter extends ObjectAdapter {
             $categoryId = $category;*/
             $this->modx =& $modx;
             $this->helpers =& $helpers;
-            /*if (!is_numeric($category)) {
-                $categoryObj = $this->modx->getObject('modCategory', array('category' => $category));
-                if (!$categoryObj) {
-                    $categoryObj = $this->modx->newObject('modCategory', array('category' => $category));
-
-                    if ($categoryObj && $categoryObj->save()) {
-                        $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    Created new category ' . $category);
-                    }
-                }
-                $categoryId = $categoryObj
-                    ? $categoryObj->get('id')
-                    : 0;
-            }
-            $this->myFields['category'] = $categoryId;*/
         }
 
 
@@ -71,6 +57,16 @@ abstract class ElementAdapter extends ObjectAdapter {
 
     public function addToMODx($overwrite = false) {
         unset($this->myFields['propertySets']);
+        $fields = $this->myFields;
+        // core/components/example/elements/snippets/snippet1.snippet.php
+        if (isset($fields['static']) && !empty($fields['static'])) {
+            $dir = 'core/components/' . $this->helpers->props['packageNameLower'] . '/';
+            $path = $this->helpers->getCodeDir($dir, $this->dbClass);
+            $path .= '/' . $this->helpers->getFileName($this->getName(), $this->dbClass);
+            $this->myFields['source'] = $this->modx->getOption('default_media_source');
+            $this->myFields['static_file'] = $path;
+            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Set static path to ' . $path);
+        }
         parent::addToMODx($overwrite);
     }
 
