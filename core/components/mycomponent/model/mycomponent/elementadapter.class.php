@@ -70,51 +70,11 @@ abstract class ElementAdapter extends ObjectAdapter {
 ***************************************************************************** */
 
     public function addToMODx($overwrite = false) {
-        if (isset($this->myFields['propertySets'])) {
-            /*$pSets = $this->myFields['propertySets'];
-            if (is_array($pSets)) {
-                foreach($pSets as $k => $pName ) {
-                    $fields = array('name' => $pName);
-                    $o = new PropertySetAdapter($this->modx, $this->helpers, $fields);
-                    $o->addToModx();
-                }
-
-            } else {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Property Sets listed under ' . $this->name . ' must be an array');
-            }*/
-            unset($this->myFields['propertySets']);
-        }
-
+        unset($this->myFields['propertySets']);
         parent::addToMODx($overwrite);
     }
 
-    /**
-     * Creates a MODX element object in the DB if set in project config file
-     *
-     * @param $name string - name of object in MODX install
-     * @param $type string - modSnippet, modChunk, etc.
-     */
-   /* public function attachCategory()
-    {//For Quick Access
-        $myComponent = $this->myComponent;
-        $modx = $myComponent->modx;
-        $type = static::xPDOClass;
-        $nameKey = static::xPDOClassNameKey;
-        $nameValue = $this->myColumns[$nameKey];
-        
 
-        $lName =strtolower($nameValue);
-        $alias = $type == 'modTemplate'? 'templatename' : 'name';
-        $obj = $modx->getObject($type, array($nameKey => $nameValue));
-        
-        if ($obj) 
-        {   $obj->set('category', $this->categoryId);
-            if ($obj->save())
-                $myComponent->sendLog(MODX::LOG_LEVEL_INFO, 'Attached ' . $type . ': ' . $name .  ' to Category (' . $this->categoryId . ')');
-            else
-                $myComponent->sendLog(MODX::LOG_LEVEL_INFO, 'Failed to attach ' . $type . ': ' . $name .  ' to Category (' . $this->categoryId . ')');
-        }
-    }*/
 
 /* *****************************************************************************
    Export Objects and Support Functions (in MODxObjectAdapter)
