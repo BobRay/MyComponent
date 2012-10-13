@@ -129,7 +129,8 @@ $components = array(
     /* ************************* ELEMENTS **************************** */
 
     /* Array containing elements for your extra. 'category' is required
-       for each element, all other fields are optional */
+       for each element, all other fields are optional.
+       Property Sets (if any) must come first! */
 
 
     'elements' => array(
