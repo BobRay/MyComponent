@@ -71,7 +71,7 @@ abstract class ElementAdapter extends ObjectAdapter {
 
     public function addToMODx($overwrite = false) {
         if (isset($this->myFields['propertySets'])) {
-            $pSets = $this->myFields['propertySets'];
+            /*$pSets = $this->myFields['propertySets'];
             if (is_array($pSets)) {
                 foreach($pSets as $k => $pName ) {
                     $fields = array('name' => $pName);
@@ -81,8 +81,7 @@ abstract class ElementAdapter extends ObjectAdapter {
 
             } else {
                 $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Property Sets listed under ' . $this->name . ' must be an array');
-            }
-
+            }*/
             unset($this->myFields['propertySets']);
         }
 
