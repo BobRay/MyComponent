@@ -253,12 +253,6 @@ class MyComponentProject {
             }
         }
 
-        /* get PropertySets */
-       /* if (isset($config['propertySets']) && !empty($config['propertySets'])) {
-            foreach ($config['propertySets'] as $settingName => $settingFields) {
-                $objects['propertySets'][$settingName] = $settingFields;
-            }
-        }*/
 
         /* get elements -- all are placed in their own category */
         $elementList = isset($config['elements'])
@@ -557,8 +551,6 @@ echo "\n" . memory_get_usage();
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Settings');
             foreach($objects['newSystemSettings'] as $key => $fields) {
                 $this->addToModx('SystemSettingAdapter', $fields);
-                /*$r = new SystemSettingAdapter($modx, $helpers, $fields);
-                $r->addToModx();*/
             }
         }
 echo "\n" . memory_get_usage();
@@ -567,8 +559,6 @@ echo "\n" . memory_get_usage();
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Events');
             foreach($objects['newSystemEvents'] as $key => $fields) {
                 $this->addToModx('SystemEventAdapter', $fields);
-                /*$r = new SystemEventAdapter($modx, $helpers, $fields);
-                $r->addToMODx();*/
             }
         }
 
@@ -584,25 +574,7 @@ echo "\n" . memory_get_usage();
                 /* second argument says to create code files too */
                 $catAdapter->addChildren($fields, true);
             }
-            $resolveDir = $this->myPaths['targetResolve'];
 
-            if (isset($this->bootstrapObjects['templateVarTemplates'])) {
-                $intersects = $this->bootstrapObjects['templateVarTemplates'];
-                TemplateVarAdapter::createResolver($resolveDir, $intersects, $this->helpers);
-            }
-
-            if (isset($this->bootstrapObjects['pluginEvents'])) {
-                $intersects = $this->bootstrapObjects['pluginEvents'];
-                $newEvents = isset($this->bootstrapObjects['newSystemEvents'])
-                    ? $this->bootstrapObjects['newSystemEvents']
-                    : array();
-                PluginAdapter::createResolver($resolveDir, $intersects, $this->helpers, $newEvents);
-            }
-
-            if (isset($this->bootstrapObjects['elementPropertySets'])) {
-                $intersects = $this->bootstrapObjects['elementPropertySets'];
-                PropertySetAdapter::createResolver($resolveDir, $intersects, $this->helpers);
-            }
         }
 
 echo "\n" . memory_get_usage();
@@ -619,19 +591,13 @@ echo "\n" . memory_get_usage();
                 $o = $this->addToModx('ResourceAdapter', $fields);
                 $o->createCodeFile();
             }
-            /* Create Resolver - This only happens once */
-            if ($o) {
-                if (isset($this->bootstrapObjects['resourceResolver'])) {
-                    $intersects = $this->bootstrapObjects['resourceResolver'];
-                    ResourceAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $helpers);
-                }
-            }
         }
 
         /* Create intersects for many-to-many objects */
-        $this->connectTvsToTemplates();
-        $this->connectPluginsToEvents();
-        $this->connectElementsToPropertySets();
+        $this->createIntersects();
+
+        /* Create Resolvers */
+        $this->createResolvers();
 
 $mem_usage = memory_get_usage();
 echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
@@ -646,35 +612,45 @@ echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
         return $o;
 
     }
+    public function createIntersects() {
+        /* Connect TVs to Templates */
+        $a = $this->bootstrapObjects;
+        $intersects = $this->modx->getOption('templateVarTemplates', $a, array());
+        $this->helpers->createIntersects('modTemplateVarTemplate', $intersects);
 
-    public function connectTvsToTemplates() {
-        $templateVarTemplates = $this->bootstrapObjects['templateVarTemplates'];
-        $this->helpers->createIntersects('modTemplateVarTemplate', $templateVarTemplates);
-    }
-    public function connectPluginsToEvents() {
-        $pluginEvents = $this->bootstrapObjects['pluginEvents'];
-        $this->helpers->createIntersects('modPluginEvent', $pluginEvents);
-    }
-    public function connectElementsToPropertySets() {
-        $propertySets = $this->bootstrapObjects['elementPropertySets'];
+        /* Connect Plugins to Events */
+        $intersects = $this->modx->getOption('pluginEvents', $a, array());
+        $this->helpers->createIntersects('modPluginEvent', $intersects);
 
-        if (!empty($propertySets)) {
-            $this->helpers->createIntersects('modElementPropertySet', $propertySets);
-        }
+        /* Connect Elements to Property Sets */
+        $intersects = $this->modx->getOption('elementPropertySets', $a, array());
+        $this->helpers->createIntersects('modElementPropertySet', $intersects);
     }
 
-    public function newPaths()
-    {//For Quick Access
-        $paths = $this->paths;
-        $needs = $this->hasObjects;
 
-    // Iterate through array
-        foreach($needs as $key => $value)
-        {   if ($value == true)
-                $this->makeDir($paths[$key]);
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Created Directory: ' . $paths['key']);
-        }
+
+    public function CreateResolvers() {
+        $dir = $this->myPaths['targetResolve'];
+        $a = $this->bootstrapObjects;
+
+        /* Resource Resolver ( */
+        $intersects = $this->modx->getOption('resourceResolver', $a, array());
+        ResourceAdapter::createResolver($dir, $intersects, $this->helpers);
+
+        /* TV Resolver */
+        $intersects = $this->modx->getOption('templateVarTemplates', $a, array());
+        TemplateVarAdapter::createResolver($dir, $intersects, $this->helpers);
+
+        /* Plugin Resolver */
+        $intersects = $this->modx->getOption('pluginEvents', $a, array());
+        $newEvents = $this->modx->getOption('newSystemEvents', $a, array());
+        PluginAdapter::createResolver($dir, $intersects, $this->helpers, $newEvents);
+
+        /* Property Set Resolver */
+        $intersects = $this->modx->getOption('elementPropertySets', $a, array());
+        PropertySetAdapter::createResolver($dir, $intersects, $this->helpers);
     }
+
 
     /** Initializes class variables  NOT USED */
     public function xinit($configPath) {
@@ -1485,7 +1461,7 @@ echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
      * @param $fieldName1 string - intersect field name for main object.
      * @param $fieldName2 string - intersect field name for subsidiary object.
      */
-    public function createIntersects($values, $intersectType, $mainObjectType, $subsidiaryObjectType, $fieldName1, $fieldName2 ) {
+    public function xcreateIntersects($values, $intersectType, $mainObjectType, $subsidiaryObjectType, $fieldName1, $fieldName2 ) {
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating ' . $intersectType . ' objects');
 
 
