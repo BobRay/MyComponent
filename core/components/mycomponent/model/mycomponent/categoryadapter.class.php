@@ -63,17 +63,10 @@ class CategoryAdapter extends ObjectAdapter {
         if (is_array($fields) && !empty($fields)) {
             $elements = $fields;
             foreach ($elements as $element => $objects) {
-                if ($element == 'propertySets') {
-                    /* created earlier */
-                    // continue;
-                }
-
                 if ($element == 'category') {
                     /* don't recreate myself */
                     continue;
                 }
-
-
                 $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating ' . $element);
                 foreach ($objects as $object => $fields) {
 
