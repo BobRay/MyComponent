@@ -254,11 +254,11 @@ class MyComponentProject {
         }
 
         /* get PropertySets */
-        if (isset($config['propertySets']) && !empty($config['propertySets'])) {
+       /* if (isset($config['propertySets']) && !empty($config['propertySets'])) {
             foreach ($config['propertySets'] as $settingName => $settingFields) {
                 $objects['propertySets'][$settingName] = $settingFields;
             }
-        }
+        }*/
 
         /* get elements -- all are placed in their own category */
         $elementList = isset($config['elements'])
