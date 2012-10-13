@@ -151,6 +151,7 @@ $components = array(
         'snippets' => array(
             'Snippet1' => array( /* minimal example */
                 'category' => 'Example',
+                'static' => true,
             ),
 
             'Snippet2' => array( /* example with static and property set(s)  */
@@ -244,72 +245,6 @@ $components = array(
     /* (optional) will make all element objects static - 'static' field above will be ignored */
     'allStatic' => false,
 
-    /* Element Connections */
-
-    /* Array of plugin names and events (optionally) each one's priority.
-     * By default, priority will be 0.
-     * Automatically generates resolver to connect and/or create them. */
-    /*   'pluginEvents' => array(
-        'Plugin1' => array(
-            'OnDocFormSave' => 1,
-            'OnUserFormSave' => 2,
-            'OnMyEvent1' => 3,
-            'OnMyEvent2' => 4,
-            ),
-        'Plugin2' => array(
-            'OnDocFormSave' => '',
-            'OnUserFormSave' => '',
-            'OnMyEvent1' => '',
-            'OnMyEvent2' => '',
-        ),
-    ),*/
-    /* Array of Templates and comma-separated list of TVs to attach to them.
-     * Automatically generates resolver to connect them
-     * (use 'default' for the site's default template).
-     * TV names and Template names are both case-sensitive */
-    /*   'templateVarTemplates' => array(
-        'default' => array('Tv1',
-            'Tv2'
-        ),
-        'Template1' => array(
-            'Tv1',
-            'Tv2'),
-        'Template2' => array(
-            'Tv1',
-            'Tv2'
-        ),
-    ),*/
-
-    /* Array of property sets and elements to connect them to.
-     * form is:
-     * 'propertySetElements' => array(
-     *    'propertySetName1' => = array(
-     *        'elementName' => 'elementType'
-     *        'elementName' => 'elementType,
-     *           ...',
-     *     ),
-     *    'propertySetName2' => = array(
-     *        'elementName' => 'elementType'
-     *        'elementName' => 'elementType,
-     *           ...',
-     *     ),
-     * ),
-
-     * Type must be specified because you might have different elements
-     * with the same name.
-     *
-     * A resolver to connect them will be created automatically
-    */
-    /*   'propertySetElements' => array(
-        'PropertySet1' => array(
-            'Plugin1' => 'modPlugin',
-            'Snippet1' => 'modSnippet',
-        ),
-        'PropertySet2' => array(
-            'Chunk1' => 'modChunk',
-            'Chunk2' => 'modChunk',
-        ),
-    ),*/
 
     /* ************************* RESOURCES **************************** */
 
@@ -332,50 +267,6 @@ $components = array(
             ),
         )
     ),
-
-
-    /* Array of template names and the pagetitles of resources that use them.
-    * Only necessary if you want to connect package resources to package
-    * templates. A resolver will be created to connect them.
-    * By default, all resources are given the site default template.
-    * Do not include default template here!
-    */
-
- /*   'resourceTemplates' => array(
-        'Template1' => array(
-            'Resource1',
-            'Resource2'
-        ),
-    ),*/
-
-    /* ToDo: make sure this resolver runs last */
-    /* (NOT IMPLEMENTED) TV Resource Values - set TV values for specific resources.
-     * A resolver will be created automatically
-     * Format is:
-     *    'TvName' => array(
-     *       'pagetitle' => 'value'
-     *    ),
-     *     */
-/*    'TvResourceValues' => array(
-        'Tv1' => array(
-            'Resource1' => 'someValue',
-            'Resource2' => 'someOtherValue',
-        ),
-        'Tv2' => array(
-            'Resource1' => 'someOtherValue',
-        ),
-    ),*/
-
-
-    /* Resource Parents - array of 'resource pagetitle' => 'resource parent pagetitle'
-       Resources no listed here will be placed in the web root */
-/*    'resourceParents' => array(
-        'Resource1' => '',
-        'Resource2' => 'Resource1',
-    ),*/
-
-
-
 
 
     /* Array of languages for which you will have language files,
