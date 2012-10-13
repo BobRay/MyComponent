@@ -904,6 +904,7 @@ echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
         }
     }
 
+    /* NOT USED */
 
     /** Creates propertyset objects in MODX install if set in project config file.
      * Create the property set's properties in the Manager and export them
@@ -1617,6 +1618,8 @@ echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
             'Example' => 'modNamespace',
             'OnMyEvent1' => 'modEvent',
             'OnMyEvent2' => 'modEvent',
+            'PropertySet1' => 'modPropertySet',
+            'PropertySet2' => 'modPropertySet',
         );
 
         foreach($objects as $object => $type) {
