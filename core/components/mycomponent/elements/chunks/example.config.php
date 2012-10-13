@@ -4,13 +4,14 @@ $packageNameLower = 'example'; /* No spaces, no dashes */
 
 $components = array(
     /* These are used to define the package and set values for placeholders */
-    'packageName' => 'Example',
-    /* No spaces, no dashes */
+    'packageName' => 'Example',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
+    'packageDescription' => 'Example project for MyComponent extra',
     'version' => '1.0.0',
     'release' => 'beta1',
-    'categories' => array('Example'),
-    /* usually just one and the same as the package name */
+    'categories' => array( /* usually just one and the same as the package name */
+        'Example,'
+    ),
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
     'authorUrl' => 'http://bobsguides.com',
@@ -21,16 +22,16 @@ $components = array(
     'createdon' => strftime('%m-%d-%Y'),
     /* Show package name and ask user to confirm before running */
     'offerAbort' => false,
-    'packageDescription' => 'Example project for MyComponent extra.',
+    /* require login -- only necessary if on a live server */
+    'requireLogin' => false,
+
     'gitHubUsername' => 'BobRay',
     'gitHubRepository' => 'Example',
     /* two-letter code of your primary language */
     'primaryLanguage' => 'en',
     /* Set directory and file permissions for project directories */
-    'dirPermission' => 0755,
-    /* No quotes!! */
-    'filePermission' => 0644,
-    /* No quotes!! */
+    'dirPermission' => 0755,  /* No quotes!! */
+    'filePermission' => 0644, /* No quotes!! */
 
     /* Define source and target directories (mycomponent root and core directories) */
     'mycomponentRoot' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/',
@@ -40,217 +41,231 @@ $components = array(
     'targetRoot' => MODX_ASSETS_PATH . 'mycomponents/' . $packageNameLower . '/',
 
 
-    /* ************************* PROPERTY SETS **************************** */
+    /* *********************** NEW SYSTEM SETTINGS ************************ */
 
-    /* Array of property set names to create.
-     * Property set will have no properties. Created here so it can
-     * be connected to elements in a resolver. Create the properties
-     * in the Manager and export them with exportObjects */
-    'propertySets' => array('PropertySet1,PropertySet2'),
+    /* If your extra needs new System Settings, set their field values here.
+     * You can also create or edit them in the Manager (System -> System Settings),
+     * and export them with exportObjects. If you do that, be sure to set
+     * their namespace and area to the lowercase package name of your extra */
 
+    'newSystemSettings' => array(
+        'example_system_setting1' => array( // key
+            'key' => 'example_system_setting1',
+            'name' => 'Example Setting One',
+            'description' => 'Description for setting one',
+            'namespace' => 'example',
+            'xtype' => 'textField',
+            'value' => 'value1',
+            'area' => 'area1',
+        ),
+        'example_system_setting2' => array( // key
+            'key' => 'example_system_setting2',
+            'name' => 'Example Setting Two',
+            'description' => 'Description for setting two',
+            'namespace' => 'example',
+            'xtype' => 'combo-boolean',
+            'value' => true,
+            'area' => 'area2',
+        ),
+    ),
+
+    /* ************************ NEW SYSTEM EVENTS ************************* */
+
+    /* Array of your new System Events (not default
+     * MODX System Events). Listed here so they can be created during
+     * install and removed during uninstall.
+     *
+     * Warning: Do *not* list regular MODX System Events here !!! */
+
+    'newSystemEvents' => array(
+        'OnMyEvent1' => array(
+            'name' => 'OnMyEvent1',
+        ),
+        'OnMyEvent2' => array(
+            'name' => 'OnMyEvent2',
+            'groupname' => 'Example',
+            'service' => 1,
+        ),
+    ),
+
+    /* ************************ NAMESPACE(S) ************************* */
+    /* (optional) Typically, there's only one namespace which is set
+     * to the $packageNameLower value. Paths should end in a slash
+    */
+
+    'namespaces' => array(
+        'example' => array(
+            'name' => 'example',
+            'path' => '{core_path}components/example/',
+            'assets_path' => '{assets_path}components/example/',
+        ),
+
+    ),
+
+    /* ************************* CATEGORIES *************************** */
+    /* (optional) List of categories. This is only necessary if you
+     * need to categories other than the one named for packageNameLower
+     * or want to nest categories.
+    */
+
+    'categoryNames' => array(
+        'Example' => array(
+            'category' => 'Example',
+            'parent' => '',  /* top level category */
+        ),
+        'category2' => array(
+            'category' => 'Category2',
+            'parent' => 'Example', /* nested under Example */
+        )
+    ),
+
+    /* *************************** MENUS ****************************** */
+
+    /* If your extra needs Menus, set this to true, create them
+     * in the Manager, and export them with exportObjects. Be sure
+     * to set their namespace to the lowercase package name of your extra */
+    'menus' => false,
 
     /* ************************* ELEMENTS **************************** */
 
-    /* Array containing the actual Element Names used in your extra */
+    /* Array containing elements for your extra. 'category' is required
+       for each element, all other fields are optional.
+       Property Sets (if any) must come first! */
+
+
     'elements' => array(
-        'Snippet1' => array(
-            'type' => 'modSnippet',
-            'category' => 'Example',
-            'static' => false,
+
+        'propertySets' => array( /* all three fields are required */
+            'PropertySet1' => array(
+                'name' => 'PropertySet1',
+                'description' => 'Description for PropertySet1',
+                'category' => 'Example',
+            ),
+            'PropertySet2' => array(
+                'name' => 'PropertySet2',
+                'description' => 'Description for PropertySet2',
+                'category' => 'Example',
+            ),
         ),
-        'Snippet2' => array(
-            'type' => 'modSnippet',
-            'category' => 'Example',
-            'static' => false,
+
+        'snippets' => array(
+            'Snippet1' => array( /* minimal example */
+                'category' => 'Example',
+                'static' => true,
+            ),
+
+            'Snippet2' => array( /* example with static and property set(s)  */
+                'category' => 'Example',
+                'static' => false,
+                'propertySets' => array(
+                    'PropertySet1',
+                    'PropertySet2'
+                ),
+            ),
+
         ),
-        'Plugin1' => array(
-            'type' => 'modPlugin',
-            'category' => 'Example',
-            'static' => false,
+        'plugins' => array(
+            'Plugin1' => array( /* minimal example */
+                'category' => 'Example',
+            ),
+            'Plugin2' => array( /* example with static, events, and property sets */
+                'category' => 'Example',
+                'static' => false,
+                'propertySets' => array( /* all property sets to be connected to element */
+                    'PropertySet1',
+                ),
+                'events' => array(
+                    /* minimal example - no fields */
+                    'OnUserFormSave' => array(),
+                    /* example with fields set */
+                    'OnMyEvent1' => array(
+                        'priority' => '0', /* priority of the event -- 0 is highest priority */
+                        'group' => 'plugins', /* should generally be set to 'plugins' */
+                        'propertySet' => 'PropertySet1', /* property set to be used in this pluginEvent */
+                    ),
+                    'OnMyEvent2' => array(
+                        'priority' => '',
+                        'group' => 'plugins',
+                        'propertySet' => '',
+                    ),
+                    'OnDocFormSave' => array(
+                        'priority' => '0',
+                        'group' => 'plugins',
+                        'propertySet' => '',
+                    ),
+
+
+                ),
+            ),
         ),
-        'Plugin2' => array(
-            'type' => 'modPlugin',
-            'category' => 'Example',
-            'events' => 'OnMyEvent1,OnDocformSave',
-            'static' => false,
+        'chunks' => array(
+            'Chunk1' => array(
+                'category' => 'Example',
+            ),
+            'Chunk2' => array(
+                'category' => 'Example',
+                'static' => false,
+                'propertySets' => array(
+                    'PropertySet2',
+                ),
+            ),
         ),
-        'Chunk1' => array(
-            'type' => 'modChunk',
-            'category' => 'Example',
-            'static' => false,
+        'templates' => array(
+            'Template1' => array(
+                'category' => 'Example',
+            ),
+            'Template2' => array(
+                'category' => 'Example',
+                'static' => false,
+                'propertySets' => array(
+                    'PropertySet2',
+                ),
+            ),
         ),
-        'Chunk2' => array(
-            'type' => 'modChunk',
-            'category' => 'Example',
-            'static' => false,
-        ),
-        'Template1' => array(
-            'type' => 'modTemplate',
-            'category' => 'Example',
-            'static' => false,
-        ),
-        'Template2' => array(
-            'type' => 'modTemplate',
-            'category' => 'Example',
-            'static' => false,
-        ),
-        'Tv1' => array(
-            'type' => 'modTemplateVar',
-            'category' => 'Example',
-            'static' => false,
-        ),
-        'Tv2' => array(
-            'type' => 'modTemplateVar',
-            'category' => 'Example',
-            'static' => false,
+        'templateVars' => array( /* minimal example */
+            'Tv1' => array(
+                'category' => 'Example',
+                'propertySets' => array(
+                    'PropertySet1',
+                    'PropertySet2',
+                ),
+            ),
+            'Tv2' => array( /* example with templates, default, and static specified */
+                'category' => 'Example',
+                'static' => false,
+                'default_text' => '@INHERIT',
+                'templates' => array(
+                    'default' => 3, /* second value is rank -- for ordering TVs when editing resource */
+                    'Template1' => 4,
+                    'Template2' => 1,
+                ),
+            ),
         ),
     ),
     /* (optional) will make all element objects static - 'static' field above will be ignored */
     'allStatic' => false,
 
-    /* Element Connections */
-
-    /* Array of plugin names and events (optionally) each one's prority.
-     * By default, priority will be 0.
-     * Automatically generates resolver to connect and/or create them. */
-    'pluginEvents' => array(
-        'Plugin1' => array(
-            'OnDocFormSave' => 1,
-            'OnUserFormSave' => 2,
-            'OnMyEvent1' => 3,
-            'OnMyEvent2' => 4,
-        ),
-        'Plugin2' => array(
-            'OnDocFormSave' => '',
-            'OnUserFormSave' => '',
-            'OnMyEvent1' => '',
-            'OnMyEvent2' => '',
-        ),
-    ),
-    /* Array of Templates and comma-separated list of TVs to attach to them.
-     * Automatically generates resolver to connect them
-     * (use 'default' for the site's default template).
-     * TV names and Template names are both case-sensitive */
-    'templateVarTemplates' => array(
-        'default' => array(
-            'Tv1',
-            'Tv2'
-        ),
-        'Template1' => array(
-            'Tv1',
-            'Tv2'
-        ),
-        'Template2' => array(
-            'Tv1',
-            'Tv2'
-        ),
-    ),
-
-    /* Array of property sets and elements to connect them to.
-     * form is:
-     * 'propertySetElements' => array(
-     *    'propertySetName1' => = array(
-     *        'elementName' => 'elementType'
-     *        'elementName' => 'elementType,
-     *           ...',
-     *     ),
-     *    'propertySetName2' => = array(
-     *        'elementName' => 'elementType'
-     *        'elementName' => 'elementType,
-     *           ...',
-     *     ),
-     * ),
-
-     * Type must be specified because you might have different elements
-     * with the same name.
-     *
-     * A resolver to connect them will be created automatically
-    */
-    'propertySetElements' => array(
-        'PropertySet1' => array(
-            'Plugin1' => 'modPlugin',
-            'Snippet1' => 'modSnippet',
-        ),
-        'PropertySet2' => array(
-            'Chunk1' => 'modChunk',
-            'Chunk2' => 'modChunk',
-        ),
-    ),
 
     /* ************************* RESOURCES **************************** */
 
-    /* Array of Resource pagetitles for your Extra; alias is optional. (set other fields here as needed. Do not set parent)
-        */
+    /* Array of Resource pagetitles for your Extra; All other fields optional.
+       You can set any resource field here */
     'resources' => array(
-        'Resource1' => array(
+        'Resource1' => array( /* minimal example */
+            'pagetitle' => 'Resource1',
             'alias' => 'resource1',
         ),
-        'Resource2' => array(
-            'alias' => 'resource2',
-
+        'Resource2' => array( /* example with other fields */
+            'pagetitle' => 'Resource2',
+            'parent' => 'Resource1',
+            'template' => 'Template1',
+            'richtext' => false,
+            'published' => true,
+            'tvValues' => array(
+                'Tv1' => 'SomeValue',
+                'Tv2' => 'SomeOtherValue',
+            ),
         )
-    ),
-
-    /* set these only if you want to override system defaults . Note: this will not change the system defaults,
-       it will only be used for the settings of your Resources */
-    'resource_defaults' => array( //'published' => false,
-        //'richtext' => false,
-        //'hidemenu' => true,
-        //'cacheable' => false,
-        //'searchable' => true,
-        //'context' => 'web',
-    ),
-
-    /* Array of template names and the pagetitles of resources that use them.
-    * Only necessary if you want to connect package resources to package
-    * templates. A resolver will be created to connect them.
-    * By default, all resources are given the site default template.
-    * Do not include default template here!
-    */
-
-    'resourceTemplates' => array(
-        'Template1' => array(
-            'Resource1',
-            'Resource2'
-        ),
-    ),
-
-    /* ToDo: make sure this resolver runs last */
-    /* (NOT IMPLEMENTED) TV Resource Values - set TV values for specific resources.
-     * A resolver will be created automatically
-     * Format is:
-     *    'TvName' => array(
-     *       'pagetitle' => 'value'
-     *    ),
-     *     */
-    'TvResourceValues' => array(
-        'Tv1' => array(
-            'Resource1' => 'someValue',
-            'Resource2' => 'someOtherValue',
-        ),
-        'Tv2' => array(
-            'Resource1' => 'someOtherValue',
-        ),
-    ),
-
-
-    /* Resource Parents - array of 'resource pagetitle' => 'resource parent pagetitle'
-       Resources no listed here will be placed in the web root */
-    'resourceParents' => array(
-        'Resource1' => '',
-        'Resource2' => 'Resource1',
-    ),
-
-
-    /* Array of your new System Events (not default
-  * MODX System Events). Listed here so they can be created during
-  * install and removed during uninstall.
-  *
-  * Warning: Do *not* list regular MODX System Events here !!!
-  *  */
-    'newSystemEvents' => array(
-        'OnMyEvent1',
-        'OnMyEvent2',
     ),
 
 
@@ -268,7 +283,7 @@ $components = array(
     /* Define optional directories to create under assets.
      * Add your own as needed.
      * Set to true to create directory.
-     * Set to false to skip.
+     * Set to hasAssets = false to skip.
      * Empty js and/or css files will be created.
      */
     'hasAssets' => true,
@@ -375,10 +390,8 @@ $components = array(
        will report what it would have done withougt changing anything  */
 
     'dryRun' => '0',
-    'createTransportFiles' => '1',
-    // remove??
-    'createObjectFiles' => '1',
-    // remove??
+    'createTransportFiles' => '1', // remove??
+    'createObjectFiles' => '1',  // remove??
 
     /* Array of elements to export. All elements set above will be handled.
      *
@@ -398,49 +411,23 @@ $components = array(
     ),
     /*  Array  of pagetitles of resources to process. */
     'pagetitles' => array(
-        'Example1',
-        'Example2'
+        'Resource1',
+        'Resource2'
     ),
     /* Array of resource parent IDs to get children of. */
-    'parents' => array(),
-    /* ToDo: Add is_numeric check */
-    /* include listed parent resources */
+    'parents' => array(), /* ToDo: Add is_numeric check */
+    /* Also export the listed parent resources
+      (set to false to include just the children) */
     'includeParents' => false,
 
-    /* ******************************************* */
 
-    /* If your extra needs new System Settings, set their field values here.
-     * You can also create or edit them in the Manager (System -> System Settings),
-     * and export them with exportObjects. If you do that, be sure to set
-     * their namespace and area to the lowercase package name of your extra */
-
-    'newSystemSettings' => array(
-        'example_system_setting1' => array( // key
-            'namespace' => 'Example',
-            'xtype' => 'textField',
-            'value' => 'value1',
-            'area' => 'area1',
-        ),
-        'example_system_setting2' => array( // key
-            'namespace' => 'Example',
-            'xtype' => 'combo-boolean',
-            'value' => true,
-            'area' => 'area2',
-        ),
-    ),
-
-    /* ******************************************* */
+    /* ******************** LEXICON HELPPER SETTINGS ***************** */
     /* These settings are used by LexiconHelper */
     'rewriteCodeFiles' => false,
     // remove ~~descriptions
     'rewriteLexiconFiles' => true,
     // automatically add missing strings to lexicon files
     /* ******************************************* */
-
-    /* If your extra needs Menus, set this to true, create them
-     * in the Manager, and export them with exportObjects. Be sure to set their
-     * namespace to the lowercase package name of your extra */
-    'menus' => true,
 
     /* Array of aliases used in code for the properties array.
      * Used by the checkproperties utility to check properties in code against
@@ -449,10 +436,10 @@ $components = array(
      * Search also checks with '$this->' prefix -- no need to add it here. */
     'scriptPropertiesAliases' => array(
         'props',
-        'sp,config',
+        'sp',
+        'config',
         'scriptProperties'
     ),
-
 );
 
 return $components;

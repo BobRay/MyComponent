@@ -124,7 +124,7 @@ $components = array(
     /* If your extra needs Menus, set this to true, create them
      * in the Manager, and export them with exportObjects. Be sure
      * to set their namespace to the lowercase package name of your extra */
-    'menus' => true,
+    'menus' => false,
 
     /* ************************* ELEMENTS **************************** */
 

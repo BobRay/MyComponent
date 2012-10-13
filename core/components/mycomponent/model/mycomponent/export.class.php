@@ -73,31 +73,31 @@ class Export
         if (file_exists($configFile)) {
             $configProps = include $configFile;
         } else {
-            $this->modx->log(modX::LOG_LEVEL_ERROR, 'Could not find main config file at ' . $configFile);
+            $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, 'Could not find main config file at ' . $configFile);
             die();
         }
 
         if (empty($configProps)) {
-            $this->modx->log(modX::LOG_LEVEL_ERROR, 'Could not find project config file at ' . $configFile);
+            $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, 'Could not find project config file at ' . $configFile);
             die();
         }
         /* properties sent to constructor will override those in config file */
         $this->props = array_merge($configProps, $this->props);
         unset($configFile, $configProps);
 
-        $this->source = $this->props['source'];
+        $this->source = $this->props['mycomponentRoot'];
         if (empty ($this->source)) {
-            die('source directory must be set');
+            die("\nmycomponentRoot directory must be set");
         }
-        require_once $this->source . 'core/components/mycomponent/model/mycomponent/helpers.class.php';
+        //require_once $this->source . 'core/components/mycomponent/model/mycomponent/helpers.class.php';
         $this->helpers = new Helpers($this->modx, $this->props);
         $this->helpers->init();
         $this->dirPermission = $this->props['dirPermission'];
         $this->dryRun = (isset($this->props['dryRun']) && $this->props['dryRun']) || (empty($this->props['createTransportFiles']) &&  empty($this->props['createObjectFiles']));
         if ($this->dryRun) {
-            $this->modx->log(modX::LOG_LEVEL_INFO,'Dry Run');
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO,'Dry Run');
         } else {
-            $this->modx->log(modX::LOG_LEVEL_INFO,'Not a Dry Run');
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO,'Not a Dry Run');
         }
 
         $this->packageName = $this->props['packageName'];
@@ -108,8 +108,8 @@ class Export
         $this->parents =  !empty($parents) ? explode(',',$parents): array();
         $this->includeParents = $this->modx->getOption('includeParents', $this->props,false);
 
-        $pagetitles = $this->modx->getOption('pagetitles', $this->props,null);
-        $this->pagetitles =  !empty($pagetitles) ? explode(',',$pagetitles): array();
+        $this->pagetitles = $this->modx->getOption('pagetitles', $this->props,null);
+        //$this->pagetitles =  !empty($pagetitles) ? explode(',',$pagetitles): array();
 
 
         $this->createObjectFiles = $this->modx->getOption('createObjectFiles',$this->props,false);
@@ -119,8 +119,7 @@ class Export
         if(substr($this->source, -1) != "/") {
             $this->source .= "/";
         }
-
-        $this->targetBase = MODX_BASE_PATH . 'assets/mycomponents/' . $this->packageNameLower . '/';
+        $this->targetBase = $this->props['targetRoot'];
         $this->targetCore = $this->targetBase . 'core/components/' . $this->packageNameLower . '/';
 
         $this->resourcePath = $this->targetBase . '_build/data/resources';
@@ -128,19 +127,20 @@ class Export
 
         $this->transportPath = $this->targetBase . '_build/data/';
         
-        if (empty($this->category)) {
-            $this->modx->log(modX::LOG_LEVEL_ERROR,'Category must be set');
-                return false;
-        }
+       // if (empty($this->category)) {
+       //     $this->helpers->sendLog(modX::LOG_LEVEL_ERROR,'Category must be set');
+       //         return false;
+       // }
+        $this->category = 'Example';
         $this->categoryObj = $this->modx->getObject('modCategory', array('category'=> $this->category));
         if (! $this->categoryObj) {
-            $this->modx->log(modX::LOG_LEVEL_ERROR,'Could not find category:' . $this->props['category']);
+            $this->helpers->sendLog(modX::LOG_LEVEL_ERROR,'Could not find category:' . $this->props['category']);
             return false;
         }
         $this->categoryId = $this->categoryObj->get('id');
-        $this->modx->log(modX::LOG_LEVEL_INFO, 'Category ID: ' . $this->categoryId);
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Category ID: ' . $this->categoryId);
         /* dry run if user has set &dryRun=`1` or has not set either create option */
-
+        $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, "Init OK");
         return true;
     }
 
@@ -159,12 +159,12 @@ class Export
             $element='Actions';
         }
 
-        $this->modx->log(modX::LOG_LEVEL_INFO, "\n\nProcessing " . $element);
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n\nProcessing " . $element);
         
-        $this->modx->log(modX::LOG_LEVEL_INFO, 'Category: ' . $this->category);
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Category: ' . $this->category);
         /* convert 'chunks' to 'modChunk' etc. */
         $this->elementType = 'mod' . substr(ucFirst($element),0,-1);
-        $this->modx->log(modX::LOG_LEVEL_INFO, 'Element Type: ' . $this->elementType);
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Element Type: ' . $this->elementType);
         if ($this->elementType == 'modResource') {
             $this->pullResources();
         } else {
@@ -191,7 +191,7 @@ class Export
         }
 
         if (empty($this->elements)) {
-            $this->modx->log(modX::LOG_LEVEL_ERROR, 'No objects found in category: ' . $this->category);
+            $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, 'No objects found in category: ' . $this->category);
             return;
         }
 
@@ -226,15 +226,15 @@ class Export
         $tpl .= 'return $' . strtolower($objectName) . ";\n";
 
         if ($this->dryRun) {
-            $this->modx->log(modX::LOG_LEVEL_INFO, '    Would be creating: ' . $transportFile . "\n");
-            $this->modx->log(modX::LOG_LEVEL_INFO, " --- Begin File Content --- ");
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    Would be creating: ' . $transportFile . "\n");
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, " --- Begin File Content --- ");
         }
         $this->helpers->writeFile($transportDir, $transportFile, $tpl, $this->dryRun);
         if ($this->dryRun) {
-            $this->modx->log(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
         }
         unset($tpl);
-        $this->modx->log(modX::LOG_LEVEL_INFO, 'Finished processing: ' . $element);
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Finished processing: ' . $element);
     }
     /** populates $this->elements with an array of resources based on pagetitles and/or parents */
     protected function pullResources() {
@@ -248,7 +248,7 @@ class Export
                 if ($resObject) {
                     $this->elements[] = $resObject;
                 } else {
-                    $this->modx->log(modX::LOG_LEVEL_ERROR, 'Could not get resource with pagetitle: ' . $pagetitle);
+                    $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, 'Could not get resource with pagetitle: ' . $pagetitle);
                 }
             }
         }
@@ -430,12 +430,12 @@ class Export
         $tpl .= "\n\n" . $this->render_properties($properties) . "\n\n";
 
         if ($this->dryRun) {
-            $this->modx->log(modX::LOG_LEVEL_INFO, 'Would be creating: ' . $fileName . "\n");
-            $this->modx->log(modX::LOG_LEVEL_INFO, " --- Begin File Content --- ");
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Would be creating: ' . $fileName . "\n");
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, " --- Begin File Content --- ");
         }
         $this->helpers->writeFile($dir, $fileName, $tpl, $this->dryRun);
         if ($this->dryRun) {
-            $this->modx->log(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
         }
         unset($tpl);
     }
@@ -501,7 +501,7 @@ class Export
         /* @var $elementObj modElement */
 
         if ($elementObj->get('static')) {
-            $this->modx->log(modX::LOG_LEVEL_INFO, 'Skipping object file for static object: ' . $elementObj->get('name'));
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Skipping object file for static object: ' . $elementObj->get('name'));
             return;
         }
         $type = $this->elementType;
@@ -511,7 +511,7 @@ class Export
         if ($fileName) {
             $content = $elementObj->getContent();
         } else {
-            $this->modx->log(modX::LOG_LEVEL_INFO, 'Skipping object file for: ' . $type . '; object (does not need source file)');
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Skipping object file for: ' . $type . '; object (does not need source file)');
             return;
         }
         if ($type == 'modResource') {
@@ -520,8 +520,8 @@ class Export
             $dir = $this->helpers->getCodeDir($this->targetCore, $type);
         }
         if ($this->dryRun) {
-            $this->modx->log(modX::LOG_LEVEL_INFO, '    Would be creating: ' . $fileName . "\n");
-            $this->modx->log(modX::LOG_LEVEL_INFO, " --- Begin File Content --- ");
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    Would be creating: ' . $fileName . "\n");
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, " --- Begin File Content --- ");
         }
         $tpl = '';
         if ($type == 'modSnippet' || $type == 'modPlugin') {
@@ -532,14 +532,14 @@ class Export
                 $tpl = $this->helpers->replaceTags($tpl);
             }
             if (empty($tpl)) {
-                $this->modx->log(modX::LOG_LEVEL_ERROR, "\n tpl is empty after replacing tags");
+                $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, "\n tpl is empty after replacing tags");
             }
         }
         $tpl .= $content;
 
         $this->helpers->writeFile($dir, $fileName, $tpl, $this->dryRun);
         if ($this->dryRun) {
-            $this->modx->log(modX::LOG_LEVEL_INFO, "\n --- End File Content --- \n");
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n --- End File Content --- \n");
         }
         unset($tpl);
     }

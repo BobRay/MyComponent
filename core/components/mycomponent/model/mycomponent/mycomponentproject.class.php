@@ -23,6 +23,7 @@ class MyComponentProject {
     protected $bootstrapObjects;
     /* Array of object names and fields created for exportObjects */
     protected $exportObjects;
+    protected $configPath;
 
 
 /* *****************************************************************************
@@ -164,7 +165,7 @@ class MyComponentProject {
     /* Create or update projects.php file */
         $this->updateProjectsFile($configPath);
 
-
+        $this->configPath = $configPath;
     }
 
     public function updateProjectsFile($configPath) {
@@ -440,7 +441,7 @@ public function initPaths() {
             $paths['targetLexicon']   = $paths['targetCore'] . 'lexicon/';
             $paths['targetModel']     = $paths['targetCore'] . 'model/' . $name . '/';
             $paths['targetProcess']   = $paths['targetCore'] . 'processors/';
-        $paths['targetAssets']    = $paths['targetCore'] . 'assets/components/' . $name . '/';
+        $paths['targetAssets']    = $paths['targetRoot'] . 'assets/components/' . $name . '/';
             $paths['targetCss']       = $paths['targetAssets'] . 'css/';
             $paths['targetJs']        = $paths['targetAssets'] . 'js/';
             $paths['targetImages']    = $paths['targetAssets'] . 'images/';
@@ -684,6 +685,7 @@ echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
 
         /* extra resolvers */
         $extraValidators = $this->modx->getOption('extraValidators', $a, array());
+        $dir = $this->myPaths['targetValidate'];
         foreach ($extraValidators as $k => $name) {
             $name = ($name == 'default')
                 ? $this->packageNameLower
@@ -853,6 +855,12 @@ echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
             }
 
         }
+
+        $fileContent = file_get_contents($this->mcRoot . '_build/utilities/jsmin.class.php');
+        if (!empty($fileContent)) {
+            $this->helpers->writeFile($this->myPaths['targetBuild'] . 'utilities' , 'jsmin.class.php', $fileContent);
+        }
+
         $this->newInstallOptions();
         $this->newAssetsDirs();
         $this->createClassFiles();
@@ -1130,6 +1138,16 @@ echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
             return;
         }
 
+        $export = new Export($this->modx, $this->props);
+        if ($export->init($this->configPath)) {
+            $toProcess = $this->props['process'];
+            foreach($toProcess as $element) {
+                $export->process($element);
+            }
+        }
+        return;
+
+        /* Old code */
     // Crawl through the list top-down
         $objects = $this->myObjects;
         foreach ($objects as $child)
