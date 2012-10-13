@@ -253,7 +253,6 @@ class MyComponentProject {
             }
         }
 
-
         /* get elements -- all are placed in their own category */
         $elementList = isset($config['elements'])
             ? $config['elements']
@@ -380,6 +379,16 @@ class MyComponentProject {
 
 
             }
+        }
+
+        /* get extra resolvers */
+        if (isset($config['resolvers'])) {
+            $objects['extraResolvers'] = $config['resolvers'];
+        }
+
+        /* get extra validators */
+        if (isset($config['validators'])) {
+            $objects['extraValidators'] = $config['validators'];
         }
 
         // die(print_r($objects, true));
@@ -649,6 +658,48 @@ echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
         /* Property Set Resolver */
         $intersects = $this->modx->getOption('elementPropertySets', $a, array());
         PropertySetAdapter::createResolver($dir, $intersects, $this->helpers);
+
+        /* extra resolvers */
+        $extraResolvers = $this->modx->getOption('extraResolvers', $a, array());
+        foreach($extraResolvers as $k => $name) {
+            $name = ($name == 'default') ? $this->packageNameLower : $name;
+            $name = strtolower($name);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating resolver: ' . $name);
+            $tpl = $this->helpers->getTpl('genericresolver.php');
+            $tpl = $this->helpers->replaceTags($tpl);
+            if (empty($tpl)) {
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'genericresolver tpl is empty');
+                continue;
+            }
+            $fileName =  $name . '.resolver.php';
+            if (!file_exists($dir . '/' . $fileName)) {
+                $this->helpers->writeFile($dir, $fileName, $tpl);
+            } else {
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $name . ' resolver already exists');
+            }
+        }
+
+        /* extra resolvers */
+        $extraValidators = $this->modx->getOption('extraValidators', $a, array());
+        foreach ($extraValidators as $k => $name) {
+            $name = ($name == 'default')
+                ? $this->packageNameLower
+                : $name;
+            $name = strtolower($name);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating validator: ' . $name);
+            $tpl = $this->helpers->getTpl('genericvalidator.php');
+            $tpl = $this->helpers->replaceTags($tpl);
+            if (empty($tpl)) {
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'genericvalidator tpl is empty');
+                continue;
+            }
+            $fileName = $name . '.validator.php';
+            if (!file_exists($dir . '/' . $fileName)) {
+                $this->helpers->writeFile($dir, $fileName, $tpl);
+            } else {
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $name . ' validator already exists');
+            }
+        }
     }
 
 
