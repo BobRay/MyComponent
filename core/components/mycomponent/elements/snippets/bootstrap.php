@@ -9,10 +9,12 @@ $tstart = $mtime;
 set_time_limit(0);
 $mem_usage =  memory_get_usage();
 $project = new MyComponentProject();
-echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
-echo "\nInitial: " . $mem_usage;
+
+
 //$project->removeObjects();
 $project->bootstrap();
+
+echo "\n\nInitial Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
 $mem_usage = memory_get_usage();
 $peak_usage = memory_get_peak_usage(true);
 echo "\nFinal Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
