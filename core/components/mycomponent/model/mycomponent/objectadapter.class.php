@@ -22,7 +22,7 @@ abstract class ObjectAdapter
     protected $createProcessor = '';
     protected $updateProcessor = '';
     protected $myId;
-    protected $object;
+
 
     
     public function __construct(&$modx, &$helpers) {/* Set the component */
@@ -230,7 +230,6 @@ abstract class ObjectAdapter
         
     // See if the object exists        
         $obj = $this->modx->getObject($objClass, array($nameKey => $name));
-        $this->object = $obj;
         if ($obj) {
             $this->myId = $obj->get('id');
         }
