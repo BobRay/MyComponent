@@ -334,7 +334,7 @@ if ($hasTemplateVariables) {
 $vehicle = $builder->createVehicle($category,$attr);
 
 if ($hasValidator) {
-    $validators = explode(',', $props['validators']);
+    $validators = empty($props['validators']) ? array() : $props['validators'];
     if (! empty($validators)) {
         foreach ($validators as $validator) {
             if ($validator == 'default') {
@@ -355,7 +355,7 @@ if ($hasValidator) {
 
 /* Package in script resolvers, if any */
 
-$resolvers = empty($props['resolvers'])? array() : explode(',', $props['resolvers']);
+$resolvers = empty($props['resolvers'])? array() : $props['resolvers'];
 $resolvers = array_merge($resolvers, array('plugin','tv','resource','propertyset'));
 
 foreach ($resolvers as $resolver) {
