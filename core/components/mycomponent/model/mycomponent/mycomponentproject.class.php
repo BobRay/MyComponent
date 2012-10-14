@@ -530,7 +530,9 @@ public function initPaths() {
         {   $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'MyComponent must be installed to create a new MyComponent Project!');
             return;
         }
-echo "\n" . memory_get_usage();
+        $mem_usage = memory_get_usage();
+        echo "\nInitial Memory Use: " . round($mem_usage / 1048576, 2) . " megabytes";
+
         $modx = $this->modx;
         $helpers = $this->helpers;
         $objects = $this->bootstrapObjects;
@@ -545,7 +547,7 @@ echo "\n" . memory_get_usage();
                 $this->addToModx('NameSpaceAdapter', $fields);
             }
        }
-echo "\n" . memory_get_usage();
+
 
     /* quick create category or categories*/
         if (!empty($objects['categoryNames'])) {
@@ -557,7 +559,7 @@ echo "\n" . memory_get_usage();
                 $o->addToModx();
             }
         }
-echo "\n" . memory_get_usage();
+
 
     /* create system settings */
         if (!empty($objects['newSystemSettings'])) {
@@ -566,7 +568,7 @@ echo "\n" . memory_get_usage();
                 $this->addToModx('SystemSettingAdapter', $fields);
             }
         }
-echo "\n" . memory_get_usage();
+
     /* create new system events */
         if (!empty($objects['newSystemEvents'])) {
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Events');
@@ -590,7 +592,7 @@ echo "\n" . memory_get_usage();
 
         }
 
-echo "\n" . memory_get_usage();
+
     /* Create resources */
         if (isset($objects['resources']) && !empty($objects['resources'])) {
             /* @var $o ResourceAdapter */
@@ -611,10 +613,6 @@ echo "\n" . memory_get_usage();
 
         /* Create Resolvers */
         $this->createResolvers();
-
-$mem_usage = memory_get_usage();
-echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
-
     }
     /* add to MODx function -- separating this allows
      * more frequent garbage collection */
@@ -1145,6 +1143,7 @@ echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
                 $export->process($element);
             }
         }
+
         return;
 
         /* Old code */

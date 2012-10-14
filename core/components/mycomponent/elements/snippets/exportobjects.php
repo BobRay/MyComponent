@@ -83,8 +83,14 @@
  *
  *
  */
-
+$mem_usage = memory_get_usage();
 include dirname(dirname(dirname(__FILE__))) . '/model/mycomponent/mycomponentproject.class.php';
 
 $project = new MyComponentProject();
 $project->exportComponent(false);
+
+echo "\n\nInitial Memory Usage: " . round($mem_usage / 1048576, 2) . " megabytes";
+$mem_usage = memory_get_usage();
+$peak_usage = memory_get_peak_usage(true);
+echo "\nFinal Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
+echo "\nPeak Memory Used: " . round($peak_usage / 1048576, 2) . " megabytes";

@@ -13,7 +13,10 @@ echo "\n" . round($mem_usage / 1048576, 2) . " megabytes";
 echo "\nInitial: " . $mem_usage;
 //$project->removeObjects();
 $project->bootstrap();
-
+$mem_usage = memory_get_usage();
+$peak_usage = memory_get_peak_usage(true);
+echo "\nFinal Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
+echo "\nPeak Memory Used: " . round($peak_usage / 1048576, 2) . " megabytes";
 /* report how long it took */
 $mtime = microtime();
 $mtime = explode(" ", $mtime);
