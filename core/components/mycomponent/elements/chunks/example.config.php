@@ -155,7 +155,7 @@ $components = array(
             ),
 
             'Snippet2' => array( /* example with static and property set(s)  */
-                'category' => 'Example',
+                'category' => 'Category2',
                 'static' => false,
                 'propertySets' => array(
                     'PropertySet1',

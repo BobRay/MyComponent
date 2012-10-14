@@ -311,13 +311,13 @@ class MyComponentProject {
                                     ? $eventFields['propertyset']
                                     : '0';
                                 unset($eventFields['group']);
-                                $objects['pluginEvents'][] = $eventFields;
+                                $objects[$category . '_pluginEvents'][] = $eventFields;
                             }
                         }
                     }
                     if (isset($fields['propertySets']) && !empty($fields['propertySets'])) {
                         foreach($fields['propertySets'] as $k => $setName) {
-                            $objects['elementPropertySets'][] = array(
+                            $objects[$category . '_elementPropertySets'][] = array(
                                 'element' => $element,
                                 'element_class' => 'mod' . ucfirst(substr($type, 0, -1)),
                                 'property_set' => $setName,
@@ -340,7 +340,7 @@ class MyComponentProject {
                             }
 
                             //$objects['templateVarTemplates'][$element][$templateName] = $rank;
-                            $objects['templateVarTemplates'][] = array(
+                            $objects[$category . '_templateVarTemplates'][] = array(
                                 'tmplvarid' => $element,
                                 'templateid' => $templateName,
                                 'rank' => $rank,
@@ -593,6 +593,8 @@ public function initPaths() {
                 $catAdapter = $this->addToModx('CategoryAdapter', $fields);
                 /* second argument says to create code files too */
                 $catAdapter->addChildren($fields, true);
+                /* Create intersects for many-to-many objects */
+                $this->createIntersects($category);
             }
 
         }
@@ -613,8 +615,7 @@ public function initPaths() {
             }
         }
 
-        /* Create intersects for many-to-many objects */
-        $this->createIntersects();
+
 
 
     }
@@ -627,50 +628,50 @@ public function initPaths() {
         return $o;
 
     }
-    public function createIntersects() {
+    public function createIntersects($category) {
         /* Connect TVs to Templates */
         $a = $this->bootstrapObjects;
-        $intersects = $this->modx->getOption('templateVarTemplates', $a, array());
+        $intersects = $this->modx->getOption($category . '_ templateVarTemplates', $a, array());
         $this->helpers->createIntersects('modTemplateVarTemplate', $intersects);
 
         /* Connect Plugins to Events */
-        $intersects = $this->modx->getOption('pluginEvents', $a, array());
+        $intersects = $this->modx->getOption($category . '_pluginEvents', $a, array());
         $this->helpers->createIntersects('modPluginEvent', $intersects);
 
         /* Connect Elements to Property Sets */
-        $intersects = $this->modx->getOption('elementPropertySets', $a, array());
+        $intersects = $this->modx->getOption($category . '_elementPropertySets', $a, array());
         $this->helpers->createIntersects('modElementPropertySet', $intersects);
     }
 
 
 
     public function CreateResolvers($categoryName) {
-        $categoryName = strtolower($categoryName);
         $dir = $this->myPaths['targetResolve'] . $categoryName . '/';
         $a = $this->bootstrapObjects;
 
         /* Category Resolver */
         $intersects = $this->modx->getOption('categoryNames', $a, array());
-        CategoryAdapter::createResolver($dir, $intersects, $this->helpers);
+        CategoryAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $this->helpers);
 
         /* Resource Resolver ( */
-        $intersects = $this->modx->getOption('resourceResolver', $a, array());
-        ResourceAdapter::createResolver($dir, $intersects, $this->helpers);
+        $intersects = $this->modx->getOption($categoryName . '_resourceResolver', $a, array());
+        ResourceAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $this->helpers);
 
         /* TV Resolver */
-        $intersects = $this->modx->getOption('templateVarTemplates', $a, array());
+        $intersects = $this->modx->getOption($categoryName . '_templateVarTemplates', $a, array());
         TemplateVarAdapter::createResolver($dir, $intersects, $this->helpers);
 
         /* Plugin Resolver */
-        $intersects = $this->modx->getOption('pluginEvents', $a, array());
+        $intersects = $this->modx->getOption($categoryName . '_pluginEvents', $a, array());
         $newEvents = $this->modx->getOption('newSystemEvents', $a, array());
         PluginAdapter::createResolver($dir, $intersects, $this->helpers, $newEvents);
 
         /* Property Set Resolver */
-        $intersects = $this->modx->getOption('elementPropertySets', $a, array());
+        $intersects = $this->modx->getOption($categoryName . '_elementPropertySets', $a, array());
         PropertySetAdapter::createResolver($dir, $intersects, $this->helpers);
 
         /* extra resolvers */
+        $dir = $this->myPaths['targetResolve'];
         $extraResolvers = $this->modx->getOption('extraResolvers', $a, array());
         foreach($extraResolvers as $k => $name) {
             $name = ($name == 'default') ? $this->packageNameLower : $name;
