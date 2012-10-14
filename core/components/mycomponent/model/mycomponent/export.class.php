@@ -191,7 +191,7 @@ class Export
         }
 
         if (empty($this->elements)) {
-            $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, 'No objects found in category: ' . $this->category);
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, 'No objects found in category: ' . $this->category);
             return;
         }
 
