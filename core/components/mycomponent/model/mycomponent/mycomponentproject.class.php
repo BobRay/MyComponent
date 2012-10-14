@@ -208,6 +208,9 @@ class MyComponentProject {
                 if (!isset($fields['category'])) {
                     $fields['category'] = $category;
                 }
+                $fields['parent'] = isset($fields['parent']) && ! empty($fields['parent'])
+                    ? $fields['parent']
+                    : '0';
                 $objects['categoryNames'][$category] = $fields;
             }
         }
@@ -643,6 +646,10 @@ public function initPaths() {
     public function CreateResolvers() {
         $dir = $this->myPaths['targetResolve'];
         $a = $this->bootstrapObjects;
+
+        /* Category Resolver */
+        $intersects = $this->modx->getOption('categoryNames', $a, array());
+        CategoryAdapter::createResolver($dir, $intersects, $this->helpers);
 
         /* Resource Resolver ( */
         $intersects = $this->modx->getOption('resourceResolver', $a, array());
