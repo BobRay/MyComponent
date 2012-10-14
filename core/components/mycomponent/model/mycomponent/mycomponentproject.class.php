@@ -202,7 +202,7 @@ class MyComponentProject {
         $config = $this->props;
         $objects = array();
 
-        /* get Categories for quick create */
+        /* get Categories for category resolver */
         if (isset($config['categoryNames'])) {
             foreach($config['categoryNames'] as $category => $fields) {
                 if (!isset($fields['category'])) {
@@ -560,6 +560,8 @@ public function initPaths() {
                 }
                 $o = new CategoryAdapter($modx, $helpers, $fields);
                 $o->addToModx();
+                /* Create Resolvers */
+                $this->createResolvers($categoryName);
             }
         }
 
@@ -614,8 +616,7 @@ public function initPaths() {
         /* Create intersects for many-to-many objects */
         $this->createIntersects();
 
-        /* Create Resolvers */
-        $this->createResolvers();
+
     }
     /* add to MODx function -- separating this allows
      * more frequent garbage collection */
@@ -643,8 +644,9 @@ public function initPaths() {
 
 
 
-    public function CreateResolvers() {
-        $dir = $this->myPaths['targetResolve'];
+    public function CreateResolvers($categoryName) {
+        $categoryName = strtolower($categoryName);
+        $dir = $this->myPaths['targetResolve'] . $categoryName . '/';
         $a = $this->bootstrapObjects;
 
         /* Category Resolver */
