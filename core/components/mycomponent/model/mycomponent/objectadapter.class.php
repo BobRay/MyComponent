@@ -227,16 +227,18 @@ abstract class ObjectAdapter
         $idKey = $this->dbClassIDKey;
         $name = $this->getName();
         $nameKey = $this->getNameField();
-        
+        $id = null;
+
+
     // See if the object exists        
         $obj = $this->modx->getObject($objClass, array($nameKey => $name));
         if ($obj) {
-            $this->myId = $obj->get('id');
+            $id = $obj->get($idKey);
         }
     /* Object exists/Cannot Overwrite */
         if ($obj && !$overwrite) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $objClass . ' already exists: ' . $name);
-            $retVal = $obj->get('id');
+            $id = $obj->get($idKey);
 
             if (isset($this->myFields['category'])) {
                 $oldCat = $obj->get('category');
@@ -263,17 +265,13 @@ abstract class ObjectAdapter
                 $msg = "Failed to create object \n    class: " . $objClass .
                     "\n    nameKey: " . $nameKey . "\n    name: " . $name;
                 $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, $msg);
-                $retVal =  -1;
+                $id =  -1;
             } else {
                 /* @var $obj xPDOObject */
                 $obj = $response->getObject();
-                $this->myId = $obj->get('id');
-                $retVal = $obj->get('id');
+                $id = $obj->get($idKey);
 
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Created ' . $objClass . ': ' . $name);
-                /* ToDo: might need to return object or ID here */
-                //$this->modx->reloadContext();
-
             }
 
     /* Object does not exist - create it */
@@ -288,13 +286,13 @@ abstract class ObjectAdapter
                 $msg = "Failed to create object \n    class: " . $objClass .
                     "\n    nameKey: " . $nameKey . "\n    name: " . $name;
                 $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, $msg);
-                $retVal = false;
+                $id = false;
             } else {
                 /* @var $o xPDOObject */
                 if (is_object($response)) {
                     $o = $response->getObject();
-                    if (is_object($o)) {
-                        $this->myId = $o->get('id');
+                    if (is_array($o) && isset($o[$this->dbClassIDKey])) {
+                        $id = $o[$this->dbClassIDKey];
                     }
                 }
 
@@ -305,7 +303,12 @@ abstract class ObjectAdapter
 
             }
         }
-        return $retVal;
+        if (! $id) {
+            $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'No ID for ' . $objClass . ' ' . $name);
+        } else {
+            $this->myId = $id;
+        }
+        // return $retVal;
     }
     public function getTplCode() {
         $code = '';

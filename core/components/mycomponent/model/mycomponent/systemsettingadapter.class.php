@@ -4,7 +4,7 @@
 class SystemSettingAdapter extends ObjectAdapter
 {//These will never change.
     protected $dbClass = 'modSystemSetting';
-    protected $dbClassIDKey = 'id';
+    protected $dbClassIDKey = 'key';
     protected $dbClassNameKey = 'key';
     protected $dbClassParentKey = 'namespace';
     protected $createProcessor = 'system/settings/create';

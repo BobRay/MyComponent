@@ -56,7 +56,7 @@ class CategoryAdapter extends ObjectAdapter {
 
     public function addToMODx($overwrite = false) {
         /* create category if necessary */
-        $this->myId =  parent::addToModx();
+        parent::addToModx($overwrite);
     }
 
     public function addChildren($fields, $createCodeFiles = false) {

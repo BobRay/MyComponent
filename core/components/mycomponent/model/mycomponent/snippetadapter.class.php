@@ -14,7 +14,6 @@ class SnippetAdapter extends ElementAdapter
 // Database Columns for the XPDO Object
     protected $myFields;
     protected $name;
-    protected $myId;
 
     final public function __construct(&$modx, &$helpers, $fields) {
         $this->name = $fields['name'];

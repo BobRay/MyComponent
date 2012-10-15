@@ -12,7 +12,6 @@ class ResourceAdapter extends ObjectAdapter
     protected $createProcessor = 'resource/create';
     protected $updateProcessor = 'resource/update';
     protected $defaults = array();
-    protected $resourceId = 0;
     protected $name;
     /* @var $helpers Helpers */
     public $helpers;
@@ -140,7 +139,7 @@ class ResourceAdapter extends ObjectAdapter
     {//Perform default export implementation
         /* @var $modx modX */
         $fields =& $this->myFields;
-        $tvValues = array();
+
 
         if (! is_numeric($fields['template'])) { /* user sent a template name */
             /* @var $templateObj modTemplate */
@@ -167,25 +166,14 @@ class ResourceAdapter extends ObjectAdapter
 
         }
         if (isset($fields['tvValues'])) {
-            $tvValues = $fields['tvValues'];
             unset($fields['tvValues']);
         }
         if (!isset($fields['alias']) || empty($fields['alias'])) {
             $fields['alias'] = str_replace(' ', '-', strtolower($fields['pagetitle']));
         }
         $this->myFields = &$fields;
-        $obj = parent::addToMODx($overwrite);
+        parent::addToMODx($overwrite);
 
-
-    // If MODx accepted the object
-        if ($obj && $obj instanceof modResource) {
-            /* Set the new ID */
-            $this->resourceId = $obj->get('id');
-
-            if (!empty ($tvValues)) {
-                $this->attachTvs($obj, $tvValues);
-            }
-        }
     }
 
 
