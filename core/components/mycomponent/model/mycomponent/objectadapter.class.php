@@ -221,7 +221,6 @@ abstract class ObjectAdapter
     public function addToMODx($overwrite = false) {
         /* @var $modx modX */
         $modx =& $this->modx;
-        $retVal = false;
         $objClass = $this->getClass();
     // Class ID Key, Name Key => Name Value Pair
         $idKey = $this->dbClassIDKey;
@@ -300,7 +299,6 @@ abstract class ObjectAdapter
                 /* ToDo: might need to return object or ID here */
                 //$this->modx->reloadContext();
                 //$retVal = $o->get('id');
-
             }
         }
         if (! $id) {
@@ -311,7 +309,6 @@ abstract class ObjectAdapter
         // return $retVal;
     }
     public function getTplCode() {
-        $code = '';
         $field = '';
 
         $tplName = strtolower($this->dbClass);
