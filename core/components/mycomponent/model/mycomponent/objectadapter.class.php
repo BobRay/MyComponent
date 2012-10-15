@@ -290,12 +290,18 @@ abstract class ObjectAdapter
                 $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, $msg);
                 $retVal = false;
             } else {
-                $o = $response->getObject();
-                $this->myId = $o['id'];
+                /* @var $o xPDOObject */
+                if (is_object($response)) {
+                    $o = $response->getObject();
+                    if (is_object($o)) {
+                        $this->myId = $o->get('id');
+                    }
+                }
+
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Created ' . $objClass . ': ' . $name);
                 /* ToDo: might need to return object or ID here */
                 //$this->modx->reloadContext();
-                $retVal = $o['id'];
+                //$retVal = $o->get('id');
 
             }
         }

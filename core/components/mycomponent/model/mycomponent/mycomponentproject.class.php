@@ -108,7 +108,7 @@ class MyComponentProject {
             $homeResource = $modx->getObject('modResource', $homeId);
 
             if ($homeResource instanceof modResource) {
-                $modx->resource &= $homeResource;
+                $modx->resource = $homeResource;
             } else {
                 echo "\nNo Resource";
             }
@@ -298,7 +298,7 @@ class MyComponentProject {
                     }
 
                     if ($type == 'plugins' || isset($fields['events'])) {
-                        if (is_array($fields['events'])) {
+                        if (isset($fields['events']) && is_array($fields['events'])) {
                             foreach($fields['events'] as $event => $eventFields) {
                                 $eventFields['plugin'] = $element;
                                 $eventFields['event'] = $event;
@@ -313,6 +313,8 @@ class MyComponentProject {
                                 unset($eventFields['group']);
                                 $objects[$category . '_pluginEvents'][] = $eventFields;
                             }
+                            /* avoid confusing the plugin create processor */
+                            unset($fields['events']);
                         }
                     }
                     if (isset($fields['propertySets']) && !empty($fields['propertySets'])) {
@@ -866,7 +868,11 @@ public function initPaths() {
 
         $fileContent = file_get_contents($this->mcRoot . '_build/utilities/jsmin.class.php');
         if (!empty($fileContent)) {
-            $this->helpers->writeFile($this->myPaths['targetBuild'] . 'utilities' , 'jsmin.class.php', $fileContent);
+            if (! file_exists($this->myPaths['targetBuild'] . 'utilities/jsmin.class.php')) {
+               $this->helpers->writeFile($this->myPaths['targetBuild'] . 'utilities' , 'jsmin.class.php', $fileContent);
+            } else {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    jsmin class file already exists');
+            }
         }
 
         $this->newInstallOptions();

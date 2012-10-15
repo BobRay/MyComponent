@@ -268,7 +268,7 @@ class ResourceAdapter extends ObjectAdapter
      *
      * @return boolean - True, if successful; False, if not.
      */
-    final public function exportObject($overwrite = false)
+    final public function exportObject($object, $overwrite = false)
     {//For Quick Access
         $mc = $this->myComponent;
         $name = $this->getName();

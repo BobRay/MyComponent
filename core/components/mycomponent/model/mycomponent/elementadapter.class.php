@@ -76,8 +76,8 @@ abstract class ElementAdapter extends ObjectAdapter {
    Export Objects and Support Functions (in MODxObjectAdapter)
 ***************************************************************************** */
 
-    public function exportObject()
-    {//Perform default export implementation
+    public function exportObject($element, $overwrite = false) {
+    //Perform default export implementation
         if (!parent::exportObject())
             return false;
     // Special fuctionality for ALL Elements
