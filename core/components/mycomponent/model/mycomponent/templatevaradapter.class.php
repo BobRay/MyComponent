@@ -14,12 +14,12 @@ class TemplateVarAdapter extends ElementAdapter
     protected $fields;
     protected $name;
 
-    final public function __construct(&$modx, &$helpers, $fields) {
+    final public function __construct(&$modx, &$helpers, $fields, $mode=MODE_BOOTSTRAP, $object = null) {
         $this->name = $fields['name'];
         if (is_array($fields)) {
             $this->myFields = $fields;
         }
-        parent::__construct($modx, $helpers);
+        parent::__construct($modx, $helpers, $fields, $mode, $object);
 
     }
 

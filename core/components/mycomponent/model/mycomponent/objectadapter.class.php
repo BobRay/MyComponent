@@ -232,7 +232,7 @@ abstract class ObjectAdapter
 
 
     // See if the object exists        
-        $obj = $this->modx->getObject($objClass, array($nameKey => $name));
+        $obj = $modx->getObject($objClass, array($nameKey => $name));
         if ($obj) {
             $id = $obj->get($idKey);
         }

@@ -12,14 +12,14 @@ class ChunkAdapter extends ElementAdapter
     
 // Database fields for the XPDO Object
     protected $myFields;
-    protected $name;
 
-    final function __construct(&$modx, &$helpers, $fields) {
+
+    final function __construct(&$modx, &$helpers, $fields, $mode=MODE_BOOTSTRAP, $object = null) {
         $this->name = $fields['name'];
         if (is_array($fields)) {
             $this->myFields = $fields;
         }
-        parent::__construct($modx, $helpers);
+        parent::__construct($modx, $helpers, $fields, $mode, $object);
 
     }
     

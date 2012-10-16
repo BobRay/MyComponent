@@ -13,14 +13,17 @@ class TemplateAdapter extends ElementAdapter
     
 // Database fields for the XPDO Object
     protected $myFields;
-    protected $name;
 
-    final public function __construct(&$modx, &$helpers, $fields) {
+    final public function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP, $object = null) {
+        if (isset($fields['name'])) {
+            $fields['templatename'] = $fields['name'];
+            unset($fields['name']);
+        }
         $this->name = $fields['templatename'];
         if (is_array($fields)) {
             $this->myFields = $fields;
         }
-        parent::__construct($modx, $helpers);
+        parent::__construct($modx, $helpers, $fields, $mode, $object);
 
     }
     

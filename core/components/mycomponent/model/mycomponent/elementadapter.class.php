@@ -20,20 +20,68 @@ abstract class ElementAdapter extends ObjectAdapter {
      *         trailing slash)
      */
 
-    public function __construct(&$modx, $helpers) {
-        $x = 1;
-        if (isset($this->myFields['category'])) {
-            /*$category = $this->myFields['category'];
-            $categoryId = $category;*/
-            $this->modx =& $modx;
-            $this->helpers =& $helpers;
-        }
-
-
+    public function __construct(&$modx, $helpers, $fields, $mode, $object) {
+        /* @var $object modElement */
+        /*$this->modx =& $modx;
+        $this->helpers =& $helpers;*/
         parent::__construct($modx, $helpers);
-
-
+        if ($mode == MODE_BOOTSTRAP) {
+            if (is_array($fields)) {
+                $this->fieldsToIds($fields);
+                if (isset($fields['propertySets'])) {
+                    $this->setPropertySetResolver($fields['propertySets']);
+                    unset($fields['propertySets']);
+                }
+                $this->myFields = $fields;
+            }
+        } elseif ($mode == MODE_EXPORT) {
+            if (!$object) {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '[PluginAdapter] Object is null');
+            }
+            else {
+                $fields = $object->toArray();
+                $this->fieldsToNames($fields);
+                $this->myFields = $fields;
+            }
+        }
     }
+
+    public function setPropertySetResolver($sets) {
+        foreach ($sets as $k => $setName) {
+            $resolverFields = array(
+                'element' => isset($fields['element'])
+                    ? $fields['element']
+                    : $this->getName(),
+                'element_class' => isset($fields['element_class'])
+                    ? $fields['element_class']
+                    : $this->dbClass,
+                'property_set' => isset($fields['property_set'])
+                    ? $fields['property_set']
+                    : $setName,
+            );
+            ObjectAdapter::$myObjects['propertySetResolver'][] = $resolverFields;
+        }
+    }
+
+    /* only executes on export */
+    public function fieldsToNames(&$fields) {
+        /* @var $categoryObj modCategory */
+        $categoryObj = $this->modx->getObject('modCategory', $fields['category']);
+        if ($categoryObj) {
+            $fields['category'] = $categoryObj->get('category');
+        } else {
+            $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find parent for resource: ' . $fields['pagetitle']);
+        }
+    }
+    public function fieldsToIds(&$fields){
+        if (isset($fields['category'])) {
+            $categoryObj = $this->modx->getObject('modCategory', array('category' => $fields['category']));
+            if ($categoryObj) {
+                $fields['category'] = $categoryObj->get('id');
+            }
+        }
+    }
+
     public function getCodeDir() 
     {//Get the path...
         $path = $this->myComponent->myPaths['targetCore'] . 'elements/';
@@ -65,7 +113,7 @@ abstract class ElementAdapter extends ObjectAdapter {
             $path .= '/' . $this->helpers->getFileName($this->getName(), $this->dbClass);
             $this->myFields['source'] = $this->modx->getOption('default_media_source');
             $this->myFields['static_file'] = $path;
-            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Set static path to ' . $path);
+            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    Set static path to ' . $path);
         }
         parent::addToMODx($overwrite);
     }

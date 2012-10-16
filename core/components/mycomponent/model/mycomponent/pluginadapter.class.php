@@ -15,13 +15,27 @@ class PluginAdapter extends ElementAdapter
     protected $myParent;
     protected $myFields;
 
-    final public function __construct(&$modx, &$helpers, $fields) {
+    final public function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP, $object = null) {
+        /* @var $object modPlugin */
         $this->name = $fields['name'];
-        if (is_array($fields)) {
-            $this->myFields = $fields;
+        if (isset($fields['events'])) {
+            $this->setPluginResolver($fields['events']);
+            unset($fields['events']);
         }
-        parent::__construct($modx, $helpers);
+        parent::__construct($modx, $helpers, $fields, $mode, $object);
 
+
+    }
+    public function setPluginResolver($events) {
+        foreach ($events as $eventName => $fields) {
+            $resolverFields = array(
+                'event' => isset($fields['event']) ? $fields['event'] : $eventName,
+                'priority' => isset($fields['priority'])? $fields['priority'] : '0',
+                'group' => isset($fields['group'])? $fields['group'] :'plugins',
+                'propertySet' => isset($fields['propertySet']) ? $fields['propertySet'] : '0',
+            );
+            ObjectAdapter::$myObjects['pluginResolver'][] = $resolverFields;
+        }
     }
     
 /* *****************************************************************************

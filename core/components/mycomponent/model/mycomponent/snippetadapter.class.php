@@ -13,15 +13,12 @@ class SnippetAdapter extends ElementAdapter
     
 // Database Columns for the XPDO Object
     protected $myFields;
-    protected $name;
 
-    final public function __construct(&$modx, &$helpers, $fields) {
+
+    final public function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP, $object = null) {
         $this->name = $fields['name'];
-        if (is_array($fields)) {
-            $this->myFields = $fields;
-        }
-        parent::__construct($modx, $helpers);
-
+        /* @var $object modSnippet */
+        parent::__construct($modx, $helpers, $fields, $mode, $object);
     }
     
 /* *****************************************************************************

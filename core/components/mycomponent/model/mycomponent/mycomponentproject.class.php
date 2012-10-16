@@ -594,21 +594,22 @@ public function initPaths() {
             }
         }
 
-    /* Create category and all its elements */
+    /* Create elements */
 
-        if (isset($objects['categories']) && !empty($objects['categories'])) {
-            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating category elements');
-            $categories = $objects['categories'];
-            foreach($categories as $category => $fields) {
-                $fields['category'] = $category;
-                /* @var $catAdapter CategoryAdapter */
-                $catAdapter = $this->addToModx('CategoryAdapter', $fields);
-                /* second argument says to create code files too */
-                $catAdapter->addChildren($fields, true);
-                /* Create intersects for many-to-many objects */
-                $this->createIntersects($category);
+        if (isset($this->props['elements']) && !empty($this->props['elements'])) {
+            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating elements');
+            $elements = $this->props['elements'];
+            foreach($elements as $element => $elementObjects) {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating ' . $element);
+                foreach($elementObjects as $elementName => $fields) {
+                /* @var $adapter elementAdapter */
+                    $adapterName = ucFirst(substr($element, 0, -1)) . 'Adapter';
+                    $fields['name'] = isset($fields['name'])? $fields['name'] : $elementName;
+                    $adapter = new $adapterName($modx, $helpers, $fields);
+                    $adapter->addToMODx();
+                }
             }
-
+            //$this->createIntersects($category);
         }
 
 
