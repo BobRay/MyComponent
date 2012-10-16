@@ -17,15 +17,14 @@ class ResourceAdapter extends ObjectAdapter
     public $helpers;
     /* @var $modx modX */
     public $modx;
-
 // Database Columns for the XPDO Object
     protected $myFields;
 
-    final function __construct(&$modx, &$helpers, &$fields, $mode = MODE_BOOTSTRAP) {
+
+    function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP, $object = null) {
         /* @var $modx modX */
-        $this->modx =& $modx;
-        $this->helpers =& $helpers;
-        parent::__construct($this->modx, $this->helpers);
+        /* @var $object modResource */
+        parent::__construct($modx, $helpers);
         $this->name = $fields['pagetitle'];
 
         if ($mode == MODE_BOOTSTRAP) {
@@ -59,13 +58,14 @@ class ResourceAdapter extends ObjectAdapter
             ObjectAdapter::$myObjects['resourceResolver'][] = $resolverFields;
 
         } elseif ($mode == MODE_EXPORT) {
-            $obj = $this->modx->getObject($this->dbClass, array('pagetitle' => $fields['pagetitle']));
-            if ($obj) {
-                $fields = $obj->toArray();
+            if (! $object) {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Object not set for Resource: ' . $fields['pagetitle']);
+            } else {
+                $fields = $object->toArray();
                 $this->fieldsToNames($fields);
-            }
-            unset($fields['id']);
-            $this->myFields = $fields;
+                }
+                unset($fields['id']);
+                $this->myFields = $fields;
         }
 
         ObjectAdapter::$myObjects['resources'][] = $fields;
