@@ -6,14 +6,6 @@ abstract class ObjectAdapter
     protected $dbClassNameKey = ''; /* pagetitle, templatename, name, etc. */
     protected $dbClassParentKey = ''; /* parent, category, etc. */
 
-    /* @var $mc  MyComponentProject  - project Object */
-    // public $mc;
-// Database Fields
-    protected $myFields;
-// Vehicle Resolution
-    public $myResolvers;
-    public $myValidators;
-    public $myFileTrees;
     /* @var $helpers Helpers */
     public $helpers;
     /* @var $modx modX */
@@ -22,6 +14,10 @@ abstract class ObjectAdapter
     protected $createProcessor = '';
     protected $updateProcessor = '';
     protected $myId;
+    protected $myFields;
+    public static $myObjects = array();
+
+
 
 
     
@@ -30,6 +26,12 @@ abstract class ObjectAdapter
         $this->helpers =& $helpers;
     }
 
+    public static function getObjects() {
+        return self::$myObjects;
+    }
+    /*public function addObject($fields) {
+        self::$myObjects[$this->dbClass][] = $fields;
+    }*/
     public function getName() {
         return ($this->name);
     }
@@ -278,6 +280,10 @@ abstract class ObjectAdapter
             if ($idKey != $nameKey) {
                 unset($this->myFields[$idKey]);
             }
+            if ($this->dbClass == 'modResource' && isset($this->myFields['tvValues'])) {
+                $tvValues = $this->myFields['tvValues'];
+                unset($this->myFields['tvValues']);
+            }
             $this->getTplCode();
             $processor = $this->getProcessor('create');
             $response = $modx->runProcessor($processor, $this->myFields);
@@ -292,7 +298,20 @@ abstract class ObjectAdapter
                     $o = $response->getObject();
                     if (is_array($o) && isset($o[$this->dbClassIDKey])) {
                         $id = $o[$this->dbClassIDKey];
+
+                        if ($this->dbClass == 'modResource' && isset($tvValues)) {
+                            $resource = $this->modx->getObject('modResource', $id);
+                            if ($resource) {
+                                foreach($tvValues as $k => $v) {
+                                    $resource->setTVValue($k, $v);
+                                }
+                                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Set TvValues for resource' .
+                                    $this->myFields['pagetitle']);
+                                unset($resource);
+                            }
+                        }
                     }
+
                 }
 
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Created ' . $objClass . ': ' . $name);

@@ -20,51 +20,91 @@ class ResourceAdapter extends ObjectAdapter
 
 // Database Columns for the XPDO Object
     protected $myFields;
-    protected $myObjects = array();
 
-    final function __construct(&$modx, &$helpers, &$fields) {
+    final function __construct(&$modx, &$helpers, &$fields, $mode = MODE_BOOTSTRAP) {
         /* @var $modx modX */
         $this->modx =& $modx;
         $this->helpers =& $helpers;
+        parent::__construct($this->modx, $this->helpers);
         $this->name = $fields['pagetitle'];
 
-        parent::__construct($this->modx, $this->helpers);
-
-            
+        if ($mode == MODE_BOOTSTRAP) {
     // Set defaults if they are not already set
-        //$modx =& $mc->modx;
-        //$this->modx =&  $mc->modx;
+            $this->defaults['published'] = $modx->getOption('publish_default', null);
+            $this->defaults['richtext'] = $modx->getOption('richtext_default',null);
+            $this->defaults['hidemenu'] = $modx->getOption('hidemenu_default', null);
+            $this->defaults['cacheable'] = $modx->getOption('cache_default', null);
+            $this->defaults['searchable'] = $modx->getOption('search_default', null);
+            $this->defaults['context'] = $modx->getOption('default_context', null);
+            // $this->defaults['template'] = $modx->getOption('default_template', null);
+            if (!isset($fields['class_key'])) {
+                $fields['class_key'] = 'modDocument';
+            }
+            foreach ($this->defaults as $field => $value) {
+                $fields[$field] = isset($fields[$field])
+                    ? $fields[$field]
+                    : $value;
+            }
+            $resolverFields = array();
+            $resolverFields['pagetitle'] = $fields['pagetitle'];
+            $resolverFields['parent'] = isset($fields['parent'])? $fields['parent'] : 'default';
+            $resolverFields['template'] = isset($fields['template'])? $fields['template'] : 'default';
 
-        $this->defaults['published'] = $modx->getOption('publish_default', null);
-        $this->defaults['richtext'] = $modx->getOption('richtext_default',null);
-        $this->defaults['hidemenu'] = $modx->getOption('hidemenu_default', null);
-        $this->defaults['cacheable'] = $modx->getOption('cache_default', null);
-        $this->defaults['searchable'] = $modx->getOption('search_default', null);
-        $this->defaults['context'] = $modx->getOption('default_context', null);
-        $this->defaults['template'] = $modx->getOption('default_template', null);
+            if (isset($fields['tvValues'])) {
+                $resolverFields['tvValues'] = $fields['tvValues'];
+            }
+            $this->myFields = $fields;
+            unset($fields['tvValues']);
 
-        if (!isset($fields['class_key'])) {
-            $fields['class_key'] = 'modDocument';
+            ObjectAdapter::$myObjects['resourceResolver'][] = $resolverFields;
+
+        } elseif ($mode == MODE_EXPORT) {
+            $obj = $this->modx->getObject($this->dbClass, array('pagetitle' => $fields['pagetitle']));
+            if ($obj) {
+                $fields = $obj->toArray();
+                $this->fieldsToNames($fields);
+            }
+            unset($fields['id']);
+            $this->myFields = $fields;
         }
 
-        foreach ($this->defaults as $field => $value) {
-            $fields[$field] = isset($fields[$field])
-                ? $fields[$field]
-                : $value;
+        ObjectAdapter::$myObjects['resources'][] = $fields;
+    }
+
+    /* only executes on export */
+    public function fieldsToNames(&$fields) {
+        $parentObj = $this->modx->getObject('modResource', $fields['parent']);
+        if ($parentObj) {
+            $fields['parent'] =  $parentObj->get('pagetitle');
+        } else {
+            $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find parent for resource: ' . $fields['pagetitle']);
         }
-
-        $this->myFields = $fields;
+        $templateObj = $this->modx->getObject('modTemplate', $fields['template']);
+        if ($templateObj) {
+            $fields['template'] = $templateObj->get('templatename');
+        }
     }
 
-   /* public function getName() {
-        return $this->name;
+    public function fieldsToIds(&$fields) {
+        if (!isset($fields['parent']) || $fields['parent'] == 'default') {
+            $fields['parent'] = '0';
+        } else {
+            $parentObj = $this->modx->getObject('modResource', array('pagetitle' => $fields['parent']));
+            if ($parentObj) {
+                $fields['parent'] = $parentObj->get('id');
+            } else {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find parent for resource: ' . $fields['pagetitle']);
+            }
+        }
+        if (!isset($fields['template']) || empty($fields['template']) || $fields['template'] == 'default') {
+            $fields['template'] = $this->modx->getOption('default_template');
+        } else {
+            $templateObj = $this->modx->getObject('modTemplate', array('templatename' => $fields['template']));
+            if ($templateObj) {
+                $fields['template'] = $templateObj->get('id');
+            }
+        }
     }
-
-    public function getProcessor($mode) {
-        return $mode == 'create'
-            ? $this->createProcessor
-            : $this->updateProcessor;
-    }*/
 /* *****************************************************************************
    Bootstrap and Support Functions
 ***************************************************************************** */
@@ -92,9 +132,9 @@ class ResourceAdapter extends ObjectAdapter
         $this->myFields['content'] = 'Enter your page\'s content here';
         
     // Create the Transport File
-        if (parent::newTransport())
+        /*if (parent::newTransport())
         // Create the Code File
-            $this->newCodeFile($this->myFields['pagetitle'], 'modResource');
+            $this->newCodeFile($this->myFields['pagetitle'], 'modResource');*/
     }
 
     /**
@@ -140,39 +180,19 @@ class ResourceAdapter extends ObjectAdapter
         /* @var $modx modX */
         $fields =& $this->myFields;
 
+        $this->fieldsToIds($fields);
 
-        if (! is_numeric($fields['template'])) { /* user sent a template name */
-            /* @var $templateObj modTemplate */
-            $templateName = $fields['template'];
-            $templateObj = $this->modx->getObject('modTemplate', array('templateName'=> $fields['template']));
-            if ($templateObj) {
-                $fields['template'] = $templateObj->get('id');
-            } else {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find template: ' . $templateName);
-                $fields['template'] = $this->defaults['template'];
-            }
-
-        }
-        if (isset($fields['parent'])) {
-            /* @var $parentObj modResource */
-            $parentName = $fields['parent'];
-            $parentObj = $this->modx->getObject('modResource', array('pagetitle' => $parentName));
-            if ($parentObj) {
-                $fields['parent'] = $parentObj->get('id');
-            } else {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find parent resource: ' . $parentName);
-                $fields['parent'] = 0;
-            }
-
-        }
-        if (isset($fields['tvValues'])) {
+        /*if (isset($fields['tvValues'])) {
+            $tvValues = $fields['tvValues'];
             unset($fields['tvValues']);
-        }
+        }*/
         if (!isset($fields['alias']) || empty($fields['alias'])) {
             $fields['alias'] = str_replace(' ', '-', strtolower($fields['pagetitle']));
         }
         $this->myFields = &$fields;
         parent::addToMODx($overwrite);
+
+
 
     }
 

@@ -27,3 +27,5 @@ $tend = $mtime;
 $totalTime = ($tend - $tstart);
 $totalTime = sprintf("%2.4f s", $totalTime);
 echo "\nTotal time: " . $totalTime;
+
+echo print_r(ObjectAdapter::$myObjects, true);

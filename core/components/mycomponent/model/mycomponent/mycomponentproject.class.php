@@ -1,5 +1,12 @@
 <?php
 
+if (!defined('MODE_BOOTSTRAP')) {
+    define('MODE_BOOTSTRAP', 0);
+    define('MODE_EXPORT', 1);
+    define('MODE_IMPORT', 2);
+}
+
+
 class MyComponentProject {
     /* @var $modx modX */
     public $modx;
@@ -44,6 +51,9 @@ class MyComponentProject {
 ***************************************************************************** */
     public function __construct()
     {
+        if (!defined('MODE_BOOTSTRAP')) {
+            die("bootstrap not defined");
+        }
         /* Create $modx object if it doesn't exist */
         $this->initMODx();
         /* Get the config file */
@@ -603,11 +613,11 @@ public function initPaths() {
 
 
     /* Create resources */
-        if (isset($objects['resources']) && !empty($objects['resources'])) {
+        if (isset($this->props['resources']) && !empty($this->props['resources'])) {
             /* @var $o ResourceAdapter */
             $o = null;
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating Resources');
-            foreach($objects['resources'] as $resource => $fields) {
+            foreach($this->props['resources'] as $resource => $fields) {
                 $fields['pagetitle'] = empty($fields['pagetitle'])
                     ? $resource
                     : $fields['pagetitle'];
