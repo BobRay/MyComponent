@@ -660,13 +660,13 @@ public function initPaths() {
     public function CreateResolvers($categoryName) {
         $dir = $this->myPaths['targetResolve'] . $categoryName . '/';
         $a = $this->bootstrapObjects;
-
+        $o = ObjectAdapter::$myObjects;
         /* Category Resolver */
         $intersects = $this->modx->getOption('categoryNames', $a, array());
         CategoryAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $this->helpers);
 
         /* Resource Resolver ( */
-        $intersects = $this->modx->getOption($categoryName . '_resourceResolver', $a, array());
+        $intersects = $this->modx->getOption('resourceResolver', $a, array());
         ResourceAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $this->helpers);
 
         /* TV Resolver */
