@@ -617,6 +617,8 @@ public function initPaths() {
             $o = new CategoryAdapter($this->modx, $this->helpers, $fields);
             $o->addToModx();
         }
+        $dir = $this->targetRoot . '/_build/config';
+        CategoryAdapter::writeCategoryFile($dir, $this->helpers);
 
     }
     public function createNewSystemSettings() {

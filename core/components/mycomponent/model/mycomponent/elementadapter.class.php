@@ -13,12 +13,6 @@ abstract class ElementAdapter extends ObjectAdapter {
     /* *****************************************************************************
        Property Getter and Setters
     ***************************************************************************** */
-    /**
-     * Gets the directory containing the code files for the element.
-     *
-     * @return string - full path for element code file (without filename or 
-     *         trailing slash)
-     */
 
     public function __construct(&$modx, $helpers, $fields, $mode, $object) {
         /* @var $object modElement */
@@ -81,6 +75,13 @@ abstract class ElementAdapter extends ObjectAdapter {
             }
         }
     }
+
+    /**
+     * Gets the directory containing the code files for the element.
+     *
+     * @return string - full path for element code file (without filename or
+     *         trailing slash)
+     */
 
     public function getCodeDir() 
     {//Get the path...

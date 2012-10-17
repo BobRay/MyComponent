@@ -59,11 +59,6 @@ class CategoryAdapter extends ObjectAdapter {
         parent::addToModx($overwrite);
     }
 
-
-
-
-
-
     public static function createResolver($dir, $intersects, $helpers) {
 
         /* Create category.resolver.php resolver */
@@ -91,6 +86,18 @@ class CategoryAdapter extends ObjectAdapter {
         }
         return true;
     }
+
+    public static function writeCategoryFile($dir, $helpers) {
+        /* @var $helpers Helpers */
+        $categories = ObjectAdapter::$myObjects['categories'];
+        $fileArray = array();
+        foreach($categories as $category => $fields) {
+            $fileArray[] = isset($fields['category'])? $fields['category'] : $category;
+        }
+        $a = var_export($fileArray, true);
+        $content = "\$categories = " . $a  . ";\nreturn \$categories;\n";
+        $helpers->writeFile($dir, 'categories.php', $content);
+  }
 /* *****************************************************************************
    Export Objects and Support Functions (in MODxObjectAdapter)
 ***************************************************************************** */
