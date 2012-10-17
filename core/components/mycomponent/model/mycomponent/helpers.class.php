@@ -337,13 +337,17 @@ class Helpers
                     $mainObjectType = 'modTemplate';
                     $subsidiaryObjectType = 'modTemplateVar';
                     $mainObjectName = $values['templateid'];
+                    if ($mainObjectName == 'default') {
+                        $defaultTemplateObj = $this->modx->getObject('modTemplate', $this->modx->getOption('default_template'));
+                        $mainObjectName = $defaultTemplateObj->get('templatename');
+                    }
                     $subsidiaryObjectName = $values['tmplvarid'];
                     break;
                 case 'modPluginEvent':
                     $subIdField = 'name';
                     $mainObjectType = 'modPlugin';
                     $subsidiaryObjectType = 'modEvent';
-                    $mainObjectName = $values['plugin'];
+                    $mainObjectName = $values['pluginid'];
                     $subsidiaryObjectName = $values['event'];
                     if (isset($values['propertyset']) && !empty($values['propertyset'])) {
                         $ps = $this->modx->getObject('modPropertySet', array('name' => $values['propertyset']));

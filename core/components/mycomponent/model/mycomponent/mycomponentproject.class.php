@@ -580,8 +580,11 @@ public function initPaths() {
     /* Create Validators */
         $this->createValidators();
 
-    /* Create all Resolvers and intersects */
+    /* Create all Resolvers */
         $this->createResolvers();
+
+    /* Create Intersects for all many-to-many relationships */
+        $this->createIntersects();
 
     }
     public function createNamespaces() {
@@ -639,13 +642,11 @@ public function initPaths() {
                     $fields['name'] = isset($fields['name'])
                         ? $fields['name']
                         : $elementName;
-                    //$adapter = new $adapterName($this->modx, $this->helpers, $fields);
-                    //$adapter->addToMODx();
+
                     $o = $this->addToModx($adapterName, $fields);
                     $o->createCodeFile();
                 }
             }
-            //$this->createIntersects($category);
         }
     }
 
@@ -674,19 +675,19 @@ public function initPaths() {
         return $o;
 
     }
-    /* NOT used ?? */
-    public function createIntersects($category) {
+    /* Create intersects for many-to-many events */
+    public function createIntersects() {
         /* Connect TVs to Templates */
-        $a = $this->bootstrapObjects;
-        $intersects = $this->modx->getOption($category . '_ templateVarTemplates', $a, array());
+        $o = ObjectAdapter::$myObjects;
+        $intersects = $this->modx->getOption('tvResolver', $o, array());
         $this->helpers->createIntersects('modTemplateVarTemplate', $intersects);
 
         /* Connect Plugins to Events */
-        $intersects = $this->modx->getOption($category . '_pluginEvents', $a, array());
+        $intersects = $this->modx->getOption('pluginResolver', $o, array());
         $this->helpers->createIntersects('modPluginEvent', $intersects);
 
         /* Connect Elements to Property Sets */
-        $intersects = $this->modx->getOption($category . '_elementPropertySets', $a, array());
+        $intersects = $this->modx->getOption('propertySetResolver', $o, array());
         $this->helpers->createIntersects('modElementPropertySet', $intersects);
     }
 
