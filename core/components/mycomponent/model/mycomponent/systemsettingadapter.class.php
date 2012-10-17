@@ -25,6 +25,13 @@ class SystemSettingAdapter extends ObjectAdapter
         $this->modx =& $modx;
         $this->helpers =& $helpers;
         $this->myComponent =& $myComponent;
+
+        if (! isset($fields['namespace'])) {
+            $fields['namespace'] = $this->helpers->props['packageNameLower'];
+        }
+        if (! isset ($fields['name'])) {
+            $fields['name'] = $fields['key'];
+        }
         if (is_array($fields)) {
             $this->myFields =& $fields;
         }
