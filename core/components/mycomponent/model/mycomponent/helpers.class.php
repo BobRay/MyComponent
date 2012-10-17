@@ -242,14 +242,17 @@ class Helpers
         if (substr($dir, -1) != "/") {
             $dir .= "/";
         }
+        $outFile = $dir . $fileName;
+        $outFile = str_replace('//','/', $outFile);
         /* write to stdout if dryRun is true */
+        $file = $dryRun? 'php://output' : $outFile;
 
-        $file = $dryRun? 'php://output' : $dir . $fileName;
+        $action = ($file == $outFile) && file_exists($outFile)? 'Updating' : 'Creating';
 
         $fp = fopen($file, 'w');
         if ($fp) {
             if ( ! $dryRun) {
-                $this->sendLog(MODX::LOG_LEVEL_INFO, '    Creating ' . $file);
+                $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $action . ' ' . $file);
                 if (empty($content)) {
                     $this->sendLog(MODX::LOG_LEVEL_INFO, ' (empty)', true);
                 }
