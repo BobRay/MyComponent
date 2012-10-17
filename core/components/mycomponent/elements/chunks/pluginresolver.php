@@ -21,9 +21,12 @@
 
 if (!function_exists('checkFields')) {
     function checkFields($required, $objectFields) {
+
+        global $modx;
         $fields = explode(',', $required);
         foreach ($fields as $field) {
             if (!isset($objectFields[$field])) {
+                $modx->log(MODX_LOG_LEVEL_ERROR, 'Missing field: ' . $field);
                 return false;
             }
         }
@@ -56,7 +59,7 @@ if ($object->xpdo) {
             if (is_array($intersects)) {
                 foreach ($intersects as $k => $fields) {
                     /* make sure we have all fields */
-                    if (!checkFields('plugin,event,priority,propertyset', $fields)) {
+                    if (!checkFields('pluginid,event,priority,propertyset', $fields)) {
                         continue;
                     }
                     $event = $modx->getObject('modEvent', array('name' => $fields['event']));
@@ -67,19 +70,17 @@ if ($object->xpdo) {
                             $fields['plugin'] . ' - ' . $fields['event']);
                         continue;
                     }
-                    $pluginEvent = $modx->getObject('modPluginEvent', array('name'=>$plugin->get('id'),'event' => $fields['event']) );
+                    $pluginEvent = $modx->getObject('modPluginEvent', array('name'=>$plugin->get('name'),'event' => $fields['event']) );
                     
                     if (!$pluginEvent) {
                         $pluginEvent = $modx->newObject('modPluginEvent');
                     }
                     if ($pluginEvent) {
-                        $pluginEvent->set('plugin', $plugin->get('id'));
-                        $pluginEvent->set('templateid', $template->get('id'));
-                        if (isset($fields['rank'])) {
-                            $pluginEvent->set('rank', $fields['rank']);
-                        } else {
-                            $pluginEvent->set('rank', 0);
-                        }
+                        $pluginEvent->set('event', $fields['event']);
+                        $pluginEvent->set('pluginid', $plugin->get('id'));
+                        $pluginEvent->set('priority', $fields['priority']);
+                        $pluginEvent->set('group', $fields['group']);
+                        $pluginEvent->set('propertyset', $fields['propertyset']);
                     }
                     if (! $pluginEvent->save()) {
                         $modx->log(xPDO::LOG_LEVEL_ERROR, 'Unknown error saving pluginEvent for ' .
