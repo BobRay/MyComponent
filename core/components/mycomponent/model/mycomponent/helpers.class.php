@@ -234,7 +234,9 @@ class Helpers
      * @param $dryRun boolean - if true, writes to stdout instead of file.
      */
     public function writeFile ($dir, $fileName, $content, $dryRun = false) {
-
+        /* just in case */
+        $dir = str_replace('//', '/', $dir);
+        /* create directory if necessary */
         if (!is_dir($dir)) {
             mkdir($dir, $this->dirPermission, true);
         }
