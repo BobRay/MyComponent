@@ -285,6 +285,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
 
     public function testConnectSystemEventsToPlugins() {
         /* check connections */
+        
         $this->mc->createElements();
         $this->mc->connectSystemEventsToPlugins();
         $plugins = $this->mc->props['elements']['modPlugin'];

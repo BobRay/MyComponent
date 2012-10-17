@@ -19,9 +19,11 @@
 
 if (!function_exists('checkFields')) {
     function checkFields($required, $objectFields) {
+        global $modx;
         $fields = explode(',', $required);
         foreach ($fields as $field) {
             if (!isset($objectFields[$field])) {
+                $modx->log(MODX_LOG_LEVEL_ERROR, 'Missing field: ' . $field);
                 return false;
             }
         }

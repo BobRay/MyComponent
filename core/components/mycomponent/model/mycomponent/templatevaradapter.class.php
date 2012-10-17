@@ -17,9 +17,24 @@ class TemplateVarAdapter extends ElementAdapter
     final public function __construct(&$modx, &$helpers, $fields, $mode=MODE_BOOTSTRAP, $object = null) {
         $this->name = $fields['name'];
         if (is_array($fields)) {
+            if (isset($fields['templates'])) {
+                $this->setTvResolver($fields['templates']);
+                unset($fields['templates']);
+            }
             $this->myFields = $fields;
+
         }
         parent::__construct($modx, $helpers, $fields, $mode, $object);
+
+    }
+    public function setTvResolver($fields) {
+        foreach($fields as $templateName => $rank) {
+            $resolverFields = array();
+            $resolverFields['templateid'] = $templateName;
+            $resolverFields['tmplvarid'] = $this->getName();
+            $resolverFields['rank'] = isset($rank) && !empty($rank) ? $rank : '0';
+            ObjectAdapter::$myObjects['tvResolver'][] = $resolverFields;
+        }
 
     }
 

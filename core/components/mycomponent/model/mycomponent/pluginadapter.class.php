@@ -31,9 +31,8 @@ class PluginAdapter extends ElementAdapter
             $resolverFields = array(
                 'pluginid' => $this->getName(),
                 'event' => isset($fields['event']) ? $fields['event'] : $eventName,
-                'priority' => isset($fields['priority'])? $fields['priority'] : '0',
-                'group' => isset($fields['group'])? $fields['group'] :'plugins',
-                'propertySet' => isset($fields['propertySet']) ? $fields['propertySet'] : '0',
+                'priority' => isset($fields['priority']) && !empty($fields['priority'])? $fields['priority'] : '0',
+                'propertyset' => isset($fields['propertySet']) && !empty($fields['priority']) ? $fields['propertySet'] : '0',
             );
             ObjectAdapter::$myObjects['pluginResolver'][] = $resolverFields;
         }
