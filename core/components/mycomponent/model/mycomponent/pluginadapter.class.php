@@ -29,6 +29,7 @@ class PluginAdapter extends ElementAdapter
     public function setPluginResolver($events) {
         foreach ($events as $eventName => $fields) {
             $resolverFields = array(
+                'pluginid' => $this->getName(),
                 'event' => isset($fields['event']) ? $fields['event'] : $eventName,
                 'priority' => isset($fields['priority'])? $fields['priority'] : '0',
                 'group' => isset($fields['group'])? $fields['group'] :'plugins',
@@ -60,8 +61,7 @@ class PluginAdapter extends ElementAdapter
      * @return bool
      */
     public static function createResolver($dir, $intersects, $helpers, $newEvents) {
-
-        /* Create tv.resolver.php resolver */
+        /* Create plugin.resolver.php resolver */
         /* @var $helpers Helpers */
         if (!empty($dir) && !empty($intersects)) {
             $helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating plugin resolver');

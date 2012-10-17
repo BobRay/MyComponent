@@ -52,12 +52,14 @@ $components = array(
   * their namespace and area to the lowercase category of your extra */
 
     'newSystemSettings' => array(
-        'ut_system_setting1' => array( // key
+        'ut_system_setting1' => array(
+            'key' => 'ut_system_setting1',
             'xtype' => 'textField',
             'value' => 'value1',
-            'namespace' => 'example',
+            'namespace' => 'unittest',
         ),
-        'ut_system_setting2' => array( // key
+        'ut_system_setting2' => array(
+            'key' => 'ut_system_setting2',
             'xtype' => 'combo-boolean',
             'value' => true,
         ),
@@ -246,7 +248,7 @@ $components = array(
     /* Array of Resource pagetitles for your Extra; All other fields optional.
        You can set any resource field here */
     'resources' => array(
-        'Resource1' => array( /* minimal example */
+        'utResource1' => array( /* minimal example */
             'pagetitle' => 'utResource1',
             'alias' => 'ut-resource1',
         ),
@@ -375,17 +377,18 @@ $components = array(
 
 
     /* *******************************************
-      * These settings control exportObjects.php  *
+      * These settings control exportObjects.php and bootstrap.php  *
       ******************************************* */
     /* ExportObjects will update existing files. You may want to set
        dryRun to '1' in the early stages of a new project so it
        will report what it would have done withougt changing anything  */
 
+    /* This only affects ExportObjects */
     'dryRun' => '0',
-    'createTransportFiles' => '1',
-    // remove??
-    'createObjectFiles' => '1',
-    // remove??
+
+    /* These settings control both Bootstrap and Export Objects */
+    'createTransportFiles' => true,  // remove??
+    'createObjectFiles' => true,    // remove??
 
     /* Array of elements to export. All elements set above will be handled.
      *

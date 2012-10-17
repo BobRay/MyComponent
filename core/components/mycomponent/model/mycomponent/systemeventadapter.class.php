@@ -19,12 +19,13 @@ class SystemEventAdapter extends ObjectAdapter
         $this->name = $fields['name'];
         $this->modx =& $modx;
         $this->helpers =& $helpers;
-        /*if (empty($fields['groupname'])) {
+        if (empty($fields['groupname'])) {
             $fields['groupname'] = $this->helpers->props['packageName'];
         }
         if (empty($fields['service'])) {
             $fields['service'] = 1;
-        }*/
+        }
+        ObjectAdapter::$myObjects['newSystemEvents'][] = $fields;
         $this->myFields = $fields;
     }
 

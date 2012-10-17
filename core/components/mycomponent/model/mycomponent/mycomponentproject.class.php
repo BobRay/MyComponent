@@ -560,69 +560,101 @@ public function initPaths() {
     $this->createBasics();
 
     /*  Create namespace */
-        if (!empty($objects['namespaces'])) {
+        $this->createNamespaces();
+
+    /* create category or categories*/
+        $this->createCategories();
+
+    /* create system settings */
+        $this->createNewSystemSettings();
+
+    /* create new system events */
+        $this->createNewSystemEvents();
+
+    /* Create elements */
+        $this->createElements();
+
+    /* Create resources */
+        $this->createResources();
+
+    /* Create Validators */
+        $this->createValidators();
+
+    /* Create all Resolvers and intersects */
+        $this->createResolvers();
+
+    }
+    public function createNamespaces() {
+        if (!empty($this->props['namespaces'])) {
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating namespace(s)');
-            foreach ($objects['namespaces'] as $namespace => $fields) {
+            foreach ($this->props['namespaces'] as $namespace => $fields) {
                 $this->addToModx('NameSpaceAdapter', $fields);
             }
-       }
-
-
-    /* quick create category or categories*/
-        if (!empty($objects['categoryNames'])) {
-            foreach($objects['categoryNames'] as $categoryName => $fields) {
+        }
+    }
+    public function createCategories() {
+        if (!empty($this->props['categoryNames'])) {
+            foreach ($this->props['categoryNames'] as $categoryName => $fields) {
                 if (empty($fields['category'])) {
                     $fields['category'] = $categoryName;
                 }
-                $o = new CategoryAdapter($modx, $helpers, $fields);
+                $o = new CategoryAdapter($this->modx, $this->helpers, $fields);
                 $o->addToModx();
                 /* Create Resolvers */
-                $this->createResolvers($categoryName);
+                //$this->createResolvers($categoryName);
             }
         }
-
-
-    /* create system settings */
-        if (!empty($objects['newSystemSettings'])) {
+    }
+    public function createNewSystemSettings() {
+        if (!empty($this->props['newSystemSettings'])) {
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Settings');
-            foreach($objects['newSystemSettings'] as $key => $fields) {
+            foreach ($this->props['newSystemSettings'] as $key => $fields) {
+                if (! isset($fields['key'])) {
+                    $fields['key'] = $key;
+                }
                 $this->addToModx('SystemSettingAdapter', $fields);
             }
         }
-
-    /* create new system events */
-        if (!empty($objects['newSystemEvents'])) {
+    }
+    public function createNewSystemEvents() {
+        if (!empty($this->props['newSystemEvents'])) {
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Events');
-            foreach($objects['newSystemEvents'] as $key => $fields) {
+            foreach ($this->props['newSystemEvents'] as $key => $fields) {
+                $fields['name'] = isset($fields['name'])
+                    ? $fields['name']
+                    : $key;
                 $this->addToModx('SystemEventAdapter', $fields);
             }
         }
-
-    /* Create elements */
-
+    }
+    public function createElements() {
         if (isset($this->props['elements']) && !empty($this->props['elements'])) {
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating elements');
             $elements = $this->props['elements'];
-            foreach($elements as $element => $elementObjects) {
+            foreach ($elements as $element => $elementObjects) {
                 $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating ' . $element);
-                foreach($elementObjects as $elementName => $fields) {
-                /* @var $adapter elementAdapter */
+                foreach ($elementObjects as $elementName => $fields) {
+                    /* @var $adapter elementAdapter */
                     $adapterName = ucFirst(substr($element, 0, -1)) . 'Adapter';
-                    $fields['name'] = isset($fields['name'])? $fields['name'] : $elementName;
-                    $adapter = new $adapterName($modx, $helpers, $fields);
-                    $adapter->addToMODx();
+                    $fields['name'] = isset($fields['name'])
+                        ? $fields['name']
+                        : $elementName;
+                    //$adapter = new $adapterName($this->modx, $this->helpers, $fields);
+                    //$adapter->addToMODx();
+                    $o = $this->addToModx($adapterName, $fields);
+                    $o->createCodeFile();
                 }
             }
             //$this->createIntersects($category);
         }
+    }
 
-
-    /* Create resources */
+    public function createResources() {
         if (isset($this->props['resources']) && !empty($this->props['resources'])) {
             /* @var $o ResourceAdapter */
             $o = null;
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating Resources');
-            foreach($this->props['resources'] as $resource => $fields) {
+            foreach ($this->props['resources'] as $resource => $fields) {
                 $fields['pagetitle'] = empty($fields['pagetitle'])
                     ? $resource
                     : $fields['pagetitle'];
@@ -631,11 +663,8 @@ public function initPaths() {
                 $o->createCodeFile();
             }
         }
-
-
-
-
     }
+
     /* add to MODx function -- separating this allows
      * more frequent garbage collection */
     protected function addToModx($adapter, $fields, $overwrite = false) {
@@ -645,6 +674,7 @@ public function initPaths() {
         return $o;
 
     }
+    /* NOT used ?? */
     public function createIntersects($category) {
         /* Connect TVs to Templates */
         $a = $this->bootstrapObjects;
@@ -662,34 +692,35 @@ public function initPaths() {
 
 
 
-    public function CreateResolvers($categoryName) {
-        $dir = $this->myPaths['targetResolve'] . $categoryName . '/';
-        $a = $this->bootstrapObjects;
+    public function CreateResolvers() {
+        $dir = $this->myPaths['targetResolve'];
         $o = ObjectAdapter::$myObjects;
+
         /* Category Resolver */
-        $intersects = $this->modx->getOption('categoryNames', $a, array());
-        CategoryAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $this->helpers);
+        /*$intersects = $this->modx->getOption('categoryNames', $a, array());
+        CategoryAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $this->helpers);*/
 
         /* Resource Resolver ( */
-        $intersects = $this->modx->getOption('resourceResolver', $a, array());
-        ResourceAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $this->helpers);
+/*        $intersects = $this->modx->getOption('resourceResolver', $a, array());
+        ResourceAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $this->helpers);*/
 
         /* TV Resolver */
-        $intersects = $this->modx->getOption($categoryName . '_templateVarTemplates', $a, array());
-        TemplateVarAdapter::createResolver($dir, $intersects, $this->helpers);
+/*        $intersects = $this->modx->getOption($categoryName . '_templateVarTemplates', $a, array());
+        TemplateVarAdapter::createResolver($dir, $intersects, $this->helpers);*/
 
         /* Plugin Resolver */
-        $intersects = $this->modx->getOption($categoryName . '_pluginEvents', $a, array());
-        $newEvents = $this->modx->getOption('newSystemEvents', $a, array());
+        $intersects = $this->modx->getOption('pluginResolver', $o, array());
+        $newEvents = $this->modx->getOption('newSystemEvents', $this->props, array());
         PluginAdapter::createResolver($dir, $intersects, $this->helpers, $newEvents);
 
         /* Property Set Resolver */
-        $intersects = $this->modx->getOption($categoryName . '_elementPropertySets', $a, array());
-        PropertySetAdapter::createResolver($dir, $intersects, $this->helpers);
+/*        $intersects = $this->modx->getOption($categoryName . '_elementPropertySets', $a, array());
+        PropertySetAdapter::createResolver($dir, $intersects, $this->helpers);*/
 
         /* extra resolvers */
+        $extraResolvers = $this->modx->getOption('resolvers', $this->props, array());
         $dir = $this->myPaths['targetResolve'];
-        $extraResolvers = $this->modx->getOption('extraResolvers', $a, array());
+
         foreach($extraResolvers as $k => $name) {
             $name = ($name == 'default') ? $this->packageNameLower : $name;
             $name = strtolower($name);
@@ -709,7 +740,7 @@ public function initPaths() {
         }
 
         /* extra resolvers */
-        $extraValidators = $this->modx->getOption('extraValidators', $a, array());
+        $extraValidators = $this->modx->getOption('validators', $this->props, array());
         $dir = $this->myPaths['targetValidate'];
         foreach ($extraValidators as $k => $name) {
             $name = ($name == 'default')
@@ -891,7 +922,7 @@ public function initPaths() {
         }
 
         $this->newInstallOptions();
-        $this->newAssetsDirs();
+        $this->createAssetsDirs();
         $this->createClassFiles();
 
         return true;
@@ -899,7 +930,7 @@ public function initPaths() {
 
     /** Creates assets directories and (optionally) empty css and js files
      * if set in project config file */
-    public function newAssetsDirs() {
+    public function CreateAssetsDirs() {
         if (! $this->props['hasAssets']) {
             return;
         }
@@ -1020,7 +1051,6 @@ public function initPaths() {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating validators');
             $dir = $this->targetRoot . '_build/validators';
 
-            $validators = explode(',', $validators);
             foreach ($validators as $validator) {
                 if ($validator == 'default') {
                     $fileName = $this->packageNameLower . '.' . 'validator.php';
@@ -1042,11 +1072,11 @@ public function initPaths() {
         $resolvers = $this->modx->getOption('resolvers', $this->props, '');
         if (!empty($resolvers)) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating extra resolvers');
-            $dir = $this->myPaths['build'] . 'resolvers';
+            $dir = $this->myPaths['targetBuild'] . 'resolvers';
             if (!is_dir($dir)) {
                 mkdir($dir, $this->dirPermission, true);
             }
-            $resolvers = explode(',', $resolvers);
+
             foreach ($resolvers as $resolver) {
                 if ($resolver == 'default') {
                     $fileName = $this->packageNameLower . '.' . 'resolver.php';
