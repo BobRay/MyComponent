@@ -616,8 +616,6 @@ public function initPaths() {
             }
             $o = new CategoryAdapter($this->modx, $this->helpers, $fields);
             $o->addToModx();
-            /* Create Resolvers */
-            //$this->createResolvers($categoryName);
         }
 
     }
@@ -711,8 +709,8 @@ public function initPaths() {
         $o = ObjectAdapter::$myObjects;
 
         /* Category Resolver */
-        /*$intersects = $this->modx->getOption('categoryNames', $a, array());
-        CategoryAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $this->helpers);*/
+        $intersects = $this->modx->getOption('categories', $o, array());
+        CategoryAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $this->helpers);
 
         /* Resource Resolver ( */
         $intersects = $this->modx->getOption('resourceResolver', $o, array());

@@ -27,6 +27,9 @@ class CategoryAdapter extends ObjectAdapter {
         $this->modx =& $modx;
         $this->helpers =& $helpers;
         $this->name = $fields['category'];
+        if (! isset($fields['parent']) || empty($fields['parent'])) {
+            $fields['parent'] = '0';
+        }
         $this->myFields = $fields;
         ObjectAdapter::$myObjects['categories'][$fields['category']] = $fields;
 
@@ -41,6 +44,7 @@ class CategoryAdapter extends ObjectAdapter {
 
     public function addToMODx($overwrite = false) {
         /* create category if necessary */
+        $fields = $this->myFields;
         if (isset($fields['parent']) && !empty($fields['parent'])) {
             $pn = $fields['parent'];
             if (!is_numeric($fields['parent'])) {
