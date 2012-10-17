@@ -49,7 +49,7 @@ class MyComponentProject {
 /* *****************************************************************************
    Construction and Support Functions (in MODxObjectAdapter)
 ***************************************************************************** */
-    public function __construct(&$modx = null)
+    public function __construct(&$modx = null, $configFile = null)
     {
         if (!defined('MODE_BOOTSTRAP')) {
             die("bootstrap not defined");
@@ -57,7 +57,7 @@ class MyComponentProject {
         /* Create $modx object if it doesn't exist */
         $this->initMODx($modx);
         /* Get the config file */
-        $this->init();
+        $this->init($configFile);
         /* Set up our paths */
         $this->initPaths();
 
@@ -127,11 +127,17 @@ class MyComponentProject {
         }
     }
 
-    public function init() {
+    public function init($configFile) {
         require dirname(__FILE__) . '/mcautoload.php';
         spl_autoload_register('mc_auto_load');
         // Get the project config file
-        include dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/_build/config/current.project.php';
+        if (! $configFile) {
+            include dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) .
+                '/_build/config/current.project.php';
+        } else {
+            $configPath = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) .
+                '/_build/config/' . $configFile;
+        }
         if (! isset($configPath)) {
             die('Config path not set');
         }

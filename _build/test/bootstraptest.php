@@ -15,7 +15,7 @@
  */
 class BootStrapTest extends PHPUnit_Framework_TestCase
 {
-    /* @var $bootstrap Bootstrap */
+    /* @var $bootstrap MyComponentProject */
     public $bootstrap;
     /* @var $modx modX */
     public $modx;
@@ -23,6 +23,8 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
     public $categoryName;
     /* @var $utHelpers UtHelpers */
     public $utHelpers;
+    /* @var $category modCategory */
+    public $category;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -40,21 +42,21 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
         $modx->setLogLevel(modX::LOG_LEVEL_ERROR);
         $modx->setLogTarget('ECHO');
 
-        require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/core/components/mycomponent/model/mycomponent/bootstrap.class.php';
+        require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/core/components/mycomponent/model/mycomponent/mycomponentproject.class.php';
 
-        $this->bootstrap = new Bootstrap($modx);
+        $this->bootstrap = new MyComponentProject($modx, 'unittest.config.php');
         $this->modx =& $this->bootstrap->modx;
         /* @var $categoryObj modCategory */
-        $this->bootstrap->init(dirname(__FILE__) . '/build.config.php');
-        if ($this->bootstrap->props['category'] != 'UnitTest') {
+        $this->category = key($this->bootstrap->props['categoryNames']);
+        if ($this->category != 'UnitTest') {
             die('wrong config - NEVER run unit test on a real project!');
         }
-        $this->utHelpers->rrmdir($this->bootstrap->targetBase);
+        $this->utHelpers->rrmdir($this->bootstrap->targetRoot);
         $this->utHelpers->removeElements($this->modx, $this->bootstrap);
         $this->utHelpers->removeResources($this->modx, $this->bootstrap);
         $this->utHelpers->removePropertySets($this->modx, $this->bootstrap);
-        $this->bootstrap->createCategory();
-        $this->bootstrap->createNamespace();
+        //$this->bootstrap->createCategory();
+        //$this->bootstrap->createNamespace();
     }
 
 
@@ -67,12 +69,12 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
         // echo "\n---------------- TEARDOWN --------------------";
         /* @var $category modCategory */
         /* @var $namespace modNamespace */
-        $this->utHelpers->rrmdir($this->bootstrap->targetBase);
+        $this->utHelpers->rrmdir($this->bootstrap->targetRoot);
         $category = $this->modx->getObject('modCategory', array('category' => 'UnitTest'));
         if ($category) $category->remove();
         $namespace = $this->modx->getObject('modNamespace', array('name'=> 'unittest'));
         if ($namespace) $namespace->remove();
-        $this->utHelpers->rrmdir($this->bootstrap->targetBase);
+        $this->utHelpers->rrmdir($this->bootstrap->targetRoot);
         $this->utHelpers->removeElements($this->modx, $this->bootstrap);
         $this->utHelpers->removeResources($this->modx, $this->bootstrap);
         $this->utHelpers->removePropertySets($this->modx, $this->bootstrap);
@@ -92,24 +94,24 @@ class BootStrapTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($this->bootstrap->props));
 
         /* make sure basic member variables are not empty */
-        $this->assertNotEmpty($this->bootstrap->packageName);
         $this->assertNotEmpty($this->bootstrap->packageNameLower);
-        $this->assertNotEmpty($this->bootstrap->targetBase);
-        $this->assertNotEmpty($this->bootstrap->targetAssets);
-        $this->assertNotEmpty($this->bootstrap->targetCore);
+        $this->assertNotEmpty($this->bootstrap->targetRoot);
+        //$this->assertNotEmpty($this->bootstrap->targetAssets);
+        $this->assertNotEmpty($this->bootstrap->myPaths['targetCore']);
         $this->assertNotEmpty($this->bootstrap->dirPermission);
-        $this->assertNotEmpty($this->bootstrap->filePermission);
-        $this->assertTrue(is_array($this->bootstrap->makeStatic));
+        $this->assertNotEmpty($this->bootstrap->props['filePermission']);
         /* make sure helpers class was loaded  */
         $this->assertTrue(method_exists($this->bootstrap->helpers,'replaceTags'));
     }
 
     public function testCategory() {
         /* @var $category modCategory */
-        $category = $this->modx->getObject('modCategory', $this->bootstrap->categoryId);
+        $fields = $this->bootstrap->props['CategoryNames']
+        $o = new CategoryAdapter($this->modx, $this->bootstrap->helpers, $fields);
+        $category = $this->modx->getObject('modCategory', array('category' => $this->category);
 
         $this->assertInstanceOf('modCategory', $category);
-        $this->assertEquals($this->bootstrap->props['category'],$category->get('category'));
+        $this->assertEquals($this->category,$category->get('category'));
     }
     public function testNamespace() {
         /* @var $namespace modNamespace */
