@@ -13,9 +13,8 @@ class CategoryAdapter extends ObjectAdapter {
     protected $name;
     protected $createProcessor = 'element/category/create';
     protected $updateProcessor = 'element/category/update';
-    protected $myId;
-    protected $objectArray = array();
-    protected $targetBase;
+
+
     /* @var $modx modX */
     public $modx;
     /* @var $helpers Helpers */
@@ -27,24 +26,10 @@ class CategoryAdapter extends ObjectAdapter {
         /* @var $modx modX */
         $this->modx =& $modx;
         $this->helpers =& $helpers;
-        $this->objectArray =& $objectArray;
-        $this->targetRoot = $this->helpers->props['targetRoot'];
-        $fields = is_array($fields) ? $fields : array();
-
         $this->name = $fields['category'];
+        $this->myFields = $fields;
+        ObjectAdapter::$myObjects['categories'][$fields['category']] = $fields;
 
-        if (isset($fields['parent'])) {
-            $pn = $fields['parent'];
-            if (!is_numeric($fields['parent'])) {
-                $p = $modx->getObject('modCategory', array('category' => $pn));
-                if ($p) {
-                    $fields['parent'] = $p->get('id');
-                }
-            }
-        }
-        if (is_array($fields)) {
-            $this->myFields = $fields;
-        }
         parent::__construct($modx, $helpers);
 
     }
@@ -56,74 +41,28 @@ class CategoryAdapter extends ObjectAdapter {
 
     public function addToMODx($overwrite = false) {
         /* create category if necessary */
+        if (isset($fields['parent']) && !empty($fields['parent'])) {
+            $pn = $fields['parent'];
+            if (!is_numeric($fields['parent'])) {
+                $p = $this->modx->getObject('modCategory', array('category' => $pn));
+                if ($p) {
+                    $fields['parent'] = $p->get('id');
+                }
+            }
+        } else {
+            $fields['parent'] = '0';
+        }
         parent::addToModx($overwrite);
     }
 
-    public function addChildren($fields, $createCodeFiles = false) {
-        if (is_array($fields) && !empty($fields)) {
-            $elements = $fields;
-            foreach ($elements as $element => $objects) {
-                if ($element == 'category') {
-                    /* don't recreate myself */
-                    continue;
-                }
-                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating ' . $element);
-                foreach ($objects as $object => $fields) {
-
-                    $fields['category'] = $this->myId;
-
-                    /* @var $o ObjectAdapter */
-                    $adapter = substr(ucfirst($element), 0, -1) . 'Adapter';
-                    $o = new $adapter($this->modx, $this->helpers, $fields);
-                    $o->addToModx();
-                    if ($createCodeFiles) {
-                        $o->createCodeFile();
-                    }
-                }
-
-            }
-        }
-    }
 
 
-    public function createTemplateVarTemplateResolver() {
-        $templateVarTemplates = $this->modx->getOption('templateVarTemplates', $this->objectArray, array());
 
-        /* Create Resolver */
-        if (!empty($templateVarTemplates)) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating tv resolver');
-            $tpl = $this->helpers->getTpl('tvresolver.php');
-            $tpl = $this->helpers->replaceTags($tpl);
-            if (empty($tpl)) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'tvresolver tpl is empty');
-            }
-            $dir = $this->targetBase . '_build/resolvers';
-            $fileName = 'tv.resolver.php';
 
-            if (!file_exists($dir . '/' . $fileName)) {
-                $code = '';
-                $codeTpl = $this->helpers->getTpl('tvresolvercode.php');
-                $codeTpl = str_replace('<?php', '', $codeTpl);
-
-                foreach ($templateVarTemplates as $template => $tvs) {
-                    $tempCodeTpl = str_replace('[[+template]]', $template, $codeTpl);
-                    $tempCodeTpl = str_replace('[[+tvs]]', $tvs, $tempCodeTpl);
-                    $code .= "\n" . $tempCodeTpl;
-                }
-
-                $tpl = str_replace('/* [[+code]] */', $code, $tpl);
-
-                $this->helpers->writeFile($dir, $fileName, $tpl);
-            }
-            else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
-            }
-        }
-    }
 
     public static function createResolver($dir, $intersects, $helpers) {
 
-        /* Create resource.resolver.php resolver */
+        /* Create category.resolver.php resolver */
         /* @var $helpers Helpers */
         if (!empty($dir) && !empty($intersects)) {
             $helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating Category resolver');

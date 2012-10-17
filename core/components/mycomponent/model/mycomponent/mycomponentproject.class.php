@@ -174,7 +174,7 @@ class MyComponentProject {
         $this->dirPermission = $this->props['dirPermission'];
 
     /* Create array of objects for bootstrap to use */
-        $this->bootstrapObjects = $this->getBootstrapObjects();
+        //$this->bootstrapObjects = $this->getBootstrapObjects();
 
     /* Create or update projects.php file */
         $this->updateProjectsFile($configPath);
@@ -212,20 +212,20 @@ class MyComponentProject {
     }
 
     /* Creates an array of object names and fields from the project config file */
-    public function getBootstrapObjects() {
+    public function xgetBootstrapObjects() {
         $config = $this->props;
         $objects = array();
 
         /* get Categories for category resolver */
-        if (isset($config['categoryNames'])) {
-            foreach($config['categoryNames'] as $category => $fields) {
+        if (isset($config['categoryies'])) {
+            foreach($config['categories'] as $category => $fields) {
                 if (!isset($fields['category'])) {
                     $fields['category'] = $category;
                 }
                 $fields['parent'] = isset($fields['parent']) && ! empty($fields['parent'])
                     ? $fields['parent']
                     : '0';
-                $objects['categoryNames'][$category] = $fields;
+                $objects['categories'][$category] = $fields;
             }
         }
 
@@ -282,8 +282,8 @@ class MyComponentProject {
                         die("\n\nERROR -- All Elements must have a category");
                     }
                     $category = $fields['category'];
-                    if (! in_array($fields['category'], array_keys($objects['categoryNames']))) {
-                        $objects['categoryNames'][$fields['category']]['category'] = $fields['category'];
+                    if (! in_array($fields['category'], array_keys($objects['categories']))) {
+                        $objects['categories'][$fields['category']]['category'] = $fields['category'];
                     }
 
                     /* normalize name field for templates*/
@@ -474,9 +474,9 @@ public function initPaths() {
         $this->myPaths = $paths;
 
     /* dump object array to file for reference */
-    $objectArray = print_r($this->bootstrapObjects, true);
+    //$objectArray = print_r($this->bootstrapObjects, true);
     //$objectArray = var_export($this->bootstrapObjects, true);
-    $this->helpers->writeFile($paths['mcBuild'], 'objectarray.txt', $objectArray);
+    //$this->helpers->writeFile($paths['mcBuild'], 'objectarray.txt', $objectArray);
 }
 
     /* Not used */
@@ -596,17 +596,30 @@ public function initPaths() {
         }
     }
     public function createCategories() {
-        if (!empty($this->props['categoryNames'])) {
-            foreach ($this->props['categoryNames'] as $categoryName => $fields) {
-                if (empty($fields['category'])) {
-                    $fields['category'] = $categoryName;
-                }
-                $o = new CategoryAdapter($this->modx, $this->helpers, $fields);
-                $o->addToModx();
-                /* Create Resolvers */
-                //$this->createResolvers($categoryName);
+        $categories = $this->modx->getOption('categories', $this->props, array());
+        if (empty($categories)) {
+            $packageName = $this->modx->GetOption('packageName', $this->props, '');
+            if (empty($packageName)) {
+                die('PackageName nor categories found in project config');
             }
+            $categories = array(
+                $packageName => array(
+                    'category' => $packageName,
+                    'parent' => '0',
+                ),
+            );
         }
+
+        foreach ($categories as $categoryName => $fields) {
+            if (empty($fields['category'])) {
+                $fields['category'] = $categoryName;
+            }
+            $o = new CategoryAdapter($this->modx, $this->helpers, $fields);
+            $o->addToModx();
+            /* Create Resolvers */
+            //$this->createResolvers($categoryName);
+        }
+
     }
     public function createNewSystemSettings() {
         if (!empty($this->props['newSystemSettings'])) {

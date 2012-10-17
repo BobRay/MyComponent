@@ -47,7 +47,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
         $this->mc = new MyComponentProject($modx, 'unittest.config.php');
         $this->modx =& $this->mc->modx;
         /* @var $categoryObj modCategory */
-        $this->category = key($this->mc->props['categoryNames']);
+        $this->category = key($this->mc->props['categories']);
         if ($this->category != 'UnitTest') {
             die('wrong config - NEVER run unit test on a real project!');
         }
@@ -115,9 +115,18 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
     public function testCreateCategories() {
         /* @var $category modCategory */
         $this->mc->createCategories();
-        $category = $this->modx->getObject('modCategory', array('category' => $this->category));
-        $this->assertInstanceOf('modCategory', $category);
-        $this->assertEquals($this->category,$category->get('category'));
+        $categories = $this->mc->props['categories'];
+        $this->assertNotEmpty($categories);
+        foreach($categories as $category => $fields){
+            $category = $this->modx->getObject('modCategory', array('category' => $category));
+            $this->assertInstanceOf('modCategory', $category);
+            $p = $category->get('parent');
+            if (! empty($p) ) {
+                $pObj = $this->modx->GetObject('modCategory', $p);
+                $this->assertEquals($fields['parent'], $p->get('category'));
+            }
+        }
+
 
     }
     public function testCreateNamespaces() {
@@ -282,6 +291,17 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
         $this->assertFileExists($this->mc->myPaths['targetAssets'] . 'js/' . $this->mc->packageNameLower . '.js');
         $this->assertnotEmpty(file_get_contents($this->mc->myPaths['targetAssets'] . 'js/' . $this->mc->packageNameLower . '.js'));
     }
+    public function testCreateResolvers() {
+
+
+    }
+
+    public function testCreateIntersects() {
+
+    }
+
+
+
 
     public function testConnectSystemEventsToPlugins() {
         /* check connections */

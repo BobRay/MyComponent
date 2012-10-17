@@ -9,9 +9,6 @@ $components = array(
     'packageDescription' => 'Example project for MyComponent extra',
     'version' => '1.0.0',
     'release' => 'beta1',
-    'categories' => array( /* usually just one and the same as the package name */
-        'Example,'
-    ),
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
     'authorUrl' => 'http://bobsguides.com',
@@ -104,11 +101,11 @@ $components = array(
 
     /* ************************* CATEGORIES *************************** */
     /* (optional) List of categories. This is only necessary if you
-     * need to categories other than the one named for packageNameLower
+     * need to categories other than the one named for packageName
      * or want to nest categories.
     */
 
-    'categoryNames' => array(
+    'categories' => array(
         'Example' => array(
             'category' => 'Example',
             'parent' => '',  /* top level category */

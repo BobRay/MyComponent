@@ -9,9 +9,6 @@ $components = array(
     'packageNameLower' => $packageNameLower,
     'version' => '1.0.0',
     'release' => 'beta1',
-    'categories' => array( /* usually just one and the same as the package name */
-        'Example,'
-    ),
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
     'authorUrl' => 'http://bobsguides.com',
@@ -101,14 +98,14 @@ $components = array(
      * or want to nest categories.
     */
 
-    'categoryNames' => array(
+    'categories' => array(
         'UnitTest' => array(
             'category' => 'UnitTest',
             'parent' => '',
             /* top level category */
         ),
-        'Utcategory2' => array(
-            'category' => 'UtCategory2',
+        'utCategory2' => array(
+            'category' => 'utCategory2',
             'parent' => 'UnitTest',
             /* nested under Example */
         )
