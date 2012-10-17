@@ -49,13 +49,13 @@ class MyComponentProject {
 /* *****************************************************************************
    Construction and Support Functions (in MODxObjectAdapter)
 ***************************************************************************** */
-    public function __construct()
+    public function __construct(&$modx = null)
     {
         if (!defined('MODE_BOOTSTRAP')) {
             die("bootstrap not defined");
         }
         /* Create $modx object if it doesn't exist */
-        $this->initMODx();
+        $this->initMODx($modx);
         /* Get the config file */
         $this->init();
         /* Set up our paths */
@@ -68,15 +68,13 @@ class MyComponentProject {
     /* Instantiate MODx -- if this require fails, check your
      * _build/build.config.php file
      */
-    public function initMODx() { /* Initialize MODX if not already done */
-        if (!defined('MODX_CORE_PATH')){
+    public function initMODx(&$modx = null) { /* Initialize MODX if not already done */
 
-            require_once dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) .'/_build/build.config.php';
+        require_once dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/_build/build.config.php';
+        if (!$modx){
             $cp = MODX_CORE_PATH;
-
             if (empty($cp)) {
                 die ('Could not initialize MODX');
-
             }
             require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
 
@@ -92,7 +90,7 @@ class MyComponentProject {
         if (php_sapi_name() == 'cli') {
             /* @var $loginFile string - set in build.config.php */
             /* @var $fields string - set in login file at the path $loginFile */
-            include $loginFile;
+             include $loginFile;
             $modx->getRequest();
             /* Log in */
             $response = $modx->runProcessor('security/login', $fields);
