@@ -37,30 +37,32 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
         require_once dirname(__FILE__) . '/uthelpers.class.php';
         require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
         $this->utHelpers = new UtHelpers();
+
         $modx = new modX();
         $modx->initialize('mgr');
+
         $modx->setLogLevel(modX::LOG_LEVEL_ERROR);
         $modx->setLogTarget('ECHO');
 
         require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/core/components/mycomponent/model/mycomponent/mycomponentproject.class.php';
 
-        $this->mc = new MyComponentProject($modx, 'unittest.config.php');
-        $this->modx =& $this->mc->modx;
         /* @var $categoryObj modCategory */
+        $this->mc = new MyComponentProject($modx, 'unittest.config.php');
+        $this->modx =& $modx;
         $this->category = key($this->mc->props['categories']);
         if ($this->category != 'UnitTest') {
             die('wrong config - NEVER run unit test on a real project!');
         }
-        $this->utHelpers->rrmdir($this->mc->targetRoot);
-        $this->utHelpers->removeElements($this->modx, $this->mc);
-        $this->utHelpers->removeResources($this->modx, $this->mc);
         $category = $this->modx->getCollection('modCategory', array('category' => 'UnitTest'));
         foreach ($category as $categoryObj) {
             $categoryObj->remove();
         }
         $namespace = $this->modx->getObject('modNamespace', array('name' => 'unittest'));
         if ($namespace) $namespace->remove();
+        $this->utHelpers->rrmdir($this->mc->targetRoot);
 
+        $this->utHelpers->removeElements($this->modx, $this->mc);
+        $this->utHelpers->removeResources($this->modx, $this->mc);
 
         //$this->mc->createCategory();
         //$this->mc->createNamespace();
@@ -87,7 +89,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
         $this->utHelpers->removeElements($this->modx, $this->mc);
         $this->utHelpers->removeResources($this->modx, $this->mc);
         $this->mc = null;
-
+        $this->modx = null;
     }
 
     /**
@@ -114,6 +116,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
 
     public function testCreateCategories() {
         /* @var $category modCategory */
+        $this->mc->createBasics();
         $this->mc->createCategories();
         $categories = $this->mc->props['categories'];
         $this->assertNotEmpty($categories);
@@ -146,7 +149,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
         $this->mc->createNewSystemSettings();
         $settings = $this->mc->props['newSystemSettings'];
         $this->assertNotEmpty($settings);
-        /* @var $object modSystemSetting */
+        // @var $object modSystemSetting
         foreach ($settings as $settingKey => $fields) {
 
             $object = $this->modx->getObject('modSystemSetting', array('key' => $settingKey));
@@ -218,6 +221,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
     public function testCreateResources() {
         /* @var $r modResource */
         $this->mc->createCategories();
+        $this->mc->createNamespaces();
         $this->mc->createElements();
         $this->mc->createResources();
         $resources = $this->mc->props['resources'];
@@ -292,175 +296,125 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
         $this->assertnotEmpty(file_get_contents($this->mc->myPaths['targetAssets'] . 'js/' . $this->mc->packageNameLower . '.js'));
     }
     public function testCreateResolvers() {
+        $this->mc->createCategories();
+        $this->mc->createResources();
+        $this->mc->createElements();
+        $this->mc->createResolvers();
+        $this->mc->createExtraResolvers();
+        $fileNames = array('plugin','tv','resource','propertyset','category','addusers','unittest');
+        foreach($fileNames as $k => $name) {
+            $fileName = $this->mc->myPaths['targetRoot'] . '_build/resolvers/' . $name . '.resolver.php';
+            $this->assertFileExists($fileName);
+            $content = file_get_contents($fileName);
+            $this->assertNotEmpty($content);
+
+            /* make sure all placeholders got replaced */
+            /* allow this one */
+            $content = str_replace('/* [[+code]] */' , '', $content);
+            $this->assertEmpty(strstr($content, '[[+'));
+            $this->assertNotEmpty(strstr($content, 'License'));
+
+            if ($name == 'plugin') {
+                $names = $this->mc->props['newSystemEvents'];
+                foreach($names as $key => $fields) {
+                    $this->assertNotEmpty(strstr($content, $fields['name']));
+                }
+            }
+        }
 
 
     }
 
     public function testCreateIntersects() {
-
-    }
-
-
-
-
-    public function testConnectSystemEventsToPlugins() {
-        /* check connections */
-
+        $this->mc->createCategories();
+        $this->mc->createNewSystemEvents();
+        $this->mc->createResources();
         $this->mc->createElements();
-        $this->mc->connectSystemEventsToPlugins();
-        $plugins = $this->mc->props['elements']['modPlugin'];
-        $this->assertNotEmpty($plugins);
-        $plugins = explode(',',$plugins);
-        foreach($plugins as $plugin) {
-            /* @var $pluginObj modPlugin */
-            /* @var $pluginEvent modPluginEvent */
-            $alias = $this->mc->helpers->getNameAlias('modPlugin');
-            $pluginObj = $this->modx->getObject('modPlugin', array ($alias => $plugin));
-            $this->assertInstanceOf('modPlugin', $pluginObj);
-            $events = $this->mc->props['pluginEvents'][$plugin];
-            $this->assertNotEmpty($events);
-            $events = explode(',', $events);
-            foreach ($events as $event) {
-                if (strstr($event, ':')) {
-                    $data = explode(':', $event);
-                    $event = $data[0];
-                    $priority = $data[1];
-                } else {
-                    $priority = 0;
-                }
-                $fields = array (
-                    'pluginid' => $pluginObj->get('id'),
-                    'event' => $event,
-                );
-                $eventName = $this->modx->getObject('modEvent', array('name' => $event));
-                $this->assertInstanceOf('modEvent', $eventName, 'EVENT NAME: ' . $event);
-                if (strstr($this->mc->props['newSystemEvents'],$event)) {
-                    /* new event */
-                    $this->assertEquals($eventName->get('groupname'), $this->mc->props['category']);
-                }
-                $pluginEvent = $this->modx->getObject('modPluginEvent', $fields);
-                $this->assertInstanceOf('modPluginEvent', $pluginEvent);
-                $this->assertEquals($priority, $pluginEvent->get('priority'));
-            }
+        $this->mc->createIntersects();
+        /* pluginEvents */
+        $pes = ObjectAdapter::$myObjects['pluginResolver'];
+        $this->assertNotEmpty($pes);
+        foreach($pes as $k => $fields) {
+            $plugin = $this->modx->getObject('modPlugin', array('name' => $fields['pluginid']));
+            $this->assertNotEmpty($plugin);
+            $fields['pluginid'] = $plugin->get('id');
+            $pe = $this->modx->getObject('modPluginEvent', $fields);
+            $this->assertInstanceOf('modPluginEvent', $pe);
         }
-
-        /* check creation of plugin resolver */
-
-        $fileName = $this->mc->targetBase . '_build/resolvers/plugin.resolver.php';
-        $this->assertFileExists($fileName);
-        $content = file_get_contents($fileName);
-        $this->assertNotEmpty($content);
-
-        /* make sure all placeholders got replaced */
-        $this->assertEmpty(strstr($content, '[[+'));
-        $this->assertNotEmpty(strstr($content, 'License'));
-
-        $names = $this->mc->props['newSystemEvents'];
-        $this->assertNotEmpty(strstr($content, $names) . "NAMES: " . $names);
-
-        /* remove event names from system_eventnames */
-        /* @var $eventName modEvent */
-        $names = empty($names) ? array() : explode(',', $names);
-        foreach ($names as $name) {
-            $eventName = $this->modx->getObject('modEvent', array('name' => $name));
-            if ($eventName) {
-                $eventName->remove();
-            }
-        }
-    }
-
-    public function testConnectTvsToTemplates()
-    {
-        $this->mc->createElements();
-        $this->mc->connectTvsToTemplates();
-        $templateVarTemplates = $this->modx->getOption('templateVarTemplates', $this->mc->props, array());
-
-        /* check connection */
-        $templateId = null;
-        $tvId = null;
-        $this->assertNotEmpty($templateVarTemplates);
-        foreach ($templateVarTemplates as $templateName => $tvNames) {
-            $this->assertNotEmpty($templateName);
-            $this->assertNotEmpty($tvNames);
-            if ($templateName == 'default') {
-                $templateId = $this->modx->getOption('default_template', null, null);
-                $templateObj = $this->modx->getObject('modTemplate', (integer)$templateId);
+        /* templateVarTemplate */
+        $tvts = ObjectAdapter::$myObjects['tvResolver'];
+        $this->assertNotEmpty($tvts);
+        foreach ($tvts as $k => $fields) {
+            if ($fields['templateid'] == 'default') {
+                $fields['templateid'] = $this->modx->getOption('default_template');
             } else {
-                $alias = $this->utHelpers->getNameAlias('modTemplate');
-                $templateObj = $this->modx->getObject('modTemplate', array($alias => $templateName));
-                $this->assertInstanceOf('modTemplate', $templateObj);
-                $templateId = $templateObj->get('id');
-
+                $template = $this->modx->getObject('modTemplate', array('templatename' => $fields['templateid']));
+                $this -> assertNotEmpty($template);
+                $fields['templateid'] = $template->get('id');
             }
-            $this->assertNotNull($templateId);
-            $tvs = explode(',', $tvNames);
-            $this->assertNotEmpty($tvs);
-            foreach ($tvs as $tvName) {
-                $this->assertTrue($templateId !== null);
-                $this->assertNotEmpty($tvName);
-                $alias = $this->utHelpers->getNameAlias('modTemplateVar');
-                $tvObj = $this->modx->getObject('modTemplateVar', array($alias => $tvName));
-                $this->assertInstanceOf('modTemplate', $templateObj);
-                $this->assertInstanceOf('modTemplateVar', $tvObj);
-                /* @var $tvObj modTemplateVar */
-                /* @var $templateObj modTemplate */
-                /* @var $tvt modTemplateVarTemplate */
-
-                $tvId = $tvObj->get('id');
-                $this->assertTrue($tvId !== null);
-                $fields = array(
-                    'templateid' => $templateObj->get('id'),
-                    'tmplvarid' => $tvObj->get('id'),
-                );
-                $tvt = $this->modx->getObject('modTemplateVarTemplate',$fields);
-                $this->assertInstanceOf('modTemplateVarTemplate', $tvt, 'Template: ' . $templateObj->get('templatename') . ' --  TV: ' . $tvObj->get('name'));
-
-            }
+            $tv = $this->modx->getObject('modTemplateVar', array('name' => $fields['tmplvarid']));
+            $this->assertNotEmpty($tv);
+            $fields['tmplvarid'] = $tv->get('id');
+            $tvt = $this->modx->getObject('modTemplateVarTemplate', $fields);
+            $this->assertInstanceOf('modTemplateVarTemplate', $tvt);
         }
-        /* check for resolver */
-        $this->assertFileExists($this->mc->targetBase . '_build/resolvers/tv.resolver.php');
-        $content = file_get_contents($this->mc->targetBase . '_build/resolvers/tv.resolver.php');
-        $this->assertNotEmpty($content);
-        $this->assertNotEmpty(strstr($content,'License'));
-        /* make sure all placeholders got replaced */
-        $this->assertEmpty(strstr($content, '[[+'));
+        /* elementPropertySet */
+        $eps = ObjectAdapter::$myObjects['propertySetResolver'];
+        $this->assertNotEmpty($eps);
+
+        foreach($eps as $k => $fields) {
+            $name = $this->utHelpers->getNameAlias($fields['element_class']);
+            $element = $this->modx->getObject($fields['element_class'], array($name => $fields['element']));
+            $this->assertNotEmpty($element);
+            $fields['element'] = $element->get('id');
+            $pSet = $this->modx->getObject('modPropertySet', array('name' => $fields['property_set']));
+            $this->assertNotEmpty($pSet);
+            $fields['property_set'] = $pSet->get('id');
+            $ep = $this->modx->getObject('modElementPropertySet', $fields);
+            $this->assertInstanceOf('modElementPropertySet', $ep);
+        }
     }
-    public function testConnectResourcesToTemplates() {
+
+    /* Tests setting of resource template, parent, and TvValues */
+    public function testResourceValues() {
+        $this->mc->createCategories();
         $this->mc->createElements();
         $this->mc->createResources();
-        $this->mc->connectResourcesToTemplates();
-        $ResourceTemplates = $this->modx->getOption('resourceTemplates', $this->mc->props, '');
+
+        $ResourceTemplates = $this->modx->getOption('resourceResolver', ObjectAdapter::$myObjects, '');
         $this->assertNotEmpty($ResourceTemplates);
-        foreach ($ResourceTemplates as $templateName => $resourceList) {
-            $this->assertNotEmpty($templateName);
-            $this->assertNotEmpty($resourceList);
-            $resources = explode(',', $resourceList);
+        foreach ($ResourceTemplates as $k => $fields) {
+            $this->assertNotEmpty($fields['pagetitle']);
+            $this->assertNotEmpty($fields['parent']);
+            $this->assertNotEmpty($fields['template']);
+            $resource = $this->modx->getObject('modResource', array('pagetitle' => $fields['pagetitle']));
+            $this->assertInstanceOf('modResource', $resource);
 
-            $alias = $this->utHelpers->getNameAlias('modTemplate');
-            $templateObj = $this->modx->getObject('modTemplate', array($alias => $templateName));
-
-            $this->assertInstanceOf('modTemplate', $templateObj);
-            foreach ($resources as $resourcePagetitle) {
-                $alias = $this->utHelpers->getNameAlias('modResource');
-                $resourceObj = $this->modx->getObject('modResource', array($alias => $resourcePagetitle ));
-                $this->assertInstanceOf('modResource', $resourceObj);
-
-                $this->assertEquals($templateObj->get('id'), $resourceObj->get('template'));
-
+            if ($fields['template'] == 'default') {
+                $fields['template'] = $this->modx->getOption('default_template');
+            } else {
+                $templateObj = $this->modx->getObject('modTemplate',
+                    array('templatename' => $fields['template']));
+                $fields['template'] = $templateObj->get('id');
+                $this->assertInstanceOf('modTemplate', $templateObj);
+                $this->assertEquals($fields['template'], $resource->get('template'));
+            }
+            if ($fields['parent'] == 'default') {
+                $fields['parent'] = 0;
+            } else {
+                $parent = $this->modx->getObject('modResource', array('pagetitle' => $fields['parent']));
+                $this->assertInstanceOf('modResource', $parent);
+                $fields['parent'] = $parent->get('id');
+                $this->assertEquals($fields['parent'], $resource->get('parent'));
+            }
+            if (isset($fields['tvValues'])) {
+                foreach($fields['tvValues'] as $tv => $value){
+                    //$this->assertEquals($value, $resource->getTVValue($tv));
+                }
             }
         }
-
-        /* check for resolver */
-        $this->assertFileExists($this->mc->targetBase . '_build/resolvers/resource.resolver.php');
-        $content = file_get_contents($this->mc->targetBase . '_build/resolvers/resource.resolver.php');
-        $this->assertNotEmpty($content);
-        $this->assertNotEmpty(strstr($content, 'License'));
-        /* make sure all placeholders got replaced */
-        $this->assertEmpty(strstr($content, '[[+'));
-
     }
-    public function testCreateValidators()
-    {
+    public function testCreateValidators() {
         $this->mc->createValidators();
         $validators = $this->mc->props['validators'];
         $this->assertNotEmpty($validators);
@@ -492,60 +446,13 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
     }
 
 
-    public function testConnectPropertySetsToElements() {
-        $this->mc->createPropertySets();
-        $this->mc->createElements();
-        $this->mc->connectPropertySetsToElements();
-        $propertySets = $this->mc->props['propertySetElements'];
-        $this->assertNotEmpty($propertySets);
-        $this->modx->log(MODX::LOG_LEVEL_INFO, '    Connecting ' . count($propertySets) . ' Property Sets to Elements');
-
-        foreach ($propertySets as $propertySetName => $elements) {
-            $alias = $this->mc->helpers->getNameAlias('modPropertySet');
-            $propertySetObj = $this->modx->getObject('modPropertySet', array($alias => $propertySetName));
-            $this->assertInstanceOf('modPropertySet', $propertySetObj);
-
-            $els = empty($elements) ? array() : explode(',', $elements);
-            foreach ($els as $el) {
-                $data = explode(':', $el);
-                $elementName = trim($data[0]);
-                $elementType = trim($data[1]);
-                $alias = $this->mc->helpers->getNameAlias($elementType);
-                $elementObj = $this->modx->getObject($elementType, array($alias => $elementName));
-                $this->assertInstanceOf($elementType,$elementObj);
-
-                /* @var $elementObj modElement */
-                /* @var $propertySetObj modPropertySet */
-                /* @var $elementPropertySet modElementPropertySet */
-                $elementId = $elementObj->get('id');
-                $propertySetId = $propertySetObj->get('id');
-                $elementPropertySet = $this->modx->getObject('modElementPropertySet', array(
-                    'element' => $elementId,
-                    'property_set' => $propertySetId,
-                ));
-                $this->assertInstanceOf('modElementPropertySet',$elementPropertySet);
-            }
-
-        }
-        /* check for resolver */
-        $dir = $this->mc->targetBase . '_build/resolvers';
-        $fileName = 'propertyset.resolver.php';
-        $this->assertFileExists($dir . '/' . $fileName);
-
-        $content = file_get_contents($dir . '/' . $fileName);
-        $this->assertNotEmpty($content);
-        /* check for license */
-        $this->assertNotEmpty(strstr($content, 'License'));
-        /* make sure all placeholders got replaced */
-        $this->assertEmpty(strstr($content, '[[+'));
-    }
 
     public function testCreateClassFiles() {
-        $this->utHelpers->rrmdir($this->mc->targetCore . '/model');
+        $this->utHelpers->rrmdir($this->mc->myPaths['targetCore'] . '/model');
         $this->mc->createClassFiles();
         $classes = $this->mc->props['classes'];
         $this->assertNotEmpty($classes);
-        $baseDir = $this->mc->targetCore . 'model';
+        $baseDir = $this->mc->myPaths['targetCore'] . 'model';
         foreach ($classes as $className => $data) {
             $data = explode(':', $data);
             if (!empty($data[1])) {
@@ -581,7 +488,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
 
         /* test removeElements */
         $this->utHelpers->removeElements($this->modx, $this->mc);
-        $this->mc->createElements();
+        // $this->mc->createElements();
         $this->utHelpers->removeElements($this->modx, $this->mc);
         $elements = $this->mc->props['elements'];
         foreach ($elements as $elementType => $elementNames) {
@@ -601,16 +508,6 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
             $r = $this->modx->getObject('modResource', array('pagetitle' => $resource));
             $this->assertNull($r);
         }
-        /* test removePropertySets (CRASHES PhpStorm - createPropertySets() doesn't exist */
 
-        /*$this->mc->createPropertySets();
-        $this->utHelpers->removePropertySets($this->modx, $this->mc);
-        $sets = $this->mc->props['elements']['propertySets'];
-        $this->assertNotEmpty($sets);
-        foreach ($sets as $set => $fields) {
-            $alias = $this->mc->helpers->getNameAlias('modPropertySet');
-            $setObj = $this->modx->getObject('modPropertySet', array($alias => $set));
-            $this->assertNull($setObj);
-        }*/
     }
 }
