@@ -10,14 +10,8 @@ class SystemSettingAdapter extends ObjectAdapter
     protected $createProcessor = 'system/settings/create';
     protected $updateProcessor = 'system/settings/update';
 
-//    static protected $xPDOClassParentKey = 'namespace';
-    /*final static protected $xPDOTransportAttributes = array
-    (   xPDOTransport::UNIQUE_KEY => 'key',
-        xPDOTransport::PRESERVE_KEYS => true,
-        xPDOTransport::UPDATE_OBJECT => false,
-    );*/
-    
-// Database Columns for the XPDO Object
+
+    /* Database Columns for the XPDO Object */
     protected $myFields;
 
     final public function __construct(&$modx, &$helpers, $fields) {
@@ -35,19 +29,14 @@ class SystemSettingAdapter extends ObjectAdapter
         if (is_array($fields)) {
             $this->myFields =& $fields;
         }
+        if (!isset($fields['area'])) {
+            $fields['area'] = $this->myFields[$this->dbClassParentKey];
+        }
         $this->name = $fields['key'];
+        ObjectAdapter::$myObjects['newSystemSettings'][] = $fields;
         parent::__construct($modx, $helpers);
     }
 
-    /*public function getName() {
-        return $this->name;
-    }
-
-    public function getProcessor($mode) {
-        return $mode == 'create'
-            ? $this->createProcessor
-            : $this->updateProcessor;
-    }*/
 /* *****************************************************************************
    Bootstrap and Support Functions (in MODxObjectAdapter)
 ***************************************************************************** */
@@ -57,17 +46,8 @@ class SystemSettingAdapter extends ObjectAdapter
    Import Objects and Support Functions (in MODxObjectAdapter) 
 ***************************************************************************** */
 
-    public function addToMODx($overwrite = false)
-    {//Prepare Setting
-        $this->myFields['area'] = $this->myFields[$this->dbClassParentKey];
-        $this->myFields['editedon'] = time();
-    // Default Functionality
-        parent::addToMODx($overwrite);
-    }
-    
-    /** Deprecated: see $this->addToMODx(); called from NamespaceAdapter->addToMODx() */
-    private function createNewSystemSettings()     {    }
- 
+
+
 /* *****************************************************************************
    Export Objects and Support Functions (in MODxObjectAdapter)
 ***************************************************************************** */
