@@ -49,8 +49,7 @@ class MyComponentProject {
 /* *****************************************************************************
    Construction and Support Functions (in MODxObjectAdapter)
 ***************************************************************************** */
-    public function __construct(&$modx = null, $configFile = null)
-    {
+    public function __construct(&$modx = null, $configFile = null) {
         if (!defined('MODE_BOOTSTRAP')) {
             die("bootstrap not defined");
         }
@@ -90,28 +89,7 @@ class MyComponentProject {
         if (php_sapi_name() == 'cli') {
             /* @var $loginFile string - set in build.config.php */
             /* @var $fields string - set in login file at the path $loginFile */
-             include $loginFile;
             $modx->getRequest();
-            /* Log in */
-            $response = $modx->runProcessor('security/login', $fields);
-            /* Check login success */
-            if ($response->isError()) {
-                if ($response->hasFieldErrors()) {
-                    $fieldErrors = $response->getAllErrors();
-                    $errorMessage = implode("\n", $fieldErrors);
-                } else {
-                    $errorMessage = 'An error occurred: ' . $response->getMessage();
-                }
-                die($errorMessage);
-            }
-
-            /* Set $modx->resource and $modx->user */
-            $user = $modx->getObject('modUser', array('username' => $fields['username']));
-            if ($user instanceof modUser) {
-                $modx->user =& $user;
-            } else {
-                echo "\nNo User\n";
-            }
             $homeId = $modx->getOption('site_start');
             $homeResource = $modx->getObject('modResource', $homeId);
 
@@ -119,10 +97,6 @@ class MyComponentProject {
                 $modx->resource = $homeResource;
             } else {
                 echo "\nNo Resource";
-            }
-            /* One last check */
-            if (! $modx->user->hasSessionContext('mgr')) {
-                die ('User is not logged in');
             }
         }
     }
