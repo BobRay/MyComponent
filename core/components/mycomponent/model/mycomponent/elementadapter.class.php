@@ -19,13 +19,13 @@ abstract class ElementAdapter extends ObjectAdapter {
         /*$this->modx =& $modx;
         $this->helpers =& $helpers;*/
         parent::__construct($modx, $helpers);
+        if (isset($fields['propertySets'])) {
+            $this->setPropertySetResolver($fields['propertySets']);
+            unset($fields['propertySets']);
+        }
         if ($mode == MODE_BOOTSTRAP) {
             if (is_array($fields)) {
                 $this->fieldsToIds($fields);
-                if (isset($fields['propertySets'])) {
-                    $this->setPropertySetResolver($fields['propertySets']);
-                    unset($fields['propertySets']);
-                }
                 $this->myFields = $fields;
             }
         } elseif ($mode == MODE_EXPORT) {
@@ -38,6 +38,7 @@ abstract class ElementAdapter extends ObjectAdapter {
                 $this->myFields = $fields;
             }
         }
+        ObjectAdapter::$myObjects['ElementCategories'][$fields['category']]['elements'][$this->dbClass][] = $fields;
     }
 
     public function setPropertySetResolver($sets) {
