@@ -624,7 +624,7 @@ public function initPaths() {
         }
 
         /* Update the projects.php file if this is a new project */
-        $dir = $this->targetRoot . '/_build/config';
+        $dir = $this->targetRoot . '_build/config';
         CategoryAdapter::writeCategoryFile($dir, $this->helpers);
 
     }
@@ -1247,8 +1247,6 @@ public function initPaths() {
         {   $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'MyComponent must be installed to export the Project from MODx!');
             return;
         }
-        //$cm = $this->modx->getCacheManager();
-        //$cm->refresh();
 
         $mode = MODE_EXPORT;
 
@@ -1262,6 +1260,8 @@ public function initPaths() {
             $this->createNewSystemEvents($mode);
         }
         $this->createCategories($mode);
+
+        // $this->createResources($mode);
 
         return;
         /* Old code */
