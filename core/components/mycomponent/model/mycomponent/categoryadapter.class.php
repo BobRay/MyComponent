@@ -89,16 +89,17 @@ class CategoryAdapter extends ObjectAdapter {
         return true;
     }
 
+    /* Silently updates categories.php in target config dir */
     public static function writeCategoryFile($dir, $helpers) {
         /* @var $helpers Helpers */
         $categories = ObjectAdapter::$myObjects['categories'];
         $fileArray = array();
-        foreach($categories as $category => $fields) {
-            $fileArray[] = isset($fields['category'])? $fields['category'] : $category;
+        foreach($categories as $elementCategory => $fields) {
+            $fileArray[] = isset($fields['category'])? $fields['category'] : $elementCategory;
         }
         $a = var_export($fileArray, true);
-        $content = "\$categories = " . $a  . ";\nreturn \$categories;\n";
-        $helpers->writeFile($dir, 'categories.php', $content);
+        $content = "\$cats = " . $a  . ";\nreturn \$cats;\n";
+        $helpers->writeFile($dir, 'categories.php', $content, false, true);
   }
 /* *****************************************************************************
    Export Objects and Support Functions (in MODxObjectAdapter)
@@ -108,6 +109,7 @@ class CategoryAdapter extends ObjectAdapter {
         $c = $this->modx->getObject('modCategory', array('category' => $this->myFields['category']));
         $this->myId = $c->get('id');
         unset($c);
+
         foreach($toProcess as $elementType) {
             /* @var $element modElement */
 
@@ -142,7 +144,7 @@ class CategoryAdapter extends ObjectAdapter {
                     $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, ' (no code file required)', true);
                 }
 
-
+            flush();
             }
         }
     }
