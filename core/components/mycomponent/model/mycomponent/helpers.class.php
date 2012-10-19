@@ -233,7 +233,7 @@ class Helpers
      * @param $content - file content
      * @param $dryRun boolean - if true, writes to stdout instead of file.
      */
-    public function writeFile ($dir, $fileName, $content, $dryRun = false) {
+    public function writeFile ($dir, $fileName, $content, $dryRun = false, $suppressOutput = false) {
         /* just in case */
         $dir = str_replace('//', '/', $dir);
         /* create directory if necessary */
@@ -257,10 +257,10 @@ class Helpers
 
             if ($dryRun) {
                 $this->sendLog(MODX_LOG_LEVEL_INFO, "\n\n ******** Begin File Content ********");
-            } else {
+            } elseif (! $suppressOutput) {
                 $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $action . ' ' . $file);
             }
-            if (empty($content)) {
+            if (empty($content) && ! $suppressOutput) {
                 $this->sendLog(MODX::LOG_LEVEL_INFO, ' (empty)', true);
             }
             fwrite($fp, $content);
