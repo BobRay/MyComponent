@@ -530,26 +530,10 @@ public function initPaths() {
         $helpers = $this->helpers;
         $objects = $this->bootstrapObjects;
 
-    /* Create basic files (no transport files or code files) */
-    $this->createBasics();
-
-    /*  Create namespace */
-        $this->createNamespaces();
-
-    /* create category or categories*/
-        $this->createCategories();
-
-    /* create system settings */
-        $this->createNewSystemSettings();
-
-    /* create new system events */
-        $this->createNewSystemEvents();
-
-    /* Create elements */
-        $this->createElements();
-
-    /* Create resources */
-        $this->createResources();
+    /* Create basic files (no resolvers, transport files, or code files) */
+        $this->createBasics();
+    /* Create all MODX objects */
+        $this->createObjects(MODE_BOOTSTRAP);
 
     /* Create Validators */
         $this->createValidators();
@@ -561,21 +545,49 @@ public function initPaths() {
         $this->createIntersects();
 
     }
-    public function createNamespaces() {
+
+    public function createObjects($mode = MODE_BOOTSTRAP) {
+        /*  Create namespace */
+        $this->createNamespaces($mode);
+
+        /* create category or categories*/
+        $this->createCategories($mode);
+
+        /* create system settings */
+        $this->createNewSystemSettings($mode);
+
+        /* create new system events */
+        $this->createNewSystemEvents($mode);
+
+        /* Create elements */
+        $this->createElements($mode);
+
+        /* Create resources */
+        $this->createResources($mode);
+
+    }
+    public function createNamespaces($mode = MODE_BOOTSTRAP) {
         if (!empty($this->props['namespaces'])) {
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating namespace(s)');
             foreach ($this->props['namespaces'] as $namespace => $fields) {
-                $this->addToModx('NameSpaceAdapter', $fields);
+                if ($mode == MODE_BOOTSTRAP) {
+                    $this->addToModx('NameSpaceAdapter', $fields);
+                } elseif ($mode == MODE_EXPORT) {
+                    new NamespaceAdapter($this->modx, $this->helpers, $fields);
+                }
+
             }
         }
     }
-    public function createCategories() {
+    public function createCategories($mode = MODE_BOOTSTRAP) {
         $categories = $this->modx->getOption('categories', $this->props, array());
+
         if (empty($categories)) {
             $packageName = $this->modx->GetOption('packageName', $this->props, '');
             if (empty($packageName)) {
                 die('PackageName nor categories found in project config');
             }
+            /* If no categories, create one based on packageName */
             $categories = array(
                 $packageName => array(
                     'category' => $packageName,
@@ -588,15 +600,41 @@ public function initPaths() {
             if (empty($fields['category'])) {
                 $fields['category'] = $categoryName;
             }
-            $o = new CategoryAdapter($this->modx, $this->helpers, $fields);
-            $o->addToModx();
+            $o = new CategoryAdapter($this->modx, $this->helpers, $fields, $mode);
+            if ($mode == MODE_BOOTSTRAP) {
+                $o->addToModx();
+            } elseif ($mode == MODE_EXPORT) {
+                $elementsToProcess = $this->modx->getOption('process', $this->props, array());
+                $possibleElements = array(
+                    'snippets',
+                    'chunks',
+                    'templates',
+                    'templateVars',
+                    'propertySets'
+                );
+                $toProcess = array();
+                foreach($possibleElements as $element) {
+                    if (in_array($element, $elementsToProcess)) {
+                        $toProcess[] = $element;
+                    }
+                }
+                unset($elementsToProcess, $possibleElements);
+                $o->exportElements($toProcess, !empty($this->props['dryRun']));
+            }
         }
+
+        /* Update the projects.php file if this is a new project */
         $dir = $this->targetRoot . '/_build/config';
         CategoryAdapter::writeCategoryFile($dir, $this->helpers);
 
     }
-    public function createNewSystemSettings() {
-        if (!empty($this->props['newSystemSettings'])) {
+    public function createNewSystemSettings($mode = MODE_BOOTSTRAP) {
+
+        $newSystemSettings = $this->modx->getOption('newSystemSettings', $this->props, array());
+        if (empty($newSystemSettings)) {
+            return;
+        }
+        if ($mode == MODE_BOOTSTRAP) {
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Settings');
             foreach ($this->props['newSystemSettings'] as $key => $fields) {
                 if (! isset($fields['key'])) {
@@ -604,40 +642,65 @@ public function initPaths() {
                 }
                 $this->addToModx('SystemSettingAdapter', $fields);
             }
-        }
-    }
-    public function createNewSystemEvents() {
-        if (!empty($this->props['newSystemEvents'])) {
-            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Events');
-            foreach ($this->props['newSystemEvents'] as $key => $fields) {
-                $fields['name'] = isset($fields['name'])
-                    ? $fields['name']
-                    : $key;
-                $this->addToModx('SystemEventAdapter', $fields);
+
+        } elseif ($mode == MODE_EXPORT) {
+            foreach ($newSystemSettings as $setting => $fields) {
+                $obj = $this->modx->getObject('modSystemSetting', array('key' => $fields['key']));
+                if ($obj) {
+                    $fields = $obj->toArray();
+                    new SystemSettingAdapter($this->modx, $this->helpers, $fields, $mode);
+                }
             }
         }
     }
-    public function createElements() {
-        if (isset($this->props['elements']) && !empty($this->props['elements'])) {
-            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating elements');
-            $elements = $this->props['elements'];
-            foreach ($elements as $element => $elementObjects) {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating ' . $element);
-                foreach ($elementObjects as $elementName => $fields) {
-                    /* @var $adapter elementAdapter */
-                    $adapterName = ucFirst(substr($element, 0, -1)) . 'Adapter';
-                    $fields['name'] = isset($fields['name'])
-                        ? $fields['name']
-                        : $elementName;
+    public function createNewSystemEvents($mode = MODE_BOOTSTRAP) {
+        $newSystemEvents = $this->modx->getOption('newSystemEvents', $this->props, array());
+        if (empty($newSystemEvents)) {
+            return;
+        }
+        if ($mode == MODE_BOOTSTRAP) {
+            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Events');
+            foreach ($newSystemEvents as $key => $fields) {
+                $fields['name'] = isset($fields['name'])
+                    ? $fields['name']
+                    : $key;
 
-                    $o = $this->addToModx($adapterName, $fields);
-                    $o->createCodeFile();
+                $this->addToModx('SystemEventAdapter', $fields);
+            }
+        } elseif ($mode == MODE_EXPORT) {
+            foreach($newSystemEvents as $k => $fields) {
+                $obj = $this->modx->getObject('modEvent', array('name' => $fields['name']));
+                if ($obj) {
+                    $fields = $obj->toArray();
+                    new SystemEventAdapter($this->modx, $this->helpers, $fields);
+                }
+            }
+        }
+
+    }
+    public function createElements($mode = MODE_BOOTSTRAP) {
+        if ($mode == MODE_BOOTSTRAP) {
+            if (isset($this->props['elements']) && !empty($this->props['elements'])) {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating elements');
+                $elements = $this->props['elements'];
+                foreach ($elements as $element => $elementObjects) {
+                    $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating ' . $element);
+                    foreach ($elementObjects as $elementName => $fields) {
+                        /* @var $adapter elementAdapter */
+                        $adapterName = ucFirst(substr($element, 0, -1)) . 'Adapter';
+                        $fields['name'] = isset($fields['name'])
+                            ? $fields['name']
+                            : $elementName;
+
+                        $o = $this->addToModx($adapterName, $fields);
+                        $o->createCodeFile();
+                    }
                 }
             }
         }
     }
 
-    public function createResources() {
+    public function createResources($mode = MODE_BOOTSTRAP) {
         if (isset($this->props['resources']) && !empty($this->props['resources'])) {
             /* @var $o ResourceAdapter */
             $o = null;
@@ -1184,7 +1247,24 @@ public function initPaths() {
         {   $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'MyComponent must be installed to export the Project from MODx!');
             return;
         }
+        //$cm = $this->modx->getCacheManager();
+        //$cm->refresh();
 
+        $mode = MODE_EXPORT;
+
+        $toProcess = $this->modx->getOption('process', $this->props, array());
+        $this->createNamespaces($mode);
+
+        if (in_array('systemSettings', $toProcess)) {
+            $this->createNewSystemSettings($mode);
+        }
+        if (in_array('systemEvents', $toProcess)) {
+            $this->createNewSystemEvents($mode);
+        }
+        $this->createCategories($mode);
+
+        return;
+        /* Old code */
         $export = new Export($this->modx, $this->props);
         if ($export->init($this->configPath)) {
             $toProcess = $this->props['process'];
@@ -1193,9 +1273,9 @@ public function initPaths() {
             }
         }
 
-        return;
 
-        /* Old code */
+
+
     // Crawl through the list top-down
         $objects = $this->myObjects;
         foreach ($objects as $child)

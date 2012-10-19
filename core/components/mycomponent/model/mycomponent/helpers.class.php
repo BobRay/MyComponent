@@ -249,21 +249,26 @@ class Helpers
         /* write to stdout if dryRun is true */
         $file = $dryRun? 'php://output' : $outFile;
 
-        $action = ($file == $outFile) && file_exists($outFile)? 'Updating' : 'Creating';
+        $action = ($file == $outFile) && file_exists($outFile)? 'Updated' : 'Creating';
 
         $fp = fopen($file, 'w');
         if ($fp) {
-            if ( ! $dryRun) {
-                $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $action . ' ' . $file);
-                if (empty($content)) {
-                    $this->sendLog(MODX::LOG_LEVEL_INFO, ' (empty)', true);
-                }
 
+
+            if ($dryRun) {
+                $this->sendLog(MODX_LOG_LEVEL_INFO, "\n\n ******** Begin File Content ********");
+            } else {
+                $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $action . ' ' . $file);
+            }
+            if (empty($content)) {
+                $this->sendLog(MODX::LOG_LEVEL_INFO, ' (empty)', true);
             }
             fwrite($fp, $content);
             fclose($fp);
             if (! $dryRun) {
                 chmod($file, $this->filePermission);
+            } else {
+                $this->sendLog(MODX_LOG_LEVEL_INFO, " ******** End File Content ********\n\n");
             }
         } else {
             $this->sendLog(MODX::LOG_LEVEL_INFO, '    Could not write file ' . $file);

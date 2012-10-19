@@ -38,7 +38,7 @@ class NamespaceAdapter extends ObjectAdapter {
         $this->myFields = $fields;
         $this->name = $fields['name'];
 
-
+        ObjectAdapter::$myObjects['nameSpaces'][] = $fields;
         parent::__construct($modx, $helpers);
     }
 

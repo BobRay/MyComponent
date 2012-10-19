@@ -14,23 +14,27 @@ class SystemSettingAdapter extends ObjectAdapter
     /* Database Columns for the XPDO Object */
     protected $myFields;
 
-    final public function __construct(&$modx, &$helpers, $fields) {
+    final public function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP) {
 
         $this->modx =& $modx;
         $this->helpers =& $helpers;
         $this->myComponent =& $myComponent;
 
-        if (! isset($fields['namespace'])) {
-            $fields['namespace'] = $this->helpers->props['packageNameLower'];
-        }
-        if (! isset ($fields['name'])) {
-            $fields['name'] = $fields['key'];
-        }
-        if (is_array($fields)) {
-            $this->myFields =& $fields;
-        }
-        if (!isset($fields['area'])) {
-            $fields['area'] = $this->myFields[$this->dbClassParentKey];
+        if ($mode == MODE_BOOTSTRAP) {
+            if (! isset($fields['namespace'])) {
+                $fields['namespace'] = $this->helpers->props['packageNameLower'];
+            }
+            if (! isset ($fields['name'])) {
+                $fields['name'] = $fields['key'];
+            }
+            if (is_array($fields)) {
+                $this->myFields =& $fields;
+            }
+            if (!isset($fields['area'])) {
+                $fields['area'] = $this->myFields[$this->dbClassParentKey];
+            }
+        } elseif ($mode == MODE_EXPORT) {
+            unset($fields['editedon']);
         }
         $this->name = $fields['key'];
         ObjectAdapter::$myObjects['newSystemSettings'][] = $fields;

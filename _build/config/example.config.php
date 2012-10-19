@@ -403,7 +403,8 @@ $components = array(
         'chunks',
         'resources',
         'propertySets',
-        'SystemSettings',
+        'systemSettings',
+        'systemEvents',
         'menus'
     ),
     /*  Array  of pagetitles of resources to process. */

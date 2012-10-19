@@ -15,10 +15,9 @@ class SnippetAdapter extends ElementAdapter
     protected $myFields;
 
 
-    final public function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP, $object = null) {
+    final public function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP) {
         $this->name = $fields['name'];
-        /* @var $object modSnippet */
-        parent::__construct($modx, $helpers, $fields, $mode, $object);
+        parent::__construct($modx, $helpers, $fields, $mode);
     }
     
 /* *****************************************************************************

@@ -9,12 +9,14 @@ abstract class ElementAdapter extends ObjectAdapter {
     public $modx;
     /* @var $helpers Helpers */
     public $helpers;
+    public $categoryName;
+    public $content = null;  /* Content field contents */
 
     /* *****************************************************************************
        Property Getter and Setters
     ***************************************************************************** */
 
-    public function __construct(&$modx, $helpers, $fields, $mode, $object) {
+    public function __construct(&$modx, $helpers, $fields, $mode = MODE_BOOTSTRAP) {
         /* @var $object modElement */
         /*$this->modx =& $modx;
         $this->helpers =& $helpers;*/
@@ -25,20 +27,20 @@ abstract class ElementAdapter extends ObjectAdapter {
         }
         if ($mode == MODE_BOOTSTRAP) {
             if (is_array($fields)) {
+                $this->categoryName = $fields['category'];
                 $this->fieldsToIds($fields);
                 $this->myFields = $fields;
             }
         } elseif ($mode == MODE_EXPORT) {
-            if (!$object) {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '[PluginAdapter] Object is null');
+            if ($this->dbClass !== 'modPropertySet')  {
+                $this->content = $fields['content'];
+                unset($fields['content']);
             }
-            else {
-                $fields = $object->toArray();
-                $this->fieldsToNames($fields);
-                $this->myFields = $fields;
-            }
+            $this->fieldsToNames($fields);
+            $this->categoryName = $fields['category'];
+            $this->myFields = $fields;
         }
-        ObjectAdapter::$myObjects['ElementCategories'][$fields['category']]['elements'][$this->dbClass][] = $fields;
+        ObjectAdapter::$myObjects['ElementCategories'][$this->categoryName]['elements'][$this->dbClass][] = $fields;
     }
 
     public function setPropertySetResolver($sets) {
@@ -108,7 +110,7 @@ abstract class ElementAdapter extends ObjectAdapter {
     public function addToMODx($overwrite = false) {
         unset($this->myFields['propertySets']);
         $fields = $this->myFields;
-        // core/components/example/elements/snippets/snippet1.snippet.php
+
         if (isset($fields['static']) && !empty($fields['static'])) {
             $dir = 'core/components/' . $this->helpers->props['packageNameLower'] . '/';
             $path = $this->helpers->getCodeDir($dir, $this->dbClass);

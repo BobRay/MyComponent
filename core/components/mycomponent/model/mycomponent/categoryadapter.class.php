@@ -22,13 +22,15 @@ class CategoryAdapter extends ObjectAdapter {
 
 
   
-    final public function __construct(&$modx, &$helpers, $fields) {
+    final public function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP) {
         /* @var $modx modX */
         $this->modx =& $modx;
         $this->helpers =& $helpers;
         $this->name = $fields['category'];
-        if (! isset($fields['parent']) || empty($fields['parent'])) {
-            $fields['parent'] = '0';
+        if ($mode == MODE_BOOTSTRAP) {
+            if (! isset($fields['parent']) || empty($fields['parent'])) {
+                $fields['parent'] = '0';
+            }
         }
         $this->myFields = $fields;
         ObjectAdapter::$myObjects['categories'][$fields['category']] = $fields;
@@ -102,6 +104,48 @@ class CategoryAdapter extends ObjectAdapter {
    Export Objects and Support Functions (in MODxObjectAdapter)
 ***************************************************************************** */
 
+    public function exportElements($toProcess, $dryRun = false) {
+        $c = $this->modx->getObject('modCategory', array('category' => $this->myFields['category']));
+        $this->myId = $c->get('id');
+        unset($c);
+        foreach($toProcess as $elementType) {
+            /* @var $element modElement */
+
+            $class = 'mod' . ucfirst(substr($elementType, 0, -1));
+            $adapterName = ucFirst(substr($class, 3)) . 'Adapter';
+            $elements = $this->modx->getCollection($class, array('category' => $this->myId));
+            if (!empty($elements)) {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Processing ' . $elementType . ' in category: ' . $this->getName());
+            } else {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'No ' . $elementType . ' found in category: ' . $this->getName());
+            }
+            foreach($elements as $element) {
+
+                if ($class !== 'modPropertySet') {
+                    $content = $element->getContent();
+                    $element->setContent('');
+                    $fields['content'] = $content;
+                } else {
+                    $content = 'Serious error in CategoryAdapter exportElements()';
+                }
+                $fields = $element->toArray();
+                /* @var $o ElementAdapter */
+                $o = new $adapterName($this->modx, $this->helpers, $fields, MODE_EXPORT);
+                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    Processing ' . $o->getName());
+                if ($class !== 'modPropertySet' && $class !== 'modTemplateVar') {
+                    if (isset($fields['static']) && empty($fields['static'])) {
+                        $o->createCodeFile(true, $content, MODE_EXPORT, $dryRun);
+                    } else {
+                        $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    Skipping static element: ' . $o->getName());
+                    }
+                } else {
+                    $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, ' (no code file required)', true);
+                }
+
+
+            }
+        }
+    }
 
 /* *****************************************************************************
    Build Vehicle and Support Functions 

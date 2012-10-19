@@ -14,16 +14,17 @@ class SystemEventAdapter extends ObjectAdapter
     protected $myFields;
     protected $name;
 
-    final public function __construct(&$modx, &$helpers, $fields)
-    {   // parent::__construct($modx, $helpers);
+    final public function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP) {
+        parent::__construct($modx, $helpers);
         $this->name = $fields['name'];
-        $this->modx =& $modx;
-        $this->helpers =& $helpers;
-        if (empty($fields['groupname'])) {
-            $fields['groupname'] = $this->helpers->props['packageName'];
-        }
-        if (empty($fields['service'])) {
-            $fields['service'] = 1;
+
+        if ($mode == MODE_BOOTSTRAP) {
+            if (empty($fields['groupname'])) {
+                $fields['groupname'] = $this->helpers->props['packageName'];
+            }
+            if (empty($fields['service'])) {
+                $fields['service'] = 1;
+            }
         }
         ObjectAdapter::$myObjects['newSystemEvents'][] = $fields;
         $this->myFields = $fields;
