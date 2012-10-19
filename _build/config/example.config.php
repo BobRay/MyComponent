@@ -243,8 +243,10 @@ $components = array(
     'allStatic' => false,
 
 
-    /* ************************* RESOURCES **************************** */
-
+    /* ************************* RESOURCES ****************************
+     Important: This list only affects Bootstrap. There is another
+     list of resources below that controls ExportObjects.
+     * ************************************************************** */
     /* Array of Resource pagetitles for your Extra; All other fields optional.
        You can set any resource field here */
     'resources' => array(
@@ -407,19 +409,26 @@ $components = array(
         'systemEvents',
         'menus'
     ),
-    /*  Array  of pagetitles of resources to process. */
-    'pagetitles' => array(
+    /*  Array  of resources to process. You can specify specific resources
+        or parent (container) resources, or both.
+
+        They can be specified by pagetitle or ID, but you must use the same method
+        for all settings and specify it here. Important: use IDs if you have
+        duplicate pagetitles */
+    'getResourcesById' => false,
+
+    'exportResources' => array(
         'Resource1',
         'Resource2'
     ),
     /* Array of resource parent IDs to get children of. */
-    'parents' => array(), /* ToDo: Add is_numeric check */
+    'parents' => array(),
     /* Also export the listed parent resources
       (set to false to include just the children) */
     'includeParents' => false,
 
 
-    /* ******************** LEXICON HELPPER SETTINGS ***************** */
+    /* ******************** LEXICON HELPER SETTINGS ***************** */
     /* These settings are used by LexiconHelper */
     'rewriteCodeFiles' => false,
     // remove ~~descriptions
