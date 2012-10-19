@@ -21,7 +21,7 @@ class ResourceAdapter extends ObjectAdapter
     protected $myFields;
 
 
-    function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP, $object = null) {
+    function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP) {
         /* @var $modx modX */
         /* @var $object modResource */
         parent::__construct($modx, $helpers);
@@ -44,31 +44,32 @@ class ResourceAdapter extends ObjectAdapter
                     ? $fields[$field]
                     : $value;
             }
-            $resolverFields = array();
-            $resolverFields['pagetitle'] = $fields['pagetitle'];
-            $resolverFields['parent'] = isset($fields['parent'])? $fields['parent'] : 'default';
-            $resolverFields['template'] = isset($fields['template'])? $fields['template'] : 'default';
-
-            if (isset($fields['tvValues'])) {
-                $resolverFields['tvValues'] = $fields['tvValues'];
-            }
-            $this->myFields = $fields;
-            unset($fields['tvValues']);
-
-            ObjectAdapter::$myObjects['resourceResolver'][] = $resolverFields;
 
         } elseif ($mode == MODE_EXPORT) {
-            if (! $object) {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Object not set for Resource: ' . $fields['pagetitle']);
-            } else {
-                $fields = $object->toArray();
                 $this->fieldsToNames($fields);
-                }
                 unset($fields['id']);
                 $this->myFields = $fields;
         }
+        $resolverFields = array();
+        $resolverFields['pagetitle'] = $fields['pagetitle'];
+        $resolverFields['parent'] = isset($fields['parent'])
+            ? $fields['parent']
+            : 'default';
+        $resolverFields['template'] = isset($fields['template'])
+            ? $fields['template']
+            : 'default';
+
+        if (isset($fields['tvValues'])) {
+            $resolverFields['tvValues'] = $fields['tvValues'];
+        }
+        $this->myFields = $fields;
+        unset($fields['tvValues']);
+
+        ObjectAdapter::$myObjects['resourceResolver'][] = $resolverFields;
+
 
         ObjectAdapter::$myObjects['resources'][] = $fields;
+
     }
 
     /* only executes on export */
@@ -304,7 +305,7 @@ class ResourceAdapter extends ObjectAdapter
 
         /* Add resources from exportResources array in the project config file
           to $this->objects */
-
+        $helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Exporting Resources');
         $byId = $modx->getOption('getResourcesById', $props, false);
         $method = $byId? 'ID' : 'pagetitle';
         $resources = $modx->getOption('exportResources', $props, array());
