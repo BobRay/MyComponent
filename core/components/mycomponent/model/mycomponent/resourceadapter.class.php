@@ -58,7 +58,6 @@ class ResourceAdapter extends ObjectAdapter
         $resolverFields['template'] = isset($fields['template'])
             ? $fields['template']
             : 'default';
-
         if (isset($fields['tvValues'])) {
             $resolverFields['tvValues'] = $fields['tvValues'];
         }
@@ -66,23 +65,29 @@ class ResourceAdapter extends ObjectAdapter
         unset($fields['tvValues']);
 
         ObjectAdapter::$myObjects['resourceResolver'][] = $resolverFields;
-
-
         ObjectAdapter::$myObjects['resources'][] = $fields;
-
     }
 
     /* only executes on export */
     public function fieldsToNames(&$fields) {
-        $parentObj = $this->modx->getObject('modResource', $fields['parent']);
-        if ($parentObj) {
-            $fields['parent'] =  $parentObj->get('pagetitle');
-        } else {
-            $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find parent for resource: ' . $fields['pagetitle']);
+        if (!empty($fields['parent'])) {
+            $parentObj = $this->modx->getObject('modResource', $fields['parent']);
+            if ($parentObj) {
+                $fields['parent'] =  $parentObj->get('pagetitle');
+            } else {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find parent for resource: ' .
+                    $fields['parent']);
+            }
         }
-        $templateObj = $this->modx->getObject('modTemplate', $fields['template']);
-        if ($templateObj) {
-            $fields['template'] = $templateObj->get('templatename');
+        if (!empty($fields['template'])) {
+            if ($fields['template'] == $this->modx->getOption('default_template')) {
+                $fields['template'] = 'default';
+            } else {
+                $templateObj = $this->modx->getObject('modTemplate', $fields['template']);
+                if ($templateObj) {
+                    $fields['template'] = $templateObj->get('templatename');
+                }
+            }
         }
     }
 
