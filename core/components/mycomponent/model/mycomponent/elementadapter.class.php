@@ -18,8 +18,8 @@ abstract class ElementAdapter extends ObjectAdapter {
 
     public function __construct(&$modx, $helpers, $fields, $mode = MODE_BOOTSTRAP) {
         /* @var $object modElement */
-        /*$this->modx =& $modx;
-        $this->helpers =& $helpers;*/
+        $this->modx =& $modx;
+        $this->helpers =& $helpers;
         parent::__construct($modx, $helpers);
         if (isset($fields['propertySets'])) {
             $this->setPropertySetResolver($fields['propertySets']);

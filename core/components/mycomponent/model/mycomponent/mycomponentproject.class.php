@@ -607,6 +607,7 @@ public function initPaths() {
                 $elementsToProcess = $this->modx->getOption('process', $this->props, array());
                 $possibleElements = array(
                     'snippets',
+                    'plugins',
                     'chunks',
                     'templates',
                     'templateVars',
@@ -1267,6 +1268,9 @@ public function initPaths() {
 
         $this->createResources($mode);
 
+
+        $this->createResolvers();
+        //$this->createExtraResolvers();
         return;
         /* Old code */
         $export = new Export($this->modx, $this->props);

@@ -15,27 +15,65 @@ class PluginAdapter extends ElementAdapter
     protected $myParent;
     protected $myFields;
 
-    final public function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP, $object = null) {
+    final public function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP) {
         /* @var $object modPlugin */
+        /* @var $helpers Helpers */
+        $this->helpers =& $helpers;
+        $this->modx =& $modx;
         $this->name = $fields['name'];
+        $this->setPluginResolver($fields, $mode);
         if (isset($fields['events'])) {
-            $this->setPluginResolver($fields['events']);
             unset($fields['events']);
         }
-        parent::__construct($modx, $helpers, $fields, $mode, $object);
+        parent::__construct($modx, $helpers, $fields, $mode);
 
 
     }
-    public function setPluginResolver($events) {
-        foreach ($events as $eventName => $fields) {
-            $resolverFields = array(
-                'pluginid' => $this->getName(),
-                'event' => isset($fields['event']) ? $fields['event'] : $eventName,
-                'priority' => isset($fields['priority']) && !empty($fields['priority'])? $fields['priority'] : '0',
-                'propertyset' => isset($fields['propertySet']) && !empty($fields['priority']) ? $fields['propertySet'] : '0',
-            );
-            ObjectAdapter::$myObjects['pluginResolver'][] = $resolverFields;
+    public function setPluginResolver($fields, $mode) {
+        $resolverFields[] = array();
+        if ($mode == MODE_BOOTSTRAP) {
+            /* bail out if no events in project config */
+            if (! isset($fields['events']) || empty($fields['events'])) {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    No events for plugin: ' . $this->getName());
+                return;
+            }
+            $events = $fields['events'];
+            foreach ($events as $eventName => $fields) {
+                $resolverFields = array(
+                    'pluginid' => $this->getName(),
+                    'event' => isset($fields['event']) ? $fields['event'] : $eventName,
+                    'priority' => isset($fields['priority']) && !empty($fields['priority'])? $fields['priority'] : '0',
+                    'propertyset' => isset($fields['propertySet']) && !empty($fields['priority']) ? $fields['propertySet'] : '0',
+                );
+                ObjectAdapter::$myObjects['pluginResolver'][] = $resolverFields;
+            }
+
+        } elseif ($mode == MODE_EXPORT) {
+            $me = $this->modx->getObject('modPlugin', array('name' => $this->getName()));
+            if (!$me) {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, "Can't find myself");
+            } else {
+                $pes = $me->getMany('PluginEvents');
+                if (! empty($pes)) {
+                    foreach($pes as $pe) {
+                        /* @var $pe modPluginEvent */
+                        $fields = $pe->toArray();
+                        $resolverFields = array(
+                            'pluginid' => $this->getName(),
+                            'event' => $fields['event'],
+                            'priority' => isset($fields['priority']) && !empty($fields['priority'])
+                                ? $fields['priority']
+                                : '0',
+                            'propertyset' => isset($fields['propertySet']) && !empty($fields['priority'])
+                                ? $fields['propertySet']
+                                : '0',
+                        );
+                        ObjectAdapter::$myObjects['pluginResolver'][] = $resolverFields;
+                    }
+                }
+            }
         }
+
     }
     
 /* *****************************************************************************
