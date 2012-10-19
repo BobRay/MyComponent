@@ -296,41 +296,65 @@ class ResourceAdapter extends ObjectAdapter
         return true;
     }
 
-    /** Deprecated: Function moved to exportChildren. Implementation completely replaced. */
-    private function pullResources() {    }
 
-    /** 
-     * Queries the MODx Installation for child Resources and exports all of them.
-     *
-     * @param $overwrite boolean - (Optional) Allows the function to overwrite the
-     *        files. Default value is false.
-     */
-    protected function exportChildren($overwrite = false) 
-    {//For Quick Access
+    static function exportResources(&$modx, &$helpers, $props) {
         /* @var $modx modX */
-        $mc = $this->myComponent;
-        $modx =& $mc->modx;
-    
-    // We DO NOT trust project.config for exporting.
-        $tempObj = array();
-        $children = $modx->getCollection($this->getClass(), array('parent' => $this->getKey()));
-        if (!empty($children))
-            foreach ($children as $child)
-                if (!empty($child))
-                {   $obj = new ResourceAdapter($mc);
-                    $obj->myFields = $child->toArray();
-                    $tempObj[] = $obj;
-                }
-    // Clean up some memory
-        unset ($children);
-        
-    // Export all VALID Children
-        foreach ($tempObj as $obj)
-            if (!empty($obj))
-                $obj->exportObject($overwrite);
+        /* @var $helpers Helpers */
+        $objects = array();
 
-    // Align the Children array
-        $this->myObjects = $tempObj;
+        /* Add resources from exportResources array in the project config file
+          to $this->objects */
+
+        $byId = $modx->getOption('getResourcesById', $props, false);
+        $method = $byId? 'ID' : 'pagetitle';
+        $resources = $modx->getOption('exportResources', $props, array());
+        if (!empty($resources)) {
+            foreach ($resources as $resource) {
+                if ($byId) {
+                    $resObject = $modx->getObject('modResource', $resource);
+                } else {
+                    $resObject = $modx->getObject('modResource', array('pagetitle' => trim($resource)));
+                }
+                if ($resObject) {
+                    $objects[] = $resObject;
+                } else {
+                    $helpers->sendLog(modX::LOG_LEVEL_ERROR, 'Could not get resource with ' . $method . ': ' . $resource);
+                }
+            }
+        }
+        /* if $parents is set in project config, add children (and optionally parent
+           to  $resources array */
+        $parents = $modx->getOption('parents', $props, array() );
+        $includeParents = $modx->getOption('includeParents', $props, false);
+        if (!empty($parents)) {
+            foreach ($parents as $parentResource) {
+                if ($byId) {
+                    $parentObj = $modx->getObject('modResource', $parentResource);
+                } else {
+                    $parentObj = $modx->getObject('modResource', array('pagetitle' => $parentResource));
+                }
+                if ($parentObj) {
+                    if ($includeParents) {
+                        $objects[] = $parentObj;
+                    }
+                    $children = $parentObj->getMany('Children');
+                    if (!empty ($children)) {
+                        $objects = array_merge($objects, $children);
+                    }
+                }
+            }
+
+        }
+        if (!empty($objects)) {
+            /* @var $object modResource */
+            foreach($objects as $object) {
+                $fields = $object->toArray();
+                new ResourceAdapter($modx, $helpers, $fields, MODE_EXPORT);
+            }
+
+        } else {
+            $helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'No Resources found');
+        }
     }
 
     /**

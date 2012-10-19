@@ -701,18 +701,22 @@ public function initPaths() {
     }
 
     public function createResources($mode = MODE_BOOTSTRAP) {
-        if (isset($this->props['resources']) && !empty($this->props['resources'])) {
-            /* @var $o ResourceAdapter */
-            $o = null;
-            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating Resources');
-            foreach ($this->props['resources'] as $resource => $fields) {
-                $fields['pagetitle'] = empty($fields['pagetitle'])
-                    ? $resource
-                    : $fields['pagetitle'];
+        if ($mode == MODE_BOOTSTRAP) {
+            if (isset($this->props['resources']) && !empty($this->props['resources'])) {
+                /* @var $o ResourceAdapter */
+                $o = null;
+                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating Resources');
+                foreach ($this->props['resources'] as $resource => $fields) {
+                    $fields['pagetitle'] = empty($fields['pagetitle'])
+                        ? $resource
+                        : $fields['pagetitle'];
 
-                $o = $this->addToModx('ResourceAdapter', $fields);
-                $o->createCodeFile();
+                    $o = $this->addToModx('ResourceAdapter', $fields);
+                    $o->createCodeFile();
+                }
             }
+        } elseif ($mode == MODE_EXPORT) {
+            ResourceAdapter::exportResources($this->modx, $this->helpers, $this->props);
         }
     }
 
@@ -1261,7 +1265,7 @@ public function initPaths() {
         }
         $this->createCategories($mode);
 
-        // $this->createResources($mode);
+        $this->createResources($mode);
 
         return;
         /* Old code */

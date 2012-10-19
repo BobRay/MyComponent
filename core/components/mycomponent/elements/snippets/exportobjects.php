@@ -44,39 +44,14 @@
  */
 /* @var $category string */
 
-/* Usage
+/*
  *
- * Create a snippet called ExportObjects, paste the code or
- * use this for the snippet code:
- *     return http://bit.ly/RJbUf8include 'path/to/this/file';
+ * Object source files will be written to
+ *  MODX_ASSETS_PATH/mycomponents/{packageNameLower}/core/components/
+ * {packageNameLower}/elements/{elementName}/
  *
- * Put a tag for the snippet on a page and preview the page
- *
- * elements in &category will be processed (for menus and system settings, ExportObjects
- * will use the 'namespace' field for the match).
- *
- * This file can be run outside of MODX (e.g., in your editor).
- *
- *  With &dryRun=`1`, no files will be written or modified and the output will go to the screen.
- *
- * Typical snippet call (use your package name instead of MyComponent):
- *
-    [[!ExportObjects?
-        &category=`MyComponent`
-        &packageName=`MyComponent`
-        &authorName=`Bob Ray`
-        &authorEmail=`<bobray@softville.com>`
-        &dryRun=`1`
-        &createTransportFiles=`1`
-        &createObjectFiles=`1`
-        &process=`snippets,chunks,plugins,templates,templateVars,menus,systemSettings`
-    ]]
-
- *
- *
- * Object source files will be written to MODX_ASSETS_PATH/mycomponents/{packageNameLower}/core/components/{packageNameLower}/elements/{elementName}/
- *
- * Transport files will be written to MODX_ASSETS_PATH/mycomponents/{packageNameLower}/_build/data/transport.{elementName}.php
+ * Transport files will be written to MODX_ASSETS_PATH/mycomponents/
+ * {packageNameLower}/_build/data/transport.{elementName}.php
  *
  * &transportPath (directory for transport.chunks.php file)
  * defaults to assets/mycomponents/{categoryLower}/_build/data/
@@ -103,4 +78,4 @@ $peak_usage = memory_get_peak_usage(true);
 echo "\nFinal Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
 echo "\nPeak Memory Used: " . round($peak_usage / 1048576, 2) . " megabytes";
 
-// echo print_r(ObjectAdapter::$myObjects, true);
+echo print_r(ObjectAdapter::$myObjects, true);
