@@ -241,7 +241,7 @@ class ResourceAdapter extends ObjectAdapter
           of the resolver code in another function
         */
     }
-    public static function createResolver($dir, $intersects, $helpers) {
+    public static function createResolver($dir, $intersects, $helpers, $mode = MODE_BOOTSTRAP) {
 
         /* Create resource.resolver.php resolver */
         /* @var $helpers Helpers */
@@ -256,7 +256,7 @@ class ResourceAdapter extends ObjectAdapter
 
             $fileName = 'resource.resolver.php';
 
-            if (!file_exists($dir . '/' . $fileName)) {
+            if (!file_exists($dir . '/' . $fileName) || $mode == MODE_EXPORT) {
                 $intersectArray = $helpers->beautify($intersects);
                 $tpl = str_replace("'[[+intersects]]'", $intersectArray, $tpl);
 

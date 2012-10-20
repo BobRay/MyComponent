@@ -12,7 +12,7 @@ class PropertySetAdapter extends ElementAdapter { //This will never change.
     protected $myFields;
 
 
-    final function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP, $object = null) {
+    final function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP) {
         /* @var $object modPropertySet */
         $this->name = $fields['name'];
         parent::__construct($modx, $helpers, $fields, $mode, $object);
@@ -22,7 +22,7 @@ class PropertySetAdapter extends ElementAdapter { //This will never change.
        Bootstrap and Support Functions (in ElementAdapter)
     ***************************************************************************** */
 
-    public static function createResolver($dir, $intersects, $helpers) {
+    public static function createResolver($dir, $intersects, $helpers, $mode = MODE_BOOTSTRAP) {
 
         /* Create tv.resolver.php resolver */
         /* @var $helpers Helpers */
@@ -37,7 +37,7 @@ class PropertySetAdapter extends ElementAdapter { //This will never change.
 
             $fileName = 'propertyset.resolver.php';
 
-            if (!file_exists($dir . '/' . $fileName)) {
+            if (!file_exists($dir . '/' . $fileName) || $mode == MODE_EXPORT) {
                 $intersectArray = $helpers->beautify($intersects);
                 $tpl = str_replace("'[[+intersects]]'", $intersectArray, $tpl);
 

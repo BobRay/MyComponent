@@ -519,6 +519,7 @@ public function initPaths() {
     public function bootstrap() {
         /* enable garbage collection() */
         // gc_enable();
+        $mode = MODE_BOOTSTRAP;
         if (!$this->isMCInstalled()) /* Only run if MC is installed */
         {   $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'MyComponent must be installed to create a new MyComponent Project!');
             return;
@@ -533,13 +534,13 @@ public function initPaths() {
     /* Create basic files (no resolvers, transport files, or code files) */
         $this->createBasics();
     /* Create all MODX objects */
-        $this->createObjects(MODE_BOOTSTRAP);
+        $this->createObjects($mode);
 
     /* Create Validators */
         $this->createValidators();
 
     /* Create all Resolvers */
-        $this->createResolvers();
+        $this->createResolvers($mode);
 
     /* Create Intersects for all many-to-many relationships */
         $this->createIntersects();
@@ -748,35 +749,36 @@ public function initPaths() {
 
 
 
-    public function CreateResolvers() {
+
+    public function createResolvers($mode = MODE_BOOTSTRAP) {
         $dir = $this->myPaths['targetResolve'];
         $o = ObjectAdapter::$myObjects;
 
         /* Category Resolver */
         $intersects = $this->modx->getOption('categories', $o, array());
-        CategoryAdapter::createResolver($this->myPaths['targetResolve'], $intersects, $this->helpers);
+        CategoryAdapter::createResolver($dir, $intersects, $this->helpers, $mode);
 
         /* Resource Resolver ( */
         $intersects = $this->modx->getOption('resourceResolver', $o, array());
-        ResourceAdapter::createResolver($dir, $intersects, $this->helpers);
+        ResourceAdapter::createResolver($dir, $intersects, $this->helpers, $mode);
 
         /* TV Resolver */
         $intersects = $this->modx->getOption('tvResolver', $o, array());
-        TemplateVarAdapter::createResolver($dir, $intersects, $this->helpers);
+        TemplateVarAdapter::createResolver($dir, $intersects, $this->helpers, $mode);
 
         /* Plugin Resolver */
         $intersects = $this->modx->getOption('pluginResolver', $o, array());
         $newEvents = $this->modx->getOption('newSystemEvents', $o, array());
-        PluginAdapter::createResolver($dir, $intersects, $this->helpers, $newEvents);
+        PluginAdapter::createResolver($dir, $intersects, $this->helpers, $newEvents, $mode);
 
         /* Property Set Resolver */
         $intersects = $this->modx->getOption('propertySetResolver', $o, array());
-        PropertySetAdapter::createResolver($dir, $intersects, $this->helpers);
+        PropertySetAdapter::createResolver($dir, $intersects, $this->helpers, $mode);
 
         /* extra resolvers */
+        /* These user-specific resolvers never get updated, even on Export */
         $extraResolvers = $this->modx->getOption('resolvers', $this->props, array());
         $dir = $this->myPaths['targetResolve'];
-
         foreach($extraResolvers as $k => $name) {
             $name = ($name == 'default') ? $this->packageNameLower : $name;
             $name = strtolower($name);
@@ -795,7 +797,7 @@ public function initPaths() {
             }
         }
 
-        /* extra resolvers */
+        /* extra validators - also never get updated */
         $extraValidators = $this->modx->getOption('validators', $this->props, array());
         $dir = $this->myPaths['targetValidate'];
         foreach ($extraValidators as $k => $name) {
@@ -1269,7 +1271,7 @@ public function initPaths() {
         $this->createResources($mode);
 
 
-        $this->createResolvers();
+        $this->createResolvers($mode);
         //$this->createExtraResolvers();
         return;
         /* Old code */

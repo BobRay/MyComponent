@@ -97,7 +97,7 @@ class PluginAdapter extends ElementAdapter
      * @param $helpers Helpers - helpers class
      * @return bool
      */
-    public static function createResolver($dir, $intersects, $helpers, $newEvents) {
+    public static function createResolver($dir, $intersects, $helpers, $newEvents, $mode = MODE_BOOTSTRAP) {
         /* Create plugin.resolver.php resolver */
         /* @var $helpers Helpers */
         if (!empty($dir) && !empty($intersects)) {
@@ -111,7 +111,7 @@ class PluginAdapter extends ElementAdapter
 
             $fileName = 'plugin.resolver.php';
 
-            if (!file_exists($dir . '/' . $fileName)) {
+            if (!file_exists($dir . '/' . $fileName) || $mode == MODE_EXPORT) {
                 $intersectArray = $helpers->beautify($intersects);
                 $tpl = str_replace("'[[+intersects]]'", $intersectArray, $tpl);
                 $newEventArray = $helpers->beautify($newEvents);
