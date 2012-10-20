@@ -300,7 +300,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
         $this->mc->createResources();
         $this->mc->createElements();
         $this->mc->createResolvers();
-        $this->mc->createExtraResolvers();
+        // $this->mc->createExtraResolvers();
         $fileNames = array('plugin','tv','resource','propertyset','category','addusers','unittest');
         foreach($fileNames as $k => $name) {
             $fileName = $this->mc->myPaths['targetRoot'] . '_build/resolvers/' . $name . '.resolver.php';
@@ -427,18 +427,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testCreateExtraResolvers()
-    {
-        $this->mc->createExtraResolvers();
-        $resolvers = $this->mc->props['resolvers'];
-        $this->assertNotEmpty($resolvers);
-        foreach ($resolvers as $resolver) {
-            $resolver = $resolver == 'default' ? $this->mc->packageNameLower : $resolver;
-            $this->assertFileExists($this->mc->myPaths['targetRoot'] . '_build/resolvers/' . $resolver . '.resolver.php');
-            $this->assertNotEmpty(file_get_contents($this->mc->myPaths['targetRoot'] . '_build/resolvers/' . $resolver . '.resolver.php'));
 
-        }
-    }
     public function testCreateInstallOption () {
         $this->mc->createInstallOptions();
         $this->assertFileExists($this->mc->myPaths['targetRoot'] . '_build/install.options/user.input.php');
