@@ -17,6 +17,7 @@ class PluginAdapter extends ElementAdapter
 
     final public function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP) {
         /* @var $object modPlugin */
+        /* @var $modx modX */
         /* @var $helpers Helpers */
         $this->helpers =& $helpers;
         $this->modx =& $modx;
