@@ -153,8 +153,8 @@ class CategoryAdapter extends ObjectAdapter {
    Build Vehicle and Support Functions 
 ***************************************************************************** */
 
-    final public function buildVehicle()
-    {//For Quick Access
+    /* NOT USED */
+    /*final public function buildVehicle() {
         $mc = $this->myComponent;
         $attr = static::dbTransportAttributes;
         $title = $this->properties['pagetitle'];
@@ -179,25 +179,24 @@ class CategoryAdapter extends ObjectAdapter {
             return false;
         }
         
-        /* create category  The category is required and will automatically
-         * have the name of your package
-         */
-        /* @var $category modCategory */
+        // create category
+
+        // @var $category modCategory
         $category= $modx->newObject('modCategory');
         $category->set('id',1);
         $category->set('category',PKG_CATEGORY);
         
-        /* add snippets */
+        // add snippets
         if ($hasSnippets) {
             $mc->sendLog(modX::LOG_LEVEL_INFO,'Adding in Snippets.');
             $snippets = include $sources['data'].'transport.snippets.php';
-            /* note: Snippets' default properties are set in transport.snippets.php */
+
             if (is_array($snippets)) {
                 $category->addMany($snippets, 'Snippets');
             } 
             else { $mc->sendLog(modX::LOG_LEVEL_FATAL,'Adding Snippets failed.'); }
         }
-        /* ToDo: Implement Property Sets */
+
         if ($hasPropertySets) {
             $mc->sendLog(modX::LOG_LEVEL_INFO,'Adding in Property Sets.');
             $propertySets = include $sources['data'].'transport.propertysets.php';
@@ -207,19 +206,15 @@ class CategoryAdapter extends ObjectAdapter {
             } 
             else { $mc->sendLog(modX::LOG_LEVEL_FATAL,'Adding Property Sets failed.'); }
         }
-        if ($hasChunks) { /* add chunks  */
+        if ($hasChunks) {
             $mc->sendLog(modX::LOG_LEVEL_INFO,'Adding in Chunks.');
-            /* note: Chunks' default properties are set in transport.chunks.php */    
             $chunks = include $sources['data'].'transport.chunks.php';
             if (is_array($chunks)) {
                 $category->addMany($chunks, 'Chunks');
             } else { $mc->sendLog(modX::LOG_LEVEL_FATAL,'Adding Chunks failed.'); }
         }
-        
-        
-        if ($hasTemplates) { /* add templates  */
+        if ($hasTemplates) {
             $modx->log(modX::LOG_LEVEL_INFO,'Adding in Templates.');
-            /* note: Templates' default properties are set in transport.templates.php */
             $templates = include $sources['data'].'transport.templates.php';
             if (is_array($templates)) {
                 if (! $category->addMany($templates,'Templates')) {
@@ -228,9 +223,8 @@ class CategoryAdapter extends ObjectAdapter {
             } else { $mc->sendLog(modX::LOG_LEVEL_FATAL,'Adding Templates failed.'); }
         }
         
-        if ($hasTemplateVariables) { /* add template variables  */
+        if ($hasTemplateVariables) {
             $modx->log(modX::LOG_LEVEL_INFO,'Adding in Template Variables.');
-            /* note: Template Variables' default properties are set in transport.tvs.php */
             $tvs = include $sources['data'].'transport.tvs.php';
             if (is_array($tvs)) {
                 $category->addMany($tvs, 'TemplateVars');
@@ -248,9 +242,8 @@ class CategoryAdapter extends ObjectAdapter {
              }
         }
         
-        /* Create Category attributes array dynamically
-         * based on which elements are present
-         */
+        // Create Category attributes array dynamically based on which elements are present
+
         
         if ($hasValidator) {
               $attr[xPDOTransport::ABORT_INSTALL_ON_VEHICLE_FAIL] = true;
@@ -309,18 +302,12 @@ class CategoryAdapter extends ObjectAdapter {
         parent::buildVehicle();
         
        
-        /* Package in script resolvers, if any */
+        // Package in script resolvers, if any
         
         $resolvers = empty($props['resolvers'])? array() : explode(',', $props['resolvers']);
         $resolvers = array_merge($resolvers, array('plugin','tv','resource','propertyset'));
         
-        /* This section transfers every file in the local
-         mycomponents/mycomponent/assets directory to the
-         target site's assets/mycomponent directory on install.
-         If the assets dir. has been renamed or moved, they will still
-         go to the right place.
-         */
-        
+
         if ($hasCore) {
             $vehicle->resolve('file', array(
                     'source' => $sources['source_core'],
@@ -328,26 +315,13 @@ class CategoryAdapter extends ObjectAdapter {
                 ));
         }
         
-        /* This section transfers every file in the local 
-         mycomponents/mycomponent/core directory to the
-         target site's core/mycomponent directory on install.
-         If the core has been renamed or moved, they will still
-         go to the right place.
-         */
-        
-            if ($hasAssets) {
-                $vehicle->resolve('file',array(
-                    'source' => $sources['source_assets'],
-                    'target' => "return MODX_ASSETS_PATH . 'components/';",
-                ));
+        if ($hasAssets) {
+            $vehicle->resolve('file',array(
+                'source' => $sources['source_assets'],
+                'target' => "return MODX_ASSETS_PATH . 'components/';",
+            ));
             }
-        
-        /* Add subpackages */
-        /* The transport.zip files will be copied to core/packages
-         * but will have to be installed manually with "Add New Package and
-         *  "Search Locally for Packages" in Package Manager
-         */
-        
+
         if ($hasSubPackages) {
             $mc->sendLog(modX::LOG_LEVEL_INFO, 'Adding in subpackages.');
              $vehicle->resolve('file',array(
@@ -356,5 +330,5 @@ class CategoryAdapter extends ObjectAdapter {
                 ));
         }
         return '';
- }
+    }*/
 }

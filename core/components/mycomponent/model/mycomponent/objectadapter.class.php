@@ -29,9 +29,7 @@ abstract class ObjectAdapter
     public static function getObjects() {
         return self::$myObjects;
     }
-    /*public function addObject($fields) {
-        self::$myObjects[$this->dbClass][] = $fields;
-    }*/
+
     public function getName() {
         return ($this->name);
     }
@@ -42,10 +40,6 @@ abstract class ObjectAdapter
             : $this->updateProcessor;
 
     }
-
-    /* *****************************************************************************
-       Property Getter and Setters
-    ***************************************************************************** */
 
     /**
      * Convenience Method for getting the name of the 'name' field for the object.
@@ -101,11 +95,7 @@ abstract class ObjectAdapter
         else
             return $class;
     }
-    
-    /*public function getAttributes()
-    {//Simple Getter Function
-        // return static::dbTransportAttributes;
-    }*/
+
 
     /**
      * Returns the correct filename for a given file
@@ -162,28 +152,6 @@ abstract class ObjectAdapter
     public function getPropertiesFileName() {
         return 'properties.' . $this->getSafeName() . '.' . $this->getSafeClass() . '.php';
     }
-    
-   /* public function setResolvers($resolvers) {
-        if (is_array($resolvers))
-            $this->myResolvers = $resolvers;
-        else
-            $this->myResolvers = explode(',', $resolvers);
-    }*/
-    
- /*   public function setValidators($validators) {
-        if (is_array($validators))
-            $this->myValidators = $validators;
-        else
-            $this->myValidators = explode(',', $validators);
-    }*/
-    
-/*    public function setFileTrees($directories)
-    {//We accept an array or a comma-delimited list.
-        if (is_array($directories))
-            $this->myFileTrees = $directories;
-        else
-            $this->myFileTrees = explode(',', $directories);
-    }*/
 
 /* *****************************************************************************
    Bootstrap and Support Functions 
@@ -211,9 +179,7 @@ abstract class ObjectAdapter
     }
     */
 
-/* *****************************************************************************
-   Import Objects and Support Functions 
-***************************************************************************** */
+
     /**
      * Add a new object to MODX
      *
@@ -315,9 +281,6 @@ abstract class ObjectAdapter
                 }
 
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Created ' . $objClass . ': ' . $name);
-                /* ToDo: might need to return object or ID here */
-                //$this->modx->reloadContext();
-                //$retVal = $o->get('id');
             }
         }
         if (! $id) {
@@ -325,7 +288,6 @@ abstract class ObjectAdapter
         } else {
             $this->myId = $id;
         }
-        // return $retVal;
     }
     public function getTplCode() {
         $field = '';
@@ -397,7 +359,7 @@ abstract class ObjectAdapter
      *
      * @param $element - string element type('snippets', 'plugins' etc.)
      */
-    public function exportObject($element, $overwrite = false) {
+    /*public function exportObject($element, $overwrite = false) {
         $mc = $this->mc;
         $name = $this->getName();
         $type = $this->getClass();
@@ -405,7 +367,7 @@ abstract class ObjectAdapter
     // For writing the Transport File
         $path = $mc->getPath('data');
 
-        if (stristr($element,'menus')) { /* note: may change in Revo 2.3 */
+        if (stristr($element,'menus')) { // note: may change in Revo 2.3
             $element='Actions';
         }
 
@@ -414,18 +376,18 @@ abstract class ObjectAdapter
         $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Category: ' . $this->category);
         $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Element Type: ' . $type);
         
-        /* use namespace rather than category for these */
+        // use namespace rather than category for these
         $key = $type == 'modSystemSetting' ||  $type =='modAction' 
             ? 'namespace' 
             : 'category';
-        /* category ID or category name, depending on what we're looking for */
+        // category ID or category name, depending on what we're looking for
         $value = $type =='modAction'  
             ? strtolower($this->category) 
             : $this->myId;
-        /* get the objects */
+        // get the objects
         $this->elements = $this->modx->getCollection($type, array($key => $value));
 
-        /* try again with actual category name (camel case) */
+        // try again with actual category name (camel case)
         if (empty($this->elements) 
         &&  ($type == 'modSystemSetting' 
             || $type == 'modSystemEvent' 
@@ -443,7 +405,7 @@ abstract class ObjectAdapter
     // Get the Transport File Name
         $transportFile = getFileName('tranport');
 
-        /* write transport header */
+        // write transport header
         $tpl = $this->getTpl('transportfile.php');
         $tpl = str_replace('[[+elementType]]', $element, $tpl);
         $tpl = $mc->replaceTags($tpl);
@@ -451,36 +413,36 @@ abstract class ObjectAdapter
         $tpl .= "\n\$" . strtolower($element) . " = array();\n\n";
 
         $i=1;
-        /* append the code (returned from writeObject) for each object to $tpl */
+        // append the code (returned from writeObject) for each object to $tpl
         foreach($this->elements as $elementObj) {
             $tpl .= $this->exportColumns($elementObj, strtolower(substr($element, 0, -1)), $i);
             $i++;
         }
-        /* write transport footer */
+        // write transport footer
         $tpl .= 'return $' . strtolower($element) . ";\n";
 
         $this->helpers->writeFile($path, $transportFile, $tpl, $this->dryRun);
         $this->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Finished processing: ' . $element);
         
         unset($tpl);
-    }
+    }*/
 
     public function createTransportFiles($object, $overwrite = false) {
-        $mc = $this->mc;
+
         $name = $this->getName();
         $type = $this->getClass();
         $safetype = $this->getSafeClass();
         // For writing the Transport File
-        $path = $mc->getPath('data');
+        $path = $this->helpers->props['targetRoot'] . '_build/data/';
 
         if (stristr($element, 'menus')) { /* note: may change in Revo 2.3 */
             $element = 'Actions';
         }
 
-        $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n\nProcessing " . $safetype . ': ' . $name);
+        /*$mc->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n\nProcessing " . $safetype . ': ' . $name);
 
         $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Category: ' . $this->category);
-        $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Element Type: ' . $type);
+        $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Element Type: ' . $type);*/
 
         /* use namespace rather than category for these */
         $key = $type == 'modSystemSetting' || $type == 'modAction'
@@ -504,7 +466,7 @@ abstract class ObjectAdapter
         }
 
         if (empty($this->elements)) {
-            $mc->helpers->sendLog(modX::LOG_LEVEL_ERROR, 'No objects found in category: ' . $this->category);
+            $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, 'No objects found in category: ' . $this->category);
             return;
         }
 
@@ -514,17 +476,17 @@ abstract class ObjectAdapter
         /* write transport header */
         $tpl = $this->getTpl('transportfile.php');
         $tpl = str_replace('[[+elementType]]', $element, $tpl);
-        $tpl = $mc->replaceTags($tpl);
+        $tpl = $this->helpers->replaceTags($tpl);
 
         $tpl .= "\n\$" . strtolower($element) . " = array();\n\n";
 
         $i = 1;
-        /* append the code (returned from writeObject) for each object to $tpl */
+        // append the code (returned from writeObject) for each object to $tpl
         foreach ($this->elements as $elementObj) {
             $tpl .= $this->exportColumns($elementObj, strtolower(substr($element, 0, -1)), $i);
             $i++;
         }
-        /* write transport footer */
+        // write transport footer
         $tpl .= 'return $' . strtolower($element) . ";\n";
 
         $this->helpers->writeFile($path, $transportFile, $tpl, $this->dryRun);
@@ -548,7 +510,7 @@ abstract class ObjectAdapter
         $safeType = $this->getSafeClass();
         $fields = $this->myFields;
         
-        /* element is in the form 'chunk', 'snippet', etc. */
+        // element is in the form 'chunk', 'snippet', etc. */
         /* @var $elementObj modElement */
 
         /* write generic stuff */
@@ -654,14 +616,13 @@ abstract class ObjectAdapter
      * @param $elementObj modElement - element MODX object
      * @param $element - string name of element type ('plugin', 'snippet' etc.) used in dir name.
      */
-    public function exportCode ($elementObj, $element) 
-    {//For Quick Access
-        /* @var $mc MyComponentProject */
+    /*public function exportCode ($elementObj, $element)  {//For Quick Access
+        // @var $mc MyComponentProject
         $mc = $this->mc;
         $name = $this->getName();
         $class = $this->getSafeClass();
         
-        /* @var $elementObj modElement */
+        // @var $elementObj modElement
 
         if ($elementObj->get('static')) {
             $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Skipping object file for static object: ' . $name);
@@ -701,68 +662,9 @@ abstract class ObjectAdapter
 
         $mc->writeFile($dir, $fileName, $tpl, $isDry);
         unset($tpl);
-    }
+    }*/
 
-/* *****************************************************************************
-   Build Vehicle and Support Functions 
-***************************************************************************** */
-    public function buildVehicle()
-    {//Quick Access
-        $mc = $this->mc;
-        $modx = $mc->modx;
-        $builder = $mc->builder;
-        $validate = $this->myValidators;
-        $resolve = $this->myResolvers;
-    // We must have MODx Object
-        if (empty($modx) || empty($builder))
-            return false;
-    // Make sure we have column values to export
-        if (empty($this->myFields)
-        ||  !is_array($this->myFields))
-        {   $mc->helpers->sendLog(modX::LOG_LEVEL_ERROR, 'Vehicle has no database values');
-            return false;
-        }
-    // We must have Attributes in order to Package
-        $attr = $this->getAttributes();
-        if (empty($attr)
-        ||  is_array($attr))
-        {   $mc->helpers->sendLog(modX::LOG_LEVEL_ERROR, 'Could not package Vehicle: ' . $this->getClass());
-            return false;
-        }
-        else
-        {//Update for Validators
-            // if (is_array($this->myValidators))
-               // $attr[xPDOTransport::ABORT_INSTALL_ON_VEHICLE_FAIL] = true;
-        // Update for 
-        }
-        
-    // We must have a valid xPDO Object to Package
-        $obj = $this->toDBObject($modx);
-        if (empty($obj))
-        {   $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, 'Could not create xPDO object: ' . $this->getDBClass());
-            return false;
-        }
-    // Create the Vehicle
-        $new = $builder->createVehicle($obj, $attr);
-    // Add all of the Validators
-        if (!empty($validate))
-            foreach($validate as $validator)
-                if (!empty($validator))
-                {   $file = $sources['validators'] . $validator . '.validator.php';
-                    if (file_exists($file))
-                        $new->validate('php',array('source' => $file,));;
-                }
-    // Add all of the Resolvers
-        if (!empty($resolve))
-            foreach($resolve as $resolver)
-                if (!empty($resolver))
-                {   $file = $sources['resolvers'] . $resolver . '.resolver.php';
-                    if (file_exists($file))
-                        $new->resolve('php',array('source' => $file,));;
-                }
-        $builder->putVehicle($new);
-    }
-    
+
 /* *****************************************************************************
    General Support Functions 
 ***************************************************************************** */
@@ -775,7 +677,7 @@ abstract class ObjectAdapter
      * @param $name string  - Name of tpl file
      * @return string - Content of tpl file or '' if it doesn't exist
      */
-    public function getTpl($name)
+    /*public function getTpl($name)
     {//Initialize
         $text = '';
         $name = strtolower($name);
@@ -784,7 +686,7 @@ abstract class ObjectAdapter
         $path = $mc->getPath('mcTpl');
         $modx = $mc->modx;
         
-    /* Check MODx Chunks first */
+    // Check MODx Chunks first
     // Check for Package Specific Chunks
         $prefix = $mc->getSafeName();
         $tpl = $modx->getObject('modChunk', array('name' => $prefix . '.' . $name));
@@ -800,18 +702,18 @@ abstract class ObjectAdapter
         if (!empty($tpl))
             return $tpl->get('snippet');
         
-    /* Resort to the File System */
-        if (strstr($name, '.php')) { /* already has extension */
+    // Resort to the File System
+        if (strstr($name, '.php')) { // already has extension
             $text = @file_get_contents($path . 'my' . $name);
             if (empty($text)) {
                 $text = @file_get_contents($path . $name);
             }
-        } else { /* use .tpl extension */
+        } else { // use .tpl extension
             $text = @file_get_contents($path . 'my' .  $name . '.tpl');
             if (empty($text)) {
                 $text = @file_get_contents($path . $name . '.tpl');
             }
         }
         return $text !== false ? $text : '';
-    }
+    }*/
 }

@@ -35,7 +35,7 @@ class ResourceAdapter extends ObjectAdapter
             $this->defaults['cacheable'] = $modx->getOption('cache_default', null);
             $this->defaults['searchable'] = $modx->getOption('search_default', null);
             $this->defaults['context'] = $modx->getOption('default_context', null);
-            // $this->defaults['template'] = $modx->getOption('default_template', null);
+
             if (!isset($fields['class_key'])) {
                 $fields['class_key'] = 'modDocument';
             }
@@ -68,7 +68,11 @@ class ResourceAdapter extends ObjectAdapter
         ObjectAdapter::$myObjects['resources'][] = $fields;
     }
 
-    /* only executes on export */
+    /**
+     * Converts object fields containing IDs to the names of the objects
+     * represented by the IDs -- only executes on export.
+     * @param $fields array
+     */
     public function fieldsToNames(&$fields) {
         if (!empty($fields['parent'])) {
             $parentObj = $this->modx->getObject('modResource', $fields['parent']);
@@ -91,6 +95,12 @@ class ResourceAdapter extends ObjectAdapter
         }
     }
 
+    /**
+     * Converts object fields containing names to the IDs of the objects
+     * represented by the names.
+     * @param $fields array
+     */
+
     public function fieldsToIds(&$fields) {
         if (!isset($fields['parent']) || $fields['parent'] == 'default') {
             $fields['parent'] = '0';
@@ -111,11 +121,9 @@ class ResourceAdapter extends ObjectAdapter
             }
         }
     }
-/* *****************************************************************************
-   Bootstrap and Support Functions
-***************************************************************************** */
+
     /** creates resources in MODX install if set in project config file */
-    public function newTransport() 
+    /*public function newTransport()
     {//Validate Page's Title
         if (empty($this->myFields['pagetitle']))
         {   $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'A Resource must have a valid page title!');
@@ -125,23 +133,12 @@ class ResourceAdapter extends ObjectAdapter
     // Create an alias
         $this->myFields['alias'] = str_replace(' ', '-', strtolower($this->myFields['pagetitle']));
 
-    // Set default properties
-        /*$this->myFields['published'] = $init_published;
-        $this->myFields['richtext'] = $init_richtext;
-        $this->myFields['hidemenu'] = $init_hidemenu;
-        $this->myFields['cacheable'] = $init_cacheable;
-        $this->myFields['searchable'] = $init_searchable;
-        $this->myFields['context'] = $init_context;
-        $this->myFields['template'] = $init_template;*/
-
     // Set default Content
         $this->myFields['content'] = 'Enter your page\'s content here';
         
     // Create the Transport File
-        /*if (parent::newTransport())
-        // Create the Code File
-            $this->newCodeFile($this->myFields['pagetitle'], 'modResource');*/
-    }
+
+    }*/
 
     /**
      * Creates a code file for an element if set in project config file
@@ -149,7 +146,7 @@ class ResourceAdapter extends ObjectAdapter
      * @param $name string - lowercase filename (without extension or type
      * @param $type string - modPlugin, modSnippet etc.
      */
-    public function newCodeFile($name, $type) 
+    /*public function newCodeFile($name, $type)
     {   $mc = $this->myComponent;
     
         $dir = $this->helpers->getCodeDir($this->targetCore, $type);
@@ -161,7 +158,7 @@ class ResourceAdapter extends ObjectAdapter
             if (!file_exists($dir . '/' . $fileName)) {
                 $tpl = $this->getTpl($type);
 
-                /* use 'phpfile.tpl' as default for .php files */
+                // use 'phpfile.tpl' as default for .php files
                 if (empty($tpl) && strstr($fileName, '.php')) {
                     $tpl = $this->getTpl('phpfile.php');
                 }
@@ -175,7 +172,7 @@ class ResourceAdapter extends ObjectAdapter
                 $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' file already exists');
             }
         }
-    }
+    }*/
 
 /* *****************************************************************************
    Import Objects and Support Functions
@@ -202,45 +199,6 @@ class ResourceAdapter extends ObjectAdapter
 
     }
 
-
-    /*  NOT USED
-     * Connects Resources to package templates and creates a resolver to
-     * connect them during the install.
-     */
-    public function attachTemplate(&$resourceObj, $templateName) {
-        /* @var $modx modX */
-        /* @var $mc MyComponentProject */
-        /* @var $resourceObj modResource */
-
-        $mc =& $this->myComponent;
-        $modx =& $mc->modx;
-
-        /* Set resource Template */
-        if (!empty($templateName)) {
-            $template = $modx->getObject('modTemplate', array('templatename' => $templateName));
-            if ($template) {
-                $templateId = $template->get('id');
-                $resourceObj->set('template', $templateId);
-                if ($resourceObj->save()) {
-                    $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, '         Connected Resource ' .
-                        $resourceObj->get('pagetitle') . ' to ' .
-                        $templateName . ' Template');
-                }
-
-            } else {
-                $mc->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '        Could not find template: ' . $templateName);
-            }
-        }
-
-        // $data = $modx->getOption('resourceTemplates', $this->props, '');
-        // $mc->createIntersects($data, 'resourceTemplates', 'modTemplate', 'modResource','','');
-
-        return;
-
-        /* resource resolver will be created elewhere - this object will return it's own bit
-          of the resolver code in another function
-        */
-    }
     public static function createResolver($dir, $intersects, $helpers, $mode = MODE_BOOTSTRAP) {
 
         /* Create resource.resolver.php resolver */
@@ -268,9 +226,6 @@ class ResourceAdapter extends ObjectAdapter
         return true;
     }
 
-/* *****************************************************************************
-   Export Objects and Support Functions
-***************************************************************************** */
 
     /**
      * Exports the Resource. Resources work a little differently than most other
@@ -282,7 +237,7 @@ class ResourceAdapter extends ObjectAdapter
      *
      * @return boolean - True, if successful; False, if not.
      */
-    final public function exportObject($object, $overwrite = false)
+/*    final public function exportObject($object, $overwrite = false)
     {//For Quick Access
         $mc = $this->myComponent;
         $name = $this->getName();
@@ -293,14 +248,14 @@ class ResourceAdapter extends ObjectAdapter
             return false;
         }
         $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Transport File created for Resource: ' . $name);
-    // Special fuctionality for Resources
+    // Special functionality for Resources
         $this->exportCode($overwrite);
         $this->exportProperties($overwrite);
     // Handle Children
         $this->exportChildren($overwrite);
     // Return Success
         return true;
-    }
+    }*/
 
 
     static function exportResources(&$modx, &$helpers, $props) {
@@ -309,7 +264,7 @@ class ResourceAdapter extends ObjectAdapter
         $objects = array();
 
         /* Add resources from exportResources array in the project config file
-          to $this->objects */
+          to $this->myObjects array */
         $helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Exporting Resources');
         $byId = $modx->getOption('getResourcesById', $props, false);
         $method = $byId? 'ID' : 'pagetitle';
@@ -357,7 +312,6 @@ class ResourceAdapter extends ObjectAdapter
                 $fields = $object->toArray();
                 new ResourceAdapter($modx, $helpers, $fields, MODE_EXPORT);
             }
-
         } else {
             $helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'No Resources found');
         }
@@ -370,7 +324,7 @@ class ResourceAdapter extends ObjectAdapter
      * @param $fileName - Name of properties file
      * @param $objectName - Name of MODX object
      */
-    public function exportProperties($overwrite = false) 
+    /*public function exportProperties($overwrite = false)
     {//For Quick Access
         $mc = $this->myComponent;
         $dir = $mc->getPath('properties');
@@ -392,7 +346,7 @@ class ResourceAdapter extends ObjectAdapter
         $mc->writeFile($dir, $fileName, $tpl, $this->dryRun);
         
         unset($tpl);
-    }
+    }*/
 
     /**
      * Recursive function to write the code for the build properties file. This
@@ -404,13 +358,13 @@ class ResourceAdapter extends ObjectAdapter
      *
      * @return string - code for the elements properties
      */
-    public function render_properties($arr, $depth = -1) 
+    /*public function render_properties($arr, $depth = -1)
     {
     // For Indents
         $tabWidth = 4;
     
         if ($depth == -1) {
-            /* this will only happen once */
+            // this will only happen once
             $output = "\$properties = array( \n";
             $depth++;
         } else {
@@ -424,7 +378,7 @@ class ResourceAdapter extends ObjectAdapter
             ||  $key == 'area_trans') 
                 continue;
             
-            /* No key for each property array */
+            // No key for each property array
             $output .= $depth == 0
                 ? $indent 
                 : $indent . "'$key' => ";
@@ -433,11 +387,11 @@ class ResourceAdapter extends ObjectAdapter
                 $output .= $this->render_properties( $val, $depth + $tabWidth );
             } else {
                 $val = empty($val)? '': $val;
-                /* see if there are any single quotes */
+                // see if there are any single quotes
                 $qc = "'";
                 if (strpos($val,$qc) !== false) {
-                    /* yes - change outer quote char to "
-                       and escape all " chars in string */
+                    // yes - change outer quote char to "
+                    //   and escape all " chars in string
                     $qc = '"';
                     $val = str_replace($qc,'\"',$val);
                 }
@@ -449,17 +403,6 @@ class ResourceAdapter extends ObjectAdapter
             ? $indent . "),\n"
             : "\n);\n\nreturn \$properties;";
         return $output;
-    }
+    }*/
 
-/* *****************************************************************************
-   Build Vehicle and Support Functions 
-***************************************************************************** */
-    final public function buildVehicle()
-    {//Add to the Transport Package
-        if (parent::buildVehicle())
-        {//Return Success
-            $this->myComponent->sendLog(modX::LOG_LEVEL_INFO, 'Packaged Resource: '.$this->myFields['pagetitle']);
-            return true;
-        }
-    }
 }

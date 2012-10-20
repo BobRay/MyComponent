@@ -45,7 +45,7 @@ class TemplateVarAdapter extends ElementAdapter
     }
 
     public static function createResolver($dir, $intersects, $helpers, $mode = MODE_BOOTSTRAP) {
-
+        /* ToDo: Export mode */
         /* Create tv.resolver.php resolver */
         /* @var $helpers Helpers */
         if (!empty($dir) && !empty($intersects)) {
@@ -70,28 +70,5 @@ class TemplateVarAdapter extends ElementAdapter
             }
         }
         return true;
-    }
-/* *****************************************************************************
-   Bootstrap and Support Functions (in ElementAdapter)
-***************************************************************************** */
-
-/* *****************************************************************************
-   Import Objects and Support Functions (in ElementAdapter) 
-***************************************************************************** */
-
-/* *****************************************************************************
-   Export Objects and Support Functions (in ElementAdapter)
-***************************************************************************** */
-
-/* *****************************************************************************
-   Build Vehicle and Support Functions 
-***************************************************************************** */
-    final public function buildVehicle()
-    {//Add to the Transport Package
-        if (parent::buildVehicle())
-        {//Return Success
-            $myComponent->log(modX::LOG_LEVEL_INFO, 'Packaged Resource: '.$this->properties['pagetitle']);
-            return true;
-        }
     }
 }

@@ -12,9 +12,6 @@ abstract class ElementAdapter extends ObjectAdapter {
     public $categoryName;
     public $content = null;  /* Content field contents */
 
-    /* *****************************************************************************
-       Property Getter and Setters
-    ***************************************************************************** */
 
     public function __construct(&$modx, $helpers, $fields, $mode = MODE_BOOTSTRAP) {
         /* @var $object modElement */
@@ -60,7 +57,13 @@ abstract class ElementAdapter extends ObjectAdapter {
         }
     }
 
-    /* only executes on export */
+
+
+    /**
+     * Converts object fields containing IDs to the names of the objects
+     * represented by the IDs -- only executes on export.
+     * @param $fields array
+     */
     public function fieldsToNames(&$fields) {
         /* @var $categoryObj modCategory */
         $categoryObj = $this->modx->getObject('modCategory', $fields['category']);
@@ -70,6 +73,13 @@ abstract class ElementAdapter extends ObjectAdapter {
             $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find category with name: ' . $fields['category']);
         }
     }
+
+    /**
+     * Converts object fields containing names to the IDs of the objects
+     * represented by the names.
+     * @param $fields array
+     */
+
     public function fieldsToIds(&$fields){
         if (isset($fields['category'])) {
             $categoryObj = $this->modx->getObject('modCategory', array('category' => $fields['category']));
@@ -86,7 +96,7 @@ abstract class ElementAdapter extends ObjectAdapter {
      *         trailing slash)
      */
 
-    public function getCodeDir() 
+    /*public function getCodeDir()
     {//Get the path...
         $path = $this->myComponent->myPaths['targetCore'] . 'elements/';
     // Get the sub-directory according to type...
@@ -95,7 +105,7 @@ abstract class ElementAdapter extends ObjectAdapter {
         $type = strtolower(substr($type, 3) . 's');
     // Append slash and return
         return $path . $type . '/';
-    }
+    }*/
 
 
 /* *****************************************************************************
@@ -123,16 +133,11 @@ abstract class ElementAdapter extends ObjectAdapter {
     }
 
 
-
-/* *****************************************************************************
-   Export Objects and Support Functions (in MODxObjectAdapter)
-***************************************************************************** */
-
-    public function exportObject($element, $overwrite = false) {
+   /* public function exportObject($element, $overwrite = false) {
     //Perform default export implementation
         if (!parent::exportObject())
             return false;
-    // Special fuctionality for ALL Elements
+    // Special functionality for ALL Elements
         if (static::xPDOClass != 'modCategory') {
             exportCode();
             exportProperties();
@@ -140,7 +145,7 @@ abstract class ElementAdapter extends ObjectAdapter {
     // Return Success
         $myComponent->log(modX::LOG_LEVEL_INFO, 'Transport File created for Resource: '.$this->myColumns['pagetitle']);
         return true;
-    }
+    }*/
     
     /**
      * Creates the code file for an element or resource - skips static elements
@@ -148,9 +153,9 @@ abstract class ElementAdapter extends ObjectAdapter {
      * @param $elementObj modElement - element MODX object
      * @param $element - string name of element type ('plugin', 'snippet' etc.) used in dir name.
      */
-    public function exportCode ($elementObj, $element) {
+    /*public function exportCode ($elementObj, $element) {
 
-        /* @var $elementObj modElement */
+        // @var $elementObj modElement
 
         if ($elementObj->get('static')) {
             $this->modx->log(modX::LOG_LEVEL_INFO, 'Skipping object file for static object: ' . $elementObj->get('name'));
@@ -181,7 +186,7 @@ abstract class ElementAdapter extends ObjectAdapter {
                 $tpl .= '<'.'?'.'php'."\n\n";
                 //fwrite($fileFp,"<?php\n\n");
             }
-            /* add header if it's not already there */
+            // add header if it's not already there
             if ( (!strstr($content,'GNU')) && (!stristr($content,'License')) ) {
                 $tpl = $this->helpers->getTpl('phpfile.php');
                 $tpl = str_replace('[[+elementName]]', $elementObj->get('name'), $tpl);
@@ -196,8 +201,9 @@ abstract class ElementAdapter extends ObjectAdapter {
             $this->modx->log(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
         }
         unset($tpl);
-    }
+    }*/
 
+    /* ToDo: make this work */
     /**
      * Writes the properties file for objects with properties
      * @param $properties array - object properties as PHP array
@@ -275,8 +281,4 @@ abstract class ElementAdapter extends ObjectAdapter {
 
         return $output;
     }
-
-/* *****************************************************************************
-   Build Vehicle and Support Functions 
-***************************************************************************** */
 }

@@ -15,12 +15,9 @@ class PropertySetAdapter extends ElementAdapter { //This will never change.
     final function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP) {
         /* @var $object modPropertySet */
         $this->name = $fields['name'];
-        parent::__construct($modx, $helpers, $fields, $mode, $object);
+        parent::__construct($modx, $helpers, $fields, $mode);
     }
 
-    /* *****************************************************************************
-       Bootstrap and Support Functions (in ElementAdapter)
-    ***************************************************************************** */
 
     public static function createResolver($dir, $intersects, $helpers, $mode = MODE_BOOTSTRAP) {
 
@@ -47,27 +44,5 @@ class PropertySetAdapter extends ElementAdapter { //This will never change.
             }
         }
         return true;
-    }
-
-    /* *****************************************************************************
-       Import Objects and Support Functions (in ElementAdapter)
-    ***************************************************************************** */
-
-    /* *****************************************************************************
-       Export Objects and Support Functions (in ElementAdapter)
-    ***************************************************************************** */
-
-    /* *****************************************************************************
-       Build Vehicle and Support Functions
-    ***************************************************************************** */
-    final public function buildVehicle() { //Add to the Transport Package
-        /* @var $myComponent MyComponentProject */
-        if (parent::buildVehicle()) { //Return Success
-            $myComponent->log(modX::LOG_LEVEL_INFO, 'Packaged Resource: ' . $this->properties['pagetitle']);
-            return true;
-        }
-        else {
-            return false;
-        }
     }
 }

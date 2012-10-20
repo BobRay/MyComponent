@@ -40,32 +40,4 @@ class SystemSettingAdapter extends ObjectAdapter
         ObjectAdapter::$myObjects['newSystemSettings'][] = $fields;
         parent::__construct($modx, $helpers);
     }
-
-/* *****************************************************************************
-   Bootstrap and Support Functions (in MODxObjectAdapter)
-***************************************************************************** */
-
-
-/* *****************************************************************************
-   Import Objects and Support Functions (in MODxObjectAdapter) 
-***************************************************************************** */
-
-
-
-/* *****************************************************************************
-   Export Objects and Support Functions (in MODxObjectAdapter)
-***************************************************************************** */
-
-/* *****************************************************************************
-   Build Vehicle and Support Functions 
-***************************************************************************** */
-
-    final public function buildVehicle()
-    {//Add to the Transport Package
-        if (parent::buildVehicle())
-        {//Return Success
-            $myComponent->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Packaged Setting: '. $this->myColumns['key']);
-            return true;
-        }
-    }
 }

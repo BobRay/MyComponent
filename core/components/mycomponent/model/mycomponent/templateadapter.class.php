@@ -14,7 +14,7 @@ class TemplateAdapter extends ElementAdapter
 // Database fields for the XPDO Object
     protected $myFields;
 
-    final public function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP, $object = null) {
+    final public function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP) {
         if (isset($fields['name'])) {
             $fields['templatename'] = $fields['name'];
             unset($fields['name']);
@@ -23,31 +23,9 @@ class TemplateAdapter extends ElementAdapter
         if (is_array($fields)) {
             $this->myFields = $fields;
         }
-        parent::__construct($modx, $helpers, $fields, $mode, $object);
 
-    }
-    
-/* *****************************************************************************
-   Bootstrap and Support Functions (in ElementAdapter)
-***************************************************************************** */
+        /* ToDo: Add TVs here for Tv or Template resolver */
+        parent::__construct($modx, $helpers, $fields, $mode);
 
-/* *****************************************************************************
-   Import Objects and Support Functions (in ElementAdapter) 
-***************************************************************************** */
-
-/* *****************************************************************************
-   Export Objects and Support Functions (in ElementAdapter)
-***************************************************************************** */
-
-/* *****************************************************************************
-   Build Vehicle and Support Functions 
-***************************************************************************** */
-    final public function buildVehicle()
-    {//Add to the Transport Package
-        if (parent::buildVehicle())
-        {//Return Success
-            $myComponent->log(modX::LOG_LEVEL_INFO, 'Packaged Resource: '.$this->properties['pagetitle']);
-            return true;
-        }
     }
 }

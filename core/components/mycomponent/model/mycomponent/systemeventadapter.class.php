@@ -30,12 +30,6 @@ class SystemEventAdapter extends ObjectAdapter
         $this->myFields = $fields;
     }
 
-
-    
-/* *****************************************************************************
-   Bootstrap and Support Functions (in MODxObjectAdapter)
-***************************************************************************** */
-
     /* Move to ObjectAdapter as alternate method? */
     public function addToMODx($overwrite = false) {
         $name = $this->getName();
@@ -70,24 +64,5 @@ class SystemEventAdapter extends ObjectAdapter
             $retVal = -1;
         }
         return $retVal;
-    }
-/* *****************************************************************************
-   Import Objects and Support Functions (in MODxObjectAdapter) 
-***************************************************************************** */
-
-/* *****************************************************************************
-   Export Objects and Support Functions (in MODxObjectAdapter)
-***************************************************************************** */
-
-/* *****************************************************************************
-   Build Vehicle and Support Functions 
-***************************************************************************** */
-    final public function buildVehicle()
-    {//Add to the Transport Package
-        if (parent::buildVehicle())
-        {//Return Success
-            $myComponent->log(modX::LOG_LEVEL_INFO, 'Packaged Resource: '.$this->properties['pagetitle']);
-            return true;
-        }
     }
 }

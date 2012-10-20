@@ -1,46 +1,15 @@
 <?php
-// Include the Base Class (only once)
-require_once('modxobjectadapter.class.php');
 
-class UserGroupAdapter extends MODxObjectAdapter
-{//This will never change.
-    final static protected $xPDOClass = 'modUserGroup';
-    final static protected $xPDOTransportAttributes = array
-    (   xPDOTransport::UNIQUE_KEY => 'key',
-        xPDOTransport::PRESERVE_KEYS => true,
-        xPDOTransport::UPDATE_OBJECT => false,
-    );
+class UserGroupAdapter extends ObjectAdapter {
+    static protected $xPDOClass = 'modUserGroup';
 
 // Database Columns for the XPDO Object
-    protected $myColumns;
+    protected $myFields;
 
-    final public function __construct(&$forComponent, $columns)
-    {   parent::__construct(&$forComponent);
-        if (is_array($columns))
-            $this->myColumns = $columns;
+    final public function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP) {
+        parent::__construct($modx, $helpers);
+        if (is_array($fields))
+            $this->myFields = $fields;
     }
-    
-/* *****************************************************************************
-   Bootstrap and Support Functions (in MODxObjectAdapter)
-***************************************************************************** */
 
-/* *****************************************************************************
-   Import Objects and Support Functions (in MODxObjectAdapter) 
-***************************************************************************** */
-
-/* *****************************************************************************
-   Export Objects and Support Functions (in MODxObjectAdapter)
-***************************************************************************** */
-
-/* *****************************************************************************
-   Build Vehicle and Support Functions 
-***************************************************************************** */
-    final public function buildVehicle()
-    {//Add to the Transport Package
-        if (parent::buildVehicle())
-        {//Return Success
-            $myComponent->log(modX::LOG_LEVEL_INFO, 'Packaged Context: '.$this->properties['key']);
-            return true;
-        }
-    }
 }

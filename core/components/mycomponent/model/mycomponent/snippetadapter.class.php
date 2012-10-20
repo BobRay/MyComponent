@@ -19,28 +19,4 @@ class SnippetAdapter extends ElementAdapter
         $this->name = $fields['name'];
         parent::__construct($modx, $helpers, $fields, $mode);
     }
-    
-/* *****************************************************************************
-   Bootstrap and Support Functions (in ElementAdapter)
-***************************************************************************** */
-
-/* *****************************************************************************
-   Import Objects and Support Functions (in ElementAdapter) 
-***************************************************************************** */
-
-/* *****************************************************************************
-   Export Objects and Support Functions (in ElementAdapter)
-***************************************************************************** */
-
-/* *****************************************************************************
-   Build Vehicle and Support Functions 
-***************************************************************************** */
-    final public function buildVehicle()
-    {//Add to the Transport Package
-        if (parent::buildVehicle())
-        {//Return Success
-            $myComponent->log(modX::LOG_LEVEL_INFO, 'Packaged Resource: '.$this->properties['pagetitle']);
-            return true;
-        }
-    }
 }

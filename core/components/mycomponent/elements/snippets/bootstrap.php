@@ -14,6 +14,8 @@ $project = new MyComponentProject();
 //$project->removeObjects();
 $project->bootstrap();
 
+echo print_r(ObjectAdapter::$myObjects, true);
+
 echo "\n\nInitial Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
 $mem_usage = memory_get_usage();
 $peak_usage = memory_get_peak_usage(true);
@@ -28,4 +30,3 @@ $totalTime = ($tend - $tstart);
 $totalTime = sprintf("%2.4f s", $totalTime);
 echo "\nTotal time: " . $totalTime;
 
-echo print_r(ObjectAdapter::$myObjects, true);
