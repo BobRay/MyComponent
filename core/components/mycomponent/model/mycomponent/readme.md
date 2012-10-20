@@ -1,6 +1,6 @@
 ## MyComponentProject
 
-This structure focuses around the MyComponentProject object. The MyComponentProject serves as the parent for all of the other classes in this directory. MyComponentProject contains the majority of the functionality of BootStrap.class, ExportObjects.class and Build.Transport.php.
+
 
 ### Public Methods
 These are the methods that are called by the localized utilities. When run, these utilities instance the MyComponentProject. MyComponentProject finds its nearby project.config file, loads it, and then connects to MODx. The localized utility then calls one of these public methods. 
@@ -8,14 +8,9 @@ These are the methods that are called by the localized utilities. When run, thes
 #### newProject()
 Creates the File Hierarchy from the initial Configuration. This is run by BootStrap.
 
-#### importProject($overwrite = false)
-Translates the objects in the File System into the MODx Installation. importProject is generally only be called when BootStrap is run. In these cases, importProject() is run immediately after newProject(). The existence of importProject() also allows for a new utility, Import. By default, importProject() is nondestructive, but if $overwrite is set to true, it will rewrite the current MODx objects.
-
 #### exportProject($overwrite = false)
 Get copies the MODx objects in the Namespace and Categories to the Project's File Hierarchy. This may only be run by the Project's ExportObjects. By default, exportProject() is nondestructive, however, if $overwrite is set to true, it will overwrite the current File Hierarchy.
 
-#### buildPackage() 
-Compiles the File Heirarchy into a Transport Package. This may only be run by the Project's Build.Transport.php. 
 
 ## ObjectAdapter
 
@@ -33,9 +28,6 @@ Translates the Object in the defined Tranport File into the MODx Installation as
 
 #### exportObject($overwrite = false)
 Gets the MODx Object from MODx based on its $xPDOClass, $xPDOClassNameKey, and its $myColumns[$xPDOClassNameKey] value. If the object exists, it copies its column values to the Transport File. If the Object happens to be a ResourceAdapter or any extension of an ElementAdapter, it will also copy the code to its appropriate code file.
-
-#### buildVehicle() 
-Translates the current object into a Transport Vehicle for a MODx Transport Package. Attributes are set to the Vehicle according to $xPDOTransportAttributes. This works well because in nearly every circumstance, the attributes do not change between different instances of the Adapters, just between the Adapter types themselves. In most cases, this will result in the creation of a Vehicle. Linking to the appropriate objects (category, etc) should already be complete at this point, so these should resolve correctly without any "tweaking".
 
 ### Subclasses
 Most of the subclasses of ObjectAdapter are going to be "shallow" extensions. This allows the base code in ObjectAdapter to do most of the work, but gives the object the opportunity to preprocess or postprocess the default actions. In very few cases, like NamespaceAdapter, it may override the behavior completely. *(For instance, namespaces use registerNamespace() rather than createVehicle() during buildTransport())*
@@ -67,7 +59,7 @@ MyComponent may gain additional benefits by adjusting the templatized base code 
 
     'basic.' . static::$xPDOClass . '.tpl';
     
-Overrides may be performed by prepeding 'my.' in front of the name. As in:
+Overrides may be performed by prepending 'my.' in front of the name. As in:
 
     'my.basic.' . static::$xPDOClass . '.tpl';
     
@@ -77,12 +69,3 @@ Even further specific overrides may be performed by prepending the package name.
 
 This prioritized kind of templating allows users to choose their own generic templates, but even meet specific needs of specific projects. In other words, we check for a package specific template, first. Failing that, we look for a user specific template. Finally, if neither is present, we always have the default basic template.
 
-## Still Adding...
-
-* *Known Classes*
-  * PropertySetAdapter.class.php
-  * PackageAdapter.class.php - for sub-packages
-* *Missing Functionality*
-  * Schema handling
-  * Copying localized classes
-  * Copying localized utilities
