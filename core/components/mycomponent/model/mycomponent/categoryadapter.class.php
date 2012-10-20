@@ -128,6 +128,7 @@ class CategoryAdapter extends ObjectAdapter {
                     $element->setContent('');
                     $fields['content'] = $content;
                 } else {
+                    /* This should never get written anywhere */
                     $content = 'Serious error in CategoryAdapter exportElements()';
                 }
                 $fields = $element->toArray();
@@ -143,8 +144,6 @@ class CategoryAdapter extends ObjectAdapter {
                 } else {
                     $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, ' (no code file required)', true);
                 }
-
-            flush();
             }
         }
     }
