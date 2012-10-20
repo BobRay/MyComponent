@@ -14,26 +14,58 @@ class TemplateVarAdapter extends ElementAdapter
     protected $fields;
     protected $name;
 
-    final public function __construct(&$modx, &$helpers, $fields, $mode=MODE_BOOTSTRAP, $object = null) {
+    final public function __construct(&$modx, &$helpers, $fields, $mode=MODE_BOOTSTRAP) {
+        /* @var $modx modX */
+        /* @var $helpers Helpers */
         $this->name = $fields['name'];
-        if (is_array($fields)) {
-            if (isset($fields['templates'])) {
-                $this->setTvResolver($fields['templates']);
-                unset($fields['templates']);
+        $this->modx =& $modx;
+        $this->helpers =& $helpers;
+        if ($mode == MODE_BOOTSTRAP) {
+            if (is_array($fields)) {
+                if (isset($fields['templates'])) {
+                    $this->setTvResolver($fields['templates'], $mode);
+                    unset($fields['templates']);
+                }
             }
-            $this->myFields = $fields;
-
+        } elseif ($mode == MODE_EXPORT) {
+            $this->setTvResolver($fields, $mode);
+            unset($fields['id']);
         }
-        parent::__construct($modx, $helpers, $fields, $mode, $object);
+        $this->myFields = $fields;
+        parent::__construct($modx, $helpers, $fields, $mode);
 
     }
-    public function setTvResolver($fields) {
-        foreach($fields as $templateName => $rank) {
-            $resolverFields = array();
-            $resolverFields['templateid'] = $templateName;
-            $resolverFields['tmplvarid'] = $this->getName();
-            $resolverFields['rank'] = isset($rank) && !empty($rank) ? $rank : '0';
-            ObjectAdapter::$myObjects['tvResolver'][] = $resolverFields;
+    public function setTvResolver($fields, $mode) {
+        if ($mode == MODE_BOOTSTRAP) {
+            foreach($fields as $templateName => $rank) {
+                $resolverFields = array();
+                $resolverFields['templateid'] = $templateName;
+                $resolverFields['tmplvarid'] = $this->getName();
+                $resolverFields['rank'] = isset($rank) && !empty($rank) ? $rank : '0';
+                ObjectAdapter::$myObjects['tvResolver'][] = $resolverFields;
+            }
+        } elseif ($mode == MODE_EXPORT) {
+            $me = $this->modx->getObject('modTemplateVar', array('name' => $this->getName()));
+            if (!$me) {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, "Can't find myself");
+            } else {
+                $tvts = $me->getMany('TemplateVarTemplates');
+                if (!empty($tvts)) {
+                    foreach ($tvts as $tvt) {
+                        /* @var $tvt modTemplateVarTemplate */
+                        $fields = $tvt->toArray();
+                        $templateObj = $this->modx->getObject('modTemplate',$fields['templateid']);
+                        $templateName = $templateObj->get('templatename');
+
+                        $resolverFields = array(
+                            'templateid' => $this->getName(),
+                            'tmplvarid' => $templateName,
+                            'rank' => $fields['rank'],
+                        );
+                        ObjectAdapter::$myObjects['tvResolver'][] = $resolverFields;
+                    }
+                }
+            }
         }
 
     }

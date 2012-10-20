@@ -14,12 +14,14 @@ abstract class ElementAdapter extends ObjectAdapter {
 
 
     public function __construct(&$modx, $helpers, $fields, $mode = MODE_BOOTSTRAP) {
-        /* @var $object modElement */
+
         $this->modx =& $modx;
         $this->helpers =& $helpers;
         parent::__construct($modx, $helpers);
+        if ($this->dbClass != 'modPropertySet') {
+            $this->setPropertySetResolver($fields, $mode);
+        }
         if (isset($fields['propertySets'])) {
-            $this->setPropertySetResolver($fields['propertySets']);
             unset($fields['propertySets']);
         }
         if ($mode == MODE_BOOTSTRAP) {
@@ -40,20 +42,52 @@ abstract class ElementAdapter extends ObjectAdapter {
         ObjectAdapter::$myObjects['ElementCategories'][$this->categoryName]['elements'][$this->dbClass][] = $fields;
     }
 
-    public function setPropertySetResolver($sets) {
-        foreach ($sets as $k => $setName) {
-            $resolverFields = array(
-                'element' => isset($fields['element'])
-                    ? $fields['element']
-                    : $this->getName(),
-                'element_class' => isset($fields['element_class'])
-                    ? $fields['element_class']
-                    : $this->dbClass,
-                'property_set' => isset($fields['property_set'])
-                    ? $fields['property_set']
-                    : $setName,
-            );
-            ObjectAdapter::$myObjects['propertySetResolver'][] = $resolverFields;
+    public function setPropertySetResolver($fields, $mode) {
+        if ($mode == MODE_BOOTSTRAP) {
+            if (! isset($fields['propertySets'])) {
+                return;
+            } else {
+                $sets = $fields['propertySets'];
+            }
+            foreach ($sets as $k => $setName) {
+                $resolverFields = array(
+                    'element' => isset($fields['element'])
+                        ? $fields['element']
+                        : $this->getName(),
+                    'element_class' => isset($fields['element_class'])
+                        ? $fields['element_class']
+                        : $this->dbClass,
+                    'property_set' => isset($fields['property_set'])
+                        ? $fields['property_set']
+                        : $setName,
+                );
+                ObjectAdapter::$myObjects['propertySetResolver'][] = $resolverFields;
+            }
+        } elseif ($mode == MODE_EXPORT) {
+            $alias = $this->helpers->getNameAlias($this->dbClass);
+            $me = $this->modx->getObject($this->dbClass, array($alias => $this->getName()));
+            /* @var $me modElement */
+            if (!$me) {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, "[ElementAdapter] Can't find myself");
+            } else {
+                $eps = $me->getMany('PropertySets');
+                if (!empty($eps)) {
+                   foreach ($eps as $ep) {
+                       /* @var $ep modElementPropertySet */
+                       $fields = $ep->toArray();
+                       /* @var $propertySetObj modPropertySet */
+                       $propertySetObj = $this->modx->getObject('modPropertySet',
+                           $fields['property_set']);
+                       $propertySetName = $propertySetObj->get('name');
+                       $resolverFields = array(
+                           'element' => $this->getName(),
+                           'property_set' => $propertySetName,
+                           'element_class' => $this->dbClass,
+                       );
+                       ObjectAdapter::$myObjects['propertySetResolver'][] = $resolverFields;
+                   }
+                }
+            }
         }
     }
 
@@ -203,7 +237,7 @@ abstract class ElementAdapter extends ObjectAdapter {
         unset($tpl);
     }*/
 
-    /* ToDo: make this work */
+
     /**
      * Writes the properties file for objects with properties
      * @param $properties array - object properties as PHP array
