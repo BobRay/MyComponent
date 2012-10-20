@@ -29,11 +29,12 @@ of the MODX Package Manager code.
             <li>Create the build.transport.php file</li>
             <li>Create code/content files for all objects, to be used in the build </li>
             <li>optionally, make elements static and connect them to their files</li>
-            <li>Create core and assets directories</li>
+            <li>Create core and assets directories and subdirectories</li>
             <li>Create any listed lexicon files</li>
             <li>Write all transport files for the build</li>
-            <li>Write all resolvers to connect objects</li>
+            <li>Write all resolver files to connect objects</li>
             <li>Optionally, write skeleton generic resolvers and validators</li>
+            <li>Create skeleton class files for all classes</li>
         </ul>
 
         <li><b>ExportObjects</b></li>
@@ -65,8 +66,13 @@ of the MODX Package Manager code.
         </ul>
 
     </ul>
+    <h4>Summary</h4>
+    <p>If your component is new, you can edit the project config file and run Bootstrap and all your Resources, Elements, and other objects and all necessary files will be created for you. Once the component is finished, you can run ExportObjects and build.transport.php and your Extra will be ready to release.</p>
+
+    <p>If your finished component already exists in MODX, you can edit the project config file and run Bootstrap, ExportObjects, and build.transport.php and your extra will be ready to release.</p>
 
 </div>
+
 
 <h3>Current Version</h3>
 
