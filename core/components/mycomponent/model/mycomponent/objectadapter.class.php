@@ -87,7 +87,7 @@ abstract class ObjectAdapter
      */
     public function getSafeClass()
     {//Simple Getter Function
-        $class = substr(strtolower($this->getDbClass()), 3);
+        $class = substr(strtolower($this->dbClass), 3);
         if ($class == 'templatevar')
             return 'tv';
         elseif ($class == 'systemsettings')
@@ -427,70 +427,55 @@ abstract class ObjectAdapter
         unset($tpl);
     }*/
 
-    public function createTransportFiles($object, $overwrite = false) {
+    public static function createTransportFile(&$helpers, $objects, $category, $type,  $mode = MODE_BOOTSTRAP) {
+        /* @var $helpers Helpers */
 
-        $name = $this->getName();
-        $type = $this->getClass();
-        $safetype = $this->getSafeClass();
-        // For writing the Transport File
-        $path = $this->helpers->props['targetRoot'] . '_build/data/';
 
-        if (stristr($element, 'menus')) { /* note: may change in Revo 2.3 */
-            $element = 'Actions';
+        $category = strtolower($category);
+        /* convert 'modSnippet' to 'Snippets' */
+        $variableName = lcfirst(substr($type, 3) . 's');
+        $alias = $helpers->getNameAlias($type);
+        $path = $helpers->props['targetRoot'] . '_build/data/' . $category . '/';
+        $dryRun = $mode == MODE_EXPORT && !empty($helpers->props['dryRun']);
+
+        // Get the Transport File Name
+        $transportFile = $helpers->getFileName('', $type, 'transport');
+        // $transportFile = 'transport.' . strtolower($variableName) . '.php';
+
+        if (stristr($variableName, 'menus')) { /* note: may change in Revo 2.3 */
+            $variableName = 'actions';
         }
 
-        /*$mc->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n\nProcessing " . $safetype . ': ' . $name);
-
-        $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Category: ' . $this->category);
-        $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Element Type: ' . $type);*/
-
-        /* use namespace rather than category for these */
-        $key = $type == 'modSystemSetting' || $type == 'modAction'
-            ? 'namespace'
-            : 'category';
-        /* category ID or category name, depending on what we're looking for */
-        $value = $type == 'modAction'
-            ? strtolower($this->category)
-            : $this->myId;
-        /* get the objects */
-        $this->elements = $this->modx->getCollection($type, array($key => $value));
-
-        /* try again with actual category name (camel case) */
-        if (empty($this->elements)
-            && ($type == 'modSystemSetting'
-                || $type == 'modSystemEvent'
-                || $type == 'modAction')
-        ) {
-            $value = $this->category;
-            $this->elements = $this->modx->getCollection($type, array($key => $value));
-        }
-
-        if (empty($this->elements)) {
-            $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, 'No objects found in category: ' . $this->category);
+        /* Abort if file exists and not in Export mode */
+        if (file_exists($path . $transportFile) && $mode != MODE_EXPORT) {
+            $helpers->sendLog(MODX_LOG_LEVEL_INFO, '    File already exists: ' . $transportFile);
             return;
         }
 
-        // Get the Transport File Name
-        $transportFile = getFileName('tranport');
-
         /* write transport header */
-        $tpl = $this->getTpl('transportfile.php');
-        $tpl = str_replace('[[+elementType]]', $element, $tpl);
-        $tpl = $this->helpers->replaceTags($tpl);
+        $tpl = $helpers->getTpl('transportfile.php');
+        $tpl = str_replace('[[+elementType]]', $variableName, $tpl);
+        $tpl = $helpers->replaceTags($tpl);
+        $tpl .= '/' . '*' .  ' @var modChunk[] ' . '$' . $variableName .  ' *' ."/\n\n";
 
-        $tpl .= "\n\$" . strtolower($element) . " = array();\n\n";
 
+        $tpl .= "\n\$" . $variableName . " = array();\n\n";
         $i = 1;
         // append the code (returned from writeObject) for each object to $tpl
-        foreach ($this->elements as $elementObj) {
-            $tpl .= $this->exportColumns($elementObj, strtolower(substr($element, 0, -1)), $i);
+        foreach ($objects as $k => $fields) {
+            $fileName = $helpers->getFileName($fields[$alias], $type);
+            $tpl .= self::writeObject($helpers, $fields, $type, $fileName, $i);
             $i++;
         }
         // write transport footer
-        $tpl .= 'return $' . strtolower($element) . ";\n";
+        $tpl .= 'return $' . $variableName . ";\n";
 
-        $this->helpers->writeFile($path, $transportFile, $tpl, $this->dryRun);
-        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Finished processing: ' . $element);
+        if (! file_exists($path . $transportFile) || $mode != MODE_BOOTSTRAP) {
+            $helpers->writeFile($path, $transportFile, $tpl, $dryRun);
+        } else {
+            $helpers->sendLog(MODX_LOG_LEVEL_INFO, '        File already exists: ' . $transportFile);
+        }
+        $helpers->sendLog(modX::LOG_LEVEL_INFO, 'Finished processing: ' . $type);
 
         unset($tpl);
     }
@@ -504,24 +489,19 @@ abstract class ObjectAdapter
      * @param $i int - index of element in transport file
      * @return string - code for this object to be inserted in transport file (by $this->process())
      */
-    public function exportColumns($elementObj, $element, $i) 
-    {//For Quick Access
-        $type = $this->getClass();
-        $safeType = $this->getSafeClass();
-        $fields = $this->myFields;
-        
-        // element is in the form 'chunk', 'snippet', etc. */
-        /* @var $elementObj modElement */
-
+    public static function writeObject(&$helpers, $fields, $type, $fileName, $i) {
+        $variableName = lcfirst(substr($type, 3) . 's');
         /* write generic stuff */
-        $tpl = '$' . $safeType . 's[' . $i . '] = $modx->newObject(' . "'" . $type . "');" . "\n";
-        $tpl .= '$' . $safeType . 's[' . $i . '] ->fromArray(array(' . "\n";
-        $tpl .= "    'id' => " . $i . ",\n";
+        $tpl = '$' . $variableName . '[' . $i . '] = $modx->newObject(' . "'" . $type . "');" . "\n";
+        $tpl .= '$' . $variableName . '[' . $i . ']->fromArray(array(' . "\n";
+        // $tpl .= "    'id' => " . $i . ",\n";
+        unset ($fields['id']);
+        $fields = array_merge(array('id' => $i), $fields);
 
 
         /* This may not be necessary */
         /* *********** */
-        $properties = $fields['properties'];
+        $properties = isset($fields['properties'])? $fields['properties'] : array();
         $hasProperties = false;
         if (!empty($properties)) {
             /* handled below */
@@ -531,7 +511,7 @@ abstract class ObjectAdapter
             ($fields['properties'] ='');
         }
         /* ************  */
-        unset($fields['id'],
+        unset(
             $fields['snippet'],
             $fields['content'],
             $fields['plugincode'],
@@ -557,6 +537,7 @@ abstract class ObjectAdapter
             $fields['menu']
         );
 
+        /* might be able to use var_export and beautify here */
         foreach ($fields as $field => $value) {
             if ($field == 'value'  && in_array('combo-boolean', array_values($fields))) {
                 $value = $value? 'true' : 'false';
@@ -568,8 +549,7 @@ abstract class ObjectAdapter
         /* ToDo: Property Sets */
         /* write object-specific stuff */
 
-        $name = $elementObj->get($this->getNameField());
-        $fileName = $this->getFileName();
+
         switch ($type) {
 
             case 'modChunk':
@@ -594,18 +574,20 @@ abstract class ObjectAdapter
         /* finish up */
         $tpl .= "), '', true, true);\n";
 
-        if ($class == 'modResource') {
+        if ($type == 'modResource') {
             $tpl .= "\$resources[" . $i . "]->setContent(file_get_contents(\$sources['data']." . "'resources/" . $fileName . "'));\n\n";
         }
 
         /* handle properties */
+
         if ($hasProperties) {
-            $name = $elementObj->get($this->getNameField());
-            $fileName = $this->getFileName('properties');
+            //$name = $elementObj->get($this->getNameField());
+            //$fileName = $helpers->getFileName('properties');
             $tpl .= "\n\$properties = include \$sources['data'].'properties/" . $fileName ."';\n" ;
-            $tpl .= '$' . $element . "s[" . $i . "]->setProperties(\$properties);\n";
+            $tpl .= '$' . $variableName . "[" . $i . "]->setProperties(\$properties);\n";
             $tpl .= "unset(\$properties);\n\n";
-            $this->writePropertyFile($properties, $fileName, $name);
+            /* This is done in the ElementAdapter */
+            //$this->writePropertyFile($properties, $fileName, $name);
         }
         return $tpl;
     }

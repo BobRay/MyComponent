@@ -123,6 +123,30 @@ abstract class ElementAdapter extends ObjectAdapter {
         }
     }
 
+    public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
+        /* @var $helpers Helpers */
+
+        $categories = ObjectAdapter::$myObjects['ElementCategories'];
+        if (empty($categories)) {
+            $helpers->sendLog(MODX_LOG_LEVEL_INFO, '    No Elements to process');
+            return;
+        }
+
+        foreach($categories as $category => $elementList) {
+            $category = strtolower($category);
+            $helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Processing category: ' . $category);
+            foreach($elementList['elements'] as $type => $elements) {
+                $helpers->sendLog(MODX_LOG_LEVEL_INFO, '    Processing ' . $type);
+                parent::createTransportFile($helpers, $elements, $category, $type, $mode);
+                foreach($elements as $k => $fields ) {
+                    $alias = $helpers->getNameAlias($type);
+                    $helpers->sendLog(MODX_LOG_LEVEL_INFO, '        Processing object: ' . $fields[$alias]);
+
+                }
+            }
+        }
+
+    }
     /**
      * Gets the directory containing the code files for the element.
      *

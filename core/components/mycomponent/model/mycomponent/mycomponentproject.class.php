@@ -263,6 +263,8 @@ public function initPaths() {
     /* Create Intersects for all many-to-many relationships */
         $this->createIntersects();
 
+        $this->createTransportFiles($mode);
+
     }
 
 
@@ -586,6 +588,11 @@ public function initPaths() {
     }
 
 
+    public function createTransportFiles($mode = MODE_BOOTSTRAP) {
+        ElementAdapter::createTransportFiles($this->helpers, $mode);
+        // ResourceAdapter::createTransportfiles($this->helpers, $mode);
+    }
+
     /** Creates main build.transport.php, build.config.php and
      * starter project config files, (optionally) lexicon files, doc file,
      *  readme.md -- files only, creates no objects in the DB */
@@ -829,6 +836,8 @@ public function initPaths() {
         $this->createResources($mode);
 
         $this->createResolvers($mode);
+
+        $this->createTransportFiles($mode);
     }
 
 
