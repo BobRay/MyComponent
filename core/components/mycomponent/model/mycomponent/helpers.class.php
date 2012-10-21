@@ -256,7 +256,7 @@ class Helpers
 
 
             if ($dryRun) {
-                $this->sendLog(MODX_LOG_LEVEL_INFO, "\n\n ******** Begin File Content ********");
+                $this->sendLog(MODX_LOG_LEVEL_INFO, "\n\n ******** Begin File Content ********\n");
             } elseif (! $suppressOutput) {
                 $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $action . ' ' . $file);
             }
