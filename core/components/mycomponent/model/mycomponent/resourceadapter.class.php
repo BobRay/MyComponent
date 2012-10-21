@@ -26,7 +26,9 @@ class ResourceAdapter extends ObjectAdapter
         /* @var $object modResource */
         parent::__construct($modx, $helpers);
         $this->name = $fields['pagetitle'];
-
+        if (! isset($fields['id'])) {
+            $fields['id'] = '';
+        }
         if ($mode == MODE_BOOTSTRAP) {
     // Set defaults if they are not already set
             $this->defaults['published'] = $modx->getOption('publish_default', null);
@@ -47,7 +49,7 @@ class ResourceAdapter extends ObjectAdapter
 
         } elseif ($mode == MODE_EXPORT) {
                 $this->fieldsToNames($fields);
-                unset($fields['id']);
+                //unset($fields['id']);
                 $this->myFields = $fields;
         }
         $resolverFields = array();
@@ -226,6 +228,12 @@ class ResourceAdapter extends ObjectAdapter
         return true;
     }
 
+    public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
+        /* @var $helpers Helpers */
+        $helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Processing Resources');
+        $resources = ObjectAdapter::$myObjects['resources'];
+        parent::createTransportFile($helpers, $resources, '', 'modResource', $mode);
+    }
 
     /**
      * Exports the Resource. Resources work a little differently than most other

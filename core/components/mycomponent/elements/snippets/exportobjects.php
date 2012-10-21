@@ -71,7 +71,7 @@ $mem_usage = memory_get_usage();
 
 $project = new MyComponentProject();
 $project->exportComponent(false);
-echo print_r(ObjectAdapter::$myObjects, true);
+// echo print_r(ObjectAdapter::$myObjects, true);
 echo "\n\nInitial Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
 $mem_usage = memory_get_usage();
 $peak_usage = memory_get_peak_usage(true);

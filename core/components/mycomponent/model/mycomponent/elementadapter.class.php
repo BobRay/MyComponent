@@ -17,6 +17,11 @@ abstract class ElementAdapter extends ObjectAdapter {
 
         $this->modx =& $modx;
         $this->helpers =& $helpers;
+
+        if (!isset($fields['id'])) {
+            $fields['id'] = '';
+        }
+
         parent::__construct($modx, $helpers);
         if ($this->dbClass != 'modPropertySet') {
             $this->setPropertySetResolver($fields, $mode);

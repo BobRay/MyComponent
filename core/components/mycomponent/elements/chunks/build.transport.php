@@ -53,7 +53,7 @@ define('PKG_RELEASE', $props['release']);
 define('PKG_CATEGORY', $props['category']);
 
 /* Set package options - you can set these manually, but it's
- * recommended to let them be generated autmatically from
+ * recommended to let them be generated automatically from
  * the project config file.
  */
 

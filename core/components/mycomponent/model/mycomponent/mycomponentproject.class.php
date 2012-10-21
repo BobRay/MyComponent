@@ -590,7 +590,9 @@ public function initPaths() {
 
     public function createTransportFiles($mode = MODE_BOOTSTRAP) {
         ElementAdapter::createTransportFiles($this->helpers, $mode);
-        // ResourceAdapter::createTransportfiles($this->helpers, $mode);
+        ResourceAdapter::createTransportFiles($this->helpers, $mode);
+        SystemSettingAdapter::createTransportFiles($this->helpers, $mode);
+        SystemEventAdapter::createTransportFiles($this->helpers, $mode);
     }
 
     /** Creates main build.transport.php, build.config.php and

@@ -65,4 +65,11 @@ class SystemEventAdapter extends ObjectAdapter
         }
         return $retVal;
     }
+
+    public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
+        /* @var $helpers Helpers */
+        $helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Processing System Events');
+        $settings = ObjectAdapter::$myObjects['newSystemEvents'];
+        parent::createTransportFile($helpers, $settings, '', 'modEvent', $mode);
+    }
 }

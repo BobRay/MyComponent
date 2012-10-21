@@ -40,4 +40,11 @@ class SystemSettingAdapter extends ObjectAdapter
         ObjectAdapter::$myObjects['newSystemSettings'][] = $fields;
         parent::__construct($modx, $helpers);
     }
+
+    public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
+        /* @var $helpers Helpers */
+        $helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Processing System Settings');
+        $settings = ObjectAdapter::$myObjects['newSystemSettings'];
+        parent::createTransportFile($helpers, $settings, '', 'modSystemSetting', $mode);
+    }
 }

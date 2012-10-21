@@ -435,7 +435,10 @@ abstract class ObjectAdapter
         /* convert 'modSnippet' to 'Snippets' */
         $variableName = lcfirst(substr($type, 3) . 's');
         $alias = $helpers->getNameAlias($type);
-        $path = $helpers->props['targetRoot'] . '_build/data/' . $category . '/';
+        $path = $helpers->props['targetRoot'] . '_build/data/';
+        if (!empty($category)) {
+            $path .= $category . '/';
+        }
         $dryRun = $mode == MODE_EXPORT && !empty($helpers->props['dryRun']);
 
         // Get the Transport File Name
@@ -456,7 +459,7 @@ abstract class ObjectAdapter
         $tpl = $helpers->getTpl('transportfile.php');
         $tpl = str_replace('[[+elementType]]', $variableName, $tpl);
         $tpl = $helpers->replaceTags($tpl);
-        $tpl .= '/' . '*' .  ' @var modChunk[] ' . '$' . $variableName .  ' *' ."/\n\n";
+        $tpl .= '/' . '*' .  ' @var xPDOObject[] ' . '$' . $variableName .  ' *' ."/\n\n";
 
 
         $tpl .= "\n\$" . $variableName . " = array();\n\n";
@@ -495,8 +498,12 @@ abstract class ObjectAdapter
         $tpl = '$' . $variableName . '[' . $i . '] = $modx->newObject(' . "'" . $type . "');" . "\n";
         $tpl .= '$' . $variableName . '[' . $i . ']->fromArray(array(' . "\n";
         // $tpl .= "    'id' => " . $i . ",\n";
-        unset ($fields['id']);
-        $fields = array_merge(array('id' => $i), $fields);
+
+        /* Set id field to $i, but only for objects with an ID */
+        if (isset($fields['id'])) {
+            unset ($fields['id']);
+            $fields = array_merge(array('id' => $i), $fields);
+        }
 
 
         /* This may not be necessary */
