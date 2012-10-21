@@ -384,15 +384,14 @@ $components = array(
     /* *******************************************
      * These settings control exportObjects.php  *
      ******************************************* */
-    /* ExportObjects will update existing files. You may want to set
-       dryRun to '1' in the early stages of a new project so it
-       will report what it would have done withougt changing anything  */
+    /* ExportObjects will update existing files. If you set dryRun
+       to '1', ExportObjects will report what it would have done
+       without changing anything. Note: On some platforms,
+       dryRun is *very* slow  */
 
     'dryRun' => '0',
-    'createTransportFiles' => '1', // remove??
-    'createObjectFiles' => '1',  // remove??
 
-    /* Array of elements to export. All elements set above will be handled.
+    /* Array of elements to export. All elements set below will be handled.
      *
      * To export resources, be sure to list pagetitles and/or IDs of parents
      * of desired resources

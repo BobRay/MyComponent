@@ -35,9 +35,9 @@
  * (except static elements) if CreateObjectFiles is set and dryRun
  * is not set.
  *
- * Warning: Will overwrite transport files and properties for
- * processed elements and resources if CreateTransportFiles is set
- * and dryRun is not set.
+ * Warning: Will overwrite transport files, resolvers, and
+ * properties for processed elements and resources if dryRun
+ * is not set.
  *
  * @package exportobjects
  *
