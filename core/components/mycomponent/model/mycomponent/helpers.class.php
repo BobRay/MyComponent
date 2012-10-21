@@ -158,6 +158,12 @@ class Helpers
         if ($suffix == 'templatevar') {
             $suffix = 'tv';
         }
+        if ($suffix == 'systemsetting') {
+            $suffix = 'setting';
+        }
+        if ($suffix == 'systemevent') {
+            $suffix = 'event';
+        }
         $output = '';
 
         if ($fileType == 'code') {
@@ -214,6 +220,9 @@ class Helpers
                 break;
             case 'modResource':
                 $nameAlias = 'pagetitle';
+                break;
+            case 'modSystemSetting':
+                $nameAlias = 'key';
                 break;
             default:
                 $nameAlias = 'name';
