@@ -46,7 +46,7 @@ if ($object->xpdo) {
                         continue;
                     }
                     $tv = $modx->getObject('modTemplateVar', array('name' => $fields['tmplvarid']));
-                    if ('templatename' == 'default') {
+                    if ($fields['templateid'] == 'default') {
                         $template = $modx->getObject('modTemplate', $modx->getOption('default_template'));
                     } else {
                         $template = $modx->getObject('modTemplate', array('templatename' => $fields['templateid']));

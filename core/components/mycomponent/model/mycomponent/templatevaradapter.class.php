@@ -54,12 +54,17 @@ class TemplateVarAdapter extends ElementAdapter
                     foreach ($tvts as $tvt) {
                         /* @var $tvt modTemplateVarTemplate */
                         $fields = $tvt->toArray();
-                        $templateObj = $this->modx->getObject('modTemplate',$fields['templateid']);
-                        $templateName = $templateObj->get('templatename');
+                        if ($fields['templateid'] == $this->modx->getOption('default_template')) {
+                            $templateName = 'default';
+                        } else {
+                            $templateObj = $this->modx->getObject('modTemplate',
+                                $fields['templateid']);
+                            $templateName = $templateObj->get('templatename');
+                        }
 
                         $resolverFields = array(
-                            'templateid' => $this->getName(),
-                            'tmplvarid' => $templateName,
+                            'templateid' => $templateName,
+                            'tmplvarid' => $this->getName(),
                             'rank' => $fields['rank'],
                         );
                         ObjectAdapter::$myObjects['tvResolver'][] = $resolverFields;
