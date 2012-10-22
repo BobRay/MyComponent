@@ -20,6 +20,10 @@ class TemplateVarAdapter extends ElementAdapter
         $this->name = $fields['name'];
         $this->modx =& $modx;
         $this->helpers =& $helpers;
+        /* make sure there's a caption */
+        if (! isset($fields['caption']) || empty($fields['caption'])) {
+            $fields['caption'] = $fields['name'];
+        }
         if ($mode == MODE_BOOTSTRAP) {
             if (is_array($fields)) {
                 if (isset($fields['templates'])) {
