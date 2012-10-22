@@ -219,12 +219,19 @@ $components = array(
                 ),
             ),
         ),
-        'templateVars' => array( /* minimal example */
+        'templateVars' => array(
             'Tv1' => array(
                 'category' => 'Example',
                 'propertySets' => array(
                     'PropertySet1',
                     'PropertySet2',
+                ),
+                'templates' => array(
+                    'default' => 1,
+                    'Template1' => 4,
+                    'Template2' => 4,
+
+
                 ),
             ),
             'Tv2' => array( /* example with templates, default, and static specified */
@@ -257,7 +264,7 @@ $components = array(
         'Resource2' => array( /* example with other fields */
             'pagetitle' => 'Resource2',
             'parent' => 'Resource1',
-            'template' => 'Template1',
+            'template' => 'Template2',
             'richtext' => false,
             'published' => true,
             'tvValues' => array(
