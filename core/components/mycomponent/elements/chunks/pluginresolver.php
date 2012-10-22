@@ -67,9 +67,9 @@ if ($object->xpdo) {
                     $event = $modx->getObject('modEvent', array('name' => $fields['event']));
 
                     $plugin = $modx->getObject('modPlugin', array('name' => $fields['pluginid']));
-                    $propertySet = null;
-                    if ($fields['propertyset'] != 0) {
-                        $propertySet = $modx->getOption('modPropertySet',
+                    $propertySetObj = null;
+                    if (!empty($fields['propertyset'])) {
+                        $propertySetObj = $modx->getObject('modPropertySet',
                             array('name' => $fields['propertyset']));
                     }
                     if (!$plugin || !$event) {
@@ -84,10 +84,12 @@ if ($object->xpdo) {
                     }
                     if ($pluginEvent) {
                         $pluginEvent->set('event', $fields['event']);
-                        $pluginEvent->set('pluginid', $plugin->get('id'));
-                        $pluginEvent->set('priority', $fields['priority']);
-                        if ($propertySet) {
-                            $pluginEvent->set('propertyset', $propertySet->get('id'));
+                        $pluginEvent->set('pluginid', (integer) $plugin->get('id'));
+                        $pluginEvent->set('priority', (integer) $fields['priority']);
+                        if ($propertySetObj) {
+                            $pluginEvent->set('propertyset', (integer) $propertySetObj->get('id'));
+                        } else {
+                            $pluginEvent->set('propertyset', 0);
                         }
 
                     }

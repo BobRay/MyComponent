@@ -44,7 +44,7 @@ class PluginAdapter extends ElementAdapter
                     'pluginid' => $this->getName(),
                     'event' => isset($fields['event']) ? $fields['event'] : $eventName,
                     'priority' => isset($fields['priority']) && !empty($fields['priority'])? $fields['priority'] : '0',
-                    'propertyset' => isset($fields['propertySet']) && !empty($fields['priority']) ? $fields['propertySet'] : '0',
+                    'propertyset' => isset($fields['propertySet']) && !empty($fields['propertySet']) ? $fields['propertySet'] : '0',
                 );
                 ObjectAdapter::$myObjects['pluginResolver'][] = $resolverFields;
             }
@@ -59,13 +59,19 @@ class PluginAdapter extends ElementAdapter
                     foreach($pes as $pe) {
                         /* @var $pe modPluginEvent */
                         $fields = $pe->toArray();
+                        if (!empty($fields['propertyset'])) {
+                            $ps = $this->modx->getObject('modPropertySet', $fields['propertyset']);
+                            $fields['propertySet'] = $ps->get('name');
+                        }
+
+
                         $resolverFields = array(
                             'pluginid' => $this->getName(),
                             'event' => $fields['event'],
                             'priority' => isset($fields['priority']) && !empty($fields['priority'])
                                 ? $fields['priority']
                                 : '0',
-                            'propertyset' => isset($fields['propertySet']) && !empty($fields['priority'])
+                            'propertyset' => isset($fields['propertySet']) && !empty($fields['propertyset'])
                                 ? $fields['propertySet']
                                 : '0',
                         );
