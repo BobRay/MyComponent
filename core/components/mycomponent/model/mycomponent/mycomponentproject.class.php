@@ -364,7 +364,7 @@ public function initPaths() {
             }
         }
 
-        /* Update the projects.php file if this is a new project */
+        /* Update the category.php file if necessary */
         $dir = $this->targetRoot . '_build/config';
         CategoryAdapter::writeCategoryFile($dir, $this->helpers);
 

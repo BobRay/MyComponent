@@ -89,17 +89,24 @@ class CategoryAdapter extends ObjectAdapter {
         return true;
     }
 
-    /* Silently updates categories.php in target config dir */
+    /* Updates categories.php in target config dir */
     public static function writeCategoryFile($dir, $helpers) {
         /* @var $helpers Helpers */
         $categories = ObjectAdapter::$myObjects['categories'];
+        $cats = array();
+        if(file_exists($dir . '/categories.php')) {
+            $cats = include $dir . '/categories.php';
+        }
         $fileArray = array();
         foreach($categories as $elementCategory => $fields) {
             $fileArray[] = isset($fields['category'])? $fields['category'] : $elementCategory;
         }
-        $a = var_export($fileArray, true);
-        $content = "\$cats = " . $a  . ";\nreturn \$cats;\n";
-        $helpers->writeFile($dir, 'categories.php', $content, false, true);
+        /* only update if something has changed */
+        if ($fileArray != $cats)  {
+            $a = var_export($fileArray, true);
+            $content = '<' . '?' . "php\n" . "\$cats = " . $a  . ";\nreturn \$cats;\n";
+            $helpers->writeFile($dir, 'categories.php', $content, false);
+        }
   }
 /* *****************************************************************************
    Export Objects and Support Functions (in MODxObjectAdapter)
