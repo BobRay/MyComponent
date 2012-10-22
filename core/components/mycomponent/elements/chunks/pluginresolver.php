@@ -34,17 +34,19 @@ if (!function_exists('checkFields')) {
     }
 }
 
+
+$newEvents = '[[+newEvents]]';
+
+
 if ($object->xpdo) {
     $modx =& $object->xpdo;
     switch ($options[xPDOTransport::PACKAGE_ACTION]) {
         case xPDOTransport::ACTION_INSTALL:
         case xPDOTransport::ACTION_UPGRADE:
 
-            $newEvents = '[[+newEvents]]';
-
             foreach($newEvents as $k => $fields) {
-                $name = $key;
-                $event = $modx->getObject('modEvent', array('name' => $name));
+
+                $event = $modx->getObject('modEvent', array('name' => $fields['name']));
                 if (!$event) {
                     $event = $modx->newObject('modEvent');
                     if ($event) {
@@ -64,13 +66,18 @@ if ($object->xpdo) {
                     }
                     $event = $modx->getObject('modEvent', array('name' => $fields['event']));
 
-                    $plugin = $modx->getObject('modPlugin', array('name' => $fields['plugin']));
+                    $plugin = $modx->getObject('modPlugin', array('name' => $fields['pluginid']));
+                    $propertySet = null;
+                    if ($fields['propertyset'] != 0) {
+                        $propertySet = $modx->getOption('modPropertySet',
+                            array('name' => $fields['propertyset']));
+                    }
                     if (!$plugin || !$event) {
                         $modx->log(xPDO::LOG_LEVEL_ERROR, 'Could not find Plugin and/or Event ' .
                             $fields['plugin'] . ' - ' . $fields['event']);
                         continue;
                     }
-                    $pluginEvent = $modx->getObject('modPluginEvent', array('name'=>$plugin->get('name'),'event' => $fields['event']) );
+                    $pluginEvent = $modx->getObject('modPluginEvent', array('pluginid'=>$plugin->get('id'),'event' => $fields['event']) );
                     
                     if (!$pluginEvent) {
                         $pluginEvent = $modx->newObject('modPluginEvent');
@@ -79,8 +86,10 @@ if ($object->xpdo) {
                         $pluginEvent->set('event', $fields['event']);
                         $pluginEvent->set('pluginid', $plugin->get('id'));
                         $pluginEvent->set('priority', $fields['priority']);
-                        $pluginEvent->set('group', $fields['group']);
-                        $pluginEvent->set('propertyset', $fields['propertyset']);
+                        if ($propertySet) {
+                            $pluginEvent->set('propertyset', $propertySet->get('id'));
+                        }
+
                     }
                     if (! $pluginEvent->save()) {
                         $modx->log(xPDO::LOG_LEVEL_ERROR, 'Unknown error saving pluginEvent for ' .
