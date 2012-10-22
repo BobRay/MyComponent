@@ -55,13 +55,17 @@ if($object->xpdo) {
                         $templateObj = $modx->getObject('modTemplate', array('templatename' => $fields['template']));
                         if ($templateObj) {
                             $resource->set('template', $templateObj->get('id'));
+                        } else {
+                            $modx->log(MODX::LOG_LEVEL_ERROR, 'Could not find template: ' . $fields['template']);
                         }
                     }
-                    if ($fields['parent'] != 0) {
+                    if (!empty($fields['parent'])) {
 
                         $parentObj = $modx->getObject('modResource', array('pagetitle' => $fields['parent']));
                         if ($parentObj) {
-                            $resource->set('template', $parentObj->get('id'));
+                            $resource->set('parent', $parentObj->get('id'));
+                        } else {
+                            $modx->log(MODX::LOG_LEVEL_ERROR, 'Could not find parent: ' . $fields['parent']);
                         }
                     }
 
@@ -69,6 +73,7 @@ if($object->xpdo) {
                         foreach($fields['tvValues'] as $tvName => $value) {
                             $resource->setTVValue($tvName, $value);
                         }
+
                     }
                     $resource->save();
                 }

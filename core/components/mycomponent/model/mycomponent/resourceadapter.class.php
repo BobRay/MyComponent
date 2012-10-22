@@ -49,9 +49,14 @@ class ResourceAdapter extends ObjectAdapter
 
         } elseif ($mode == MODE_EXPORT) {
                 $this->fieldsToNames($fields);
-                //unset($fields['id']);
                 $this->myFields = $fields;
         }
+        $this->setResourceResolver($fields, $mode);
+        $this->myFields = $fields;
+        ObjectAdapter::$myObjects['resources'][] = $fields;
+    }
+
+    public function setResourceResolver($fields, $mode) {
         $resolverFields = array();
         $resolverFields['pagetitle'] = $fields['pagetitle'];
         $resolverFields['parent'] = isset($fields['parent'])
@@ -60,16 +65,43 @@ class ResourceAdapter extends ObjectAdapter
         $resolverFields['template'] = isset($fields['template'])
             ? $fields['template']
             : 'default';
-        if (isset($fields['tvValues'])) {
+        if ($mode == MODE_BOOTSTRAP && isset($fields['tvValues'])) {
             $resolverFields['tvValues'] = $fields['tvValues'];
+        } elseif ($mode == MODE_EXPORT) {
+            $me = $this->modx->getObject('modResource', array('pagetitle' => $fields['pagetitle']));
+            if (!$me) {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '[ResourceAdapter] Could not get myself');
+            } else {
+                /* Check for TVs (this is ugly, but we only want OUR TVs) */
+                $myId = $me->get('id');
+                /* get our categories */
+                $categories = $this->modx->getOption('categories',
+                    ObjectAdapter::$myObjects, array(0));
+                /* get Tvs in all our categories */
+                $tvObjects = array();
+                foreach($categories as $categoryName => $fields ) {
+                    $categoryObj = $this->modx->getObject('modCategory',
+                        array('category' => $categoryName));
+                    if ($categoryObj) {
+                        $categoryId = $categoryObj->get('id');
+                        $tvObjects = array_merge($tvObjects, $this->modx->getCollection('modTemplateVar', array('category' => $categoryId)));
+                    }
+                }
+                /* get the TvValues */
+                /* @var $tvObj modTemplateVar */
+                if (!empty($tvObjects)) {
+                    foreach ($tvObjects as $tvObj) {
+                        $val = $tvObj->getValue($myId);
+                        if (!empty($val) && $val != $tvObj->get('default_text')) {
+                            $resolverFields['tvValues'][$tvObj->get('name')] = $val;
+                        }
+                    }
+                }
+            }
         }
-        $this->myFields = $fields;
-        unset($fields['tvValues']);
-
         ObjectAdapter::$myObjects['resourceResolver'][] = $resolverFields;
-        ObjectAdapter::$myObjects['resources'][] = $fields;
-    }
 
+    }
     /**
      * Converts object fields containing IDs to the names of the objects
      * represented by the IDs -- only executes on export.
