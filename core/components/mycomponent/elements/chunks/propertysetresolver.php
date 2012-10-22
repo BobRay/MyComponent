@@ -74,6 +74,9 @@ if ($object->xpdo) {
                         $fields['element'] . ' - ' . $fields['property_set']);
                     continue;
                 }
+                $fields['element'] = $elementObj->get('id');
+                $fields['property_set'] = $propertySetObj->get('id');
+
                 $tvt = $modx->getObject('modElementPropertySet', $fields);
                 if (!$tvt) {
                     $tvt = $modx->newObject('modElementPropertySet');
