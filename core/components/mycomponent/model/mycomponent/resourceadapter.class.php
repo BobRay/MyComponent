@@ -156,57 +156,6 @@ class ResourceAdapter extends ObjectAdapter
         }
     }
 
-    /** creates resources in MODX install if set in project config file */
-    /*public function newTransport()
-    {//Validate Page's Title
-        if (empty($this->myFields['pagetitle']))
-        {   $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'A Resource must have a valid page title!');
-            return false;
-        }
-        
-    // Create an alias
-        $this->myFields['alias'] = str_replace(' ', '-', strtolower($this->myFields['pagetitle']));
-
-    // Set default Content
-        $this->myFields['content'] = 'Enter your page\'s content here';
-        
-    // Create the Transport File
-
-    }*/
-
-    /**
-     * Creates a code file for an element if set in project config file
-     *
-     * @param $name string - lowercase filename (without extension or type
-     * @param $type string - modPlugin, modSnippet etc.
-     */
-    /*public function newCodeFile($name, $type)
-    {   $mc = $this->myComponent;
-    
-        $dir = $this->helpers->getCodeDir($this->targetCore, $type);
-        $fileName = $this->helpers->getFileName($name, $type);
-        // echo "\nDIR: " . $dir . "\n" . 'FILENAME: ' . $fileName . "\n" . "TYPE: " . $type . "\n";
-        if (empty($fileName)) {
-            $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    skipping ' . $type . ' file -- needs no code file');
-        } else {
-            if (!file_exists($dir . '/' . $fileName)) {
-                $tpl = $this->getTpl($type);
-
-                // use 'phpfile.tpl' as default for .php files
-                if (empty($tpl) && strstr($fileName, '.php')) {
-                    $tpl = $this->getTpl('phpfile.php');
-                }
-                $tpl = str_replace('[[+elementType]]', strtolower(substr($type,3)), $tpl);
-                $tpl = str_replace('[[+elementName]]', $name, $tpl);
-                if (!empty ($tpl)) {
-                    $tpl = $mc->replaceTags($tpl);
-                }
-                $this->helpers->writeFile($dir, $fileName, $tpl);
-            } else {
-                $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' file already exists');
-            }
-        }
-    }*/
 
 /* *****************************************************************************
    Import Objects and Support Functions
