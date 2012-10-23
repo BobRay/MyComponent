@@ -115,7 +115,7 @@ $props = array();
 $sourceRoot = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/';
 include $sourceRoot . 'core/components/mycomponent/model/mycomponent/lexiconhelper.class.php';
     $lexiconHelper = new LexiconHelper($modx, $props);
-    $lexiconHelper->init($sourceRoot . '_build/build.config.php');
+    $lexiconHelper->init($modx, $props);
     $lexiconHelper->run();
 
 exit();

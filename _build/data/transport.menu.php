@@ -5,11 +5,12 @@
 * @package mycomponent
 * @subpackage build
 */
+/* @var $modx modX */
+
 $action= $modx->newObject('modAction');
 $action->fromArray(array(
     'id' => 1,
     'namespace' => 'mycomponent',
-    'parent' => 0,
     'controller' => 'index',
     'haslayout' => true,
     'lang_topics' => 'mycomponent.:default,lexicon',

@@ -69,30 +69,42 @@ class LexiconHelper {
         $this->props =& $props;
     }
 
-    public function init($configPath) {
+    public function init(&$modx, $configFile = null) {
+        $this->modx =& $modx;
         clearstatcache(); /*  make sure is_dir() is current */
-        $config = $configPath;
-        if (file_exists($config)) {
-            $configProps = @include $config;
+        require dirname(__FILE__) . '/mcautoload.php';
+        spl_autoload_register('mc_auto_load');
+        // Get the project config file
+        if (!$configFile) {
+            include dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) .
+                '/_build/config/current.project.php';
+        } else {
+            $configPath = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) .
+                '/_build/config/' . $configFile;
         }
-        else {
-            die('Could not find main config file at ' . $config);
+        if (!isset($configPath)) {
+            die('Config path not set');
         }
-
-        if (empty($configProps)) {
-            /* @var $configFile string - defined in included build.config.php */
-            die('Could not find project config file at ' . $configFile);
+        if (file_exists($configPath)) {
+            $properties = @include $configPath;
+        } else {
+            die('Could not find project config file at ' . $configPath);
         }
-        $this->props = array_merge($configProps, $this->props);
+        /* Make sure that we get usable values */
+        if (empty($properties)) {
+            die('Config File was not set up correctly: ' . $configPath);
+        }
+        $this->props = isset($this->props) ? $this->props : array();
+        $this->props = array_merge($properties, $this->props);
         unset($config, $configFile, $configProps);
         $this->output =  "\nProject: " . $this->props['packageName'];
-        $this->source = $this->props['source'];
+        $this->source = $this->props['mycomponentRoot'];
         /* add trailing slash if missing */
         if (substr($this->source, -1) != "/") {
             $this->source .= "/";
         }
-
-        require_once $this->source . 'core/components/mycomponent/model/mycomponent/helpers.class.php';
+        //$sourceRoot = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/';
+        //require_once $sourceRoot . 'core/components/mycomponent/model/mycomponent/helpers.class.php';
         $this->helpers = new Helpers($this->modx, $this->props);
         $this->helpers->init();
 
@@ -108,14 +120,20 @@ class LexiconHelper {
     }
 
     public function run() {
-        $snippets = $this->props['elements']['modSnippet'];
+        $snippets = $this->props['elements']['snippets'];
         $elements = array();
         /* get all plugins and snippets from config file */
-        foreach (explode(',', $snippets) as $snippet) {
+        foreach ($snippets as $snippet => $fields) {
+            if (isset($fields['name'])) {
+                $snippet = $fields['name'];
+            }
             $elements[strtolower(trim($snippet))] = 'modSnippet';
         }
-        $plugins = $this->props['elements']['modPlugin'];
-        foreach (explode(',', $plugins) as $plugin) {
+        $plugins = $this->props['elements']['plugins'];
+        foreach ($plugins as $plugin => $fields) {
+            if (isset($fields['name'])) {
+                $plugin = $fields['name'];
+            }
             $elements[strtolower(trim($plugin))] = 'modPlugin';
         }
         $this->classFiles = array();
@@ -195,7 +213,7 @@ class LexiconHelper {
         $nspos = strpos($lexFileSpec, ':');
         $languages = array_keys($this->props['languages']);
         $language = $languages[0];
-        $namespace = $this->props['category'];
+        $namespace = $this->props['packageNameLower'];
         if ($nspos === false) {
             $topic_parsed = $lexFileSpec;
 
@@ -417,8 +435,8 @@ class LexiconHelper {
         $this->output .= "\n\n********  Checking for property description lexicon strings ********";
         foreach($this->props['elements'] as $type => $elementList) {
 
-            $elements = empty($elementList)? array() : explode(',', $elementList);
-            foreach ($elements as $element ) {
+            $elements = empty($elementList)? array() : $elementList;
+            foreach ($elements as $element => $fields ) {
                 $propsFileName = $this->helpers->getFileName($element, $type, 'properties');
                 $propsFilePath = $this->targetBase . '_build/data/properties/' . $propsFileName;
                 /* process one properties file */
