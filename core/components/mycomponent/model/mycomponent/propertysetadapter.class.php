@@ -28,7 +28,8 @@ class PropertySetAdapter extends ElementAdapter { //This will never change.
             $tpl = $helpers->getTpl('propertysetresolver.php');
             $tpl = $helpers->replaceTags($tpl);
             if (empty($tpl)) {
-                $helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'propertysetresolver tpl is empty');
+                $helpers->sendLog(MODX::LOG_LEVEL_ERROR,
+                    '[PropertySet Adapter] propertysetresolver tpl is empty');
                 return false;
             }
 

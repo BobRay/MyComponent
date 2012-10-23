@@ -207,7 +207,7 @@ abstract class ObjectAdapter
             /* @var $response modProcessorResponse */
             $response = $modx->runProcessor($processor, $this->myFields);
             if (empty($response) || $response->isError()) {
-                $msg = "Failed to create object \n    class: " . $objClass .
+                $msg = "[Object Adapter] Failed to create object \n    class: " . $objClass .
                     "\n    nameKey: " . $nameKey . "\n    name: " . $name;
                 $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, $msg);
                 $id =  -1;
@@ -234,7 +234,7 @@ abstract class ObjectAdapter
             $processor = $this->getProcessor('create');
             $response = $modx->runProcessor($processor, $this->myFields);
             if (empty($response) || $response->isError()) {
-                $msg = "Failed to create object \n    class: " . $objClass .
+                $msg = "[Object Adapter] Failed to create object \n    class: " . $objClass .
                     "\n    nameKey: " . $nameKey . "\n    name: " . $name;
                 $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, $msg);
                 $id = false;
@@ -264,7 +264,7 @@ abstract class ObjectAdapter
             }
         }
         if (! $id) {
-            $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'No ID for ' . $objClass . ' ' . $name);
+            $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '[Object Adapter] No ID for ' . $objClass . ' ' . $name);
         } else {
             $this->myId = $id;
         }
@@ -394,7 +394,7 @@ abstract class ObjectAdapter
         }
 
         if (empty($this->elements)) {
-            $mc->helpers->sendLog(modX::LOG_LEVEL_ERROR, 'No objects found in category: ' . $this->category);
+            $mc->helpers->sendLog(modX::LOG_LEVEL_ERROR, '[Object Adapter] No objects found in category: ' . $this->category);
             return;
         }
         

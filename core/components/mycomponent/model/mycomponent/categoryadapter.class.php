@@ -70,7 +70,7 @@ class CategoryAdapter extends ObjectAdapter {
             $tpl = $helpers->getTpl('categoryresolver.php');
             $tpl = $helpers->replaceTags($tpl);
             if (empty($tpl)) {
-                $helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'categoryresolver tpl is empty');
+                $helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[Category Adapter] categoryresolver tpl is empty');
                 return false;
             }
 

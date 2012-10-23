@@ -113,7 +113,7 @@ class ResourceAdapter extends ObjectAdapter
             if ($parentObj) {
                 $fields['parent'] =  $parentObj->get('pagetitle');
             } else {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find parent for resource: ' .
+                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '[ResourceAdapter] Could not find parent for resource: ' .
                     $fields['parent']);
             }
         }
@@ -143,7 +143,7 @@ class ResourceAdapter extends ObjectAdapter
             if ($parentObj) {
                 $fields['parent'] = $parentObj->get('id');
             } else {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find parent for resource: ' . $fields['pagetitle']);
+                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '[ResourceAdapter] Could not find parent for resource: ' . $fields['pagetitle']);
             }
         }
         if (!isset($fields['template']) || empty($fields['template']) || $fields['template'] == 'default') {
@@ -191,7 +191,7 @@ class ResourceAdapter extends ObjectAdapter
             $tpl = $helpers->getTpl('resourceresolver.php');
             $tpl = $helpers->replaceTags($tpl);
             if (empty($tpl)) {
-                $helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'resourceresolver tpl is empty');
+                $helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[Resource Adapter] resourceresolver tpl is empty');
                 return false;
             }
 
@@ -268,7 +268,9 @@ class ResourceAdapter extends ObjectAdapter
                 if ($resObject) {
                     $objects[] = $resObject;
                 } else {
-                    $helpers->sendLog(modX::LOG_LEVEL_ERROR, 'Could not get resource with ' . $method . ': ' . $resource);
+                    $helpers->sendLog(modX::LOG_LEVEL_ERROR,
+                        '[Resource Adapter] Could not get resource with ' .
+                            $method . ': ' . $resource);
                 }
             }
         }
@@ -302,7 +304,7 @@ class ResourceAdapter extends ObjectAdapter
                 new ResourceAdapter($modx, $helpers, $fields, MODE_EXPORT);
             }
         } else {
-            $helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'No Resources found');
+            $helpers->sendLog(MODX_LOG_LEVEL_ERROR, '[ResourceAdapter] No Resources found');
         }
     }
 

@@ -101,7 +101,7 @@ if (!defined('MODX_CORE_PATH')) {
     require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
     $modx = new modX();
     if (!$modx) {
-        $modx->log(modX::LOG_LEVEL_ERROR, 'Could not create MODX class');
+        $modx->log(modX::LOG_LEVEL_ERROR, '[LexiconHelper] Could not create MODX class');
     }
     $modx->initialize('mgr');
 } else {

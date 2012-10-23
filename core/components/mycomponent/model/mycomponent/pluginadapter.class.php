@@ -52,7 +52,7 @@ class PluginAdapter extends ElementAdapter
         } elseif ($mode == MODE_EXPORT) {
             $me = $this->modx->getObject('modPlugin', array('name' => $this->getName()));
             if (!$me) {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, "Can't find myself");
+                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, "[Plugin Adapter] Can't find myself");
             } else {
                 $pes = $me->getMany('PluginEvents');
                 if (! empty($pes)) {

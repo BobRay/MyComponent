@@ -239,7 +239,7 @@ public function initPaths() {
         // gc_enable();
         $mode = MODE_BOOTSTRAP;
         if (!$this->isMCInstalled()) { /* Only run if MC is installed */
-            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'MyComponent must be installed to create a new MyComponent Project!');
+            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[MyComponentProject] MyComponent must be installed to create a new MyComponent Project!');
             return;
         }
         $mem_usage = memory_get_usage();
@@ -393,7 +393,7 @@ public function initPaths() {
                     new SystemSettingAdapter($this->modx, $this->helpers, $fields, $mode);
                 } else {
                     $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR,
-                        'Could not find System Setting with key: ' . $fields['key']);
+                        '[MyComponentProject] Could not find System Setting with key: ' . $fields['key']);
                 }
             }
         }
@@ -447,7 +447,7 @@ public function initPaths() {
                 }
             }
         } else {
-            $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'createElements() called in Export mode');
+            $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '[MyComponentProject] createElements() called in Export mode');
         }
     }
 
@@ -552,7 +552,8 @@ public function initPaths() {
             $tpl = $this->helpers->getTpl('genericresolver.php');
             $tpl = $this->helpers->replaceTags($tpl);
             if (empty($tpl)) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'genericresolver tpl is empty');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
+                    '[MyComponentProject] genericresolver tpl is empty');
                 continue;
             }
             $fileName =  $name . '.resolver.php';
@@ -575,7 +576,8 @@ public function initPaths() {
             $tpl = $this->helpers->getTpl('genericvalidator.php');
             $tpl = $this->helpers->replaceTags($tpl);
             if (empty($tpl)) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'genericvalidator tpl is empty');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
+                    '[MyComponentProject] genericvalidator tpl is empty');
                 continue;
             }
             $fileName = $name . '.validator.php';
@@ -818,7 +820,7 @@ public function initPaths() {
     public function exportComponent($overwrite = false) {
     //Only run if MC is installed
         if (!$this->isMCInstalled())
-        {   $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'MyComponent must be installed to export the Project from MODx!');
+        {   $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[MyComponentProject] MyComponent must be installed to export the Project from MODx!');
             return;
         }
 
@@ -874,7 +876,7 @@ public function initPaths() {
             if ($type == 'modSystemSetting') $name = 'key';
             $obj = $this->modx->getObject($type, array($name => $object));
             if (! $obj) {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find ' . $type . ' ' . $object);
+                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '[MyComponentProject] Could not find ' . $type . ' ' . $object);
             } else {
                 $obj->remove();
             }

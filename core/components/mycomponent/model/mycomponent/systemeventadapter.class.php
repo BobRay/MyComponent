@@ -43,10 +43,10 @@ class SystemEventAdapter extends ObjectAdapter
                     $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    Created System Event: ' . $name);
                     $retVal = true;
                 } else {
-                    $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '    Could not save System Event: ' . $name);
+                    $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '    [SystemEvent Adapter] Could not save System Event: ' . $name);
                 }
             } else {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '    Could not create System Event: ' . $name);
+                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '    [SystemEvent Adapter] Could not create System Event: ' . $name);
             }
         } elseif ($overwrite) {
             foreach($this->myFields as $field => $value) {

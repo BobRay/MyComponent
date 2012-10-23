@@ -124,10 +124,10 @@ class Helpers
         if (strstr($name, '.php') && !empty($text)) {
             /* make sure the header made it and do alerts if not */
             if (empty($text)) {
-                $this->sendLog(MODX_LOG_LEVEL_ERROR, '    Problem loading Tpl file (text is empty) ' . $name  );
+                $this->sendLog(MODX_LOG_LEVEL_ERROR, '    [Helpers] Problem loading Tpl file (text is empty) ' . $name  );
                 $text = "<?php\n/* empty header */\n\n";
             } elseif (strpos($text, '<' . '?' . 'php') === false) {
-                $this->sendLog(MODX_LOG_LEVEL_ERROR, '    Problem loading Tpl file (text has no PHP tag) ' . $name);
+                $this->sendLog(MODX_LOG_LEVEL_ERROR, '    [Helpers] Problem loading Tpl file (text has no PHP tag) ' . $name);
                 $text = "<?php\n /* inserted PHP tag */\n\n" . $text;
             }
         }
@@ -387,7 +387,7 @@ class Helpers
 
                     break;
                 default:
-                    $this->sendLog(MODX_LOG_LEVEL_ERROR, 'Asked for unknown intersect type');
+                    $this->sendLog(MODX_LOG_LEVEL_ERROR, '[Helpers] Asked for unknown intersect type');
                     break;
 
 
@@ -397,7 +397,7 @@ class Helpers
             $mainObject = $this->modx->getObject($mainObjectType, $searchFields);
 
             if (!$mainObject) {
-                $this->sendLog(MODX::LOG_LEVEL_ERROR, '    Error creating intersect ' .
+                $this->sendLog(MODX::LOG_LEVEL_ERROR, '    [Helpers] Error creating intersect ' .
                         $intersectType . ': Could not get main object ' . $mainObjectName .
                         "\n    " . implode(',', $searchFields));
                 return false;
@@ -407,7 +407,7 @@ class Helpers
             $searchFields = array($alias => $subsidiaryObjectName);
             $subsidiaryObject = $this->modx->getObject($subsidiaryObjectType, $searchFields);
             if (! $subsidiaryObject) {
-                $this->sendLog(MODX::LOG_LEVEL_ERROR, '    Error creating intersect ' .
+                $this->sendLog(MODX::LOG_LEVEL_ERROR, '    [Helpers] Error creating intersect ' .
                         $intersectType . ': could not get subsidiary object ' .
                         $subsidiaryObjectName ."\n    " . implode(', ', $searchFields));
                 return false;
@@ -468,7 +468,7 @@ class Helpers
 
                     }
                 } else {
-                    $this->sendLog(MODX_LOG_LEVEL_ERROR, '    Could not create intersect for ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
+                    $this->sendLog(MODX_LOG_LEVEL_ERROR, '    [Helpers] Could not create intersect for ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
                 }
             }
 

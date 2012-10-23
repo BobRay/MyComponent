@@ -51,7 +51,7 @@ class TemplateVarAdapter extends ElementAdapter
         } elseif ($mode == MODE_EXPORT) {
             $me = $this->modx->getObject('modTemplateVar', array('name' => $this->getName()));
             if (!$me) {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, "Can't find myself");
+                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, "[TemplateVar Adapter] Can't find myself");
             } else {
                 $tvts = $me->getMany('TemplateVarTemplates');
                 if (!empty($tvts)) {
@@ -94,7 +94,8 @@ class TemplateVarAdapter extends ElementAdapter
             $tpl = $helpers->getTpl('tvresolver.php');
             $tpl = $helpers->replaceTags($tpl);
             if (empty($tpl)) {
-                $helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'tvresolver tpl is empty');
+                $helpers->sendLog(MODX::LOG_LEVEL_ERROR,
+                    '[TemplateVar Adapter] tvresolver tpl is empty');
                 return false;
             }
 

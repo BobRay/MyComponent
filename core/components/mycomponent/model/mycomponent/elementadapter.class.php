@@ -109,7 +109,7 @@ abstract class ElementAdapter extends ObjectAdapter {
         if ($categoryObj) {
             $fields['category'] = $categoryObj->get('category');
         } else {
-            $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, 'Could not find category with name: ' . $fields['category']);
+            $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '[Element Adapter] Could not find category with name: ' . $fields['category']);
         }
     }
 
