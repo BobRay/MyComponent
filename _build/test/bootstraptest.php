@@ -338,6 +338,10 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
             $plugin = $this->modx->getObject('modPlugin', array('name' => $fields['pluginid']));
             $this->assertNotEmpty($plugin);
             $fields['pluginid'] = $plugin->get('id');
+            if (!empty($fields['propertyset'])) {
+                $pSet = $this->modx->getObject('modPropertySet', array('name' => $fields['propertyset']));
+                $fields['propertyset'] = $pSet->get('id');
+            }
             $pe = $this->modx->getObject('modPluginEvent', $fields);
             $this->assertInstanceOf('modPluginEvent', $pe);
         }
