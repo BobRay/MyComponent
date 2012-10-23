@@ -549,9 +549,6 @@ abstract class ObjectAdapter
                 $tpl .= "    '" . $field . "'" . " => '" . $value . "',\n";
             }
         }
-        /* ToDo: Property Sets */
-        /* write object-specific stuff */
-
 
         switch ($type) {
 

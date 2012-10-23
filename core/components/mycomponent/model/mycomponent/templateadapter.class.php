@@ -24,7 +24,6 @@ class TemplateAdapter extends ElementAdapter
             $this->myFields = $fields;
         }
 
-        /* ToDo: Add TVs here for Tv or Template resolver */
         parent::__construct($modx, $helpers, $fields, $mode);
 
     }
