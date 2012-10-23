@@ -23,8 +23,8 @@ if (!function_exists('checkFields')) {
         global $modx;
         $fields = explode(',', $required);
         foreach ($fields as $field) {
-            if (!isset($objectFields[$field]) || empty($objectFields[$field])) {
-                $modx->log(MODX_LOG_LEVEL_ERROR, 'Missing field: ' . $field);
+            if (!isset($objectFields[$field])) {
+                $modx->log(MODX_LOG_LEVEL_ERROR, 'Category Resolver] Missing field: ' . $field);
                 return false;
             }
         }
@@ -46,11 +46,11 @@ if ($object->xpdo) {
                         continue;
                     }
                     $categoryObj = $modx->getObject('modCategory', array('category' => $fields['category']));
-                    if (!$category) {
+                    if (!$categoryObj) {
                         continue;
                     }
                     $parentObj = $modx->getObject('modCategory', array('category' => $fields['parent']));
-                        if ($templateObj) {
+                        if ($parentObj) {
                             $categoryObj->set('parent', $parentObj->get('id'));
                         }
                     $categoryObj->save();
