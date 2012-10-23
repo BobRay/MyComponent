@@ -181,12 +181,12 @@ $components = array(
                         'propertySet' => 'PropertySet1', /* property set to be used in this pluginEvent */
                     ),
                     'OnMyEvent2' => array(
-                        'priority' => '',
+                        'priority' => '3',
                         'group' => 'plugins',
                         'propertySet' => '',
                     ),
                     'OnDocFormSave' => array(
-                        'priority' => '0',
+                        'priority' => '4',
                         'group' => 'plugins',
                         'propertySet' => '',
                     ),
