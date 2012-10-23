@@ -54,42 +54,6 @@ define('PKG_NAME', $props['packageName']);
 define('PKG_NAME_LOWER', $props['packageNameLower']);
 define('PKG_VERSION', $props['version']);
 define('PKG_RELEASE', $props['release']);
-define('PKG_CATEGORY', $props['category']);
-
-/* Set package options - you can set these manually, but it's
- * recommended to let them be generated automatically from
- * the project config file.
- */
-
-$hasAssets = $props['hasAssets']; /* Transfer the files in the assets dir. */
-$hasCore = $props['hasCore'];   /* Transfer the files in the core dir. */
-$hasSnippets = !empty($props['elements']['modSnippet']);
-$hasChunks = !empty($props['elements']['modChunk']);
-$hasTemplates = !empty($props['elements']['modTemplate']);
-$hasTemplateVariables = !empty($props['elements']['modTemplateVar']);
-$hasPlugins = !empty($props['elements']['modPlugin']);
-$hasResources = !empty($props['resources']);
-$hasValidator = !empty($props['validators']); /* Run a validator before installing anything */
-$hasSetupOptions = !empty($props['install.options']); /* HTML/PHP script to interact with user */
-$hasPropertySets = !empty($props['propertySets']);
-$hasMenu = !empty($props['menus']); /* Add items to the MODx Top Menu */
-$hasSettings = !empty($props['newSystemSettings']); /* Add new MODx System Settings */
-$hasSubPackages = !empty($props['subPackages']);
-$minifyJS = $props['minifyJS'];
-
-
-// $hasSubPackages = true; /* add in other component packages (transport.zip files)*/
-/* Note: The package files will be copied to core/packages but will
- * have to be installed manually with "Add New Package" and "Search
- * Locally for Packages" in Package Manager. Be aware that the
- * copied packages may be older versions than ones already
- * installed. This is necessary because Package Manager's
- * autoinstall of the packages is unreliable at this point. 
- */
-
-/******************************************
- * Work begins here
- * ****************************************/
 
 /* set start time */
 $mtime = microtime();
@@ -188,6 +152,25 @@ if ($hasResources) {
     unset($resources, $resource, $attributes);
 }
 
+/* load new system settings */
+if ($hasSettings) {
+    $settings = include $sources['data'] . 'transport.settings.php';
+    if (!is_array($settings)) {
+        $modx->log(modX::LOG_LEVEL_ERROR, 'Settings not an array.');
+    } else {
+        $attributes = array(
+            xPDOTransport::UNIQUE_KEY => 'key',
+            xPDOTransport::PRESERVE_KEYS => true,
+            xPDOTransport::UPDATE_OBJECT => false,
+        );
+        foreach ($settings as $setting) {
+            $vehicle = $builder->createVehicle($setting, $attributes);
+            $builder->putVehicle($vehicle);
+        }
+        $modx->log(modX::LOG_LEVEL_INFO, 'Packaged ' . count($settings) . ' new System Settings.');
+        unset($settings, $setting, $attributes);
+    }
+}
 
 /* minify JS */
 
@@ -280,7 +263,6 @@ foreach($categories as $k => $categoryName) {
         }
     }
     if ($hasChunks) { /* add chunks  */
-    $modx->log(modX::LOG_LEVEL_INFO,'Adding in Chunks.');
         /* note: Chunks' default properties are set in transport.chunks.php */
         $chunks = include $sources['data'] . $categoryName .'/transport.chunks.php';
         if (is_array($chunks)) {
@@ -520,26 +502,6 @@ if ($hasMenu) {
             unset($vehicle, $menu);
         }
         $modx->log(modX::LOG_LEVEL_INFO, 'Packaged ' . count($menus) . ' menu items.');
-    }
-}
-
-/* load system settings */
-if ($hasSettings) {
-    $settings = include $sources['data'].'transport.settings.php';
-    if (!is_array($settings)) {
-        $modx->log(modX::LOG_LEVEL_ERROR,'Settings not an array.');
-    } else {
-        $attributes= array(
-            xPDOTransport::UNIQUE_KEY => 'key',
-            xPDOTransport::PRESERVE_KEYS => true,
-            xPDOTransport::UPDATE_OBJECT => false,
-        );
-        foreach ($settings as $setting) {
-            $vehicle = $builder->createVehicle($setting,$attributes);
-            $builder->putVehicle($vehicle);
-        }
-        $modx->log(modX::LOG_LEVEL_INFO,'Packaged '.count($settings).' System Settings.');
-        unset($settings,$setting,$attributes);
     }
 }
 
