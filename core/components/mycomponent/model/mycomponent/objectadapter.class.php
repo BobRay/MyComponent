@@ -157,28 +157,6 @@ abstract class ObjectAdapter
    Bootstrap and Support Functions 
 ***************************************************************************** */
 
-/*    public function newTransport()
-    {//Get the Build path
-        $mc = $this->mc;
-        $data = $mc->getPath('data');
-        $path = $data . $this->getSafeClass() . '/';
-    // If data directory does not exist, create it
-        if (!$mc->makeDir($data, false))
-        {   $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO,'Could not create Transport: Data directory was not created!');
-            return false;
-        }
-    // If Object directory does not exist, create it
-        if (!$mc->makeDir($path, false))
-        {   $mc->helpers->sendLog(MODX::LOG_LEVEL_INFO,'Could not create Transport: Object directory was not created!');
-            return false;
-        }
-    // Now that we know all directories exist...
-        $filename = $this->getTransportFileName();
-
-
-    }
-    */
-
 
     /**
      * Add a new object to MODX
@@ -250,7 +228,9 @@ abstract class ObjectAdapter
                 $tvValues = $this->myFields['tvValues'];
                 unset($this->myFields['tvValues']);
             }
-            $this->getTplCode();
+            /* sets appropriate content field for elements and resources */
+            $this->setContentField();
+
             $processor = $this->getProcessor('create');
             $response = $modx->runProcessor($processor, $this->myFields);
             if (empty($response) || $response->isError()) {
@@ -289,7 +269,14 @@ abstract class ObjectAdapter
             $this->myId = $id;
         }
     }
-    public function getTplCode() {
+
+    /**
+     *
+     *  Sets the content field for resources and elements
+     * on Bootstrap
+     * @return string = tpl code
+     */
+    public function setContentField() {
         $field = '';
 
         $tplName = strtolower($this->dbClass);
@@ -313,10 +300,10 @@ abstract class ObjectAdapter
                 default:
                     break;
             }
-            $tpl = str_replace('[[+elementType]]', strtolower(substr($this->dbClass, 3)), $tpl);
-            $tpl = str_replace('[[+elementName]]', $this->getName(), $tpl);
+            //$tpl = str_replace('[[+elementType]]', strtolower(substr($this->dbClass, 3)), $tpl);
+            //$tpl = str_replace('[[+elementName]]', $this->getName(), $tpl);
             if (!empty ($tpl)) {
-                $tpl = $this->helpers->replaceTags($tpl);
+                //$tpl = $this->helpers->replaceTags($tpl);
                 $this->myFields[$field] = $tpl;
             }
         }
@@ -325,7 +312,16 @@ abstract class ObjectAdapter
 
     public function createCodeFile($overwrite = false, $content = '', $mode = MODE_BOOTSTRAP, $dryRun = false) {
         if ($mode == MODE_BOOTSTRAP) {
-            $tpl = $this->getTplCode();
+            $tplName = strtolower($this->dbClass);
+            if ($tplName == 'modplugin' || $tplName == 'modsnippet') {
+                $tplName = 'phpfile.php';
+            }
+            $tpl = $this->helpers->getTpl($tplName);
+            $tpl = str_replace('[[+elementType]]', strtolower(substr($this->dbClass, 3)), $tpl);
+            $tpl = str_replace('[[+elementName]]', $this->getName(), $tpl);
+            if (!empty ($tpl)) {
+                $tpl = $this->helpers->replaceTags($tpl);
+            }
         } elseif ($mode == MODE_EXPORT) {
             $tpl = $content;
         }
@@ -588,15 +584,44 @@ abstract class ObjectAdapter
         /* handle properties */
 
         if ($hasProperties) {
-            //$name = $elementObj->get($this->getNameField());
-            //$fileName = $helpers->getFileName('properties');
-            $tpl .= "\n\$properties = include \$sources['data'].'properties/" . $fileName ."';\n" ;
+            /* @var $helpers Helpers */
+            $alias = $helpers->getNameAlias($type);
+            $name = $fields[$alias];
+            $propertyFileName = $helpers->getFileName($name, $type, 'properties');
+            $tpl .= "\n\$properties = include \$sources['data'].'properties/" . $propertyFileName ."';\n" ;
             $tpl .= '$' . $variableName . "[" . $i . "]->setProperties(\$properties);\n";
             $tpl .= "unset(\$properties);\n\n";
-            /* This is done in the ElementAdapter */
-            //$this->writePropertyFile($properties, $fileName, $name);
+
         }
         return $tpl;
+    }
+
+    /**
+     * Writes the properties file for objects with properties
+     * @param $properties array - object properties as PHP array
+     * @param $fileName - Name of properties file
+     * @param $objectName - Name of MODX object
+     */
+    protected function writePropertyFile($helpers, $properties, $fileName, $objectName) {
+        /* @var $helpers Helpers */
+        $dir = $helpers->props['targetRoot'] . 'properties/';
+        //$dir = $this->transportPath . 'properties/';
+        $tpl = $this->helpers->getTpl('propertiesfile.php');
+        $tpl = str_replace('[[+element]]', $objectName, $tpl);
+        $tpl = str_replace('[[+elementType]]', substr(strtolower($this->elementType), 3), $tpl);
+
+        $tpl = $this->helpers->replaceTags($tpl);
+        $tpl .= "\n\n" . $this->render_properties($properties) . "\n\n";
+
+        if ($this->dryRun) {
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Would be creating: ' . $fileName . "\n");
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, " --- Begin File Content --- ");
+        }
+        $this->helpers->writeFile($dir, $fileName, $tpl, $this->dryRun);
+        if ($this->dryRun) {
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
+        }
+        unset($tpl);
     }
 
     /**

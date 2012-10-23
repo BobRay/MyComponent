@@ -273,27 +273,33 @@ abstract class ElementAdapter extends ObjectAdapter {
      * @param $fileName - Name of properties file
      * @param $objectName - Name of MODX object
      */
-    public function exportProperties($properties, $fileName, $objectName)
-    {   $dir = $this->transportPath . 'properties/';
-        $tpl = $this->helpers->getTpl('propertiesfile.tpl');
-        $tpl = str_replace('[[+element]]',$objectName,$tpl);
-        $tpl = str_replace('[[+elementType]]', substr(strtolower($this->elementType), 3), $tpl);
+    public function writePropertiesFile($objectName, $properties, $mode = MODE_BOOTSTRAP, $dryRun = false) {
+        $dir = $this->helpers->props['targetRoot'] . '_build/data/properties/';
+        $fileName = $this->helpers->getFileName($this->getName(),
+            $this->dbClass, 'properties');
+        if (file_exists($dir . $fileName) && $mode != MODE_EXPORT) {
+            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    File already exists: ' . $fileName);
+        } else {
+            $tpl = $this->helpers->getTpl('propertiesfile.php');
+            $tpl = str_replace('[[+element]]',$objectName,$tpl);
+            $tpl = str_replace('[[+elementType]]', substr(strtolower($this->dbClass), 3), $tpl);
 
-        $tpl = $this->helpers->replaceTags($tpl);
-        $hastags = strpos($tpl, '<'.'?'.'php');
-        if ($hastags === false)
-            $tpl = '<'.'?'.'php'.$tpl;
-        $tpl .=  "\n\n" . $this->render_properties($properties) . "\n\n";
+            $tpl = $this->helpers->replaceTags($tpl);
+            $hastags = strpos($tpl, '<'.'?'.'php');
+            if ($hastags === false)
+                $tpl = '<'.'?'.'php'.$tpl;
+            $tpl .=  "\n\n" . $this->render_properties($properties) . "\n\n";
 
-        if ($this->dryRun) {
-            $this->modx->log(modX::LOG_LEVEL_INFO, 'Would be creating: ' . $fileName . "\n");
-            $this->modx->log(modX::LOG_LEVEL_INFO, " --- Begin File Content --- ");
+            if ($dryRun) {
+                $this->modx->log(modX::LOG_LEVEL_INFO, 'Would be creating: ' . $fileName . "\n");
+                $this->modx->log(modX::LOG_LEVEL_INFO, " --- Begin File Content --- ");
+            }
+            $this->helpers->writeFile($dir, $fileName, $tpl, $dryRun);
+            if ($dryRun) {
+                $this->modx->log(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
+            }
+            unset($tpl);
         }
-        $this->helpers->writeFile($dir, $fileName, $tpl, $this->dryRun);
-        if ($this->dryRun) {
-            $this->modx->log(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
-        }
-        unset($tpl);
     }
 
     /**

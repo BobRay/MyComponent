@@ -142,11 +142,15 @@ class CategoryAdapter extends ObjectAdapter {
                 /* @var $o ElementAdapter */
                 $o = new $adapterName($this->modx, $this->helpers, $fields, MODE_EXPORT);
                 $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    Processing ' . $o->getName());
+
+                if (isset($fields['properties']) && !empty($fields['properties'])) {
+                    $o->writePropertiesFile($o->getName(), $fields['properties'], MODE_EXPORT);
+                }
                 if ($class !== 'modPropertySet' && $class !== 'modTemplateVar') {
                     if (isset($fields['static']) && empty($fields['static'])) {
                         $o->createCodeFile(true, $content, MODE_EXPORT, $dryRun);
                     } else {
-                        $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    Skipping static element: ' . $o->getName());
+                        $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    Skipping code file for static element: ' . $o->getName());
                     }
                 } else {
                     $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, ' (no code file required)', true);
