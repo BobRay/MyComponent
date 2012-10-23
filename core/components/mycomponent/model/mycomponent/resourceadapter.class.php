@@ -70,7 +70,7 @@ class ResourceAdapter extends ObjectAdapter
         } elseif ($mode == MODE_EXPORT) {
             $me = $this->modx->getObject('modResource', array('pagetitle' => $fields['pagetitle']));
             if (!$me) {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '[ResourceAdapter] Could not get myself');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[ResourceAdapter] Could not get myself');
             } else {
                 /* Check for TVs (this is ugly, but we only want OUR TVs) */
                 $myId = $me->get('id');
@@ -113,7 +113,7 @@ class ResourceAdapter extends ObjectAdapter
             if ($parentObj) {
                 $fields['parent'] =  $parentObj->get('pagetitle');
             } else {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '[ResourceAdapter] Could not find parent for resource: ' .
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[ResourceAdapter] Could not find parent for resource: ' .
                     $fields['parent']);
             }
         }
@@ -143,7 +143,7 @@ class ResourceAdapter extends ObjectAdapter
             if ($parentObj) {
                 $fields['parent'] = $parentObj->get('id');
             } else {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '[ResourceAdapter] Could not find parent for resource: ' . $fields['pagetitle']);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[ResourceAdapter] Could not find parent for resource: ' . $fields['pagetitle']);
             }
         }
         if (!isset($fields['template']) || empty($fields['template']) || $fields['template'] == 'default') {
@@ -211,7 +211,7 @@ class ResourceAdapter extends ObjectAdapter
 
     public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
         /* @var $helpers Helpers */
-        $helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Processing Resources');
+        $helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing Resources');
         $resources = ObjectAdapter::$myObjects['resources'];
         parent::createTransportFile($helpers, $resources, '', 'modResource', $mode);
     }
@@ -254,7 +254,7 @@ class ResourceAdapter extends ObjectAdapter
 
         /* Add resources from exportResources array in the project config file
           to $this->myObjects array */
-        $helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Exporting Resources');
+        $helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Exporting Resources');
         $byId = $modx->getOption('getResourcesById', $props, false);
         $method = $byId? 'ID' : 'pagetitle';
         $resources = $modx->getOption('exportResources', $props, array());
@@ -304,7 +304,7 @@ class ResourceAdapter extends ObjectAdapter
                 new ResourceAdapter($modx, $helpers, $fields, MODE_EXPORT);
             }
         } else {
-            $helpers->sendLog(MODX_LOG_LEVEL_ERROR, '[ResourceAdapter] No Resources found');
+            $helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[ResourceAdapter] No Resources found');
         }
     }
 

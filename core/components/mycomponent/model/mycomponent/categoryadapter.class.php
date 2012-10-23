@@ -124,9 +124,9 @@ class CategoryAdapter extends ObjectAdapter {
             $adapterName = ucFirst(substr($class, 3)) . 'Adapter';
             $elements = $this->modx->getCollection($class, array('category' => $this->myId));
             if (!empty($elements)) {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Processing ' . $elementType . ' in category: ' . $this->getName());
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing ' . $elementType . ' in category: ' . $this->getName());
             } else {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'No ' . $elementType . ' found in category: ' . $this->getName());
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'No ' . $elementType . ' found in category: ' . $this->getName());
             }
             foreach($elements as $element) {
 
@@ -141,7 +141,7 @@ class CategoryAdapter extends ObjectAdapter {
                 $fields = $element->toArray();
                 /* @var $o ElementAdapter */
                 $o = new $adapterName($this->modx, $this->helpers, $fields, MODE_EXPORT);
-                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    Processing ' . $o->getName());
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Processing ' . $o->getName());
 
                 if (isset($fields['properties']) && !empty($fields['properties'])) {
                     $o->writePropertiesFile($o->getName(), $fields['properties'], MODE_EXPORT);
@@ -150,10 +150,10 @@ class CategoryAdapter extends ObjectAdapter {
                     if (isset($fields['static']) && empty($fields['static'])) {
                         $o->createCodeFile(true, $content, MODE_EXPORT, $dryRun);
                     } else {
-                        $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    Skipping code file for static element: ' . $o->getName());
+                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Skipping code file for static element: ' . $o->getName());
                     }
                 } else {
-                    $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, ' (no code file required)', true);
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, ' (no code file required)', true);
                 }
             }
         }

@@ -124,10 +124,10 @@ class Helpers
         if (strstr($name, '.php') && !empty($text)) {
             /* make sure the header made it and do alerts if not */
             if (empty($text)) {
-                $this->sendLog(MODX_LOG_LEVEL_ERROR, '    [Helpers] Problem loading Tpl file (text is empty) ' . $name  );
+                $this->sendLog(MODX::LOG_LEVEL_ERROR, '    [Helpers] Problem loading Tpl file (text is empty) ' . $name  );
                 $text = "<?php\n/* empty header */\n\n";
             } elseif (strpos($text, '<' . '?' . 'php') === false) {
-                $this->sendLog(MODX_LOG_LEVEL_ERROR, '    [Helpers] Problem loading Tpl file (text has no PHP tag) ' . $name);
+                $this->sendLog(MODX::LOG_LEVEL_ERROR, '    [Helpers] Problem loading Tpl file (text has no PHP tag) ' . $name);
                 $text = "<?php\n /* inserted PHP tag */\n\n" . $text;
             }
         }
@@ -265,7 +265,7 @@ class Helpers
 
 
             if ($dryRun) {
-                $this->sendLog(MODX_LOG_LEVEL_INFO, "\n\n ******** Begin File Content ********\n");
+                $this->sendLog(MODX::LOG_LEVEL_INFO, "\n\n ******** Begin File Content ********\n");
             } elseif (! $suppressOutput) {
                 $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $action . ' ' . $file);
             }
@@ -277,7 +277,7 @@ class Helpers
             if (! $dryRun) {
                 chmod($file, $this->filePermission);
             } else {
-                $this->sendLog(MODX_LOG_LEVEL_INFO, " ******** End File Content ********\n\n");
+                $this->sendLog(MODX::LOG_LEVEL_INFO, " ******** End File Content ********\n\n");
             }
         } else {
             $this->sendLog(MODX::LOG_LEVEL_INFO, '    Could not write file ' . $file);
@@ -373,7 +373,7 @@ class Helpers
                         if ($ps) {
                             $values['propertyset'] = $ps->get('id');
                         } else {
-                            $this->sendLog(MODX_LOG_LEVEL_ERROR, '[Helpers] Could not find Property Set: ' .
+                            $this->sendLog(MODX::LOG_LEVEL_ERROR, '[Helpers] Could not find Property Set: ' .
                                 $values['propertyset']);
                         }
                     }
@@ -387,7 +387,7 @@ class Helpers
 
                     break;
                 default:
-                    $this->sendLog(MODX_LOG_LEVEL_ERROR, '[Helpers] Asked for unknown intersect type');
+                    $this->sendLog(MODX::LOG_LEVEL_ERROR, '[Helpers] Asked for unknown intersect type');
                     break;
 
 
@@ -442,7 +442,7 @@ class Helpers
             $intersectObj = $this->modx->getObject($intersectType, $searchFields);
 
             if ($intersectObj) {
-                $this->sendLog(MODX_LOG_LEVEL_INFO, '    Intersect already exists for ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
+                $this->sendLog(MODX::LOG_LEVEL_INFO, '    Intersect already exists for ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
 
             } else {
                 $intersectObj = $this->modx->newObject($intersectType);
@@ -464,11 +464,11 @@ class Helpers
                         $intersectObj->set($k, $v);
                     }
                     if ($intersectObj->save()) {
-                        $this->sendLog(MODX_LOG_LEVEL_INFO, '    Created Intersect ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
+                        $this->sendLog(MODX::LOG_LEVEL_INFO, '    Created Intersect ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
 
                     }
                 } else {
-                    $this->sendLog(MODX_LOG_LEVEL_ERROR, '    [Helpers] Could not create intersect for ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
+                    $this->sendLog(MODX::LOG_LEVEL_ERROR, '    [Helpers] Could not create intersect for ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
                 }
             }
 

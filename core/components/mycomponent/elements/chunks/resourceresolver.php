@@ -24,7 +24,7 @@ if (!function_exists('checkFields')) {
         $fields = explode(',', $required);
         foreach ($fields as $field) {
             if (! isset($objectFields[$field])) {
-                $modx->log(MODX_LOG_LEVEL_ERROR, '[Resource Resolver] Missing field: ' . $field);
+                $modx->log(MODX::LOG_LEVEL_ERROR, '[Resource Resolver] Missing field: ' . $field);
                 return false;
             }
         }

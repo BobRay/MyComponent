@@ -140,7 +140,7 @@ class Export
         $this->categoryId = $this->categoryObj->get('id');
         $this->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Category ID: ' . $this->categoryId);
         /* dry run if user has set &dryRun=`1` or has not set either create option */
-        $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, "Init OK");
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "Init OK");
         return true;
     }
 

@@ -40,13 +40,13 @@ class SystemEventAdapter extends ObjectAdapter
             if ($event && $event instanceof modEvent) {
                 $event->fromArray($this->myFields, "", true, true);
                 if ($event->save()) {
-                    $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    Created System Event: ' . $name);
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Created System Event: ' . $name);
                     $retVal = true;
                 } else {
-                    $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '    [SystemEvent Adapter] Could not save System Event: ' . $name);
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '    [SystemEvent Adapter] Could not save System Event: ' . $name);
                 }
             } else {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '    [SystemEvent Adapter] Could not create System Event: ' . $name);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '    [SystemEvent Adapter] Could not create System Event: ' . $name);
             }
         } elseif ($overwrite) {
             foreach($this->myFields as $field => $value) {
@@ -54,13 +54,13 @@ class SystemEventAdapter extends ObjectAdapter
             }
             if ($obj->save()) {
                 $retVal = true;
-                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    Updated System Event: ' . $name);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Updated System Event: ' . $name);
             } else {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    Failed to updated System Event: ' . $name);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Failed to updated System Event: ' . $name);
             }
 
         } else {
-            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    System Event already exists: ' . $name);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    System Event already exists: ' . $name);
             $retVal = -1;
         }
         return $retVal;
@@ -68,7 +68,7 @@ class SystemEventAdapter extends ObjectAdapter
 
     public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
         /* @var $helpers Helpers */
-        $helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Processing System Events');
+        $helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing System Events');
         $settings = ObjectAdapter::$myObjects['newSystemEvents'];
         parent::createTransportFile($helpers, $settings, '', 'modEvent', $mode);
     }

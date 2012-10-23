@@ -73,7 +73,7 @@ abstract class ElementAdapter extends ObjectAdapter {
             $me = $this->modx->getObject($this->dbClass, array($alias => $this->getName()));
             /* @var $me modElement */
             if (!$me) {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, "[ElementAdapter] Can't find myself");
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, "[ElementAdapter] Can't find myself");
             } else {
                 $eps = $me->getMany('PropertySets');
                 if (!empty($eps)) {
@@ -109,7 +109,7 @@ abstract class ElementAdapter extends ObjectAdapter {
         if ($categoryObj) {
             $fields['category'] = $categoryObj->get('category');
         } else {
-            $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '[Element Adapter] Could not find category with name: ' . $fields['category']);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[Element Adapter] Could not find category with name: ' . $fields['category']);
         }
     }
 
@@ -133,19 +133,19 @@ abstract class ElementAdapter extends ObjectAdapter {
 
         $categories = ObjectAdapter::$myObjects['ElementCategories'];
         if (empty($categories)) {
-            $helpers->sendLog(MODX_LOG_LEVEL_INFO, '    No Elements to process');
+            $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    No Elements to process');
             return;
         }
 
         foreach($categories as $category => $elementList) {
             $category = strtolower($category);
-            $helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Processing category: ' . $category);
+            $helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing category: ' . $category);
             foreach($elementList['elements'] as $type => $elements) {
-                $helpers->sendLog(MODX_LOG_LEVEL_INFO, '    Processing ' . $type);
+                $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Processing ' . $type);
                 parent::createTransportFile($helpers, $elements, $category, $type, $mode);
                 foreach($elements as $k => $fields ) {
                     $alias = $helpers->getNameAlias($type);
-                    $helpers->sendLog(MODX_LOG_LEVEL_INFO, '        Processing object: ' . $fields[$alias]);
+                    $helpers->sendLog(MODX::LOG_LEVEL_INFO, '        Processing object: ' . $fields[$alias]);
 
                 }
             }
@@ -190,7 +190,7 @@ abstract class ElementAdapter extends ObjectAdapter {
             $path .= '/' . $this->helpers->getFileName($this->getName(), $this->dbClass);
             $this->myFields['source'] = $this->modx->getOption('default_media_source');
             $this->myFields['static_file'] = $path;
-            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    Set static path to ' . $path);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Set static path to ' . $path);
         }
         parent::addToMODx($overwrite);
     }
@@ -278,7 +278,7 @@ abstract class ElementAdapter extends ObjectAdapter {
         $fileName = $this->helpers->getFileName($this->getName(),
             $this->dbClass, 'properties');
         if (file_exists($dir . $fileName) && $mode != MODE_EXPORT) {
-            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    File already exists: ' . $fileName);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    File already exists: ' . $fileName);
         } else {
             $tpl = $this->helpers->getTpl('propertiesfile.php');
             $tpl = str_replace('[[+element]]',$objectName,$tpl);

@@ -51,7 +51,7 @@ class TemplateVarAdapter extends ElementAdapter
         } elseif ($mode == MODE_EXPORT) {
             $me = $this->modx->getObject('modTemplateVar', array('name' => $this->getName()));
             if (!$me) {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, "[TemplateVar Adapter] Can't find myself");
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, "[TemplateVar Adapter] Can't find myself");
             } else {
                 $tvts = $me->getMany('TemplateVarTemplates');
                 if (!empty($tvts)) {

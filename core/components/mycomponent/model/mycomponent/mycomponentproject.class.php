@@ -173,11 +173,11 @@ class MyComponentProject {
                 $fp = fopen($projectsFile, 'w');
                 fwrite($fp, $content);
                 fclose($fp);
-                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Updated projects.php file');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Updated projects.php file');
             }
 
         } else {
-            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Created projects.php file');
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Created projects.php file');
             $content = $header . "    '" . $newContent . $footer;
             $fp = fopen($projectsFile, 'w');
             fwrite($fp, $content);
@@ -305,7 +305,7 @@ public function initPaths() {
     }
     public function createNamespaces($mode = MODE_BOOTSTRAP) {
         if (!empty($this->props['namespaces'])) {
-            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating namespace(s)');
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating namespace(s)');
             foreach ($this->props['namespaces'] as $namespace => $fields) {
                 if ($mode == MODE_BOOTSTRAP) {
                     $this->addToModx('NameSpaceAdapter', $fields);
@@ -376,7 +376,7 @@ public function initPaths() {
             return;
         }
         if ($mode == MODE_BOOTSTRAP) {
-            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Settings');
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating new System Settings');
             foreach ($this->props['newSystemSettings'] as $key => $fields) {
                 if (! isset($fields['key'])) {
                     $fields['key'] = $key;
@@ -392,7 +392,7 @@ public function initPaths() {
                     $fields = $obj->toArray();
                     new SystemSettingAdapter($this->modx, $this->helpers, $fields, $mode);
                 } else {
-                    $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR,
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
                         '[MyComponentProject] Could not find System Setting with key: ' . $fields['key']);
                 }
             }
@@ -404,7 +404,7 @@ public function initPaths() {
             return;
         }
         if ($mode == MODE_BOOTSTRAP) {
-            $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating new System Events');
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating new System Events');
             foreach ($newSystemEvents as $key => $fields) {
                 $fields['name'] = isset($fields['name'])
                     ? $fields['name']
@@ -430,10 +430,10 @@ public function initPaths() {
              * In Export, they're pulled by category in the
              * CategoryAdapter, so not done here */
             if (isset($this->props['elements']) && !empty($this->props['elements'])) {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating elements');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating elements');
                 $elements = $this->props['elements'];
                 foreach ($elements as $element => $elementObjects) {
-                    $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating ' . $element);
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating ' . $element);
                     foreach ($elementObjects as $elementName => $fields) {
                         /* @var $adapter elementAdapter */
                         $adapterName = ucFirst(substr($element, 0, -1)) . 'Adapter';
@@ -447,7 +447,7 @@ public function initPaths() {
                 }
             }
         } else {
-            $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '[MyComponentProject] createElements() called in Export mode');
+            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[MyComponentProject] createElements() called in Export mode');
         }
     }
 
@@ -456,7 +456,7 @@ public function initPaths() {
             if (isset($this->props['resources']) && !empty($this->props['resources'])) {
                 /* @var $o ResourceAdapter */
                 $o = null;
-                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Creating Resources');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating Resources');
                 foreach ($this->props['resources'] as $resource => $fields) {
                     $fields['pagetitle'] = empty($fields['pagetitle'])
                         ? $resource
@@ -692,7 +692,7 @@ public function initPaths() {
             if (! file_exists($this->myPaths['targetBuild'] . 'utilities/jsmin.class.php')) {
                $this->helpers->writeFile($this->myPaths['targetBuild'] . 'utilities' , 'jsmin.class.php', $fileContent);
             } else {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, '    jsmin class file already exists');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    jsmin class file already exists');
             }
         }
 
@@ -876,7 +876,7 @@ public function initPaths() {
             if ($type == 'modSystemSetting') $name = 'key';
             $obj = $this->modx->getObject($type, array($name => $object));
             if (! $obj) {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '[MyComponentProject] Could not find ' . $type . ' ' . $object);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[MyComponentProject] Could not find ' . $type . ' ' . $object);
             } else {
                 $obj->remove();
             }

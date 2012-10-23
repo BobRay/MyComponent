@@ -188,11 +188,11 @@ abstract class ObjectAdapter
             if (isset($this->myFields['category'])) {
                 $oldCat = $obj->get('category');
                 if ($oldCat && $oldCat != $this->myFields['category']) {
-                    $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, "Outdated Category " . $this->myFields['category']);
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "Outdated Category " . $this->myFields['category']);
                     if (is_numeric($this->myFields['category'])) {
                         $obj->set('category', $this->myFields['category']);
                         $obj->save();
-                        $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, "Updated category for " . $name);
+                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "Updated category for " . $name);
                     }
                 }
             }
@@ -251,7 +251,7 @@ abstract class ObjectAdapter
                                 foreach($tvValues as $k => $v) {
                                     $resource->setTVValue($k, $v);
                                 }
-                                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'Set TvValues for resource' .
+                                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Set TvValues for resource' .
                                     $this->myFields['pagetitle']);
                                 unset($resource);
                             }
@@ -264,7 +264,7 @@ abstract class ObjectAdapter
             }
         }
         if (! $id) {
-            $this->helpers->sendLog(MODX_LOG_LEVEL_ERROR, '[Object Adapter] No ID for ' . $objClass . ' ' . $name);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[Object Adapter] No ID for ' . $objClass . ' ' . $name);
         } else {
             $this->myId = $id;
         }
@@ -339,7 +339,7 @@ abstract class ObjectAdapter
             if (! file_exists($dir . '/' . $file) || $overwrite) {
                 $this->helpers->writeFile($dir, $file, $tpl, $dryRun);
             } else {
-                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO, 'File already exists: ' . $file);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'File already exists: ' . $file);
             }
 
         }
@@ -447,7 +447,7 @@ abstract class ObjectAdapter
 
         /* Abort if file exists and not in Export mode */
         if (file_exists($path . $transportFile) && $mode != MODE_EXPORT) {
-            $helpers->sendLog(MODX_LOG_LEVEL_INFO, '    File already exists: ' . $transportFile);
+            $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    File already exists: ' . $transportFile);
             return;
         }
 
@@ -472,7 +472,7 @@ abstract class ObjectAdapter
         if (! file_exists($path . $transportFile) || $mode != MODE_BOOTSTRAP) {
             $helpers->writeFile($path, $transportFile, $tpl, $dryRun);
         } else {
-            $helpers->sendLog(MODX_LOG_LEVEL_INFO, '        File already exists: ' . $transportFile);
+            $helpers->sendLog(MODX::LOG_LEVEL_INFO, '        File already exists: ' . $transportFile);
         }
         $helpers->sendLog(modX::LOG_LEVEL_INFO, 'Finished processing: ' . $type);
 
