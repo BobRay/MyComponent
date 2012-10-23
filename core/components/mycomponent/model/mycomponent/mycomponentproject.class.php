@@ -238,8 +238,8 @@ public function initPaths() {
         /* enable garbage collection() */
         // gc_enable();
         $mode = MODE_BOOTSTRAP;
-        if (!$this->isMCInstalled()) /* Only run if MC is installed */
-        {   $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'MyComponent must be installed to create a new MyComponent Project!');
+        if (!$this->isMCInstalled()) { /* Only run if MC is installed */
+            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'MyComponent must be installed to create a new MyComponent Project!');
             return;
         }
         $mem_usage = memory_get_usage();
