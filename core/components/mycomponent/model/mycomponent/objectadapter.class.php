@@ -230,11 +230,18 @@ abstract class ObjectAdapter
             }
             /* sets appropriate content field for elements and resources */
             if (!isset($this->myFields['static']) || empty($this->myFields['static'])) {
-                $this->setContentField();
+                $this->setContentField($name, $this->dbClass);
             }
-
+            if (isset($this->myFields['filename'])) {
+                $tempFilename = $this->myFields['filename'];
+                unset($this->myFields['filename']);
+            }
             $processor = $this->getProcessor('create');
             $response = $modx->runProcessor($processor, $this->myFields);
+            if (!empty($tempFilename)) {
+                $this->myFields['filename'] = $tempFilename;
+                unset($tempFilename);
+            }
             if (empty($response) || $response->isError()) {
                 $msg = "[Object Adapter] Failed to create object \n    class: " . $objClass .
                     "\n    nameKey: " . $nameKey . "\n    name: " . $name;
@@ -278,14 +285,37 @@ abstract class ObjectAdapter
      * on Bootstrap
      * @return string = tpl code
      */
-    public function setContentField() {
+    public function setContentField($name, $type ) {
+        $name = strtolower($name);
+        $tpl = '';
         $field = '';
-
-        $tplName = strtolower($this->dbClass);
-        if ($tplName == 'modplugin' || $tplName == 'modsnippet') {
-            $tplName = 'phpfile.php';
+        $suppliedFileName = null;
+        if (isset($this->myFields['filename'])) {
+            $suppliedFileName = $this->myFields['filename'];
         }
-        $tpl = $this->helpers->getTpl($tplName);
+
+        $dir = $this->helpers->props['targetRoot'] . 'core/components/';
+        $dir .= $this->helpers->props['packageNameLower'] . '/';
+        $codeDir = $this->helpers->getCodeDir($dir, $type);
+        $path = $codeDir . '/' . $suppliedFileName;
+        if ($suppliedFileName && file_exists($path)) {
+            $tpl = file_get_contents($path);
+        } else {
+            $fileName = $this->helpers->getFileName($name, $type);
+            /* Use file content if file exists */
+            $path = $codeDir . '/' . $fileName;
+            if (file_exists ($path)) {
+                $tpl = file_get_contents($codeDir . '/' . $fileName);
+            }
+        }
+        if (empty($tpl)) {
+        /* no file, use Tpl chunk */
+            $tplName = strtolower($this->dbClass);
+            if ($tplName == 'modplugin' || $tplName == 'modsnippet') {
+                $tplName = 'phpfile.php';
+            }
+            $tpl = $this->helpers->getTpl($tplName);
+        }
         if (!empty($tpl)) {
             switch($this->dbClass) {
                 case 'modChunk':
@@ -304,9 +334,12 @@ abstract class ObjectAdapter
             }
             //$tpl = str_replace('[[+elementType]]', strtolower(substr($this->dbClass, 3)), $tpl);
             //$tpl = str_replace('[[+elementName]]', $this->getName(), $tpl);
-            if (!empty ($tpl)) {
+            if (!empty($tpl) && !empty($field)) {
                 //$tpl = $this->helpers->replaceTags($tpl);
                 $this->myFields[$field] = $tpl;
+            } else {
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '    Could not find Tpl for: ' .
+                    $name);
             }
         }
         return $tpl;
@@ -336,14 +369,16 @@ abstract class ObjectAdapter
                 $dir .= $this->helpers->props['packageNameLower'] . '/';
                 $dir = $this->helpers->getCodeDir($dir, $this->dbClass);
             }
-
-            $file = $this->helpers->getFileName($this->getName(), $this->dbClass);
-            if (! file_exists($dir . '/' . $file) || $overwrite) {
+            if (isset($this->myFields['filename'])) {
+                $file = $this->myFields['filename'];
+            } else {
+                $file = $this->helpers->getFileName($this->getName(), $this->dbClass);
+            }
+            if ( (! file_exists(($dir . '/' . $file))  || $overwrite)) {
                 $this->helpers->writeFile($dir, $file, $tpl, $dryRun);
             } else {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'File already exists: ' . $file);
             }
-
         }
     }
 /* *****************************************************************************
@@ -427,7 +462,9 @@ abstract class ObjectAdapter
 
     public static function createTransportFile(&$helpers, $objects, $category, $type,  $mode = MODE_BOOTSTRAP) {
         /* @var $helpers Helpers */
-
+        if (empty($objects)) {
+            return;
+        }
 
         $category = strtolower($category);
         /* convert 'modSnippet' to 'Snippets' */
@@ -464,7 +501,12 @@ abstract class ObjectAdapter
         $i = 1;
         // append the code (returned from writeObject) for each object to $tpl
         foreach ($objects as $k => $fields) {
-            $fileName = $helpers->getFileName($fields[$alias], $type);
+            if (isset($fields['filename'])) {
+                $fileName = $fields['filename'];
+                unset($fields['filename']);
+            } else {
+                $fileName = $helpers->getFileName($fields[$alias], $type);
+            }
             $tpl .= self::writeObject($helpers, $fields, $type, $fileName, $i);
             $i++;
         }
