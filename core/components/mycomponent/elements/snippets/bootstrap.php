@@ -1,6 +1,10 @@
 <?php
+if (defined('MODX_ASSETS_PATH')) {
+    include MODX_ASSETS_PATH . 'mycomponents/mycomponent/core/components/mycomponent/model/mycomponent/mycomponentproject.class.php';
+} else {
+    include dirname(dirname(dirname(__FILE__))) . '/model/mycomponent/mycomponentproject.class.php';
+}
 
-include dirname(dirname(dirname(__FILE__))) . '/model/mycomponent/mycomponentproject.class.php';
 /* set start time */
 $mtime = microtime();
 $mtime = explode(" ", $mtime);
@@ -11,7 +15,7 @@ $mem_usage =  memory_get_usage();
 $project = new MyComponentProject();
 
 
-// $project->removeObjects();
+//$project->removeObjects();
 $project->bootstrap();
 
 // echo print_r(ObjectAdapter::$myObjects, true);
