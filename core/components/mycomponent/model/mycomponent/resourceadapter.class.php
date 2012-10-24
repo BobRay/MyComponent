@@ -212,7 +212,7 @@ class ResourceAdapter extends ObjectAdapter
     public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
         /* @var $helpers Helpers */
         $helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing Resources');
-        $resources = ObjectAdapter::$myObjects['resources'];
+        $resources = $helpers->modx->getOption('resources', ObjectAdapter::$myObjects, array());
         parent::createTransportFile($helpers, $resources, '', 'modResource', $mode);
     }
 
