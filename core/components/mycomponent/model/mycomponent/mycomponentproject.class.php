@@ -849,6 +849,37 @@ public function initPaths() {
      * Utility function to remove objects from MODX during development
      */
     public function removeObjects() {
+        $categories = $this->props['categories'];
+        foreach($categories as $category => $fields) {
+            $catObj = $this->modx->getObject('modCategory', array('category' => $category));
+            if ($catObj) {
+                $categoryId = $catObj->get('id');
+            } else {
+                die('could not find category: ' . $category);
+            }
+            $elements = array(
+             'modChunk',
+             'modSnippet',
+             'modTemplate',
+             'modTemplateVar',
+             'modPlugin',
+             'modPropertySet',
+            );
+
+            foreach($elements as $element) {
+
+                $objs = $this->modx->getCollection($element, array('category' => $categoryId));
+                foreach($objs as $obj) {
+                    /* @var $obj xPDOObject */
+                    if ($obj) {
+                        $obj->remove();
+                    }
+                }
+            }
+        }
+
+
+
         $objects = array(
             'Resource1' => 'modResource',
             'Resource2' => 'modResource',
