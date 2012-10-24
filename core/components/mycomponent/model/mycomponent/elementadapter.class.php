@@ -185,7 +185,9 @@ abstract class ElementAdapter extends ObjectAdapter {
         $fields = $this->myFields;
 
         if (isset($fields['static']) && !empty($fields['static'])) {
-            $dir = 'core/components/' . $this->helpers->props['packageNameLower'] . '/';
+
+            $dir = 'assets/mycomponents/';
+            $dir .= $this->helpers->props['packageNameLower'] . '/';
             $path = $this->helpers->getCodeDir($dir, $this->dbClass);
             $path .= '/' . $this->helpers->getFileName($this->getName(), $this->dbClass);
             $this->myFields['source'] = $this->modx->getOption('default_media_source');

@@ -229,7 +229,9 @@ abstract class ObjectAdapter
                 unset($this->myFields['tvValues']);
             }
             /* sets appropriate content field for elements and resources */
-            $this->setContentField();
+            if (!isset($this->myFields['static']) || empty($this->myFields['static'])) {
+                $this->setContentField();
+            }
 
             $processor = $this->getProcessor('create');
             $response = $modx->runProcessor($processor, $this->myFields);
