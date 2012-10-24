@@ -2,7 +2,7 @@
 
 class PropertySetAdapter extends ElementAdapter { //This will never change.
     protected $dbClass = 'modPropertySet';
-    protected $dbClassIDKey = 'name';
+    protected $dbClassIDKey = 'id';
     protected $dbClassNameKey = 'name';
     protected $dbClassParentKey = 'category';
     protected $createProcessor = 'element/propertyset/create';

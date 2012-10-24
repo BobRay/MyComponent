@@ -4,7 +4,7 @@
 class TemplateVarAdapter extends ElementAdapter
 {
     protected $dbClass = 'modTemplateVar';
-    protected $dbClassIDKey = 'name';
+    protected $dbClassIDKey = 'id';
     protected $dbClassNameKey = 'name';
     protected $dbClassParentKey = 'category';
     protected $createProcessor = 'element/tv/create';

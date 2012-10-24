@@ -5,7 +5,7 @@ require_once('elementadapter.class.php');
 class SnippetAdapter extends ElementAdapter
 {
     protected $dbClass = 'modSnippet';
-    protected $dbClassIDKey = 'name';
+    protected $dbClassIDKey = 'id';
     protected $dbClassNameKey = 'name';
     protected $dbClassParentKey = 'category';
     protected $createProcessor = 'element/snippet/create';

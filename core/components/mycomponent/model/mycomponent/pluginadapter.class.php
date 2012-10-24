@@ -5,7 +5,7 @@ require_once('elementadapter.class.php');
 class PluginAdapter extends ElementAdapter
 {
     protected $dbClass = 'modPlugin';
-    protected $dbClassIDKey = 'name';
+    protected $dbClassIDKey = 'id';
     protected $dbClassNameKey = 'name';
     protected $dbClassParentKey = 'category';
     protected $createProcessor = 'element/plugin/create';
