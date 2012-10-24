@@ -127,7 +127,17 @@ $components = array(
 
     /* Array containing elements for your extra. 'category' is required
        for each element, all other fields are optional.
-       Property Sets (if any) must come first! */
+       Property Sets (if any) must come first!
+
+       The standard file names are in this form:
+           SnippetName.snippet.php
+           PluginName.plugin.php
+           ChunkName.chunk.html
+           TemplateName.template.html
+
+       If your file names are not standard, add this field:
+          'filename' => 'actualFileName',
+    */
 
 
     'elements' => array(
