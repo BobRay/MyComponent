@@ -41,89 +41,61 @@ class MyComponentProject {
      *
      * @return boolean - True, if MC is installed. False, if not.
      */
-    public function isMCInstalled()
-    {//Simple Getter
+    public function isMCInstalled() {
         return $this->myPaths['mcCore'] != '';
     }
 
 /* *****************************************************************************
    Construction and Support Functions (in MODxObjectAdapter)
 ***************************************************************************** */
-    public function __construct(&$modx = null, $configFile = null) {
+    public function __construct(&$modx) {
         if (!defined('MODE_BOOTSTRAP')) {
             die("bootstrap not defined");
         }
+        $this->modx =& $modx;
         /* Create $modx object if it doesn't exist */
-        $this->initMODx($modx);
+        // $this->initMODx($modx);
         /* Get the config file */
-        $this->init($configFile);
+        //$this->init($configFile);
         /* Set up our paths */
-        $this->initPaths();
+        //$this->initPaths();
 
         // $output =  print_r($this->props,true);
         // echo $output;
     }
 
-    /* Instantiate MODx -- if this fails, check your
-     * _build/build.config.php file
-     */
-    public function initMODx(&$modx = null) { /* Initialize MODX if not already done */
 
-        require_once dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/_build/build.config.php';
-        if (!$modx){
-            $cp = MODX_CORE_PATH;
-            if (empty($cp)) {
-                die ('Could not initialize MODX');
-            }
-            require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
+    public function init($scriptProperties = array()) {
 
-            $modx= new modX();
-        }
-        $this->modx =& $modx;
-        /* Initialize and set up logging */
-        $modx->initialize('mgr');
-        $modx->setLogLevel(xPDO::LOG_LEVEL_INFO);
-        $modx->setLogTarget(XPDO_CLI_MODE ? 'ECHO' : 'HTML');
-
-        /* This section will only run when operating outside of MODX */
-        if (php_sapi_name() == 'cli') {
-            /* Set $modx->user and $modx->resource to avoid
-             * other people's plugins from crashing us */
-            $modx->getRequest();
-            $homeId = $modx->getOption('site_start');
-            $homeResource = $modx->getObject('modResource', $homeId);
-
-            if ($homeResource instanceof modResource) {
-                $modx->resource = $homeResource;
-            } else {
-                echo "\nNo Resource";
-            }
-        }
-    }
-
-    public function init($configFile) {
         require dirname(__FILE__) . '/mcautoload.php';
         spl_autoload_register('mc_auto_load');
         // Get the project config file
-        if (! $configFile) {
-            include dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) .
-                '/_build/config/current.project.php';
+        $currentProject = '';
+        $currentProjectPath = $this->modx->getOption('mc.root', null,
+            $this->modx->getOption('core_path') . 'components/mycomponent/') . '_build/config/current.project.php';
+        if (file_exists($currentProjectPath)) {
+            include $currentProjectPath;
         } else {
-            $configPath = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) .
-                '/_build/config/' . $configFile;
+            die('Could not find current.project.php file at: ' . $currentProjectPath);
         }
-        if (! isset($configPath)) {
-            die('Config path not set');
-        }
-        if (file_exists($configPath)) {
-            $properties = @include $configPath;
+
+        $projectConfigPath = $this->modx->getOption('mc.root', null,
+            $this->modx->getOption('core_path') . 'components/mycomponent/') .
+            '_build/config/' . strtoLower($currentProject) . '.config.php';
+
+        if (file_exists($projectConfigPath)) {
+            $properties = include $projectConfigPath;
         } else {
-            die('Could not find project config file at ' . $configPath);
+            die('Could not find Project Config file at: ' . $projectConfigPath);
         }
+
         /* Make sure that we get usable values */
-        if (empty($properties)) {
-            die('Config File was not set up correctly: ' . $configPath);
+        if (! is_array($properties) or empty($properties)) {
+            die('Config File was not set up correctly: ' . $projectConfigPath);
         }
+
+        /* Properties sent in method call will override those in Project Config file */
+        $properties = array_merge($scriptProperties, $properties);
 
         $this->packageNameLower = $properties['packageNameLower'];
 
@@ -131,23 +103,32 @@ class MyComponentProject {
             ? $properties['mycomponentRoot']
             : '';
         if ( empty($this->mcRoot)) {
-            die('mycomponentRoot is not set');
+            die('mcRoot is not set in Project Config: ' .  $projectConfigPath);
         }
+        if (! is_dir($this->mcRoot)) {
+            die('mcRoot set in project config is not a directory: ' .  $projectConfigPath);
+        }
+        $this->mcRoot = $this->modx->getOption('mc.root', null,
+            $this->modx->getOption('core_path') . 'components/mycomponent/');
+
         $this->targetRoot = isset($properties['targetRoot'])
             ? $properties['targetRoot']
             : '';
+
 
         if (empty($this->targetRoot)) {
             die('targetRoot is not set');
         }
         $this->props = $properties;
+        $this->initPaths();
+
         $helpers = new Helpers($this->modx, $this->props);
         $this->helpers = $helpers;
         $this->helpers->init();
 
         $this->dirPermission = $this->props['dirPermission'];
-        $this->updateProjectsFile($configPath);
-        $this->configPath = $configPath;
+        $this->updateProjectsFile($projectConfigPath);
+        $this->configPath = $projectConfigPath;
     }
 
 
@@ -158,7 +139,7 @@ class MyComponentProject {
      * @param $configPath string - path to project config file
      */
     public function updateProjectsFile($configPath) {
-        $projectsFile = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/_build/config/projects.php';
+        $projectsFile = $this->mcRoot  . '_build/config/projects.php';
         $header = '<' . '?' . 'php' . "\n\n\$projects = array(\n";
         $footer = ");\nreturn \$projects;\n";
         $newContent = $this->packageNameLower . "' => '" . $configPath .
@@ -193,7 +174,6 @@ class MyComponentProject {
 public function initPaths() {
 
     $paths = array();
-
     $name = $this->props['packageNameLower'];
     // @var $ns modNameSpace
 
@@ -919,6 +899,73 @@ public function initPaths() {
                 $c->remove();
             }
         }
+    }
+/* *****************************************************************************
+   Import Objects and Support Functions
+***************************************************************************** */
+
+
+    /**
+     * Creates and overwrites MODX Objects based on the elements
+     * in the 'elements' member of the Project config
+     *
+     * Will not process static elements
+     *
+     * @param bool $dryRun -- if set, will just report what it would have done
+     */
+    public function importObjects($toProcess, $directory, $dryRun = true) {
+        $toProcess = explode(',', $toProcess);
+        foreach($toProcess as $elementType) {
+            $class = 'mod' . ucfirst(substr($elementType, 0, -1));
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing ' . $elementType);
+            $elements = $this->props['elements'][$elementType];
+            foreach($elements as $element => $fields) {
+                if (isset($fields['static']) && !empty($fields['static'])) {
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                        '    Skipping static element: ' . $element);
+                    continue;
+                }
+                if (isset($fields['filename'])) {
+                    $fileName = $fields['filename'];
+                } else {
+                    $fileName = $this->helpers->getFileName($element, $class);
+                }
+                if (file_exists($fileName)) {
+                    $alias = $this->helpers->getNameAlias($class);
+                    $object = $this->modx->getObject($class, array($alias => $element));
+                    if ($object) {
+                        /* check again in case config file is wrong */
+                        $static = $object->get('static');
+                        if (!empty($static)) {
+                            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                                '    Skipping static element: ' . $element);
+                            continue;
+                        }
+                        $content = file_get_contents($fileName);
+                        if (!empty($content)) {
+                            if ($dryRun) {
+                                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                                    '    Would be updating: ' . $element);
+                            } else {
+                                $object->setContent($content);
+                                if ($object->save()) {
+                                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                                        '    Updated: ' . $element );
+                                }
+                            }
+                        }
+                    } else {
+                        $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
+                            'Could not find element: ' . $element);
+                    }
+                } else {
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
+                        'Could not find file: ' . $fileName);
+                }
+            }
+
+        }
+
     }
 }
 

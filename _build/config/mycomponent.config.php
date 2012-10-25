@@ -134,17 +134,14 @@ $components = array(
         'snippets' => array(
             'Bootstrap' => array( /* example with static and property set(s)  */
                 'category' => 'MyComponent',
-                'static' => true,
                 'filename' => 'bootstrap.php',
             ),
             'ExportObjects' => array(
                 'category' => 'MyComponent',
-                'static' => true,
                 'filename' => 'exportobjects.php',
             ),
             'LexiconHelper' => array(
                 'category' => 'MyComponent',
-                'static' => true,
                 'filename' => 'lexiconhelper.php',
             ),
 
