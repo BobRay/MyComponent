@@ -4,8 +4,8 @@
 class ChunkAdapter extends ElementAdapter
 {//This will never change.
     protected $dbClass = 'modChunk';
-    protected $dbClassIDKey = 'name';
-    protected $dbClassNameKey = 'id';
+    protected $dbClassIDKey = 'id';
+    protected $dbClassNameKey = 'name';
     protected $dbClassParentKey = 'category';
     protected $createProcessor = 'element/chunk/create';
     protected $updateProcessor = 'element/chunk/update';
