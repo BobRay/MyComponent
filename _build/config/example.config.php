@@ -31,7 +31,8 @@ $components = array(
     'filePermission' => 0644, /* No quotes!! */
 
     /* Define source and target directories (mycomponent root and core directories) */
-    'mycomponentRoot' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/',
+    'mycomponentRoot' => $this->modx->getOption('mc.root', null,
+        MODX_CORE_PATH . 'components/mycomponent/'),
     /* path to MyComponent source files */
     'mycomponentCore' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/core/components/mycomponent/',
     /* path to new project root */
