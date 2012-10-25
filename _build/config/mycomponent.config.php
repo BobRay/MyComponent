@@ -309,18 +309,9 @@ $components = array(
      * Empty js and/or css files will be created.
      */
     'hasAssets' => false,
-    'minifyJS' => true,
+    'minifyJS' => false,
     /* minify any JS files */
-    'assetsDirs' => array(
-        'css' => true,
-        /* If true, a default (empty) CSS file will be created */
-        'js' => true,
-        /* If true, a default (empty) JS file will be created */
-        'images' => true,
-        'audio' => true,
-        'video' => true,
-        'themes' => true,
-    ),
+
 
 
     /* ********************************************* */
@@ -357,8 +348,7 @@ $components = array(
      *  named after the package suffix 'validator.php' will be added */
 
     'xxxvalidators' => array(
-        'default',
-        'hasGdLib'
+
     ),
 
     /* (optional) install.options is needed if you will interact
@@ -420,15 +410,7 @@ $components = array(
     */
     'process' => array(
         'snippets',
-        'xxxplugins',
-        'xxxtemplateVars',
-        'xxxtemplates',
         'chunks',
-        'xxxresources',
-        'xxxpropertySets',
-        'xxxsystemSettings',
-        'xxxsystemEvents',
-        'xxxmenus'
     ),
     /*  Array  of resources to process. You can specify specific resources
         or parent (container) resources, or both.
@@ -438,10 +420,7 @@ $components = array(
         duplicate pagetitles */
     'getResourcesById' => false,
 
-    'xxxexportResources' => array(
-        'Resource1',
-        'Resource2'
-    ),
+
     /* Array of resource parent IDs to get children of. */
     'parents' => array(),
     /* Also export the listed parent resources
