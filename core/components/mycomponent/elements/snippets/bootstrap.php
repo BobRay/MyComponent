@@ -48,6 +48,8 @@ if (!defined('MODX_CORE_PATH')) {
     } else {
         echo "\n<pre>\n";
     }
+} else {
+    echo "\n<pre>\n";
 }
 
 require_once $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'model/mycomponent/mycomponentproject.class.php';
