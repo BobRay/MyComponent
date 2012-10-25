@@ -32,8 +32,7 @@
  * MyComponent to use in creating a transport package
  *
  * Warning: Will overwrite code files for resources and elements
- * (except static elements) if CreateObjectFiles is set and dryRun
- * is not set.
+ * (except static elements) if dryRun is not set.
  *
  * Warning: Will overwrite transport files, resolvers, and
  * properties for processed elements and resources if dryRun
