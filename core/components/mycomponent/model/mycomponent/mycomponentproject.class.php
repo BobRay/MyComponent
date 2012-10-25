@@ -837,7 +837,10 @@ public function initPaths() {
         }
         $this->createCategories($mode);
 
-        $this->createResources($mode);
+        if (in_array('resources', $toProcess)) {
+            $this->createResources($mode);
+        }
+
 
         $this->createResolvers($mode);
 
