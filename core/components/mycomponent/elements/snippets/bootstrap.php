@@ -1,6 +1,6 @@
 <?php
-if (defined('MODX_ASSETS_PATH')) {
-    include MODX_ASSETS_PATH . 'mycomponents/mycomponent/core/components/mycomponent/model/mycomponent/mycomponentproject.class.php';
+if (defined('MODX_CORE_PATH')) {
+    include MODX_CORE_PATH . 'components/mycomponent/model/mycomponent/mycomponentproject.class.php';
 } else {
     include dirname(dirname(dirname(__FILE__))) . '/model/mycomponent/mycomponentproject.class.php';
 }
