@@ -140,7 +140,7 @@ class CategoryAdapter extends ObjectAdapter {
                 }
                 $fields = $element->toArray();
                 /* @var $o ElementAdapter */
-                $name = $elementType == 'modTemplate' ? $fields['template'] : $fields['name'];
+                $name = $class == 'modTemplate' ? $fields['templatename'] : $fields['name'];
                 $elementList = $this->modx->getOption($elementType, $this->helpers->props['elements']);
                 foreach ($elementList as $elementName => $propFields) {
                     if ($elementName == $name && isset($propFields['filename'])) {
