@@ -52,23 +52,21 @@ if (!defined('MODX_CORE_PATH')) {
 
 require_once $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'model/mycomponent/mycomponentproject.class.php';
 
+$props = isset($scriptProperties) ? $scriptProperties : array();
 $project = new MyComponentProject($modx);
-$project->init();
+$project->init($props);
 
 //$project->removeObjects();
 
 
 $dryRun = false; /* true is the default -- set to false for actual import */
 /* Comma-separated list of elements to process (snippets,plugins,chunks,templates) */
-$toProcess = 'snippets';
+
+$toProcess = 'snippets,plugins,chunks,templates';
 /* path to elements directory to import -- if empty, project's elements dir will be used */
-$directory = $modx->getOption('mc.core', null,
-    $modx->getOption('core_path') . 'components/mycomponent/') . 'elements/';
-
-if (!empty($directory) && ! is_dir($directory)) {
-    die ('[importobjects.php] ' . "\$directory is not a directory");
-}
-
+/*$directory = $modx->getOption('mc.core', null,
+    $modx->getOption('core_path') . 'components/example/') . 'elements/';*/
+$directory = '';
 $project->importObjects($toProcess, $directory, $dryRun);
 
 // echo print_r(ObjectAdapter::$myObjects, true);

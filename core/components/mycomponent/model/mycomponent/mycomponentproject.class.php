@@ -916,7 +916,10 @@ class MyComponentProject {
      *
      * @param bool $dryRun -- if set, will just report what it would have done
      */
-    public function importObjects($toProcess, $directory, $dryRun = true) {
+    public function importObjects($toProcess, $directory = '', $dryRun = true) {
+        if (empty($directory)) {
+            $directory = $this->myPaths['targetCore'] . 'elements/';
+        }
         $toProcess = explode(',', $toProcess);
         foreach ($toProcess as $elementType) {
             $class = 'mod' . ucfirst(substr($elementType, 0, -1));
@@ -933,7 +936,8 @@ class MyComponentProject {
                 } else {
                     $fileName = $this->helpers->getFileName($element, $class);
                 }
-                if (file_exists($fileName)) {
+                $dir = $directory . $elementType . '/';
+                if (file_exists($dir . $fileName)) {
                     $alias = $this->helpers->getNameAlias($class);
                     $object = $this->modx->getObject($class, array($alias => $element));
                     if ($object) {
@@ -944,7 +948,7 @@ class MyComponentProject {
                                 '    Skipping static element: ' . $element);
                             continue;
                         }
-                        $content = file_get_contents($fileName);
+                        $content = file_get_contents($dir . $fileName);
                         if (!empty($content)) {
                             if ($dryRun) {
                                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
