@@ -58,6 +58,7 @@ class CategoryAdapter extends ObjectAdapter {
         } else {
             $fields['parent'] = '0';
         }
+        $this->myFields = $fields;
         parent::addToModx($overwrite);
     }
 
