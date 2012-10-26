@@ -69,35 +69,42 @@ class LexiconHelper {
         $this->props =& $props;
     }
 
-    public function init(&$modx, $configFile = null) {
-        $this->modx =& $modx;
+    public function init($scriptProperties = array()) {
         clearstatcache(); /*  make sure is_dir() is current */
+
         require dirname(__FILE__) . '/mcautoload.php';
         spl_autoload_register('mc_auto_load');
         // Get the project config file
-        if (!$configFile) {
-            include dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) .
-                '/_build/config/current.project.php';
+        $currentProject = '';
+        $currentProjectPath = $this->modx->getOption('mc.root', null,
+            $this->modx->getOption('core_path') . 'components/mycomponent/') . '_build/config/current.project.php';
+        if (file_exists($currentProjectPath)) {
+            include $currentProjectPath;
         } else {
-            $configPath = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) .
-                '/_build/config/' . $configFile;
+            die('Could not find current.project.php file at: ' . $currentProjectPath);
         }
-        if (!isset($configPath)) {
-            die('Config path not set');
-        }
-        if (file_exists($configPath)) {
-            $properties = @include $configPath;
+
+        $projectConfigPath = $this->modx->getOption('mc.root', null,
+            $this->modx->getOption('core_path') . 'components/mycomponent/') .
+            '_build/config/' . strtoLower($currentProject) . '.config.php';
+
+        if (file_exists($projectConfigPath)) {
+            $properties = include $projectConfigPath;
         } else {
-            die('Could not find project config file at ' . $configPath);
+            die('Could not find Project Config file at: ' . $projectConfigPath);
         }
+
         /* Make sure that we get usable values */
-        if (empty($properties)) {
-            die('Config File was not set up correctly: ' . $configPath);
+        if (!is_array($properties) or empty($properties)) {
+            die('Config File was not set up correctly: ' . $projectConfigPath);
         }
-        $this->props = isset($this->props) ? $this->props : array();
+
+        $this->props = isset($this->props)
+            ? $this->props
+            : array();
         $this->props = array_merge($properties, $this->props);
-        unset($config, $configFile, $configProps);
-        $this->output =  "\nProject: " . $this->props['packageName'];
+        unset($currentProjectPath, $projectConfigPath);
+        $this->output = "\nProject: " . $this->props['packageName'];
         $this->source = $this->props['mycomponentRoot'];
         /* add trailing slash if missing */
         if (substr($this->source, -1) != "/") {
