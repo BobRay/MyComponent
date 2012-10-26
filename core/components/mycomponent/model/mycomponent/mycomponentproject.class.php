@@ -798,7 +798,8 @@ class MyComponentProject {
      * This function does the real work of getting the package objects from the
      * MODx database.
      */
-    public function exportComponent($overwrite = false) {
+    public function exportComponent() {
+        /* This should respect $scriptProperties['dryRun'] */
         //Only run if MC is installed
         if (!$this->isMCInstalled()) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[MyComponentProject] MyComponent must be installed to export the Project from MODx!');

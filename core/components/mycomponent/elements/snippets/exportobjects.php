@@ -113,7 +113,8 @@ if (!defined('MODX_CORE_PATH')) {
 require_once $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'model/mycomponent/mycomponentproject.class.php';
 
 $project = new MyComponentProject($modx);
-$project->init();
+$props = isset($scriptProperties) ? $scriptProperties : array();
+$project->init($props);
 $project->exportComponent(false);
 // echo print_r(ObjectAdapter::$myObjects, true);
 echo "\n\nInitial Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
