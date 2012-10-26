@@ -40,6 +40,15 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
 
         $modx = new modX();
         $modx->initialize('mgr');
+        $modx->getRequest();
+        $homeId = $modx->getOption('site_start');
+        $homeResource = $modx->getObject('modResource', $homeId);
+
+        if ($homeResource instanceof modResource) {
+            $modx->resource = $homeResource;
+        } else {
+            echo "\nNo Resource\n";
+        }
 
         $modx->setLogLevel(modX::LOG_LEVEL_ERROR);
         $modx->setLogTarget('ECHO');
@@ -47,7 +56,8 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
         require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/core/components/mycomponent/model/mycomponent/mycomponentproject.class.php';
 
         /* @var $categoryObj modCategory */
-        $this->mc = new MyComponentProject($modx, 'unittest.config.php');
+        $this->mc = new MyComponentProject($modx);
+        $this->mc->init(array(), 'unittest');
         $this->modx =& $modx;
         $this->category = key($this->mc->props['categories']);
         if ($this->category != 'UnitTest') {
@@ -126,7 +136,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
             $p = $category->get('parent');
             if (! empty($p) ) {
                 $pObj = $this->modx->GetObject('modCategory', $p);
-                $this->assertEquals($fields['parent'], $p->get('category'));
+                $this->assertEquals($fields['parent'], $pObj->get('category'));
             }
         }
 
