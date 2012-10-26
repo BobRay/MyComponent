@@ -11,14 +11,9 @@ class MyComponentProject {
     /* @var $modx modX */
     public $modx;
 
-    public $myName;
-    public $myVersion;
 
-// List of Paths for MC and the Project
     public $myPaths = array();
     public $packageNameLower = '';
-// List of all Objects
-    //public $myObjects = array();
     public $targetRoot = '';
     public $mcRoot = '';
     public $mcCore = '';
@@ -33,9 +28,9 @@ class MyComponentProject {
     protected $configPath;
 
 
-/* *****************************************************************************
-   Property Getter and Setters
-***************************************************************************** */
+    /* *****************************************************************************
+       Property Getter and Setters
+    ***************************************************************************** */
     /**
      * Convenience method for determining if MyComponent is installed.
      *
@@ -45,38 +40,34 @@ class MyComponentProject {
         return $this->myPaths['mcCore'] != '';
     }
 
-/* *****************************************************************************
-   Construction and Support Functions (in MODxObjectAdapter)
-***************************************************************************** */
+    /* *****************************************************************************
+       Construction and Support Functions (in MODxObjectAdapter)
+    ***************************************************************************** */
     public function __construct(&$modx) {
+
         if (!defined('MODE_BOOTSTRAP')) {
             die("bootstrap not defined");
         }
         $this->modx =& $modx;
-        /* Create $modx object if it doesn't exist */
-        // $this->initMODx($modx);
-        /* Get the config file */
-        //$this->init($configFile);
-        /* Set up our paths */
-        //$this->initPaths();
-
-        // $output =  print_r($this->props,true);
-        // echo $output;
     }
 
 
-    public function init($scriptProperties = array()) {
+    public function init($scriptProperties = array(), $currentProject = '') {
 
         require dirname(__FILE__) . '/mcautoload.php';
         spl_autoload_register('mc_auto_load');
-        // Get the project config file
-        $currentProject = '';
-        $currentProjectPath = $this->modx->getOption('mc.root', null,
-            $this->modx->getOption('core_path') . 'components/mycomponent/') . '_build/config/current.project.php';
-        if (file_exists($currentProjectPath)) {
-            include $currentProjectPath;
-        } else {
-            die('Could not find current.project.php file at: ' . $currentProjectPath);
+
+        if (empty($currentProject)) {
+            $currentProjectPath = $this->modx->getOption('mc.root', null,
+                $this->modx->getOption('core_path') . 'components/mycomponent/') . '_build/config/current.project.php';
+            if (file_exists($currentProjectPath)) {
+                include $currentProjectPath;
+            } else {
+                die('Could not find current.project.php file at: ' . $currentProjectPath);
+            }
+        }
+        if (empty($currentProject)) {
+            die('No current Project Set');
         }
 
         $projectConfigPath = $this->modx->getOption('mc.root', null,
@@ -90,34 +81,31 @@ class MyComponentProject {
         }
 
         /* Make sure that we get usable values */
-        if (! is_array($properties) or empty($properties)) {
+        if (!is_array($properties) or empty($properties)) {
             die('Config File was not set up correctly: ' . $projectConfigPath);
         }
 
         /* Properties sent in method call will override those in Project Config file */
-        $properties = array_merge($scriptProperties, $properties);
+        $properties = array_merge($properties, $scriptProperties);
 
         $this->packageNameLower = $properties['packageNameLower'];
 
         $this->mcRoot = isset($properties['mycomponentRoot'])
             ? $properties['mycomponentRoot']
             : '';
-        if ( empty($this->mcRoot)) {
-            die('mcRoot is not set in Project Config: ' .  $projectConfigPath);
+        if (empty($this->mcRoot)) {
+            die('mcRoot is not set in Project Config: ' . $projectConfigPath);
         }
-        if (! is_dir($this->mcRoot)) {
-            die('mcRoot set in project config is not a directory: ' .  $projectConfigPath);
+        if (!is_dir($this->mcRoot)) {
+            die('mcRoot set in project config is not a directory: ' . $projectConfigPath);
         }
         $this->mcRoot = $this->modx->getOption('mc.root', null,
             $this->modx->getOption('core_path') . 'components/mycomponent/');
 
-        $this->targetRoot = isset($properties['targetRoot'])
-            ? $properties['targetRoot']
-            : '';
-
+        $this->targetRoot = $this->modx->getOption('targetRoot', $properties, '');
 
         if (empty($this->targetRoot)) {
-            die('targetRoot is not set');
+            die('targetRoot is not set in project config file');
         }
         $this->props = $properties;
         $this->initPaths();
@@ -139,7 +127,7 @@ class MyComponentProject {
      * @param $configPath string - path to project config file
      */
     public function updateProjectsFile($configPath) {
-        $projectsFile = $this->mcRoot  . '_build/config/projects.php';
+        $projectsFile = $this->mcRoot . '_build/config/projects.php';
         $header = '<' . '?' . 'php' . "\n\n\$projects = array(\n";
         $footer = ");\nreturn \$projects;\n";
         $newContent = $this->packageNameLower . "' => '" . $configPath .
@@ -171,48 +159,48 @@ class MyComponentProject {
     /**
      * Sets up the Path variables for the Component Project. Called in __construct.
      */
-public function initPaths() {
+    public function initPaths() {
 
-    $paths = array();
-    $name = $this->props['packageNameLower'];
-    // @var $ns modNameSpace
+        $paths = array();
+        $name = $this->props['packageNameLower'];
+        // @var $ns modNameSpace
 
-    $paths['mcRoot'] = $this ->mcRoot;
-    $paths['mcCore'] = $this->mcRoot . 'core/components/mycomponent/';
-    $paths['mcModel'] = $paths['mcCore'] . 'model/mycomponent/';
-    $paths['mcBuild'] = $this->mcRoot . '_build/';
-    $paths['mcElements'] = $paths['mcCore'] . 'elements/';
-    $paths['mcTpl'] = $paths['mcElements'] . 'chunks/';
+        $paths['mcRoot'] = $this->mcRoot;
+        $paths['mcCore'] = $this->mcRoot . 'core/components/mycomponent/';
+        $paths['mcModel'] = $paths['mcCore'] . 'model/mycomponent/';
+        $paths['mcBuild'] = $this->mcRoot . '_build/';
+        $paths['mcElements'] = $paths['mcCore'] . 'elements/';
+        $paths['mcTpl'] = $paths['mcElements'] . 'chunks/';
 
-    /*  Set the Root path for this Component */
-    $paths['targetRoot'] = $this->targetRoot;
-    /* Basic Paths */
-        $paths['targetCore']      = $paths['targetRoot'] . 'core/components/' . $name . '/';
-            $paths['targetControl']   = $paths['targetCore'] . 'controllers/';
-            $paths['targetDocs']      = $paths['targetCore'] . 'docs/';
-            $paths['targetElements']  = $paths['targetCore'] . 'elements/';
-            $paths['targetLexicon']   = $paths['targetCore'] . 'lexicon/';
-            $paths['targetModel']     = $paths['targetCore'] . 'model/' . $name . '/';
-            $paths['targetProcess']   = $paths['targetCore'] . 'processors/';
-        $paths['targetAssets']    = $paths['targetRoot'] . 'assets/components/' . $name . '/';
-            $paths['targetCss']       = $paths['targetAssets'] . 'css/';
-            $paths['targetJs']        = $paths['targetAssets'] . 'js/';
-            $paths['targetImages']    = $paths['targetAssets'] . 'images/';
-        $paths['targetBuild']     = $paths['targetRoot'] . '_build/';
-            $paths['targetData']      = $paths['targetBuild'] . 'data/';
-            $paths['targetResources'] = $paths['targetData'] . '_resources/';
-            $paths['targetProperties'] = $paths['targetData'] . 'properties/';
-            $paths['targetResolve']   = $paths['targetBuild'] . 'resolvers/';
-            $paths['targetValidate']  = $paths['targetBuild'] . 'validators/';
+        /*  Set the Root path for this Component */
+        $paths['targetRoot'] = $this->targetRoot;
+        /* Basic Paths */
+        $paths['targetCore'] = $paths['targetRoot'] . 'core/components/' . $name . '/';
+        $paths['targetControl'] = $paths['targetCore'] . 'controllers/';
+        $paths['targetDocs'] = $paths['targetCore'] . 'docs/';
+        $paths['targetElements'] = $paths['targetCore'] . 'elements/';
+        $paths['targetLexicon'] = $paths['targetCore'] . 'lexicon/';
+        $paths['targetModel'] = $paths['targetCore'] . 'model/' . $name . '/';
+        $paths['targetProcess'] = $paths['targetCore'] . 'processors/';
+        $paths['targetAssets'] = $paths['targetRoot'] . 'assets/components/' . $name . '/';
+        $paths['targetCss'] = $paths['targetAssets'] . 'css/';
+        $paths['targetJs'] = $paths['targetAssets'] . 'js/';
+        $paths['targetImages'] = $paths['targetAssets'] . 'images/';
+        $paths['targetBuild'] = $paths['targetRoot'] . '_build/';
+        $paths['targetData'] = $paths['targetBuild'] . 'data/';
+        $paths['targetResources'] = $paths['targetData'] . '_resources/';
+        $paths['targetProperties'] = $paths['targetData'] . 'properties/';
+        $paths['targetResolve'] = $paths['targetBuild'] . 'resolvers/';
+        $paths['targetValidate'] = $paths['targetBuild'] . 'validators/';
 
         /* Set myPathc class member */
         $this->myPaths = $paths;
 
-}
+    }
 
-/* *****************************************************************************
-   Bootstrap and Support Functions
-***************************************************************************** */
+    /* *****************************************************************************
+       Bootstrap and Support Functions
+    ***************************************************************************** */
 
     public function bootstrap() {
         /* enable garbage collection() */
@@ -229,18 +217,18 @@ public function initPaths() {
         $helpers = $this->helpers;
         $objects = $this->bootstrapObjects;
 
-    /* Create basic files (no resolvers, transport files, or code files) */
+        /* Create basic files (no resolvers, transport files, or code files) */
         $this->createBasics();
-    /* Create all MODX objects */
+        /* Create all MODX objects */
         $this->createObjects($mode);
 
-    /* Create Validators */
+        /* Create Validators */
         $this->createValidators();
 
-    /* Create all Resolvers */
+        /* Create all Resolvers */
         $this->createResolvers($mode);
 
-    /* Create Intersects for all many-to-many relationships */
+        /* Create Intersects for all many-to-many relationships */
         $this->createIntersects();
 
         $this->createTransportFiles($mode);
@@ -283,6 +271,7 @@ public function initPaths() {
         $this->createResources($mode);
 
     }
+
     public function createNamespaces($mode = MODE_BOOTSTRAP) {
         if (!empty($this->props['namespaces'])) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating namespace(s)');
@@ -296,6 +285,7 @@ public function initPaths() {
             }
         }
     }
+
     public function createCategories($mode = MODE_BOOTSTRAP) {
         $categories = $this->modx->getOption('categories', $this->props, array());
 
@@ -334,7 +324,7 @@ public function initPaths() {
                     'propertySets'
                 );
                 $toProcess = array();
-                foreach($possibleElements as $element) {
+                foreach ($possibleElements as $element) {
                     if (in_array($element, $elementsToProcess)) {
                         $toProcess[] = $element;
                     }
@@ -349,6 +339,7 @@ public function initPaths() {
         CategoryAdapter::writeCategoryFile($dir, $this->helpers);
 
     }
+
     public function createNewSystemSettings($mode = MODE_BOOTSTRAP) {
 
         $newSystemSettings = $this->modx->getOption('newSystemSettings', $this->props, array());
@@ -358,7 +349,7 @@ public function initPaths() {
         if ($mode == MODE_BOOTSTRAP) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating new System Settings');
             foreach ($this->props['newSystemSettings'] as $key => $fields) {
-                if (! isset($fields['key'])) {
+                if (!isset($fields['key'])) {
                     $fields['key'] = $key;
                 }
                 $this->addToModx('SystemSettingAdapter', $fields);
@@ -378,6 +369,7 @@ public function initPaths() {
             }
         }
     }
+
     public function createNewSystemEvents($mode = MODE_BOOTSTRAP) {
         $newSystemEvents = $this->modx->getOption('newSystemEvents', $this->props, array());
         if (empty($newSystemEvents)) {
@@ -394,7 +386,7 @@ public function initPaths() {
             }
         } elseif ($mode == MODE_EXPORT) {
             /* These come from the project config file */
-            foreach($newSystemEvents as $k => $fields) {
+            foreach ($newSystemEvents as $k => $fields) {
                 $obj = $this->modx->getObject('modEvent', array('name' => $fields['name']));
                 if ($obj) {
                     $fields = $obj->toArray();
@@ -404,6 +396,7 @@ public function initPaths() {
         }
 
     }
+
     public function createElements($mode = MODE_BOOTSTRAP) {
         if ($mode == MODE_BOOTSTRAP) {
             /* Create elements from the project config file.
@@ -525,8 +518,10 @@ public function initPaths() {
         /* These user-specific resolvers never get updated, even on Export */
         $extraResolvers = $this->modx->getOption('resolvers', $this->props, array());
         $dir = $this->myPaths['targetResolve'];
-        foreach($extraResolvers as $k => $name) {
-            $name = ($name == 'default') ? $this->packageNameLower : $name;
+        foreach ($extraResolvers as $k => $name) {
+            $name = ($name == 'default')
+                ? $this->packageNameLower
+                : $name;
             $name = strtolower($name);
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating resolver: ' . $name);
             $tpl = $this->helpers->getTpl('genericresolver.php');
@@ -536,7 +531,7 @@ public function initPaths() {
                     '[MyComponentProject] genericresolver tpl is empty');
                 continue;
             }
-            $fileName =  $name . '.resolver.php';
+            $fileName = $name . '.resolver.php';
             if (!file_exists($dir . '/' . $fileName)) {
                 $this->helpers->writeFile($dir, $fileName, $tpl);
             } else {
@@ -613,17 +608,19 @@ public function initPaths() {
         }
 
         /* Create language directories and files specified in project config */
-        if (isset ($this->props['languages']) &&  ! empty($this->props['languages'])) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,'Creating Lexicon files');
+        if (isset ($this->props['languages']) && !empty($this->props['languages'])) {
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating Lexicon files');
             $lexiconBase = $this->myPaths['targetCore'] . 'lexicon/';
-            foreach($this->props['languages'] as $language => $languageFiles) {
+            foreach ($this->props['languages'] as $language => $languageFiles) {
                 $dir = $lexiconBase . 'lexicon/' . $language;
-                $files = !empty($languageFiles)? $languageFiles : array();
-                foreach($files as $file){
+                $files = !empty($languageFiles)
+                    ? $languageFiles
+                    : array();
+                foreach ($files as $file) {
                     $fileName = $file . '.inc.php';
-                    if (! file_exists($dir . '/' . $fileName)){
+                    if (!file_exists($dir . '/' . $fileName)) {
                         $tpl = $this->helpers->getTpl('phpfile.php');
-                        $tpl = str_replace('[[+elementName]]', $language . ' '. $file . ' topic', $tpl);
+                        $tpl = str_replace('[[+elementName]]', $language . ' ' . $file . ' topic', $tpl);
                         $tpl = str_replace('[[+description]]', $language . ' ' . $file . ' topic lexicon strings', $tpl);
                         $tpl = str_replace('[[+elementType]]', 'lexicon file', $tpl);
                         $tpl = $this->helpers->replaceTags($tpl);
@@ -640,11 +637,11 @@ public function initPaths() {
             ? $this->props['docs']
             : array();
 
-        if (! empty($docs)) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,'Creating doc files');
+        if (!empty($docs)) {
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating doc files');
             $toDir = $this->myPaths['targetCore'] . 'docs/';
-            foreach($docs as $doc) {
-                if (! file_exists($toDir . $doc )) {
+            foreach ($docs as $doc) {
+                if (!file_exists($toDir . $doc)) {
                     $tpl = $this->helpers->getTpl($doc);
                     $tpl = $this->helpers->replaceTags($tpl);
                     $this->helpers->writeFile($toDir, $doc, $tpl);
@@ -657,7 +654,7 @@ public function initPaths() {
             ? $this->props['readme.md']
             : false;
         if ($readmeMd) {
-            if (! file_exists($this->myPaths['targetRoot'] . 'readme.md')) {
+            if (!file_exists($this->myPaths['targetRoot'] . 'readme.md')) {
                 $tpl = $this->helpers->getTpl('readme.md');
                 $tpl = $this->helpers->replaceTags($tpl);
                 $this->helpers->writeFile($this->myPaths['targetRoot'], 'readme.md', $tpl);
@@ -669,8 +666,8 @@ public function initPaths() {
 
         $fileContent = file_get_contents($this->mcRoot . '_build/utilities/jsmin.class.php');
         if (!empty($fileContent)) {
-            if (! file_exists($this->myPaths['targetBuild'] . 'utilities/jsmin.class.php')) {
-               $this->helpers->writeFile($this->myPaths['targetBuild'] . 'utilities' , 'jsmin.class.php', $fileContent);
+            if (!file_exists($this->myPaths['targetBuild'] . 'utilities/jsmin.class.php')) {
+                $this->helpers->writeFile($this->myPaths['targetBuild'] . 'utilities', 'jsmin.class.php', $fileContent);
             } else {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    jsmin class file already exists');
             }
@@ -686,19 +683,21 @@ public function initPaths() {
     /** Creates assets directories and (optionally) empty css and js files
      * if set in project config file */
     public function CreateAssetsDirs() {
-        if (! $this->props['hasAssets']) {
+        if (!$this->props['hasAssets']) {
             return;
         }
-        $optionalDirs = !empty($this->props['assetsDirs'])? $this->props['assetsDirs'] : array();
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,'Creating Assets directories');
-        foreach($optionalDirs as $dir => $val) {
+        $optionalDirs = !empty($this->props['assetsDirs'])
+            ? $this->props['assetsDirs']
+            : array();
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating Assets directories');
+        foreach ($optionalDirs as $dir => $val) {
             $targetDir = $this->myPaths['targetAssets'] . $dir;
-            if ($val && (! is_dir($targetDir)) ) {
+            if ($val && (!is_dir($targetDir))) {
                 if (mkdir($targetDir, $this->dirPermission, true)) {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,'    Created ' . $targetDir . ' directory');
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Created ' . $targetDir . ' directory');
                 }
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,'    Assets/' . $dir . ' directory already exists');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Assets/' . $dir . ' directory already exists');
             }
             if ($dir == 'css' || $dir == 'js') {
                 $path = $this->myPaths['targetAssets'] . $dir;
@@ -719,12 +718,12 @@ public function initPaths() {
     /** Creates example file for user input during install if set in project config file */
     public function createInstallOptions() {
         $iScript = $this->modx->getOption('install.options', $this->props, '');
-        if (! empty($iScript)) {
+        if (!empty($iScript)) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating Install Options');
             $dir = $this->targetRoot . '_build/install.options';
             $fileName = 'user.input.php';
 
-            if (! file_exists($dir . '/' . $fileName)) {
+            if (!file_exists($dir . '/' . $fileName)) {
                 $tpl = $this->helpers->getTpl($fileName);
                 $tpl = $this->helpers->replaceTags($tpl);
                 $this->helpers->writeFile($dir, $fileName, $tpl);
@@ -752,7 +751,7 @@ public function initPaths() {
                     $tpl = $this->helpers->replaceTags($tpl);
                     $this->helpers->writeFile($dir, $fileName, $tpl);
                 } else {
-                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    '  . $fileName . ' already exists');
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
                 }
             }
         }
@@ -763,21 +762,23 @@ public function initPaths() {
     public function createClassFiles() {
         /* @var $element modElement */
         $classes = $this->modx->getOption('classes', $this->props, array());
-        $classes = !empty($classes) ? $classes : array();
+        $classes = !empty($classes)
+            ? $classes
+            : array();
         if (!empty($classes)) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating class files');
             $baseDir = $this->myPaths['targetCore'] . 'model';
-            foreach($classes as $className => $data) {
+            foreach ($classes as $className => $data) {
                 $data = explode(':', $data);
                 if (!empty($data[1])) {
                     $dir = $baseDir . '/' . $data[0] . '/' . $data[1];
-                } else {  /* no directory */
+                } else { /* no directory */
                     $dir = $baseDir . '/' . $data[0];
                 }
                 $fileName = strtolower($className) . '.class.php';
                 if (!file_exists($dir . '/' . $fileName)) {
                     $tpl = $this->helpers->getTpl('classfile.php');
-                    $tpl = str_replace('MyClass', $className, $tpl );
+                    $tpl = str_replace('MyClass', $className, $tpl);
                     $tpl = str_replace('[[+className]]', $className, $tpl);
                     $tpl = $this->helpers->replaceTags($tpl);
                     $this->helpers->writeFile($dir, $fileName, $tpl);
@@ -789,18 +790,18 @@ public function initPaths() {
         }
     }
 
-/* *****************************************************************************
-   Export Objects and Support Functions
-***************************************************************************** */
+    /* *****************************************************************************
+       Export Objects and Support Functions
+    ***************************************************************************** */
 
     /**
      * This function does the real work of getting the package objects from the
      * MODx database.
      */
     public function exportComponent($overwrite = false) {
-    //Only run if MC is installed
-        if (!$this->isMCInstalled())
-        {   $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[MyComponentProject] MyComponent must be installed to export the Project from MODx!');
+        //Only run if MC is installed
+        if (!$this->isMCInstalled()) {
+            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[MyComponentProject] MyComponent must be installed to export the Project from MODx!');
             return;
         }
 
@@ -833,7 +834,7 @@ public function initPaths() {
      */
     public function removeObjects() {
         $categories = $this->props['categories'];
-        foreach($categories as $category => $fields) {
+        foreach ($categories as $category => $fields) {
             $catObj = $this->modx->getObject('modCategory', array('category' => $category));
             if ($catObj) {
                 $categoryId = $catObj->get('id');
@@ -841,26 +842,26 @@ public function initPaths() {
                 die('could not find category: ' . $category);
             }
             $elements = array(
-             'modChunk',
-             'modSnippet',
-             'modTemplate',
-             'modTemplateVar',
-             'modPlugin',
-             'modPropertySet',
+                'modChunk',
+                'modSnippet',
+                'modTemplate',
+                'modTemplateVar',
+                'modPlugin',
+                'modPropertySet',
             );
 
-            foreach($elements as $element) {
+            foreach ($elements as $element) {
 
                 $objs = $this->modx->getCollection($element, array('category' => $categoryId));
-                foreach($objs as $obj) {
+                foreach ($objs as $obj) {
                     /* @var $obj xPDOObject */
                     if ($obj) {
                         $obj->remove();
                     }
                 }
             }
+            $catObj->remove();
         }
-
 
 
         $objects = array(
@@ -883,13 +884,13 @@ public function initPaths() {
             'PropertySet2' => 'modPropertySet',
         );
 
-        foreach($objects as $object => $type) {
+        foreach ($objects as $object => $type) {
             $name = 'name';
             if ($type == 'modTemplate') $name = 'templatename';
             if ($type == 'modResource') $name = 'pagetitle';
             if ($type == 'modSystemSetting') $name = 'key';
             $obj = $this->modx->getObject($type, array($name => $object));
-            if (! $obj) {
+            if (!$obj) {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[MyComponentProject] Could not find ' . $type . ' ' . $object);
             } else {
                 $obj->remove();
@@ -900,9 +901,10 @@ public function initPaths() {
             }
         }
     }
-/* *****************************************************************************
-   Import Objects and Support Functions
-***************************************************************************** */
+
+    /* *****************************************************************************
+       Import Objects and Support Functions
+    ***************************************************************************** */
 
 
     /**
@@ -915,11 +917,11 @@ public function initPaths() {
      */
     public function importObjects($toProcess, $directory, $dryRun = true) {
         $toProcess = explode(',', $toProcess);
-        foreach($toProcess as $elementType) {
+        foreach ($toProcess as $elementType) {
             $class = 'mod' . ucfirst(substr($elementType, 0, -1));
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing ' . $elementType);
             $elements = $this->props['elements'][$elementType];
-            foreach($elements as $element => $fields) {
+            foreach ($elements as $element => $fields) {
                 if (isset($fields['static']) && !empty($fields['static'])) {
                     $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
                         '    Skipping static element: ' . $element);
@@ -950,7 +952,7 @@ public function initPaths() {
                                 $object->setContent($content);
                                 if ($object->save()) {
                                     $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                                        '    Updated: ' . $element );
+                                        '    Updated: ' . $element);
                                 }
                             }
                         }
