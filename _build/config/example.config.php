@@ -119,10 +119,35 @@ $components = array(
 
     /* *************************** MENUS ****************************** */
 
-    /* If your extra needs Menus, set this to true, create them
-     * in the Manager, and export them with exportObjects. Be sure
-     * to set their namespace to the lowercase package name of your extra */
-    'menus' => false,
+    /* If your extra needs Menus, you can create them here
+     * or create them in the Manager, and export them with exportObjects.
+     * Be sure to set their namespace to the lowercase package name
+     * of your extra.
+     *
+     * Every menu should have exactly one action */
+
+    'menus' => array(
+        'Example' => array(
+            'text' => 'Example',
+            'parent' => 'components',
+            'description' => 'example.menu_desc',
+            'icon' => '',
+            'menuindex' => 0,
+            'params' => '',
+            'handler' => '',
+            'permissions' => '',
+
+            'action' => array(
+                'id' => '',
+                'namespace' => 'example',
+                'controller' => 'index',
+                'haslayout' => true,
+                'lang_topics' => 'example:default',
+                'assets' => '',
+            ),
+        ),
+    ),
+
 
     /* ************************* ELEMENTS **************************** */
 

@@ -276,6 +276,9 @@ class MyComponentProject {
         /* Create resources */
         $this->createResources($mode);
 
+        /* Create menus */
+        $this->createMenus($mode);
+
         if ($mode == MODE_REMOVE) {
             /*  Create namespace */
             $this->createNamespaces($mode);
@@ -495,6 +498,29 @@ class MyComponentProject {
         }
     }
 
+    public function createMenus($mode = MODE_BOOTSTRAP) {
+        if (!empty($this->props['menus'])) {
+            if ($mode != MODE_EXPORT) {
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+                    'Processing Menus');
+            }
+            foreach ($this->props['menus'] as $k => $fields) {
+                if ($mode == MODE_BOOTSTRAP) {
+                    $this->addToModx('MenuAdapter', $fields);
+                } elseif ($mode == MODE_EXPORT || $mode == MODE_REMOVE) {
+                    $a = new MenuAdapter($this->modx, $this->helpers, $fields, $mode);
+                    if ($mode == MODE_EXPORT) {
+                        //$a->export();
+                    } elseif ($mode == MODE_REMOVE) {
+                        $a->remove();
+                    }
+
+                }
+
+            }
+        }
+    }
+
 
     /**
      * Called on Bootstrap to add items to MODX
@@ -619,6 +645,7 @@ class MyComponentProject {
         ResourceAdapter::createTransportFiles($this->helpers, $mode);
         SystemSettingAdapter::createTransportFiles($this->helpers, $mode);
         SystemEventAdapter::createTransportFiles($this->helpers, $mode);
+        MenuAdapter::createTransportFiles($this->helpers, $mode);
     }
 
     /** Creates main build.transport.php, build.config.php and
