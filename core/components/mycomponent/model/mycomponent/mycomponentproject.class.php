@@ -4,6 +4,7 @@ if (!defined('MODE_BOOTSTRAP')) {
     define('MODE_BOOTSTRAP', 0);
     define('MODE_EXPORT', 1);
     define('MODE_IMPORT', 2);
+    define('MODE_REMOVE', 3);
 }
 
 
@@ -240,23 +241,27 @@ class MyComponentProject {
      * Creates Adapter Objects
      * Called for both Bootstrap and ExportObjects
      *
-     * For Bootstrap, creates objects in MODX and
+     * For MODE_BOOTSTRAP, creates objects in MODX and
      * creates code files for them
      *
-     * For Export Objects, finds objects in MODX
+     * For MODE_EXPORT, finds objects in MODX
      * and creates code files for them.
      *
      * In both cases the objects fields and resolver
      * fields are written to ObjectAdapter::myObjects
      *
+     * for MODE_REMOVE, object is removed from MODX
+     *
      * @param int $mode
      */
     public function createObjects($mode = MODE_BOOTSTRAP) {
-        /*  Create namespace */
-        $this->createNamespaces($mode);
+        if ($mode != MODE_REMOVE) {
+            /*  Create namespace */
+            $this->createNamespaces($mode);
 
-        /* create category or categories*/
-        $this->createCategories($mode);
+            /* create category or categories*/
+            $this->createCategories($mode);
+        }
 
         /* create system settings */
         $this->createNewSystemSettings($mode);
@@ -270,16 +275,29 @@ class MyComponentProject {
         /* Create resources */
         $this->createResources($mode);
 
+        if ($mode == MODE_REMOVE) {
+            /*  Create namespace */
+            $this->createNamespaces($mode);
+
+            /* create category or categories*/
+            $this->createCategories($mode);
+        }
+
+
     }
 
     public function createNamespaces($mode = MODE_BOOTSTRAP) {
         if (!empty($this->props['namespaces'])) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating namespace(s)');
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing namespace(s)');
             foreach ($this->props['namespaces'] as $namespace => $fields) {
                 if ($mode == MODE_BOOTSTRAP) {
                     $this->addToModx('NameSpaceAdapter', $fields);
-                } elseif ($mode == MODE_EXPORT) {
-                    new NamespaceAdapter($this->modx, $this->helpers, $fields);
+                } elseif ($mode == MODE_EXPORT || $mode == MODE_REMOVE) {
+                    $a = new NamespaceAdapter($this->modx, $this->helpers, $fields);
+                    if ($mode == MODE_REMOVE) {
+                        $a->remove();
+                    }
+
                 }
 
             }
@@ -311,7 +329,7 @@ class MyComponentProject {
 
             if ($mode == MODE_BOOTSTRAP) {
                 $o->addToModx();
-            } elseif ($mode == MODE_EXPORT) {
+            } elseif ($mode == MODE_EXPORT || $mode == MODE_REMOVE) {
                 /* The Category will process any elements in the category */
                 /* that are specified in the project config file 'process' member */
                 $elementsToProcess = $this->modx->getOption('process', $this->props, array());
@@ -324,13 +342,21 @@ class MyComponentProject {
                     'propertySets'
                 );
                 $toProcess = array();
-                foreach ($possibleElements as $element) {
-                    if (in_array($element, $elementsToProcess)) {
-                        $toProcess[] = $element;
+                if ($mode == MODE_REMOVE) {
+                    $toProcess = $possibleElements;
+                } else {
+                    foreach ($possibleElements as $element) {
+                        if (in_array($element, $elementsToProcess)) {
+                            $toProcess[] = $element;
+                        }
                     }
                 }
                 unset($elementsToProcess, $possibleElements);
-                $o->exportElements($toProcess, !empty($this->props['dryRun']));
+                if ($mode == MODE_EXPORT) {
+                    $o->exportElements($toProcess, !empty($this->props['dryRun']));
+                } elseif ($mode = MODE_REMOVE) {
+                    $o->remove($toProcess);
+                }
             }
         }
 
@@ -347,7 +373,7 @@ class MyComponentProject {
             return;
         }
         if ($mode == MODE_BOOTSTRAP) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating new System Settings');
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing new System Settings');
             foreach ($this->props['newSystemSettings'] as $key => $fields) {
                 if (!isset($fields['key'])) {
                     $fields['key'] = $key;
@@ -361,7 +387,11 @@ class MyComponentProject {
                 $obj = $this->modx->getObject('modSystemSetting', array('key' => $fields['key']));
                 if ($obj) {
                     $fields = $obj->toArray();
-                    new SystemSettingAdapter($this->modx, $this->helpers, $fields, $mode);
+                    $a = new SystemSettingAdapter($this->modx, $this->helpers, $fields, $mode);
+                    if ($mode == MODE_REMOVE) {
+                        $a->remove();
+                    }
+
                 } else {
                     $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
                         '[MyComponentProject] Could not find System Setting with key: ' . $fields['key']);
@@ -375,8 +405,8 @@ class MyComponentProject {
         if (empty($newSystemEvents)) {
             return;
         }
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing new System Events');
         if ($mode == MODE_BOOTSTRAP) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating new System Events');
             foreach ($newSystemEvents as $key => $fields) {
                 $fields['name'] = isset($fields['name'])
                     ? $fields['name']
@@ -384,13 +414,16 @@ class MyComponentProject {
 
                 $this->addToModx('SystemEventAdapter', $fields);
             }
-        } elseif ($mode == MODE_EXPORT) {
+        } elseif ($mode == MODE_EXPORT || $mode == MODE_REMOVE) {
             /* These come from the project config file */
             foreach ($newSystemEvents as $k => $fields) {
                 $obj = $this->modx->getObject('modEvent', array('name' => $fields['name']));
                 if ($obj) {
                     $fields = $obj->toArray();
-                    new SystemEventAdapter($this->modx, $this->helpers, $fields);
+                    $a = new SystemEventAdapter($this->modx, $this->helpers, $fields);
+                    if ($mode == MODE_REMOVE) {
+                        $a->remove();
+                    }
                 }
             }
         }
@@ -398,24 +431,29 @@ class MyComponentProject {
     }
 
     public function createElements($mode = MODE_BOOTSTRAP) {
-        if ($mode == MODE_BOOTSTRAP) {
+        if ($mode == MODE_BOOTSTRAP || $mode == MODE_REMOVE) {
             /* Create elements from the project config file.
              * In Export, they're pulled by category in the
              * CategoryAdapter, so not done here */
             if (isset($this->props['elements']) && !empty($this->props['elements'])) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating elements');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing elements');
                 $elements = $this->props['elements'];
                 foreach ($elements as $element => $elementObjects) {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating ' . $element);
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Processing ' . $element);
                     foreach ($elementObjects as $elementName => $fields) {
                         /* @var $adapter elementAdapter */
+                        /* @var $o ObjectAdapter */
                         $adapterName = ucFirst(substr($element, 0, -1)) . 'Adapter';
                         $fields['name'] = isset($fields['name'])
                             ? $fields['name']
                             : $elementName;
-
-                        $o = $this->addToModx($adapterName, $fields);
-                        $o->createCodeFile();
+                        if ($mode == MODE_BOOTSTRAP) {
+                            $o = $this->addToModx($adapterName, $fields);
+                            $o->createCodeFile();
+                        } elseif ($mode == MODE_REMOVE) {
+                            $o = new $adapterName($this->modx, $this->helpers, $fields);
+                            $o -> remove();
+                        }
                     }
                 }
             }
@@ -429,7 +467,7 @@ class MyComponentProject {
             if (isset($this->props['resources']) && !empty($this->props['resources'])) {
                 /* @var $o ResourceAdapter */
                 $o = null;
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating Resources');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing Resources');
                 foreach ($this->props['resources'] as $resource => $fields) {
                     $fields['pagetitle'] = empty($fields['pagetitle'])
                         ? $resource
@@ -439,10 +477,10 @@ class MyComponentProject {
                     $o->createCodeFile();
                 }
             }
-        } elseif ($mode == MODE_EXPORT) {
+        } elseif ($mode == MODE_EXPORT || $mode == MODE_REMOVE) {
             /* Resource Adapter gets resources based on the project config file's
              * 'ExportResources' member */
-            ResourceAdapter::exportResources($this->modx, $this->helpers, $this->props);
+            ResourceAdapter::exportResources($this->modx, $this->helpers, $this->props, $mode);
         }
     }
 
@@ -829,83 +867,9 @@ class MyComponentProject {
         $this->createTransportFiles($mode);
     }
 
-
-    /**
-     * Utility function to remove objects from MODX during development
-     */
-    public function removeObjects() {
-        $categories = $this->props['categories'];
-        foreach ($categories as $category => $fields) {
-            $catObj = $this->modx->getObject('modCategory', array('category' => $category));
-            if ($catObj) {
-                $categoryId = $catObj->get('id');
-            } else {
-                die('could not find category: ' . $category);
-            }
-            $elements = array(
-                'modChunk',
-                'modSnippet',
-                'modTemplate',
-                'modTemplateVar',
-                'modPlugin',
-                'modPropertySet',
-            );
-
-            foreach ($elements as $element) {
-
-                $objs = $this->modx->getCollection($element, array('category' => $categoryId));
-                foreach ($objs as $obj) {
-                    /* @var $obj xPDOObject */
-                    if ($obj) {
-                        $obj->remove();
-                    }
-                }
-            }
-            $catObj->remove();
-        }
-
-
-        $objects = array(
-            'Resource1' => 'modResource',
-            'Resource2' => 'modResource',
-            'Snippet1' => 'modSnippet',
-            'Snippet2' => 'modSnippet',
-            'Chunk1' => 'modChunk',
-            'Chunk2' => 'modChunk',
-            'Plugin1' => 'modPlugin',
-            'Plugin2' => 'modPlugin',
-            'Template1' => 'modTemplate',
-            'Template2' => 'modTemplate',
-            'Tv1' => 'modTemplateVar',
-            'Tv2' => 'modTemplateVar',
-            'Example' => 'modNamespace',
-            'OnMyEvent1' => 'modEvent',
-            'OnMyEvent2' => 'modEvent',
-            'PropertySet1' => 'modPropertySet',
-            'PropertySet2' => 'modPropertySet',
-        );
-
-        foreach ($objects as $object => $type) {
-            $name = 'name';
-            if ($type == 'modTemplate') $name = 'templatename';
-            if ($type == 'modResource') $name = 'pagetitle';
-            if ($type == 'modSystemSetting') $name = 'key';
-            $obj = $this->modx->getObject($type, array($name => $object));
-            if (!$obj) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[MyComponentProject] Could not find ' . $type . ' ' . $object);
-            } else {
-                $obj->remove();
-            }
-            $c = $this->modx->getObject('modCategory', array('category' => 'Example'));
-            if ($c) {
-                $c->remove();
-            }
-        }
-    }
-
     /* *****************************************************************************
-       Import Objects and Support Functions
-    ***************************************************************************** */
+        Import Objects and Support Functions
+     ***************************************************************************** */
 
 
     /**
@@ -974,5 +938,47 @@ class MyComponentProject {
         }
 
     }
+
+    /* *****************************************************************************
+        Development Utilities
+     ***************************************************************************** */
+    /**
+     * Utility function to remove objects from MODX during development
+     */
+    public function removeObjects($removeFiles = false) {
+        $oldLogLevel = $this->modx->setLogLevel(MODX::LOG_LEVEL_ERROR);
+        $this->createObjects(MODE_REMOVE);
+        if ($removeFiles) {
+            $dir = $this->targetRoot;
+            if (! ($this->targetRoot == $this->props['targetRoot'])) {
+                die('mismatched targetRoot -- aborting remove directory');
+            }
+
+            rrmdir($dir);
+        }
+        $this->modx->setLogLevel($oldLogLevel);
+    }
+
+    /** recursive remove dir function */
+    public function rrmdir($dir) {
+        if (is_dir($dir)) {
+            $objects = scandir($dir);
+            foreach ($objects as $object) {
+                if ($object != "." && $object != "..") {
+                    if (filetype($dir . "/" . $object) == "dir") {
+                        $this->rrmdir($dir . "/" . $object);
+                    } else {
+                        unlink($dir . "/" . $object);
+                    }
+                }
+            }
+            reset($objects);
+            rmdir($dir);
+        }
+
+    }
+
+
+
 }
 

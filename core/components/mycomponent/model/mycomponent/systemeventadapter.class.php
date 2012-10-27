@@ -4,6 +4,8 @@
 class SystemEventAdapter extends ObjectAdapter
 {//This will never change.
     protected $dbClass = 'modEvent';
+    protected $dbClassIDKey = 'name';
+    protected $dbClassNameKey = 'name';
     /* @var $modx modX */
     public $modx;
     /* @var $helpers Helpers */

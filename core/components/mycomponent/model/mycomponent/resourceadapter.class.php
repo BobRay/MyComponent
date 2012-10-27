@@ -107,14 +107,17 @@ class ResourceAdapter extends ObjectAdapter
      * represented by the IDs -- only executes on export.
      * @param $fields array
      */
-    public function fieldsToNames(&$fields) {
+    public function fieldsToNames(&$fields, $mode = MODE_BOOTSTRAP) {
         if (!empty($fields['parent'])) {
             $parentObj = $this->modx->getObject('modResource', $fields['parent']);
             if ($parentObj) {
                 $fields['parent'] =  $parentObj->get('pagetitle');
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[ResourceAdapter] Could not find parent for resource: ' .
-                    $fields['parent']);
+                if ($mode != MODE_REMOVE) {
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
+                        '[ResourceAdapter] Could not find parent for resource: ' .
+                        $fields['parent']);
+                }
             }
         }
         if (!empty($fields['template'])) {
@@ -247,14 +250,14 @@ class ResourceAdapter extends ObjectAdapter
     }*/
 
 
-    static function exportResources(&$modx, &$helpers, $props) {
+    static function exportResources(&$modx, &$helpers, $props, $mode = MODE_EXPORT) {
         /* @var $modx modX */
         /* @var $helpers Helpers */
         $objects = array();
 
         /* Add resources from exportResources array in the project config file
           to $this->myObjects array */
-        $helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Exporting Resources');
+        $helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing Resources');
         $byId = $modx->getOption('getResourcesById', $props, false);
         $method = $byId? 'ID' : 'pagetitle';
         $resources = $modx->getOption('exportResources', $props, array());
@@ -301,7 +304,10 @@ class ResourceAdapter extends ObjectAdapter
             /* @var $object modResource */
             foreach($objects as $object) {
                 $fields = $object->toArray();
-                new ResourceAdapter($modx, $helpers, $fields, MODE_EXPORT);
+                $a = new ResourceAdapter($modx, $helpers, $fields, $mode);
+                if ($mode == MODE_REMOVE) {
+                    $a->remove();
+                }
             }
         } else {
             $helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[ResourceAdapter] No Resources found');

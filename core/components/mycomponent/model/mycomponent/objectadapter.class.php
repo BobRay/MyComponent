@@ -279,6 +279,27 @@ abstract class ObjectAdapter
         }
     }
 
+    public function remove() {
+        $modx =& $this->modx;
+        $objClass = $this->getClass();
+        // Class ID Key, Name Key => Name Value Pair
+        $idKey = $this->dbClassIDKey;
+        $name = $this->getName();
+        $nameKey = $this->getNameField();
+        $id = null;
+
+
+        // See if the object exists
+        $obj = $modx->getObject($objClass, array($nameKey => $name));
+        if ($obj) {
+            $obj->remove();
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        Removed ' . $objClass . ': ' . $name);
+        } else {
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                '[Object Adapter] Could not find ' . $objClass . ': ' .
+                    $name);
+        }
+    }
     /**
      *
      *  Sets the content field for resources and elements
@@ -377,7 +398,7 @@ abstract class ObjectAdapter
             if ( (! file_exists(($dir . '/' . $file))  || $overwrite)) {
                 $this->helpers->writeFile($dir, $file, $tpl, $dryRun);
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'File already exists: ' . $file);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    File already exists: ' . $file);
             }
         }
     }
@@ -518,7 +539,7 @@ abstract class ObjectAdapter
         } else {
             $helpers->sendLog(MODX::LOG_LEVEL_INFO, '        File already exists: ' . $transportFile);
         }
-        $helpers->sendLog(modX::LOG_LEVEL_INFO, 'Finished processing: ' . $type);
+        // $helpers->sendLog(modX::LOG_LEVEL_INFO, 'Finished processing: ' . $type);
 
         unset($tpl);
     }

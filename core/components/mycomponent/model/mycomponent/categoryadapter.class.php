@@ -162,9 +162,19 @@ class CategoryAdapter extends ObjectAdapter {
                         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Skipping code file for static element: ' . $o->getName());
                     }
                 } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, ' (no code file required)', true);
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                        '        (no code file required)');
                 }
             }
+        }
+    }
+
+    public function remove() {
+        $name = $this->getName();
+        $obj = $this->modx->getObject('modCategory', array('category' => $name));
+        if ($obj) {
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        Removed ' . 'modCategory' . ': ' . $name);
+            $obj->remove();
         }
     }
 
