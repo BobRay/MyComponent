@@ -565,6 +565,7 @@ class Helpers
             $msg .= 'ERROR -- ';
         }
         $msg .= $message;
+        $msg .= "\n";
 
         if (php_sapi_name() != 'cli') {
             $msg = nl2br($msg);
