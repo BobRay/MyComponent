@@ -104,7 +104,7 @@ class LexiconHelper {
             : array();
         $this->props = array_merge($properties, $this->props);
         unset($currentProjectPath, $projectConfigPath);
-        $this->output = "\nProject: " . $this->props['packageName'];
+        $this->output = "\n" . 'Project: ' . $this->props['packageName'];
         $this->source = $this->props['mycomponentRoot'];
         /* add trailing slash if missing */
         if (substr($this->source, -1) != "/") {
@@ -161,7 +161,7 @@ class LexiconHelper {
             $this->codeMatches = array();
             $this->missing = array();
             $this->output .= "\n\n*********************************************";
-            $this->output .= "\nProcessing Element: " . $element . " -- Type: " . $type;
+            $this->output .= "\n" . 'Processing Element: ' . $element . " -- Type: " . $type;
             $this->getCode($element, $type);
             if (!empty($this->included)) {
                 $this->output .= "\nCode File(s) analyzed: " . implode(', ', $this->included);

@@ -190,7 +190,7 @@ class ResourceAdapter extends ObjectAdapter
         /* Create resource.resolver.php resolver */
         /* @var $helpers Helpers */
         if (!empty($dir) && !empty($intersects)) {
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating resource resolver');
+            $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Creating resource resolver');
             $tpl = $helpers->getTpl('resourceresolver.php');
             $tpl = $helpers->replaceTags($tpl);
             if (empty($tpl)) {
@@ -214,7 +214,7 @@ class ResourceAdapter extends ObjectAdapter
 
     public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
         /* @var $helpers Helpers */
-        $helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing Resources');
+        $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    Processing Resources');
         $resources = $helpers->modx->getOption('resources', ObjectAdapter::$myObjects, array());
         parent::createTransportFile($helpers, $resources, '', 'modResource', $mode);
     }
@@ -257,7 +257,7 @@ class ResourceAdapter extends ObjectAdapter
 
         /* Add resources from exportResources array in the project config file
           to $this->myObjects array */
-        $helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing Resources');
+        $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Processing Resources');
         $byId = $modx->getOption('getResourcesById', $props, false);
         $method = $byId? 'ID' : 'pagetitle';
         $resources = $modx->getOption('exportResources', $props, array());

@@ -182,7 +182,7 @@ abstract class ObjectAdapter
         }
     /* Object exists/Cannot Overwrite */
         if ($obj && !$overwrite) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $objClass . ' already exists: ' . $name);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $objClass . ' already exists: ' . $name);
             $id = $obj->get($idKey);
 
             if (isset($this->myFields['category'])) {
@@ -260,7 +260,7 @@ abstract class ObjectAdapter
                                 foreach($tvValues as $k => $v) {
                                     $resource->setTVValue($k, $v);
                                 }
-                                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Set TvValues for resource' .
+                                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Set TvValues for resource' .
                                     $this->myFields['pagetitle']);
                                 unset($resource);
                             }
@@ -398,7 +398,7 @@ abstract class ObjectAdapter
             if ( (! file_exists(($dir . '/' . $file))  || $overwrite)) {
                 $this->helpers->writeFile($dir, $file, $tpl, $dryRun);
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    File already exists: ' . $file);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        File already exists: ' . $file);
             }
         }
     }
@@ -507,7 +507,7 @@ abstract class ObjectAdapter
 
         /* Abort if file exists and not in Export mode */
         if (file_exists($path . $transportFile) && $mode != MODE_EXPORT) {
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    File already exists: ' . $transportFile);
+            $helpers->sendLog(MODX::LOG_LEVEL_INFO, '        File already exists: ' . $transportFile);
             return;
         }
 

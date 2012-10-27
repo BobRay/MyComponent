@@ -346,7 +346,7 @@ class Helpers
         $mainObjectName = 'missing';
         $subsidiaryObjectType = 'missing';
         $subsidiaryObjectName = 'missing';
-        $this->sendLog(MODX::LOG_LEVEL_INFO, 'Creating ' . $intersectType . ' objects');
+        $this->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Creating ' . $intersectType . ' objects');
         foreach ($intersects as $values) {
 
             $mainIdField = 'id';

@@ -67,7 +67,7 @@ class CategoryAdapter extends ObjectAdapter {
         /* Create category.resolver.php resolver */
         /* @var $helpers Helpers */
         if (!empty($dir) && !empty($intersects)) {
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating Category resolver');
+            $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Creating Category resolver');
             $tpl = $helpers->getTpl('categoryresolver.php');
             $tpl = $helpers->replaceTags($tpl);
             if (empty($tpl)) {
@@ -125,9 +125,11 @@ class CategoryAdapter extends ObjectAdapter {
             $adapterName = ucFirst(substr($class, 3)) . 'Adapter';
             $elements = $this->modx->getCollection($class, array('category' => $this->myId));
             if (!empty($elements)) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing ' . $elementType . ' in category: ' . $this->getName());
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                    "\n" . 'Processing ' . $elementType . ' in category: ' .
+                        $this->getName());
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'No ' . $elementType . ' found in category: ' . $this->getName());
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    No ' . $elementType . ' found in category: ' . $this->getName());
             }
             foreach($elements as $element) {
 

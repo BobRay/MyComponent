@@ -88,7 +88,6 @@ class MyComponentProject {
 
         /* Properties sent in method call will override those in Project Config file */
         $properties = array_merge($properties, $scriptProperties);
-
         $this->packageNameLower = $properties['packageNameLower'];
 
         $this->mcRoot = isset($properties['mycomponentRoot'])
@@ -118,6 +117,8 @@ class MyComponentProject {
         $this->dirPermission = $this->props['dirPermission'];
         $this->updateProjectsFile($projectConfigPath);
         $this->configPath = $projectConfigPath;
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+            "\n" . 'Package: ' . $this->props['packageName']);
     }
 
 
@@ -212,7 +213,7 @@ class MyComponentProject {
             return;
         }
         $mem_usage = memory_get_usage();
-        echo "\nInitial Memory Use: " . round($mem_usage / 1048576, 2) . " megabytes";
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Action: Bootstrap');
 
         $modx = $this->modx;
         $helpers = $this->helpers;
@@ -288,7 +289,10 @@ class MyComponentProject {
 
     public function createNamespaces($mode = MODE_BOOTSTRAP) {
         if (!empty($this->props['namespaces'])) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing namespace(s)');
+            if ($mode != MODE_EXPORT) {
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+                    'Processing Namespace(s)');
+            }
             foreach ($this->props['namespaces'] as $namespace => $fields) {
                 if ($mode == MODE_BOOTSTRAP) {
                     $this->addToModx('NameSpaceAdapter', $fields);
@@ -306,7 +310,7 @@ class MyComponentProject {
 
     public function createCategories($mode = MODE_BOOTSTRAP) {
         $categories = $this->modx->getOption('categories', $this->props, array());
-
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Processing Categories');
         if (empty($categories)) {
             $packageName = $this->modx->GetOption('packageName', $this->props, '');
             if (empty($packageName)) {
@@ -372,8 +376,11 @@ class MyComponentProject {
         if (empty($newSystemSettings)) {
             return;
         }
+        if ($mode != MODE_EXPORT) {
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+                'Processing New System Settings');
+        }
         if ($mode == MODE_BOOTSTRAP) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing new System Settings');
             foreach ($this->props['newSystemSettings'] as $key => $fields) {
                 if (!isset($fields['key'])) {
                     $fields['key'] = $key;
@@ -381,7 +388,7 @@ class MyComponentProject {
                 $this->addToModx('SystemSettingAdapter', $fields);
             }
 
-        } elseif ($mode == MODE_EXPORT) {
+        } elseif ($mode == MODE_EXPORT || $mode == MODE_REMOVE) {
             /* These still come from the project config file  */
             foreach ($newSystemSettings as $setting => $fields) {
                 $obj = $this->modx->getObject('modSystemSetting', array('key' => $fields['key']));
@@ -405,7 +412,10 @@ class MyComponentProject {
         if (empty($newSystemEvents)) {
             return;
         }
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing new System Events');
+        if ($mode != MODE_EXPORT) {
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+                'Processing New System Events');
+        }
         if ($mode == MODE_BOOTSTRAP) {
             foreach ($newSystemEvents as $key => $fields) {
                 $fields['name'] = isset($fields['name'])
@@ -417,7 +427,8 @@ class MyComponentProject {
         } elseif ($mode == MODE_EXPORT || $mode == MODE_REMOVE) {
             /* These come from the project config file */
             foreach ($newSystemEvents as $k => $fields) {
-                $obj = $this->modx->getObject('modEvent', array('name' => $fields['name']));
+                $obj = $this->modx->getObject('modEvent',
+                    array('name' => $fields['name']));
                 if ($obj) {
                     $fields = $obj->toArray();
                     $a = new SystemEventAdapter($this->modx, $this->helpers, $fields);
@@ -436,10 +447,10 @@ class MyComponentProject {
              * In Export, they're pulled by category in the
              * CategoryAdapter, so not done here */
             if (isset($this->props['elements']) && !empty($this->props['elements'])) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing elements');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Processing Elements');
                 $elements = $this->props['elements'];
                 foreach ($elements as $element => $elementObjects) {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Processing ' . $element);
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n    Processing " . ucfirst($element));
                     foreach ($elementObjects as $elementName => $fields) {
                         /* @var $adapter elementAdapter */
                         /* @var $o ObjectAdapter */
@@ -467,7 +478,7 @@ class MyComponentProject {
             if (isset($this->props['resources']) && !empty($this->props['resources'])) {
                 /* @var $o ResourceAdapter */
                 $o = null;
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing Resources');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Processing Resources');
                 foreach ($this->props['resources'] as $resource => $fields) {
                     $fields['pagetitle'] = empty($fields['pagetitle'])
                         ? $resource
@@ -561,7 +572,7 @@ class MyComponentProject {
                 ? $this->packageNameLower
                 : $name;
             $name = strtolower($name);
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating resolver: ' . $name);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Creating resolver: ' . $name);
             $tpl = $this->helpers->getTpl('genericresolver.php');
             $tpl = $this->helpers->replaceTags($tpl);
             if (empty($tpl)) {
@@ -585,7 +596,7 @@ class MyComponentProject {
                 ? $this->packageNameLower
                 : $name;
             $name = strtolower($name);
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating validator: ' . $name);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Creating validator: ' . $name);
             $tpl = $this->helpers->getTpl('genericvalidator.php');
             $tpl = $this->helpers->replaceTags($tpl);
             if (empty($tpl)) {
@@ -618,7 +629,7 @@ class MyComponentProject {
         /* Transfer build.transport.php and build.config.php files */
 
         $dir = $this->myPaths['targetBuild'];
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating build files');
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Creating build files');
         $fileName = 'build.transport.php';
         if (!file_exists($dir . '/' . $fileName)) {
             $tpl = $this->helpers->getTpl($fileName);
@@ -647,7 +658,7 @@ class MyComponentProject {
 
         /* Create language directories and files specified in project config */
         if (isset ($this->props['languages']) && !empty($this->props['languages'])) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating Lexicon files');
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Creating Lexicon files');
             $lexiconBase = $this->myPaths['targetCore'] . 'lexicon/';
             foreach ($this->props['languages'] as $language => $languageFiles) {
                 $dir = $lexiconBase . 'lexicon/' . $language;
@@ -676,7 +687,7 @@ class MyComponentProject {
             : array();
 
         if (!empty($docs)) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating doc files');
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Creating doc files');
             $toDir = $this->myPaths['targetCore'] . 'docs/';
             foreach ($docs as $doc) {
                 if (!file_exists($toDir . $doc)) {
@@ -727,7 +738,7 @@ class MyComponentProject {
         $optionalDirs = !empty($this->props['assetsDirs'])
             ? $this->props['assetsDirs']
             : array();
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating Assets directories');
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Creating Assets directories');
         foreach ($optionalDirs as $dir => $val) {
             $targetDir = $this->myPaths['targetAssets'] . $dir;
             if ($val && (!is_dir($targetDir))) {
@@ -757,7 +768,7 @@ class MyComponentProject {
     public function createInstallOptions() {
         $iScript = $this->modx->getOption('install.options', $this->props, '');
         if (!empty($iScript)) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating Install Options');
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Creating Install Options');
             $dir = $this->targetRoot . '_build/install.options';
             $fileName = 'user.input.php';
 
@@ -775,7 +786,7 @@ class MyComponentProject {
     public function createValidators() {
         $validators = $this->modx->getOption('validators', $this->props, '');
         if (!empty($validators)) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating validators');
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Creating validators');
             $dir = $this->targetRoot . '_build/validators';
 
             foreach ($validators as $validator) {
@@ -804,7 +815,7 @@ class MyComponentProject {
             ? $classes
             : array();
         if (!empty($classes)) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating class files');
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Creating class files');
             $baseDir = $this->myPaths['targetCore'] . 'model';
             foreach ($classes as $className => $data) {
                 $data = explode(':', $data);
@@ -844,6 +855,7 @@ class MyComponentProject {
             return;
         }
 
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Action: ExportObjects');
         $mode = MODE_EXPORT;
 
         $toProcess = $this->modx->getOption('process', $this->props, array());
@@ -887,7 +899,7 @@ class MyComponentProject {
         $toProcess = explode(',', $toProcess);
         foreach ($toProcess as $elementType) {
             $class = 'mod' . ucfirst(substr($elementType, 0, -1));
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing ' . $elementType);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Processing ' . $elementType);
             $elements = $this->props['elements'][$elementType];
             foreach ($elements as $element => $fields) {
                 if (isset($fields['static']) && !empty($fields['static'])) {
@@ -946,12 +958,13 @@ class MyComponentProject {
      * Utility function to remove objects from MODX during development
      */
     public function removeObjects($removeFiles = false) {
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Action: RemoveObjects');
         $oldLogLevel = $this->modx->setLogLevel(MODX::LOG_LEVEL_ERROR);
         $this->createObjects(MODE_REMOVE);
         if ($removeFiles) {
             $dir = $this->targetRoot;
             if (! ($this->targetRoot == $this->props['targetRoot'])) {
-                die('mismatched targetRoot -- aborting remove directory');
+                die('mismatched targetRoot -- aborting removeObjects');
             }
 
             rrmdir($dir);

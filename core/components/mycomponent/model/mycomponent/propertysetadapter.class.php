@@ -24,7 +24,7 @@ class PropertySetAdapter extends ElementAdapter { //This will never change.
         /* Create tv.resolver.php resolver */
         /* @var $helpers Helpers */
         if (!empty($dir) && !empty($intersects)) {
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating elementPropertySet resolver');
+            $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Creating elementPropertySet resolver');
             $tpl = $helpers->getTpl('propertysetresolver.php');
             $tpl = $helpers->replaceTags($tpl);
             if (empty($tpl)) {

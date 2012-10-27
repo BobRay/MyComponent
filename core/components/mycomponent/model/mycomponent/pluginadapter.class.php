@@ -35,7 +35,7 @@ class PluginAdapter extends ElementAdapter
         if ($mode == MODE_BOOTSTRAP) {
             /* bail out if no events in project config */
             if (! isset($fields['events']) || empty($fields['events'])) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    No events for plugin: ' . $this->getName());
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        No events for plugin: ' . $this->getName());
                 return;
             }
             $events = $fields['events'];
@@ -110,7 +110,7 @@ class PluginAdapter extends ElementAdapter
         /* Create plugin.resolver.php resolver */
         /* @var $helpers Helpers */
         if (!empty($dir) && !empty($intersects)) {
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating plugin resolver');
+            $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Creating plugin resolver');
             $tpl = $helpers->getTpl('pluginresolver.php');
             $tpl = $helpers->replaceTags($tpl);
             if (empty($tpl)) {

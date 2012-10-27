@@ -161,7 +161,7 @@ class CheckProperties {
         $typeName = strtolower(substr($type, 3));
         $file = $this->targetCore . 'elements/' . $typeName . 's/' . $element . '.' . $typeName . '.php';
         $this->output .= "\n\n*********************************************";
-        $this->output .= "\nProcessing Element: " . $element . " -- Type: " . $type;
+        $this->output .= "\n" . 'Processing Element: ' . $element . " -- Type: " . $type;
         $this->scriptCode = file_get_contents($file);
         $this->included[] = $element;
         $this->getIncludes($file);

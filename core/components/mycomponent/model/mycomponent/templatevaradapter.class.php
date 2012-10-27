@@ -90,7 +90,7 @@ class TemplateVarAdapter extends ElementAdapter
         /* Create tv.resolver.php resolver */
         /* @var $helpers Helpers */
         if (!empty($dir) && !empty($intersects)) {
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Creating TV resolver');
+            $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Creating TV resolver');
             $tpl = $helpers->getTpl('tvresolver.php');
             $tpl = $helpers->replaceTags($tpl);
             if (empty($tpl)) {

@@ -139,15 +139,16 @@ abstract class ElementAdapter extends ObjectAdapter {
 
         foreach($categories as $category => $elementList) {
             $category = strtolower($category);
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Processing category: ' . $category);
+            $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Processing Transport Files for Category: ' . $category);
             foreach($elementList['elements'] as $type => $elements) {
-                $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Processing ' . $type);
-                parent::createTransportFile($helpers, $elements, $category, $type, $mode);
+                $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    Processing ' . $type);
+
                 foreach($elements as $k => $fields ) {
                     $alias = $helpers->getNameAlias($type);
                     $helpers->sendLog(MODX::LOG_LEVEL_INFO, '        Processing object: ' . $fields[$alias]);
 
                 }
+                parent::createTransportFile($helpers, $elements, $category, $type, $mode);
             }
         }
 
@@ -199,7 +200,7 @@ abstract class ElementAdapter extends ObjectAdapter {
             $path .= '/' . $fileName;
             $this->myFields['source'] = $this->modx->getOption('default_media_source');
             $this->myFields['static_file'] = $path;
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Set static path to ' . $path);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        Set static path to ' . $path);
         }
         parent::addToMODx($overwrite);
     }
