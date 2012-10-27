@@ -480,7 +480,7 @@ foreach($categories as $k => $categoryName) {
 if ($hasMenu) {
     /* load menu */
     $modx->log(modX::LOG_LEVEL_INFO,'Packaging menu...');
-    $menus = include $sources['data'].'transport.menu.php';
+    $menus = include $sources['data'].'transport.menus.php';
     foreach ($menus as $menu) {
         if (empty($menu)) {
             $modx->log(modX::LOG_LEVEL_ERROR,'Could not package menu.');
