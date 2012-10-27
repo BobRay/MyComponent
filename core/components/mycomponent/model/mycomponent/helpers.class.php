@@ -560,13 +560,16 @@ class Helpers
 
     public function sendLog($level, $message, $suppressReturn = false) {
         $msg = '';
-        if (!$suppressReturn) {
-            $msg .= "\n";
-        }
+
         if ($level == MODX::LOG_LEVEL_ERROR) {
             $msg .= 'ERROR -- ';
         }
         $msg .= $message;
+
+        if (!$suppressReturn) {
+            $msg .= "\n";
+        }
+
         if (php_sapi_name() != 'cli') {
             $msg = nl2br($msg);
         }
