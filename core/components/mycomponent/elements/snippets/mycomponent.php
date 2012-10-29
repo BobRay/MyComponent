@@ -17,6 +17,9 @@ if (!empty($_POST)) {
         case 'exportobjects':
             $output = $modx->runSnippet('ExportObjects');
             break;
+        case 'importobjects':
+            $output = $modx->runSnippet('ImportObjects');
+            break;
         case 'lexiconhelper':
             $output = $modx->runSnippet('LexiconHelper');
             break;
