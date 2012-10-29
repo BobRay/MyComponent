@@ -1,4 +1,4 @@
-<div style="margin:100px;padding:100px">
+<div style="margin:50px;padding:50px">
 
     <h3>MyComponent Actions</h3>
 
@@ -21,6 +21,7 @@
 
         <input type="submit" value="Submit">
     </form>
+<br /><br/>
 
 
-</div>
+
