@@ -144,6 +144,14 @@ $components = array(
                 'category' => 'MyComponent',
                 'filename' => 'lexiconhelper.php',
             ),
+            'ImportObjects' => array (
+                'category' => 'MyComponent',
+                'filename' => 'importopjects.php',
+            ),
+            'RemoveObject' => array (
+                'category' => 'MyComponent',
+                'filename' => 'removeobjects.php',
+            ),
 
         ),
         'chunks' => array(
@@ -255,7 +263,18 @@ $components = array(
                 'category' => 'MyComponent',
                 'filename' => 'user.input.php',
             ),
+            'mycomponentform.tpl' => array (
+                'category' => 'MyComponent',
+                'filename' => 'mycomponentform.tpl',
+            ),
         ),
+
+        'templates' => array(
+            'MyComponentTemplate' => array(
+                'category' => 'MyComponent',
+                'filename' => 'mycomponenttemplate.html',
+            ),
+        )
 
     ),
 
@@ -269,22 +288,17 @@ $components = array(
      * ************************************************************** */
     /* Array of Resource pagetitles for your Extra; All other fields optional.
        You can set any resource field here */
-    'xresources' => array(
-        'Resource1' => array( /* minimal example */
-            'pagetitle' => 'Resource1',
-            'alias' => 'resource1',
+    'resources' => array(
+        'MyComponent' => array( /* minimal example */
+            'pagetitle' => 'MyComponent',
+            'alias' => 'mycomponent',
+            'longtitle' =>  'My Component Control Center',
+            'published' => '0',
+            'hidemenu' => '1',
+            'richtext' => '0',
+            'template' => 'MyComponentTemplate',
+
         ),
-        'Resource2' => array( /* example with other fields */
-            'pagetitle' => 'Resource2',
-            'parent' => 'Resource1',
-            'template' => 'Template2',
-            'richtext' => false,
-            'published' => true,
-            'tvValues' => array(
-                'Tv1' => 'SomeValue',
-                'Tv2' => 'SomeOtherValue',
-            ),
-        )
     ),
 
 
@@ -417,6 +431,9 @@ $components = array(
         duplicate pagetitles */
     'getResourcesById' => false,
 
+    'exportResources' => array(
+        'MyComponent',
+    ),
 
     /* Array of resource parent IDs to get children of. */
     'parents' => array(),
