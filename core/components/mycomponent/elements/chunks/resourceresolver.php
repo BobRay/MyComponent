@@ -60,12 +60,13 @@ if($object->xpdo) {
                         }
                     }
                     if (!empty($fields['parent'])) {
-
-                        $parentObj = $modx->getObject('modResource', array('pagetitle' => $fields['parent']));
-                        if ($parentObj) {
-                            $resource->set('parent', $parentObj->get('id'));
-                        } else {
-                            $modx->log(MODX::LOG_LEVEL_ERROR, '[Resource Resolver] Could not find parent: ' . $fields['parent']);
+                        if ($fields['parent'] != 'default') {
+                            $parentObj = $modx->getObject('modResource', array('pagetitle' => $fields['parent']));
+                            if ($parentObj) {
+                                $resource->set('parent', $parentObj->get('id'));
+                            } else {
+                                $modx->log(MODX::LOG_LEVEL_ERROR, '[Resource Resolver] Could not find parent: ' . $fields['parent']);
+                            }
                         }
                     }
 
