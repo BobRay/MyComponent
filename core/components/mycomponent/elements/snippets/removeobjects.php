@@ -59,9 +59,6 @@ $props = isset($scriptProperties)
 $project = new MyComponentProject($modx);
 $project->init($props);
 
-//$project->removeObjects();
-
-
 $dryRun = false; /* true is the default -- set to false for actual import */
 /* Comma-separated list of elements to process (snippets,plugins,chunks,templates) */
 
@@ -70,9 +67,10 @@ $toProcess = 'snippets,plugins,chunks,templates';
 /*$directory = $modx->getOption('mc.core', null,
     $modx->getOption('core_path') . 'components/example/') . 'elements/';*/
 $directory = '';
-$project->removeObjects(false);
+$removeFiles = false;
+$project->removeObjects($removeFiles);
 
-// echo print_r(ObjectAdapter::$myObjects, true);
+
 
 echo "\n\nInitial Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
 $mem_usage = memory_get_usage();
