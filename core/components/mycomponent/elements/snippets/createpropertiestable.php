@@ -44,6 +44,10 @@ $propertiesInjected = false; /* This will be set automatically if properties are
 
 if (php_sapi_name() != 'cli') {
     echo "<pre>\n"; /* used for nice formatting for log messages  */
+} else {
+    if (!$modx->user->hasSessionContext('mgr')) {
+        die ('Unauthorized Access');
+    }
 }
 
 if (!file_exists($propertiesFile)) {

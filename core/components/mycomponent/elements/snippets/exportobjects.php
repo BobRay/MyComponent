@@ -103,11 +103,11 @@ if (!defined('MODX_CORE_PATH')) {
         } else {
             echo "\nNo Resource\n";
         }
-    } else {
-        echo "\n<pre>\n";
     }
 } else {
-    echo "\n<pre>\n";
+    if (!$modx->user->hasSessionContext('mgr')) {
+        die ('Unauthorized Access');
+    }
 }
 
 require_once $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'model/mycomponent/mycomponentproject.class.php';
@@ -122,4 +122,3 @@ $mem_usage = memory_get_usage();
 $peak_usage = memory_get_peak_usage(true);
 echo "\nFinal Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
 echo "\nPeak Memory Used: " . round($peak_usage / 1048576, 2) . " megabytes";
-

@@ -139,6 +139,10 @@ if (!defined('MODX_CORE_PATH')) {
             echo "\nNo Resource\n";
         }
     }
+} else {
+    if (! $modx->user->hasSessionContext('mgr')) {
+        die ('Unauthorized Access');
+    }
 }
 
 require_once $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'model/mycomponent/lexiconhelper.class.php';

@@ -37,6 +37,10 @@ if (!defined('MODX_CORE_PATH')) {
     $configPath = $sourceRoot . '_build/build.config.php';
     require_once $configPath;
     require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
+} else {
+    if (!$modx->user->hasSessionContext('mgr')) {
+        die ('Unauthorized Access');
+    }
 }
 if (php_sapi_name() != 'cli') {
     echo "<pre>\n"; /* used for nice formatting for log messages  */

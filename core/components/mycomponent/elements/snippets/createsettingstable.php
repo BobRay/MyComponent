@@ -57,6 +57,10 @@ if (!defined('MODX_CORE_PATH')) {
     $modx->setLogLevel(modX::LOG_LEVEL_INFO);
     $modx->setLogTarget('ECHO');
     echo '<pre>'; /* used for nice formatting for log messages  */
+} else {
+    if (!$modx->user->hasSessionContext('mgr')) {
+        die ('Unauthorized Access');
+    }
 }
 
 if (php_sapi_name() != 'cli') {

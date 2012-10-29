@@ -1,5 +1,4 @@
 <?php
-
 /* set start time */
 $mtime = microtime();
 $mtime = explode(" ", $mtime);
@@ -45,11 +44,11 @@ if (!defined('MODX_CORE_PATH')) {
         } else {
             echo "\nNo Resource\n";
         }
-    } else {
-        echo "\n<pre>\n";
     }
 } else {
-    echo "\n<pre>\n";
+    if (!$modx->user->hasSessionContext('mgr')) {
+        die ('Unauthorized Access');
+    }
 }
 
 require_once $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'model/mycomponent/mycomponentproject.class.php';
@@ -75,4 +74,4 @@ $tend = $mtime;
 $totalTime = ($tend - $tstart);
 $totalTime = sprintf("%2.4f s", $totalTime);
 echo "\nTotal time: " . $totalTime;
-
+return;
