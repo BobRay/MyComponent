@@ -121,7 +121,7 @@ $components = array(
     /* If your extra needs Menus, set this to true, create them
      * in the Manager, and export them with exportObjects. Be sure
      * to set their namespace to the lowercase package name of your extra */
-    'menus' => false,
+    'menus' => array(),
 
     /* ************************* ELEMENTS **************************** */
 
@@ -132,7 +132,11 @@ $components = array(
 
     'elements' => array(
         'snippets' => array(
-            'Bootstrap' => array( /* example with static and property set(s)  */
+            'MyComponent' => array(
+                'category' => 'MyComponent',
+                'filename' => 'mycomponent.php',
+            ),
+            'Bootstrap' => array(
                 'category' => 'MyComponent',
                 'filename' => 'bootstrap.php',
             ),
@@ -148,7 +152,7 @@ $components = array(
                 'category' => 'MyComponent',
                 'filename' => 'importopjects.php',
             ),
-            'RemoveObject' => array (
+            'RemoveObjects' => array (
                 'category' => 'MyComponent',
                 'filename' => 'removeobjects.php',
             ),
