@@ -108,7 +108,7 @@ if (!defined('MODX_CORE_PATH')) {
     if (file_exists($path1)) {
         include $path1;
     } else {
-        $path2 = dirname(dirname(dirname(dirname(__FILE__)))) . '/_build/build.config.php';
+        $path2 = dirname(dirname(dirname(__FILE__))) . '/_build/build.config.php';
         if (file_exists($path2)) {
             include($path2);
         }
