@@ -492,7 +492,7 @@ class LexiconHelper {
             $this->output .= "\nNo empty property descriptions in lexicon file!";
             return;
         } else {
-            $lexFile = $this->targetCore . '/lexicon/' . $this->primaryLanguage . '/properties.inc.php';
+            $lexFile = $this->targetCore . $this->primaryLanguage . '/properties.inc.php';
             $lexFileContent = file_get_contents($lexFile);
             $original = $lexFileContent;
         }
