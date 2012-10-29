@@ -136,7 +136,7 @@ class LexiconHelper {
             if (isset($fields['name'])) {
                 $snippet = $fields['name'];
             }
-            $elements[strtolower(trim($snippet))] = 'modSnippet';
+            $elements[trim($snippet)] = 'modSnippet';
         }
         $plugins = $this->modx->getOption('plugins', $this->props['elements'], array());
         foreach ($plugins as $plugin => $fields) {
@@ -159,8 +159,6 @@ class LexiconHelper {
             foreach($this->classFiles as $name => $path) {
                 $this->output .= "\n    " . $name;
             }
-            //$this->output .= "\nFound these class files: " . implode(', ', array_keys($this->classFiles));
-
         }
 
         foreach ($elements as $element => $type) {
@@ -683,20 +681,33 @@ class LexiconHelper {
      * returns raw code from an element file and all
      * the class files it includes
      *
-     * @param $element array member
+     * @param $element string - name of element
      * @param $type string - 'modSnippet or modChunk
      */
     public function getCode($element, $type) {
+        $file = '';
         if (empty($element)) {
             $this->output .= 'Error: Element is empty';
             return;
         }
-        $typeName = strtolower(substr($type, 3));
-        $file = $this->targetCore . 'elements/' . $typeName . 's/' . $element . '.' . $typeName . '.php';
+        $typeName = strtolower(substr($type, 3) .'s');
+        /* Check for explicit filename */
+        $elementFileName = $this->modx->getOption('filename',
+            $this->props['elements'][$typeName][$element], '' );
 
+        if (!empty ($elementFileName)) {
+            $file = $this->targetCore . 'elements/' . $typeName . '/' . $elementFileName;
+        } else {
+            $file = $this->targetCore . 'elements/' . $typeName . '/' .
+                $element . '.' . $typeName . '.php';
+        }
 
-        $this->included[] = $element;
-        $this->getIncludes($file);
+        if (file_exists($file)) {
+            $this->included[] = $element;
+            $this->getIncludes($file);
+        } else {
+            $this->output .= ' Could not find file: ' . $file;
+        }
 
     }
 
