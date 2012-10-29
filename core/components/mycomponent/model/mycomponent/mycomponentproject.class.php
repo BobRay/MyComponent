@@ -688,7 +688,7 @@ class MyComponentProject {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Creating Lexicon files');
             $lexiconBase = $this->myPaths['targetCore'] . 'lexicon/';
             foreach ($this->props['languages'] as $language => $languageFiles) {
-                $dir = $lexiconBase . 'lexicon/' . $language;
+                $dir = $lexiconBase . $language;
                 $files = !empty($languageFiles)
                     ? $languageFiles
                     : array();
