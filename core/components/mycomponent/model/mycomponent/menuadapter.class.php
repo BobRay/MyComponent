@@ -65,17 +65,15 @@ class MenuAdapter extends ObjectAdapter {
         $actionFields = array();
         $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    Processing Menus');
         if ($mode == MODE_BOOTSTRAP) {
-        $menus = ObjectAdapter::$myObjects['menus'];
+            $menus = $helpers->modx->getOption('menus', ObjectAdapter::$myObjects, array());
             foreach($menus as $menu => $fields) {
                 $actionFields[] = $fields['action'];
                 unset($fields['action']);
                 $menuFields[] = $fields;
-
-
-
             }
         } elseif ($mode == MODE_EXPORT) {
-            $nameSpaces = ObjectAdapter::$myObjects['nameSpaces'];
+            $nameSpaces = $helpers->modx->getOption('nameSpaces',
+                ObjectAdapter::$myObjects, array());
             foreach($nameSpaces as $namespace => $fields) {
                 $name = isset($fields['name']) ? $fields['name'] : $namespace;
                 $name = strtolower($name);
@@ -99,47 +97,49 @@ class MenuAdapter extends ObjectAdapter {
             }
 
         }
-        $transportFile = 'transport.menus.php';
-        $tpl = $helpers->getTpl('transportfile.php');
-        $variableName = 'menus';
-        $tpl = str_replace('[[+elementType]]', $variableName, $tpl);
-        $tpl = $helpers->replaceTags($tpl);
-        $tpl .= '/' . '*' . ' @var xPDOObject[] ' . '$' . $variableName . ' *' . "/\n\n";
-        $i = 0;
-        $code = '';
-        foreach($menuFields as $k => $fields) {
-            $actionFields[$i]['id'] = $i + 1;
-            /* do Action */
-            $code .= "\$action = \$modx->newObject('modAction');\n";
-            $code .= "\$action->fromArray( ";
-            $code .= var_export($actionFields[$i], true);
-            $code  .= ", '', true, true);\n";
+        if (! empty($menuFields)) {
+            $transportFile = 'transport.menus.php';
+            $tpl = $helpers->getTpl('transportfile.php');
+            $variableName = 'menus';
+            $tpl = str_replace('[[+elementType]]', $variableName, $tpl);
+            $tpl = $helpers->replaceTags($tpl);
+            $tpl .= '/' . '*' . ' @var xPDOObject[] ' . '$' . $variableName . ' *' . "/\n\n";
+            $i = 0;
+            $code = '';
+            foreach($menuFields as $k => $fields) {
+                $actionFields[$i]['id'] = $i + 1;
+                /* do Action */
+                $code .= "\$action = \$modx->newObject('modAction');\n";
+                $code .= "\$action->fromArray( ";
+                $code .= var_export($actionFields[$i], true);
+                $code  .= ", '', true, true);\n";
 
-            /* do Menu item */
-            $code .= "\n";
-            $code .= "\$";
-            $code .= "menus[";
-            $code .= $i+1 . '] = ' . "\$modx->newObject('modMenu');\n";
-            $code .= "\$";
-            $code .= "menus[";
-            $code .= $i + 1 . ']->fromArray( ';
-            $code .= var_export($menuFields[$i], true);
-            $code .= ", '', true, true);\n";
-            $code .= "\$";
-            $code .= "menus[";
-            $code .= $i + 1 . ']->addOne(';
-            $code .= "\$action);\n";
-            $code .= "\nreturn \$menus;\n";
+                /* do Menu item */
+                $code .= "\n";
+                $code .= "\$";
+                $code .= "menus[";
+                $code .= $i+1 . '] = ' . "\$modx->newObject('modMenu');\n";
+                $code .= "\$";
+                $code .= "menus[";
+                $code .= $i + 1 . ']->fromArray( ';
+                $code .= var_export($menuFields[$i], true);
+                $code .= ", '', true, true);\n";
+                $code .= "\$";
+                $code .= "menus[";
+                $code .= $i + 1 . ']->addOne(';
+                $code .= "\$action);\n";
+                $code .= "\nreturn \$menus;\n";
 
-            $tpl .= $code;
-            $i++;
-        }
-        $dryRun = $mode == MODE_EXPORT && !empty($helpers->props['dryRun']);
-        $path = $helpers->props['targetRoot'] . '_build/data/';
-        if (!file_exists($path . $transportFile) || $mode != MODE_BOOTSTRAP) {
-            $helpers->writeFile($path, $transportFile, $tpl, $dryRun);
-        } else {
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, '        File already exists: ' . $transportFile);
+                $tpl .= $code;
+                $i++;
+            }
+            $dryRun = $mode == MODE_EXPORT && !empty($helpers->props['dryRun']);
+            $path = $helpers->props['targetRoot'] . '_build/data/';
+            if (!file_exists($path . $transportFile) || $mode != MODE_BOOTSTRAP) {
+                $helpers->writeFile($path, $transportFile, $tpl, $dryRun);
+            } else {
+                $helpers->sendLog(MODX::LOG_LEVEL_INFO, '        File already exists: ' . $transportFile);
+            }
         }
 
     }
