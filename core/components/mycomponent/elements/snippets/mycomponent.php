@@ -27,4 +27,4 @@ if (!empty($_POST)) {
 
 }
 
-return $tpl . $output;
+return $tpl . '<pre>' . $output;
