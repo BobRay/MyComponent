@@ -1,11 +1,16 @@
 <?php
 /* @var $modx modX */
-$tpl = $modx->getChunk('MyComponentForm');
+
+if (!defined('MODX_CORE_PATH')) {
+    die('This file can not be run outside of MODX. ');
+}
+
+$tpl = $modx->getChunk('mycomponentform.tpl');
 
 $output = '';
 if (!empty($_POST)) {
     $action = $_POST['doit'];
-    switch($action) {
+    switch ($action) {
         case 'bootstrap':
             $output = $modx->runSnippet('Bootstrap');
             break;
@@ -26,5 +31,6 @@ if (!empty($_POST)) {
 
 
 }
+
 
 return $tpl . '<pre>' . $output;
