@@ -150,7 +150,7 @@ $components = array(
             ),
             'ImportObjects' => array (
                 'category' => 'MyComponent',
-                'filename' => 'importopjects.php',
+                'filename' => 'importobjects.php',
             ),
             'RemoveObjects' => array (
                 'category' => 'MyComponent',
