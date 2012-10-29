@@ -10,6 +10,8 @@
         </label><br/><br />
         <label for="exportobjects"> <input type="radio" name="doit" value="exportobjects" id="exportobjects"/>
             ExportObjects</label><br/><br/>
+        <label for="importobjects"> <input type="radio" name="doit" value="importobjects" id="importobjects"/>
+                        ImportObjects</label><br/><br/>
         <label for="lexiconhelper"> <input type="radio" name="doit" value="lexiconhelper" id="lexiconhelper"/>
             LexiconHelper</label><br/><br/>
         <label for="build"> <input type="radio" name="doit" value="build" id="build"/>
