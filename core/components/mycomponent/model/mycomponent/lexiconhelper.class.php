@@ -110,15 +110,17 @@ class LexiconHelper {
         if (substr($this->source, -1) != "/") {
             $this->source .= "/";
         }
-        //$sourceRoot = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/';
-        //require_once $sourceRoot . 'core/components/mycomponent/model/mycomponent/helpers.class.php';
+
         $this->helpers = new Helpers($this->modx, $this->props);
         $this->helpers->init();
 
         $this->packageNameLower = $this->props['packageNameLower'];
         $this->targetBase = MODX_BASE_PATH . 'assets/mycomponents/' . $this->packageNameLower . '/';
         $this->targetCore = $this->targetBase . 'core/components/' . $this->packageNameLower . '/';
-        $this->primaryLanguage = $this->props['primaryLanguage'];
+        $this->primaryLanguage = $this->modx->getOption('primaryLanguage', $this->props, '');
+        if (empty($this->primaryLanguage)) {
+            $this->primaryLanguage = 'en';
+        }
         clearstatcache(); /*  make sure is_dir() is current */
 
 
@@ -127,7 +129,7 @@ class LexiconHelper {
     }
 
     public function run() {
-        $snippets = $this->props['elements']['snippets'];
+        $snippets = $this->modx->getOption('snippets', $this->props['elements'], array());
         $elements = array();
         /* get all plugins and snippets from config file */
         foreach ($snippets as $snippet => $fields) {
@@ -136,12 +138,16 @@ class LexiconHelper {
             }
             $elements[strtolower(trim($snippet))] = 'modSnippet';
         }
-        $plugins = $this->props['elements']['plugins'];
+        $plugins = $this->modx->getOption('plugins', $this->props['elements'], array());
         foreach ($plugins as $plugin => $fields) {
             if (isset($fields['name'])) {
                 $plugin = $fields['name'];
             }
             $elements[strtolower(trim($plugin))] = 'modPlugin';
+        }
+        if (empty($elements)) {
+            $this->output .= 'No elements to process';
+            return;
         }
         $this->classFiles = array();
         $dir = $this->targetCore . 'model';
@@ -149,7 +155,11 @@ class LexiconHelper {
         $this->helpers->dirWalk($dir, 'php', true);
         $this->classFiles = $this->helpers->getFiles();
         if (!empty($this->classFiles)) {
-            $this->output .= "\nFound these class files: " . implode(', ', array_keys($this->classFiles));
+            $this->output .= "\nFound these class files: ";
+            foreach($this->classFiles as $name => $path) {
+                $this->output .= "\n    " . $name;
+            }
+            //$this->output .= "\nFound these class files: " . implode(', ', array_keys($this->classFiles));
 
         }
 
@@ -218,7 +228,10 @@ class LexiconHelper {
      */
     public function getLexFqn ($lexFileSpec) {
         $nspos = strpos($lexFileSpec, ':');
-        $languages = array_keys($this->props['languages']);
+        $languages = array_keys($this->modx->getOption('languages', $this->props, array()));
+        if (empty($languages)) {
+            return '';
+        }
         $language = $languages[0];
         $namespace = $this->props['packageNameLower'];
         if ($nspos === false) {
@@ -290,7 +303,8 @@ class LexiconHelper {
                 $code .= "\n\$_lang['" . $key . "'] = {$qc}" . $value . "{$qc};";
             }
             $count = count($this->loadedLexiconFiles);
-            if ($count == 1 && $this->props['rewriteLexiconFiles']) {
+            if (($count == 1) && isset($this->props['rewriteLexiconFiles'])
+                    && $this->props['rewriteLexiconFiles']) {
                 /* append $output to lexicon file  */
                 $comment = '/* used in ' . $this->element . ' or its included classes */';
                 $fileName = reset($this->loadedLexiconFiles);
@@ -323,7 +337,8 @@ class LexiconHelper {
                 }
 
 
-            } elseif ($this->props['rewriteLexiconFiles']) {
+            } elseif (isset($this->props['rewriteLexiconFiles'])
+                    && $this->props['rewriteLexiconFiles']) {
                 $output .= "\n\nCan't update multiple Lexicon files;\npaste these strings in the appropriate file:\n" . $code;
             } else {
                 $this->output .= "\nMissing Lexicon strings:" . $code;
@@ -440,7 +455,8 @@ class LexiconHelper {
     public function checkPropertyDescriptions($lexStrings) {
 
         $this->output .= "\n\n********  Checking for property description lexicon strings ********";
-        foreach($this->props['elements'] as $type => $elementList) {
+        $ary = $this->modx->getOption('elements', $this->props, array());
+        foreach($ary as $type => $elementList) {
 
             $elements = empty($elementList)? array() : $elementList;
             foreach ($elements as $element => $fields ) {
@@ -528,7 +544,9 @@ class LexiconHelper {
         } else {
             $this->output .= "\nNo empty property descriptions in lexicon file!";
         }
-        if ($this->props['rewriteLexiconFiles'] && (!empty($missing) || $emptyFixed)) {
+        if (isset($this->props['rewriteLexiconFiles'])
+                && $this->props['rewriteLexiconFiles']
+                && (!empty($missing) || $emptyFixed)) {
             /* make sure we're not shortening it */
             if (strlen($lexFileContent) > strlen($original)) {
                 $fp = fopen($lexFile, 'w');
@@ -579,7 +597,7 @@ class LexiconHelper {
         /* ToDo: Update lexicon file */
 
         $comment = "/* System Setting Names and Descriptions */";
-        $settings = $this->props['newSystemSettings'];
+        $settings = $this->modx->getOption('newSystemSettings', $this->props, array());
         $output = '';
         if (!empty($settings)) {
             $_lang = array();
