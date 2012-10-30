@@ -109,7 +109,7 @@ class MyComponentProject {
         }
         $this->props = $properties;
         $this->initPaths();
-
+        // include 'helpers.class.php';
         $helpers = new Helpers($this->modx, $this->props);
         $this->helpers = $helpers;
         $this->helpers->init();
@@ -298,6 +298,7 @@ class MyComponentProject {
             }
             foreach ($this->props['namespaces'] as $namespace => $fields) {
                 if ($mode == MODE_BOOTSTRAP) {
+                    // include 'namespaceadapter.class.php';
                     $this->addToModx('NameSpaceAdapter', $fields);
                 } elseif ($mode == MODE_EXPORT || $mode == MODE_REMOVE) {
                     $a = new NamespaceAdapter($this->modx, $this->helpers, $fields);
@@ -332,6 +333,7 @@ class MyComponentProject {
             if (empty($fields['category'])) {
                 $fields['category'] = $categoryName;
             }
+            // include 'categoryadapter.class.php';
             $o = new CategoryAdapter($this->modx, $this->helpers, $fields, $mode);
 
             if ($mode == MODE_BOOTSTRAP) {
@@ -388,6 +390,7 @@ class MyComponentProject {
                 if (!isset($fields['key'])) {
                     $fields['key'] = $key;
                 }
+                // include 'systemsettingadapter.class.php';
                 $this->addToModx('SystemSettingAdapter', $fields);
             }
 
@@ -425,6 +428,7 @@ class MyComponentProject {
                     ? $fields['name']
                     : $key;
 
+                // include 'systemeventadapter.class.php';
                 $this->addToModx('SystemEventAdapter', $fields);
             }
         } elseif ($mode == MODE_EXPORT || $mode == MODE_REMOVE) {
@@ -434,6 +438,7 @@ class MyComponentProject {
                     array('name' => $fields['name']));
                 if ($obj) {
                     $fields = $obj->toArray();
+                    // include 'systemeventadapter.class.php';
                     $a = new SystemEventAdapter($this->modx, $this->helpers, $fields);
                     if ($mode == MODE_REMOVE) {
                         $a->remove();
@@ -487,6 +492,7 @@ class MyComponentProject {
                         ? $resource
                         : $fields['pagetitle'];
 
+                    // include 'resourceadapter.class.php';
                     $o = $this->addToModx('ResourceAdapter', $fields);
                     $o->createCodeFile();
                 }
@@ -506,6 +512,7 @@ class MyComponentProject {
             }
             foreach ($this->props['menus'] as $k => $fields) {
                 if ($mode == MODE_BOOTSTRAP) {
+                    // include 'menuadapter.class.php';
                     $this->addToModx('MenuAdapter', $fields);
                 } elseif ($mode == MODE_EXPORT || $mode == MODE_REMOVE) {
                     $a = new MenuAdapter($this->modx, $this->helpers, $fields, $mode);
@@ -531,7 +538,15 @@ class MyComponentProject {
      * @return ObjectAdapter ObjectAdapter - returns the appropriate object adapter
      */
     protected function addToModx($adapter, $fields, $overwrite = false) {
+        /* These are here for LexiconHelper */
+        // include 'chunkadapter.class.php';
+        // include 'propertyset.adapter.class.php';
+        // include 'snippetadapter.class.php';
+        // include 'template.adapter.class.php';
+        // include 'templatevar.adapter.class.php'
+
         /* @var $o ObjectAdapter */
+        // include 'objectadapter.class.php';
         $o = new $adapter($this->modx, $this->helpers, $fields);
         $o->addToMODx($overwrite);
         return $o;
@@ -847,11 +862,13 @@ class MyComponentProject {
             foreach ($classes as $className => $data) {
                 $data = explode(':', $data);
                 if (!empty($data[1])) {
-                    $dir = $baseDir . '/' . $data[0] . '/' . $data[1];
-                } else { /* no directory */
                     $dir = $baseDir . '/' . $data[0];
+                    $fileName = $data[1];
+                } else { /* no directory */
+                    $dir = $baseDir. '/' . $this->packageNameLower;
+                    $fileName = $data[0];
                 }
-                $fileName = strtolower($className) . '.class.php';
+                $fileName = strtolower($fileName) . '.class.php';
                 if (!file_exists($dir . '/' . $fileName)) {
                     $tpl = $this->helpers->getTpl('classfile.php');
                     $tpl = str_replace('MyClass', $className, $tpl);
