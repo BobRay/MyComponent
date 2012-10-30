@@ -34,7 +34,8 @@ $components = array(
     'mycomponentRoot' => $this->modx->getOption('mc.root', null,
         MODX_CORE_PATH . 'components/mycomponent/'),
     /* path to MyComponent source files */
-    'mycomponentCore' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/core/components/mycomponent/',
+    'mycomponentCore' => $this->modx->getOption('mc.core_path', null,
+        MODX_CORE_PATH . 'components/mycomponent/core/components/mycomponent/'),
     /* path to new project root */
     'targetRoot' => MODX_ASSETS_PATH . 'mycomponents/' . $packageNameLower . '/',
 
