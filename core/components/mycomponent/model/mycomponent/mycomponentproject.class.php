@@ -775,13 +775,21 @@ class MyComponentProject {
 
         }
 
-        $fileContent = file_get_contents($this->myPaths['targetCore'] . 'model/mycomponent/jsmin.class.php');
+        $path = $this->modx->getOption('mc.core_path',
+            null, $this->modx->getOption('core_path') .
+                'components/mycomponent/') . 'model/mycomponent/jsmin.class.php';
+        if (file_exists($path)) {
+            $fileContent = file_get_contents($path);
+        }
         if (!empty($fileContent)) {
             if (!file_exists($this->myPaths['targetBuild'] . 'utilities/jsmin.class.php')) {
-                $this->helpers->writeFile($this->myPaths['targetBuild'] . 'utilities', 'jsmin.class.php', $fileContent);
+                $this->helpers->writeFile($this->myPaths['targetBuild'] .
+                    'utilities', 'jsmin.class.php', $fileContent);
             } else {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    jsmin class file already exists');
             }
+        } else {
+            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '    Could not find jsm.class.php');
         }
 
         $this->createInstallOptions();
