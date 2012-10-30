@@ -64,7 +64,7 @@
  *
  */
 
-/* Important: All language keys in the code file must be in this form:
+/** Important: All language keys in the code file must be in this form:
  *
  *      $modx->lexicon('language_string_key');
  *      $modx->lexicon("language_string_key");

@@ -110,7 +110,7 @@ class LexiconHelper {
         if (substr($this->source, -1) != "/") {
             $this->source .= "/";
         }
-
+        // include 'helpers.class.php'
         $this->helpers = new Helpers($this->modx, $this->props);
         $this->helpers->init();
 
@@ -690,20 +690,22 @@ class LexiconHelper {
             $this->output .= 'Error: Element is empty';
             return;
         }
-        $typeName = strtolower(substr($type, 3));
+        /* get name of element directory */
+        $dirName = strtolower(substr($type, 3)) . 's';
+
         /* Check for explicit filename */
         $elementFileName = $this->modx->getOption('filename',
-            $this->props['elements'][$typeName . 's'][$element], '' );
+            $this->props['elements'][$dirName][$element], '' );
 
         if (!empty ($elementFileName)) {
-            $file = $this->targetCore . 'elements/' . $typeName . '/' . $elementFileName;
+            $file = $this->targetCore . 'elements/' . $dirName . '/' . $elementFileName;
         } else {
-            $file = $this->targetCore . 'elements/' . $typeName . '/' .
-                $element . '.' . $typeName . '.php';
+            $file = $this->targetCore . 'elements/' . $dirName . '/' .
+                $element . '.' . substr($dirName, 0, -1) . '.php';
         }
 
         if (file_exists($file)) {
-            $this->included[] = $element;
+            $this->included[] = $elementFileName;
             $this->getIncludes($file);
         } else {
             $this->output .= ' Could not find file: ' . $file;

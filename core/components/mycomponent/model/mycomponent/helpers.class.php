@@ -538,8 +538,8 @@ class Helpers
                     define('T_ML_COMMENT', T_COMMENT); /* for PHP < 5 */
                 }
                 switch ($id) {
-                    case T_COMMENT:
-                    case T_ML_COMMENT:
+                    // case T_COMMENT:
+                    // case T_ML_COMMENT:
                     case T_DOC_COMMENT:
                         break;
 
