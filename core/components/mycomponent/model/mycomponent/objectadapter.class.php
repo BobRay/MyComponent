@@ -611,33 +611,13 @@ abstract class ObjectAdapter
             }
         }
 
-        switch ($type) {
-
-            case 'modChunk':
-                $tpl .= "    'snippet' => stripPhpTags(\$sources['source_core']." . "'/elements/chunks/" . $fileName . "'),\n";
-                break;
-
-            case 'modSnippet':
-                $tpl .= "    'snippet' => stripPhpTags(\$sources['source_core']." . "'/elements/snippets/" . $fileName . "'),\n";
-                break;
-
-            case 'modPlugin':
-                $tpl .= "    'snippet' => stripPhpTags(\$sources['source_core']." . "'/elements/plugins/" . $fileName . "'),\n";
-                break;
-
-            case 'modTemplate':
-                $tpl .= "    'snippet' => stripPhpTags(\$sources['source_core']." . "'/elements/templates/" . $fileName . "'),\n";
-                break;
-
-            default:
-                break;
-        }
         /* finish up */
-        //$tpl .= "), '', true, true);\n";
         $tpl .= "), '', true, true);\n";
 
         if ($type == 'modResource') {
             $tpl .= "\$resources[" . $i . "]->setContent(file_get_contents(\$sources['data']." . "'resources/" . $fileName . "'));\n\n";
+        } elseif ($type == 'modChunk' || $type == 'modSnippet' || $type == 'modPlugin' || $type == 'modTemplate') {
+            $tpl .= '$' . $variableName . '[' . $i . "]->setContent(file_get_contents(\$sources['source_core'] . '/elements/" . strtolower($variableName) . '/' . $fileName . "'));\n\n" ;
         }
 
         /* handle properties */
