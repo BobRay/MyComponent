@@ -134,6 +134,10 @@ $components = array(
 
     'elements' => array(
         'snippets' => array(
+            'Build' => array(
+                'category' => 'MyComponent',
+                'filename' => 'build.php',
+            ),
             'MyComponent' => array(
                 'category' => 'MyComponent',
                 'filename' => 'mycomponent.php',
