@@ -281,6 +281,9 @@ class MyComponentProject {
 
         if ($mode == MODE_REMOVE) {
             /*  Create namespace */
+            $temp = $this->modx->setLogLevel(MODX::LOG_LEVEL_INFO);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Removing Project Objects from MODX');
+            $this->modx->setLogLevel($temp);
             $this->createNamespaces($mode);
 
             /* create category or categories*/
@@ -1027,7 +1030,9 @@ class MyComponentProject {
             if (! ($this->targetRoot == $this->props['targetRoot'])) {
                 die('mismatched targetRoot -- aborting removeObjects');
             }
-
+            $temp = $this->modx->setLogLevel(MODX::LOG_LEVEL_INFO);
+            $this->helpers->sendLog(MODx::LOG_LEVEL_INFO, 'Removing project files');
+            $this->modx->setLogLevel($temp);
             rrmdir($dir);
         }
         $this->modx->setLogLevel($oldLogLevel);

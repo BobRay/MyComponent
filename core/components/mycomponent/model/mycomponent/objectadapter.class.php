@@ -289,7 +289,9 @@ abstract class ObjectAdapter
         $obj = $modx->getObject($objClass, array($nameKey => $name));
         if ($obj) {
             $obj->remove();
+            $temp = $this->modx->setLogLevel(MODX::LOG_LEVEL_INFO);
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        Removed ' . $objClass . ': ' . $name);
+            $this->modx->setLogLevel($temp);
         } else {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
                 '[Object Adapter] Could not find ' . $objClass . ': ' .

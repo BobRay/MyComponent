@@ -181,7 +181,9 @@ class CategoryAdapter extends ObjectAdapter {
         $name = $this->getName();
         $obj = $this->modx->getObject('modCategory', array('category' => $name));
         if ($obj) {
+            $temp = $this->modx->setLogLevel(MODX::LOG_LEVEL_INFO);
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        Removed ' . 'modCategory' . ': ' . $name);
+            $this->modx->setLogLevel($temp);
             $obj->remove();
         }
     }
