@@ -52,6 +52,7 @@ if (!defined('MODX_CORE_PATH')) {
 }
 
 require_once $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'model/mycomponent/mycomponentproject.class.php';
+// include 'mycomponentproject.class.php';
 
 $project = new MyComponentProject($modx);
 $project->init();

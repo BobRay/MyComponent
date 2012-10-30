@@ -109,7 +109,7 @@ if (!defined('MODX_CORE_PATH')) {
         die ('Unauthorized Access');
     }
 }
-
+// include 'mycomponentproject.class.php';
 require_once $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'model/mycomponent/mycomponentproject.class.php';
 
 $project = new MyComponentProject($modx);

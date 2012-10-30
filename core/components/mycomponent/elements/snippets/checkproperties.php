@@ -45,7 +45,7 @@ if (!defined('MODX_CORE_PATH')) {
 if (php_sapi_name() != 'cli') {
     echo "<pre>\n"; /* used for nice formatting for log messages  */
 }
-
+// include 'checkproperties.class.php';
 require_once $sourceRoot . 'core/components/mycomponent/model/mycomponent/checkproperties.class.php';
 
 $checkProperties = new CheckProperties();

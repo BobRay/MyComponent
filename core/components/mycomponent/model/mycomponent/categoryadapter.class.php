@@ -150,6 +150,12 @@ class CategoryAdapter extends ObjectAdapter {
                         $fields['filename'] = $propFields['filename'];
                     }
                 }
+                /* These are here for LexiconHelper */
+                // include 'chunkadapter.class.php';
+                // include 'propertyset.adapter.class.php';
+                // include 'snippetadapter.class.php';
+                // include 'template.adapter.class.php';
+                // include 'templatevar.adapter.class.php'
 
                 $o = new $adapterName($this->modx, $this->helpers, $fields, MODE_EXPORT);
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Processing ' . $o->getName());
