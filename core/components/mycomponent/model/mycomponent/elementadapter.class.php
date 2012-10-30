@@ -131,7 +131,7 @@ abstract class ElementAdapter extends ObjectAdapter {
     public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
         /* @var $helpers Helpers */
 
-        $categories = ObjectAdapter::$myObjects['ElementCategories'];
+        $categories = $helpers->modx->getOption('ElementCategories', ObjectAdapter::$myObjects, array());
         if (empty($categories)) {
             $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    No Elements to process');
             return;

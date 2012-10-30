@@ -115,7 +115,9 @@ class CategoryAdapter extends ObjectAdapter {
 
     public function exportElements($toProcess, $dryRun = false) {
         $c = $this->modx->getObject('modCategory', array('category' => $this->myFields['category']));
-        $this->myId = $c->get('id');
+        if ($c) {
+            $this->myId = $c->get('id');
+        }
         unset($c);
 
         foreach($toProcess as $elementType) {
