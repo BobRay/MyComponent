@@ -1036,6 +1036,8 @@ class MyComponentProject {
             rrmdir($dir);
         }
         $this->modx->setLogLevel($oldLogLevel);
+        $cm = $this->modx->getCacheManager();
+        $cm->refresh();
     }
 
     /** recursive remove dir function */
