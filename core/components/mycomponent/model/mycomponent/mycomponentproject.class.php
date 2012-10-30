@@ -772,7 +772,7 @@ class MyComponentProject {
 
         }
 
-        $fileContent = file_get_contents($this->mcRoot . '_build/utilities/jsmin.class.php');
+        $fileContent = file_get_contents($this->mcCore . 'model/mycomponent/jsmin.class.php');
         if (!empty($fileContent)) {
             if (!file_exists($this->myPaths['targetBuild'] . 'utilities/jsmin.class.php')) {
                 $this->helpers->writeFile($this->myPaths['targetBuild'] . 'utilities', 'jsmin.class.php', $fileContent);
