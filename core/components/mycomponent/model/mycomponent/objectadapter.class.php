@@ -17,10 +17,6 @@ abstract class ObjectAdapter
     protected $myFields;
     public static $myObjects = array();
 
-
-
-
-    
     public function __construct(&$modx, &$helpers) {/* Set the component */
         $this->modx =& $modx;
         $this->helpers =& $helpers;
@@ -618,7 +614,7 @@ abstract class ObjectAdapter
         switch ($type) {
 
             case 'modChunk':
-                $tpl .= "    'snippet' => file_get_contents(\$sources['source_core']." . "'/elements/chunks/" . $fileName . "'),\n";
+                $tpl .= "    'snippet' => stripPhpTags(\$sources['source_core']." . "'/elements/chunks/" . $fileName . "'),\n";
                 break;
 
             case 'modSnippet':
@@ -626,17 +622,18 @@ abstract class ObjectAdapter
                 break;
 
             case 'modPlugin':
-                $tpl .= "    'plugincode' => stripPhpTags(\$sources['source_core']." . "'/elements/plugins/" . $fileName . "'),\n";
+                $tpl .= "    'snippet' => stripPhpTags(\$sources['source_core']." . "'/elements/plugins/" . $fileName . "'),\n";
                 break;
 
             case 'modTemplate':
-                $tpl .= "    'content' => file_get_contents(\$sources['source_core']." . "'/elements/templates/" . $fileName . "'),\n";
+                $tpl .= "    'snippet' => stripPhpTags(\$sources['source_core']." . "'/elements/templates/" . $fileName . "'),\n";
                 break;
 
             default:
                 break;
         }
         /* finish up */
+        //$tpl .= "), '', true, true);\n";
         $tpl .= "), '', true, true);\n";
 
         if ($type == 'modResource') {
