@@ -407,7 +407,31 @@ $components = array(
      *
      * Set to array() if there are no classes. */
     'classes' => array(
-        'MyComponentProject' => 'mycomponent',
+        'ActionAdapter' => 'actionadapter',
+        'CategoryAdapter' => 'categoryadapter',
+        'CheckProperties' => 'checkproperties',
+        'ChunkAdapter' => 'chunkadapter',
+        'ContextAdapter' => 'contextadapter',
+        'ContextSettingsAdapter' => 'contextsettingsadapter',
+        'ElementAdapter' => 'elementadapter',
+        'Helpers' => 'helpers',
+        /* 'mc_auto_load' => 'mcautoload', */
+        'MenuAdapter' => 'menuadapter',
+        'MyComponentProject' => 'mycomponentproject',
+        'NamespaceAdapter' => 'namespaceadapter',
+        'ObjectAdapter' => 'objectadapter',
+        'PluginAdapter' => 'pluginadapter',
+        'PropertySetAdapter' => 'propertysetadapter',
+        'ResourceAdapter' => 'resourceadapter',
+        'SnippetAdapter' => 'snippetadapter',
+        'SystemEventAdapter' => 'systemeventadapter',
+        'SystemSettingAdapter' => 'systemsettingadapter',
+        'TemplateAdapter' => 'templateadapter',
+        'TemplateVarAdapter' => 'templatevaradapter',
+        'UserGroupAdapter' => 'usergroupadapter',
+        'UserGroupRoleAdapter' => 'usergrouproleadapter',
+        'UserSettingAdapter' => 'usersettingadapter',
+
     ),
 
     /* *******************************************
