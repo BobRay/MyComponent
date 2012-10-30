@@ -31,9 +31,11 @@ $components = array(
     'filePermission' => 0644, /* No quotes!! */
 
     /* Define source and target directories (mycomponent root and core directories) */
-    'mycomponentRoot' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/',
+    'mycomponentRoot' => $this->modx->getOption('mc.root', null,
+        MODX_CORE_PATH . 'components/mycomponent/'),
     /* path to MyComponent source files */
-    'mycomponentCore' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/core/components/mycomponent/',
+    'mycomponentCore' => $this->modx->getOption('mc.core_path', null,
+        MODX_CORE_PATH . 'components/mycomponent/core/components/mycomponent/'),
     /* path to new project root */
     'targetRoot' => MODX_ASSETS_PATH . 'mycomponents/' . $packageNameLower . '/',
 
@@ -118,16 +120,51 @@ $components = array(
 
     /* *************************** MENUS ****************************** */
 
-    /* If your extra needs Menus, set this to true, create them
-     * in the Manager, and export them with exportObjects. Be sure
-     * to set their namespace to the lowercase package name of your extra */
-    'menus' => false,
+    /* If your extra needs Menus, you can create them here
+     * or create them in the Manager, and export them with exportObjects.
+     * Be sure to set their namespace to the lowercase package name
+     * of your extra.
+     *
+     * Every menu should have exactly one action */
+
+    'menus' => array(
+        'Example' => array(
+            'text' => 'Example',
+            'parent' => 'components',
+            'description' => 'example.menu_desc',
+            'icon' => '',
+            'menuindex' => 0,
+            'params' => '',
+            'handler' => '',
+            'permissions' => '',
+
+            'action' => array(
+                'id' => '',
+                'namespace' => 'example',
+                'controller' => 'index',
+                'haslayout' => true,
+                'lang_topics' => 'example:default',
+                'assets' => '',
+            ),
+        ),
+    ),
+
 
     /* ************************* ELEMENTS **************************** */
 
     /* Array containing elements for your extra. 'category' is required
        for each element, all other fields are optional.
-       Property Sets (if any) must come first! */
+       Property Sets (if any) must come first!
+
+       The standard file names are in this form:
+           SnippetName.snippet.php
+           PluginName.plugin.php
+           ChunkName.chunk.html
+           TemplateName.template.html
+
+       If your file names are not standard, add this field:
+          'filename' => 'actualFileName',
+    */
 
 
     'elements' => array(
@@ -181,12 +218,12 @@ $components = array(
                         'propertySet' => 'PropertySet1', /* property set to be used in this pluginEvent */
                     ),
                     'OnMyEvent2' => array(
-                        'priority' => '',
+                        'priority' => '3',
                         'group' => 'plugins',
                         'propertySet' => '',
                     ),
                     'OnDocFormSave' => array(
-                        'priority' => '0',
+                        'priority' => '4',
                         'group' => 'plugins',
                         'propertySet' => '',
                     ),
