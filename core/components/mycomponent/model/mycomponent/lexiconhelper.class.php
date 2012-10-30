@@ -115,7 +115,7 @@ class LexiconHelper {
         $this->helpers->init();
 
         $this->packageNameLower = $this->props['packageNameLower'];
-        $this->targetBase = MODX_BASE_PATH . 'assets/mycomponents/' . $this->packageNameLower . '/';
+        $this->targetBase = $this->props['targetRoot'];
         $this->targetCore = $this->targetBase . 'core/components/' . $this->packageNameLower . '/';
         $this->primaryLanguage = $this->modx->getOption('primaryLanguage', $this->props, '');
         if (empty($this->primaryLanguage)) {
@@ -143,7 +143,7 @@ class LexiconHelper {
             if (isset($fields['name'])) {
                 $plugin = $fields['name'];
             }
-            $elements[strtolower(trim($plugin))] = 'modPlugin';
+            $elements[trim($plugin)] = 'modPlugin';
         }
         if (empty($elements)) {
             $this->output .= 'No elements to process';
@@ -690,10 +690,10 @@ class LexiconHelper {
             $this->output .= 'Error: Element is empty';
             return;
         }
-        $typeName = strtolower(substr($type, 3) .'s');
+        $typeName = strtolower(substr($type, 3));
         /* Check for explicit filename */
         $elementFileName = $this->modx->getOption('filename',
-            $this->props['elements'][$typeName][$element], '' );
+            $this->props['elements'][$typeName . 's'][$element], '' );
 
         if (!empty ($elementFileName)) {
             $file = $this->targetCore . 'elements/' . $typeName . '/' . $elementFileName;
