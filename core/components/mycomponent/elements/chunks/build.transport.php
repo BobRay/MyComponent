@@ -9,14 +9,25 @@
  * Important note: MyComponent never updates this file, so any changes
  * you make will be permanent.
  *
- * Build Script for [[+packageName]] extra
+ * Build Script for MyComponent extra
  *
  * Copyright 2012 by Bob Ray <http://bobsguides.com>
- * Created on [[+createdon]]
+ * Created on 10-23-2012
  *
-[[+license]]
+ * MyComponent is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * @package [[+packageNameLower]]
+ * MyComponent is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * MyComponent; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ * @package mycomponent
  * @subpackage build
  */
 
@@ -30,18 +41,54 @@
  * for more detailed information about using the package.
  */
 
+/* config file must be retrieved in a class */
+class MycomponentConfig{
 
-$config = dirname(__FILE__) . '/build.config.php';
+    public function __construct(&$modx) {
+        $this->modx =& $modx;
 
-if (file_exists($config)) {
-    $props = @include $config;
-} else {
-    die('Could not find main config file at ' . $config);
+    }
+    public function getProps($configPath) {
+        $properties = @include $configPath;
+        return $properties;
+    }
 }
 
-/* @var $configFile string - set in included file */
-if (empty($props)) {
-    die('Could not find project config file at ' . $configFile);
+/* set start time */
+$mtime = microtime();
+$mtime = explode(" ", $mtime);
+$mtime = $mtime[1] + $mtime[0];
+$tstart = $mtime;
+set_time_limit(0);
+
+
+/* Instantiate MODx -- if this require fails, check your
+ * _build/build.config.php file
+ */
+require_once dirname(dirname(__FILE__)) . '/_build/build.config.php';
+require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
+$modx = new modX();
+$modx->initialize('mgr');
+$modx->setLogLevel(xPDO::LOG_LEVEL_INFO);
+$modx->setLogTarget(XPDO_CLI_MODE
+    ? 'ECHO'
+    : 'HTML');
+
+if (!defined('MODX_CORE_PATH')) {
+    die('build.config.php is not correct');
+ }
+
+@include dirname(__FILE__) . '/config/current.project.php';
+
+if (! $currentProject) {
+    die('Could not get current project');
+}
+
+$config = new MycomponentConfig($modx);
+$props = $config->getProps(dirname(__FILE__) . '/config/' . $currentProject . '.config.php');
+
+if (! is_array($props)) {
+    die('Could not get project config file');
 }
 
 if (strpos($props['packageNameLower'], '-') || strpos($props['packageNameLower'], ' ') ) {
@@ -55,12 +102,6 @@ define('PKG_NAME_LOWER', $props['packageNameLower']);
 define('PKG_VERSION', $props['version']);
 define('PKG_RELEASE', $props['release']);
 
-/* set start time */
-$mtime = microtime();
-$mtime = explode(" ", $mtime);
-$mtime = $mtime[1] + $mtime[0];
-$tstart = $mtime;
-set_time_limit(0);
 
 /* define sources */
 $root = dirname(dirname(__FILE__)) . '/';
@@ -77,21 +118,12 @@ $sources= array (
     'data' => $root . '_build/data/',
     'docs' => $root . 'core/components/' . PKG_NAME_LOWER . '/docs/',
     'install_options' => $root . '_build/install.options/',
-    'packages' => $root . 'core/packages',
-    /* no trailing slash */
+    'packages' => $root . 'core/packages',  /* no trailing slash */
 
 );
 unset($root);
 
-/* Instantiate MODx -- if this require fails, check your
- * _build/build.config.php file
- */
-require_once $sources['build'] . 'build.config.php';
-require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
-$modx = new modX();
-$modx->initialize('mgr');
-$modx->setLogLevel(xPDO::LOG_LEVEL_INFO);
-$modx->setLogTarget(XPDO_CLI_MODE ? 'ECHO' : 'HTML');
+
 
 
 $categories = require_once $sources['build'] . 'config/categories.php';
@@ -263,6 +295,7 @@ foreach($categories as $k => $categoryName) {
         }
     }
     if ($hasChunks) { /* add chunks  */
+    $modx->log(modX::LOG_LEVEL_INFO,'Adding Chunks.');
         /* note: Chunks' default properties are set in transport.chunks.php */
         $chunks = include $sources['data'] . $categoryName .'/transport.chunks.php';
         if (is_array($chunks)) {
@@ -278,7 +311,7 @@ foreach($categories as $k => $categoryName) {
 
 
     if ($hasTemplates) { /* add templates  */
-    $modx->log(modX::LOG_LEVEL_INFO,'Adding in Templates.');
+    $modx->log(modX::LOG_LEVEL_INFO,'Adding Templates.');
         /* note: Templates' default properties are set in transport.templates.php */
         $templates = include $sources['data'] . $categoryName .'/transport.templates.php';
         if (is_array($templates)) {
@@ -293,7 +326,8 @@ foreach($categories as $k => $categoryName) {
     }
 
     if ($hasTemplateVariables) { /* add template variables  */
-        /* Template Variables' default properties are set in transport.tvs.php */
+    $modx->log(modX::LOG_LEVEL_INFO,'Adding Template Variables.');
+    /* note: Template Variables' default properties are set in transport.tvs.php */
         $tvs = include $sources['data'] . $categoryName .'/transport.tvs.php';
         if (is_array($tvs)) {
             if ($category->addMany($tvs, 'TemplateVars')) {
@@ -443,6 +477,13 @@ foreach($categories as $k => $categoryName) {
                 'target' => "return MODX_CORE_PATH . 'components/';",
             ));
     }
+
+    /* This is just for MyComponent - Transfer _build dir. */
+    $modx->log(MODX::LOG_LEVEL_INFO, 'Packaged _build directory files');
+    $vehicle->resolve('file',array(
+            'source' => $sources['root'] . '/_build',
+            'target' => "return MODX_CORE_PATH . 'components/mycomponent/';",
+        ));
 
     /* This section transfers every file in the local
        mycomponents/mycomponent/assets directory to the
