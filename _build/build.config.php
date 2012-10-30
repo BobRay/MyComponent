@@ -12,7 +12,6 @@
      Put the full path to the file in the next line
   */
 
-  $loginFile = 'c:\Users\Bob Ray\mc_auth.php';
 
 /* Define the MODX path constants necessary for connecting to your core and other directories.
  * If you have not moved the core, the current values should work.
