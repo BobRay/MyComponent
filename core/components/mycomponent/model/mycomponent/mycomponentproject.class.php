@@ -698,6 +698,23 @@ class MyComponentProject {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
         }
 
+        $fileName = 'current.project.php';
+        $tpl = "<?php
+   /** MyComponent Current Project
+    *  Change this file whenever you work on another project
+    *
+    *  This should be set to the lowercase name of your package and
+    *  Should match the \$packageNameLower value in the Project Config
+    *  file (which must be named {packageNameLower}.config.php)
+    * */
+
+\$currentProject = '" . $this->packageNameLower. "';";
+    if (! file_exists($dir . $fileName)) {
+        $this->helpers->writeFile($dir, $fileName, $tpl);
+    } else {
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+    }
+
         /* Create language directories and files specified in project config */
         if (isset ($this->props['languages']) && !empty($this->props['languages'])) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Creating Lexicon files');
