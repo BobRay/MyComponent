@@ -67,7 +67,7 @@ $toProcess = 'snippets,plugins,chunks,templates';
 /*$directory = $modx->getOption('mc.core', null,
     $modx->getOption('core_path') . 'components/example/') . 'elements/';*/
 $directory = '';
-$removeFiles = false;
+$removeFiles = isset($scriptProperties['removeFiles']) && !empty($scriptProperties['removeFiles']);
 $project->removeObjects($removeFiles);
 
 

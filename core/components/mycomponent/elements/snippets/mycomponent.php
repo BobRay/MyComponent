@@ -24,11 +24,14 @@ if (!empty($_POST)) {
             $output = $modx->runSnippet('LexiconHelper');
             break;
         case 'build':
-            $modx->runSnippet('Build');
+            $output = $modx->runSnippet('Build');
             break;
 
         case 'removeobjects':
-            $modx->runSnippet('RemoveObjects');
+            $output = $modx->runSnippet('RemoveObjects');
+            break;
+        case 'removeobjectsandfiles':
+            $output = $modx->runSnippet('RemoveObjects', array('removeFiles' => true));
             break;
     }
 

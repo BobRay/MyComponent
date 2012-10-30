@@ -17,7 +17,9 @@
         <label for="build"> <input type="radio" name="doit" value="build" id="build"/>
             Build</label><br/><br/><br/><br/>
         <label for="removeobjects"> <input type="radio" name="doit" value="removeobjects" id="removeobjects"/>
-            RemoveObjects</label><br/><br/><br/>
+            RemoveObjects</label><br/><br/>
+            <label for="removeobjectsandfiles"> <input type="radio" name="doit" value="removeobjectsandfiles" id="removeobjectsandfiled"/>
+                        RemoveObjects and Files</label><br/><br/><br/>
 
         
 
