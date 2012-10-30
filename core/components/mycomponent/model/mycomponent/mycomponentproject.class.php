@@ -1033,7 +1033,7 @@ class MyComponentProject {
             $temp = $this->modx->setLogLevel(MODX::LOG_LEVEL_INFO);
             $this->helpers->sendLog(MODx::LOG_LEVEL_INFO, 'Removing project files');
             $this->modx->setLogLevel($temp);
-            rrmdir($dir);
+            $this->rrmdir($dir);
         }
         $this->modx->setLogLevel($oldLogLevel);
         $cm = $this->modx->getCacheManager();
