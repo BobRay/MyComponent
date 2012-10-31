@@ -8,6 +8,34 @@ set_time_limit(0);
 $mem_usage = memory_get_usage();
 
 /* @var $modx modX */
+if (! class_exists('BuildHelper')) {
+    class BuildHelper {
+
+        public function __construct(&$modx) {
+            $this->modx =& $modx;
+
+        }
+
+        public function getProps($configPath) {
+            $properties = @include $configPath;
+            return $properties;
+        }
+
+        public function sendLog($level, $message) {
+            $msg = '';
+            if ($level == MODX::LOG_LEVEL_ERROR) {
+                $msg .= 'ERROR -- ';
+            }
+            $msg .= $message;
+            $msg .= "\n";
+            if (php_sapi_name() != 'cli') {
+                $msg = nl2br($msg);
+            }
+            echo $msg;
+        }
+    }
+}
+
 
 if (!defined('MODX_CORE_PATH')) {
     $path1 = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/_build/build.config.php';
@@ -44,23 +72,41 @@ if (!defined('MODX_CORE_PATH')) {
         } else {
             echo "\nNo Resource\n";
         }
+
     }
+
 } else {
     if (!$modx->user->hasSessionContext('mgr')) {
         die ('Unauthorized Access');
     }
 }
 
-$path1 = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/_build/build.transport.php';
-if (file_exists($path1)) {
-    return include $path1;
+$buildPath =  $modx->getOption('mc.root', null, $modx->getOption('core_path') . 'components/mycomponent/') . '_build/';
+
+$file = 'config/current.project.php';
+
+@include $buildPath . $file;
+
+if (! isset($currentProject)) {
+    die ('Could not find current project file at: ' . $buildPath . $file);
+}
+$configPath = $buildPath . 'config/' . $currentProject . '.config.php';
+
+if (! file_exists($configPath)) {
+    die('Could not find project config file at: ' . $configPath);
 } else {
-    $path2 = dirname(dirname(dirname(__FILE__))) . '/_build/build.transport.php';
-    if (file_exists($path2)) {
-        return include($path2);
-    }
+    $helper = new BuildHelper($modx);
+    $props = $helper->getProps($configPath);
 }
 
-echo "Could not find build.transport.php at either location:\n" . "\n" . $path1 . "\n" . $path2;
+if (! is_array($props)) {
+    die('Project Config file is corrupt');
+}
 
+$transportPath = $props['targetRoot'] . '_build/build.transport.php';
 
+if (! file_exists($transportPath)) {
+    die('Could not find build.transport.php at: ' . $transportPath);
+}
+
+return include $transportPath;
