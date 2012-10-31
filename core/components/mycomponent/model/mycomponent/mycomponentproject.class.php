@@ -118,7 +118,7 @@ class MyComponentProject {
         $this->updateProjectsFile($projectConfigPath);
         $this->configPath = $projectConfigPath;
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-            "\n" . 'Package: ' . $this->props['packageName']);
+            "\n" . 'Project: ' . $this->props['packageName']);
     }
 
 
