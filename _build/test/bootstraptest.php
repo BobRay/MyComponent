@@ -459,9 +459,11 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
         foreach ($classes as $className => $data) {
             $data = explode(':', $data);
             if (!empty($data[1])) {
-                $dir = $baseDir . '/' . $data[0] . '/' . $data[1];
-            } else { /* no directory */
                 $dir = $baseDir . '/' . $data[0];
+                $fileName = $data[1];
+            } else { /* no directory */
+                $dir = $baseDir . '/' . $this->packageNameLower;
+                $fileName = $data[0];
             }
             $fileName = strtolower($className) . '.class.php';
             $this->assertTrue(is_dir($dir));
