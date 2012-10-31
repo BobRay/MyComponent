@@ -1042,6 +1042,13 @@ class MyComponentProject {
             $this->helpers->sendLog(MODx::LOG_LEVEL_INFO, 'Removing project files');
             $this->modx->setLogLevel($temp);
             $this->rrmdir($dir);
+            if (! is_dir($dir)) {
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                    'Project files and directories removed');
+            } else {
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                    'Project files removed, but Version Control files may remain');
+            }
         }
         $this->modx->setLogLevel($oldLogLevel);
         $cm = $this->modx->getCacheManager();
@@ -1055,14 +1062,21 @@ class MyComponentProject {
             foreach ($objects as $object) {
                 if ($object != "." && $object != "..") {
                     if (filetype($dir . "/" . $object) == "dir") {
+                        $prefix = substr($object, 0, 4);
+                        if ($prefix == '.git' || $prefix == '.svn') {
+                            continue;
+                        }
                         $this->rrmdir($dir . "/" . $object);
                     } else {
-                        unlink($dir . "/" . $object);
+                        $prefix = substr($object, 0, 4);
+                        if ( $prefix != '.git' && $prefix != '.svn') {
+                            @unlink($dir . "/" . $object);
+                        }
                     }
                 }
             }
             reset($objects);
-            rmdir($dir);
+            $success = @rmdir($dir);
         }
 
     }
