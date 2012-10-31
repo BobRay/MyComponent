@@ -106,14 +106,23 @@ class Helpers
             name chunk
             name file
         */
-        $text = $this->modx->getChunk('my' . $name);
+        $text = '';
+        // $text = $this->modx->getChunk('my' . $name);
+        $obj = $this->modx->getObject('modChunk', array('name' => 'my' . $name));
+        if ($obj) {
+            $text = $obj->getContent();
+        }
+
         if (empty($text)) {
             if (file_exists($this->tplPath . 'my' . $name)) {
                 $text = file_get_contents($this->tplPath . 'my' . $name);
             }
         }
         if (empty($text)) {
-            $text = $this->modx->getChunk($name);
+            $obj = $this->modx->getObject('modChunk', array('name' => $name));
+            if ($obj) {
+                $text = $obj->getContent();
+            }
         }
         if (empty($text)) {
             if (file_exists($this->tplPath . $name)) {
