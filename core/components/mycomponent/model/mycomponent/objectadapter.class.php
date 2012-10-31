@@ -608,10 +608,15 @@ abstract class ObjectAdapter
 
         /* might be able to use var_export and beautify here */
         foreach ($fields as $field => $value) {
-            if ($field == 'value'  && in_array('combo-boolean', array_values($fields))) {
+            /* @var $helpers Helpers */
+            if (is_array($value)) {
+                $value = empty($value) ? 'array()' : $helpers->beautify($value);
+                $tpl .= "    '" . $field . "'" . " => " . $value . ",\n";
+
+            } elseif ($field == 'value'  && in_array('combo-boolean', array_values($fields))) {
                 $value = $value? 'true' : 'false';
                 $tpl .= "    '" . $field . "'" . " => " . $value . ",\n";
-            } else {
+            }  else {
                 $tpl .= "    '" . $field . "'" . " => '" . $value . "',\n";
             }
         }
