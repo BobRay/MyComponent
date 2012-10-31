@@ -105,6 +105,7 @@ class LexiconHelper {
         $this->props = array_merge($properties, $this->props);
         unset($currentProjectPath, $projectConfigPath);
         $this->output = "\n" . 'Project: ' . $this->props['packageName'];
+        $this->output = "\nAction: LexiconHelper\n";
         $this->source = $this->props['mycomponentRoot'];
         /* add trailing slash if missing */
         if (substr($this->source, -1) != "/") {
