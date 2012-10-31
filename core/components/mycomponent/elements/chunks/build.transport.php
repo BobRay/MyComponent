@@ -42,7 +42,7 @@
  */
 
 /* config file must be retrieved in a class */
-class BuildHelper{
+class BuildHelper {
 
     public function __construct(&$modx) {
         $this->modx =& $modx;
@@ -160,14 +160,19 @@ $hasSettings = file_exists($sources['data'] . 'transport.settings.php'); /* Add 
 $hasSubPackages = is_dir($sources['data'] .'subpackages');
 $minifyJS = $props['minifyJS'];
 
-
+$helper->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Project: ' . $currentProject);
+$helper->sendLog(MODX::LOG_LEVEL_INFO, "Action: Build\n");
+$helper->sendLog(MODX::LOG_LEVEL_INFO, 'Created Package: ' . PKG_NAME_LOWER);
+$helper->sendLog(MODX::LOG_LEVEL_INFO, 'Created namespace: ' . PKG_NAME_LOWER);
 /* load builder */
+$modx->setLogLevel(MODX::LOG_LEVEL_ERROR);
 $modx->loadClass('transport.modPackageBuilder','',false, true);
 $builder = new modPackageBuilder($modx);
 $builder->createPackage(PKG_NAME_LOWER, PKG_VERSION, PKG_RELEASE);
+
 $assetsPath = $hasAssets? '{assets_path}components/' . PKG_NAME_LOWER . '/' : '';
 $builder->registerNamespace(PKG_NAME_LOWER,false,true,'{core_path}components/'.PKG_NAME_LOWER.'/', $assetsPath);
-
+$modx->setLogLevel(MODX::LOG_LEVEL_INFO);
 /* Transport Resources */
 
 if ($hasResources) {

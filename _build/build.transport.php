@@ -91,7 +91,10 @@ if (!defined('MODX_CORE_PATH')) {
     die('build.config.php is not correct');
  }
 
-@include dirname(__FILE__) . '/config/current.project.php';
+/* Non standard setting for mycomponent */
+
+$currentProject = 'mycomponent';
+// @include dirname(__FILE__) . '/config/current.project.php';
 
 if (! $currentProject) {
     die('Could not get current project');
@@ -160,14 +163,19 @@ $hasSettings = file_exists($sources['data'] . 'transport.settings.php'); /* Add 
 $hasSubPackages = is_dir($sources['data'] .'subpackages');
 $minifyJS = $props['minifyJS'];
 
-
+$helper->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Project: ' . $currentProject);
+$helper->sendLog(MODX::LOG_LEVEL_INFO, "Action: Build\n");
+$helper->sendLog(MODX::LOG_LEVEL_INFO, 'Created Package: ' . PKG_NAME_LOWER);
+$helper->sendLog(MODX::LOG_LEVEL_INFO, 'Created namespace: ' . PKG_NAME_LOWER);
 /* load builder */
+$modx->setLogLevel(MODX::LOG_LEVEL_ERROR);
 $modx->loadClass('transport.modPackageBuilder','',false, true);
 $builder = new modPackageBuilder($modx);
 $builder->createPackage(PKG_NAME_LOWER, PKG_VERSION, PKG_RELEASE);
+
 $assetsPath = $hasAssets? '{assets_path}components/' . PKG_NAME_LOWER . '/' : '';
 $builder->registerNamespace(PKG_NAME_LOWER,false,true,'{core_path}components/'.PKG_NAME_LOWER.'/', $assetsPath);
-
+$modx->setLogLevel(MODX::LOG_LEVEL_INFO);
 /* Transport Resources */
 
 if ($hasResources) {
@@ -483,6 +491,13 @@ foreach($categories as $k => $categoryName) {
        target site's core/mycomponent directory on install.
      */
 
+    /* Transfer _build dir -- this is just for MyComponent. */
+    $helper->sendLog(MODX::LOG_LEVEL_INFO, 'Packaged _build/config directory files');
+    $vehicle->resolve('file', array(
+       'source' => $sources['root'] . '/_build/config',
+       'target' => "return MODX_CORE_PATH . 'components/mycomponent/_build/';",
+    ));
+
     if ($hasCore && $i == 1) {
         $helper->sendLog(MODX::LOG_LEVEL_INFO, 'Packaged core directory files');
         $vehicle->resolve('file',array(
@@ -491,12 +506,7 @@ foreach($categories as $k => $categoryName) {
             ));
     }
 
-    /* This is just for MyComponent - Transfer _build dir. */
-    $helper->sendLog(MODX::LOG_LEVEL_INFO, 'Packaged _build directory files');
-    $vehicle->resolve('file',array(
-            'source' => $sources['root'] . '/_build/config',
-            'target' => "return MODX_CORE_PATH . 'components/mycomponent/_build/';",
-        ));
+
 
     /* This section transfers every file in the local
        mycomponents/mycomponent/assets directory to the
