@@ -172,7 +172,7 @@ class LexiconHelper {
             $this->output .= "\n" . 'Processing Element: ' . $element . " -- Type: " . $type;
             $this->getCode($element, $type);
             if (!empty($this->included)) {
-                $this->output .= "\nCode File(s) analyzed: " . implode(', ', $this->included);
+                $this->output .= "\nCode File(s) analyzed:\n" . implode("\n", $this->included);
             }
             if (!empty($this->loadedLexiconFiles)) {
                 $this->output .= "\nLexicon File(s) analyzed: " . implode(', ', array_keys($this->loadedLexiconFiles));
@@ -701,11 +701,11 @@ class LexiconHelper {
             $file = $this->targetCore . 'elements/' . $dirName . '/' . $elementFileName;
         } else {
             $file = $this->targetCore . 'elements/' . $dirName . '/' .
-                $element . '.' . substr($dirName, 0, -1) . '.php';
+                strtolower($element) . '.' . substr($dirName, 0, -1) . '.php';
         }
 
         if (file_exists($file)) {
-            $this->included[] = $elementFileName;
+            $this->included[] = $file;
             $this->getIncludes($file);
         } else {
             $this->output .= ' Could not find file: ' . $file;
