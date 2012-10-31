@@ -42,28 +42,30 @@
  */
 
 /* config file must be retrieved in a class */
-class BuildHelper {
+if (! class_exists('BuildHelper')) {
+    class BuildHelper {
 
-    public function __construct(&$modx) {
-        $this->modx =& $modx;
+        public function __construct(&$modx) {
+            $this->modx =& $modx;
 
-    }
-    public function getProps($configPath) {
-        $properties = @include $configPath;
-        return $properties;
-    }
-
-    public function sendLog($level, $message) {
-        $msg = '';
-        if ($level == MODX::LOG_LEVEL_ERROR) {
-            $msg .= 'ERROR -- ';
         }
-        $msg .= $message;
-        $msg .= "\n";
-        if (php_sapi_name() != 'cli') {
-            $msg = nl2br($msg);
+        public function getProps($configPath) {
+            $properties = @include $configPath;
+            return $properties;
         }
-        echo $msg;
+
+        public function sendLog($level, $message) {
+            $msg = '';
+            if ($level == MODX::LOG_LEVEL_ERROR) {
+                $msg .= 'ERROR -- ';
+            }
+            $msg .= $message;
+            $msg .= "\n";
+            if (php_sapi_name() != 'cli') {
+                $msg = nl2br($msg);
+            }
+            echo $msg;
+        }
     }
 }
 
