@@ -5,7 +5,7 @@
     <form method="post" action="[[~[[*id]]]]">
 
         <label for="bootstrap">
-            <input type="radio" checked="checked" name="doit" value="bootstrap" id="bootstrap"/>
+            <input type="radio" name="doit" value="bootstrap" id="bootstrap"/>
             Bootstrap
         </label><br/><br />
         <label for="exportobjects"> <input type="radio" name="doit" value="exportobjects" id="exportobjects"/>
