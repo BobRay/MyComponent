@@ -60,6 +60,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
         $this->mc->init(array(), 'unittest');
         $this->modx =& $modx;
         $this->category = key($this->mc->props['categories']);
+        $this->packageNameLower = $this->mc->packageNameLower;
         if ($this->category != 'UnitTest') {
             die('wrong config - NEVER run unit test on a real project!');
         }
@@ -465,7 +466,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
                 $dir = $baseDir . '/' . $this->packageNameLower;
                 $fileName = $data[0];
             }
-            $fileName = strtolower($className) . '.class.php';
+            $fileName = strtolower($fileName) . '.class.php';
             $this->assertTrue(is_dir($dir));
             $this->assertFileExists($dir . '/' . $fileName);
             $this->assertNotEmpty(file_get_contents($dir . '/' . $fileName));
