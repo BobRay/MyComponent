@@ -212,12 +212,8 @@ class MyComponentProject {
             $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[MyComponentProject] MyComponent must be installed to create a new MyComponent Project!');
             return;
         }
-        $mem_usage = memory_get_usage();
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Action: Bootstrap');
 
-        $modx = $this->modx;
-        $helpers = $this->helpers;
-        $objects = $this->bootstrapObjects;
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Action: Bootstrap');
 
         /* Create basic files (no resolvers, transport files, or code files) */
         $this->createBasics();
