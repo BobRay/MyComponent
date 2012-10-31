@@ -351,8 +351,11 @@ abstract class ObjectAdapter
                 default:
                     break;
             }
-            //$tpl = str_replace('[[+elementType]]', strtolower(substr($this->dbClass, 3)), $tpl);
-            //$tpl = str_replace('[[+elementName]]', $this->getName(), $tpl);
+            $tpl = str_replace('[[+elementType]]', strtolower(substr($this->dbClass, 3)), $tpl);
+            $tpl = str_replace('[[+elementName]]', $this->getName(), $tpl);
+            if (!empty ($tpl)) {
+                $tpl = $this->helpers->replaceTags($tpl);
+            }
             if (!empty($tpl) && !empty($field)) {
                 //$tpl = $this->helpers->replaceTags($tpl);
                 $this->myFields[$field] = $tpl;
