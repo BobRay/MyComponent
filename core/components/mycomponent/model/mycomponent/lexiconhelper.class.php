@@ -152,13 +152,16 @@ class LexiconHelper {
         }
         $this->classFiles = array();
         $dir = $this->targetCore . 'model';
-        $this->helpers->resetFiles();
-        $this->helpers->dirWalk($dir, 'php', true);
-        $this->classFiles = $this->helpers->getFiles();
-        if (!empty($this->classFiles)) {
-            $this->output .= "\nFound these class files: ";
-            foreach($this->classFiles as $name => $path) {
-                $this->output .= "\n    " . $name;
+        /*  make sure there is a model dir */
+        if (is_dir(($dir))) {
+            $this->helpers->resetFiles();
+            $this->helpers->dirWalk($dir, 'php', true);
+            $this->classFiles = $this->helpers->getFiles();
+            if (!empty($this->classFiles)) {
+                $this->output .= "\nFound these class files: ";
+                foreach($this->classFiles as $name => $path) {
+                    $this->output .= "\n    " . $name;
+                }
             }
         }
 
