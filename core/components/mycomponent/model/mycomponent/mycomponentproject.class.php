@@ -968,7 +968,7 @@ class MyComponentProject {
         foreach ($toProcess as $elementType) {
             $class = 'mod' . ucfirst(substr($elementType, 0, -1));
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Processing ' . $elementType);
-            $elements = $this->props['elements'][$elementType];
+            $elements = $this->modx->getOption($elementType,$this->props['elements'], array());
             foreach ($elements as $element => $fields) {
                 if (isset($fields['static']) && !empty($fields['static'])) {
                     $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
