@@ -70,6 +70,8 @@ $toProcess = 'snippets,plugins,chunks,templates';
 $directory = '';
 $project->importObjects($toProcess, $directory, $dryRun);
 
+$cm = $modx->getCacheManager();
+$cm->refresh();
 // echo print_r(ObjectAdapter::$myObjects, true);
 
 echo "\n\nInitial Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
