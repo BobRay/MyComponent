@@ -584,7 +584,17 @@ class MyComponentProject {
 
         /* Category Resolver */
         $intersects = $this->modx->getOption('categories', $o, array());
-        CategoryAdapter::createResolver($dir, $intersects, $this->helpers, $mode);
+        $needResolver = false;
+        /* see if we really need the resolver */
+        foreach($intersects as $k => $fields) {
+            /* see if parent is set to something other than 0 */
+            if ($fields['parent']) {
+                $needResolver = true;
+            }
+        }
+        if ($needResolver) {
+            CategoryAdapter::createResolver($dir, $intersects, $this->helpers, $mode);
+        }
 
         /* Resource Resolver ( */
         $intersects = $this->modx->getOption('resourceResolver', $o, array());
