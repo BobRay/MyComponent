@@ -1,16 +1,121 @@
 <?php
 /* @var $modx modX */
 
-if (!defined('MODX_CORE_PATH')) {
+if (! $modx->user->hasSessionContext('mgr')) {
     die('This file can not be run outside of MODX. ');
 }
-
+$message = '&nbsp;';
 $tpl = $modx->getChunk('mycomponentform.tpl');
 
+/* get the current project from the mc _build/config directory */
+$cpFile = $modx->getOption('mc.root', null, $modx->getOption('core_path') . 'components/mycomponent/') . '_build/config/current.project.php';
+
+@include $cpFile;
+
+/* make sure we got it */
+if (! isset($currentProject)) {
+    die('Current Project is not set');
+}
+
+
+$newProjectName = '';
 $output = '';
-if (!empty($_POST)) {
-    $action = $_POST['doit'];
+$projects = '';
+$code = '';
+
+$projectFile = $modx->getOption('mc.root', null, $modx->getOption('core_path') . 'components/mycomponent/') . '_build/config/projects.php';
+
+
+$projects = require $projectFile;
+
+if (!is_array($projects)) {
+    die ('could not get projects array');
+}
+
+// $tpl .= print_r($_POST, true);
+
+/* process form */
+if ( (!empty($_POST) ) && (isset($_POST['doit']) || isset($_POST['newproject']) || isset($_POST['switchproject']))) {
+    if (isset($_POST['newproject'])) {
+        $action ='newproject';
+    } elseif (isset($_POST['switchproject'])) {
+        $action = 'switchproject';
+    } else {
+        $action = $_POST['doit'];
+    }
     switch ($action) {
+        case 'switchproject':
+            if (empty($_POST['currentproject'])) {
+                $message = 'You must specify a project name';
+            } elseif ($_POST['selectproject'] == $currentProject) {
+                $message = 'Already on that project';
+            } else {
+                $newProjectName = $_POST['selectproject'];
+                $content = file_get_contents($cpFile);
+                $content = str_replace($currentProject, $newProjectName, $content);
+                $fp = fopen($cpFile, 'w');
+                if ($fp) {
+                    fwrite($fp, $content);
+                    fclose($fp);
+                }
+                $currentProject = $newProjectName;
+            }
+            break;
+        case 'newproject':
+            if (empty($_POST['currentproject'])) {
+                $message = 'You must specify a project name';
+            } elseif(isset($projects[strtolower($_POST['currentproject'])])) {
+                $message = 'Project already exists';
+            } else {
+                $newProjectName = $_POST['currentproject'];
+                $newProjectLower = strtolower($newProjectName);
+
+                /* update MC current.project.php file */
+                $content = file_get_contents($cpFile);
+                $content = str_replace($currentProject, $newProjectLower, $content);
+                $fp = fopen($cpFile, 'w');
+                if ($fp) {
+                    fwrite($fp, $content);
+                    fclose($fp);
+                }
+                $currentProject = $newProjectLower;
+                /* create new project config file */
+                $tplPath = $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'elements/chunks/';
+                $newTpl = file_get_contents($tplPath . 'example.config.php');
+                if (empty($newTpl)) {
+                    $message = 'Could not find example.config.php';
+                    break;
+                }
+                $newTpl = str_replace('Example', $newProjectName, $newTpl);
+                $newTpl = str_replace('example', $newProjectLower, $newTpl);
+                $configDir = $modx->getOption('mc.root', null, $modx->getOption('core_path') . 'components/mycomponent/') . '_build/config/';
+                if (! is_dir($configDir)) {
+                    $message = 'Config directory does not exist';
+                    break;
+                }
+                $configFile = $configDir . $newProjectLower . '.config.php';
+                $fp = fopen($configFile, 'w');
+                if ($fp) {
+                    fwrite($fp, $newTpl);
+                    fclose($fp);
+                } else {
+                    $message = 'Could not open new config file';
+                    break;
+                }
+                $message = "Important! Edit the new config file before running any utilities:\n" . $configFile;
+                $projects[$newProjectLower] = $configFile;
+                /* update projects file */
+                $content = '<' . '?' . "php\n\n  \$projects = " . var_export($projects, true) .
+                    ';' . "\n return \$projects;";
+                $fp = fopen($projectFile, 'w');
+                if ($fp) {
+                    fwrite($fp, $content);
+                    fclose($fp);
+                }
+
+            }
+
+            break;
         case 'bootstrap':
             $output = $modx->runSnippet('Bootstrap');
             break;
@@ -38,5 +143,19 @@ if (!empty($_POST)) {
 
 }
 
+/* populate projects drop-down list with current project selected */
+foreach ($projects as $k => $value) {
+    $selected = '';
+    if ($k == $currentProject) {
+        $selected = ' selected="selected" ';
+    }
+    $code .= '        <option value="' . $k . '"' . $selected . '>' . $k . "</option >\n";
+}
+
+$tpl = str_replace('[[+projects]]', $code, $tpl);
+$tpl = str_replace('[[+message]]', $message, $tpl);
+$tpl = str_replace('[[+current_project]]', $currentProject, $tpl);
+
+// $tpl .= "\nNEW PROJECT: " . $newProjectName . "\n" . 'URL: ' . $url . "\n\n" . print_r($projects, true);
 
 return $tpl . '<pre>' . $output;
