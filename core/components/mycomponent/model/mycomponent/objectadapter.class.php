@@ -353,6 +353,14 @@ abstract class ObjectAdapter
             }
             $tpl = str_replace('[[+elementType]]', strtolower(substr($this->dbClass, 3)), $tpl);
             $tpl = str_replace('[[+elementName]]', $this->getName(), $tpl);
+            if (isset($this->myFields['description'])) {
+                $description = $this->myFields['description'];
+                if (strstr($description, '~~')) {
+                    $split = explode('~~', $description);
+                    $description = $split[1];
+                }
+                $tpl = str_replace('[[+description]]', $description, $tpl);
+            }
             if (!empty ($tpl)) {
                 $tpl = $this->helpers->replaceTags($tpl);
             }
@@ -376,6 +384,14 @@ abstract class ObjectAdapter
             $tpl = $this->helpers->getTpl($tplName);
             $tpl = str_replace('[[+elementType]]', strtolower(substr($this->dbClass, 3)), $tpl);
             $tpl = str_replace('[[+elementName]]', $this->getName(), $tpl);
+            if (isset($this->myFields['description'])) {
+                $description = $this->myFields['description'];
+                if (strstr($description, '~~')) {
+                    $split = explode('~~', $description);
+                    $description = $split[1];
+                }
+                $tpl = str_replace('[[+description]]', $description, $tpl);
+            }
             if (!empty ($tpl)) {
                 $tpl = $this->helpers->replaceTags($tpl);
             }
