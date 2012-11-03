@@ -965,7 +965,7 @@ class MyComponentProject {
             return;
         }
 
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Action: ExportObjects');
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Action: Export Objects');
         $mode = MODE_EXPORT;
 
         $toProcess = $this->modx->getOption('process', $this->props, array());
@@ -1009,7 +1009,7 @@ class MyComponentProject {
         if (empty($directory)) {
             $directory = $this->myPaths['targetCore'] . 'elements/';
         }
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Action: ImportObjects');
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Action: Import Objects');
         $toProcess = explode(',', $toProcess);
         foreach ($toProcess as $elementType) {
             $class = 'mod' . ucfirst(substr($elementType, 0, -1));
