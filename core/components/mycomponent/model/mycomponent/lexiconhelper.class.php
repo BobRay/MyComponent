@@ -197,9 +197,79 @@ class LexiconHelper {
         $lexPropStrings = $this->getLexiconPropertyStrings();
         $this->checkPropertyDescriptions($lexPropStrings);
 
+        /* remove ~~lexString from files is set in project config */
+
+        $rewriteFiles = $this->modx->getOption('rewriteCodeFiles', $this->props, false);
+        if ($rewriteFiles) {
+            $this->rewriteFiles($snippets, $plugins);
+        }
         $this->report();
     }
 
+    public function rewriteFiles($snippets, $plugins) {
+        if ( (!empty($snippets)) || (!empty($plugins))) {
+            $this->output .= "\n\nRemoving ~~ strings from code files";
+        } else {
+            return;
+        }
+        foreach ($snippets as $snippet => $fields) {
+            $name = isset($fields['name']) ? $fields['name'] : $snippet;
+            $name = strtolower($name);
+            $fileName = isset($fields['filename']) ? $fields['filename'] : $name . '.' . 'snippet.php';
+            $fileName = strtolower($fileName);
+            $fullPath = $this->targetCore . 'elements/snippets/' . $fileName;
+            $this->rewriteFile($fullPath);
+            $propsFileName = $this->helpers->getFileName($name, 'modSnippet', 'properties');
+            $propsFilePath = $this->targetBase . '_build/data/properties/' . $propsFileName;
+            if (file_exists($propsFilePath)) {
+                $this->rewriteFile($propsFilePath);
+            }
+
+        }
+        $plugins = $this->modx->getOption('plugins', $this->props['elements'], array());
+        foreach ($plugins as $plugin => $fields) {
+            $name = isset($fields['name']) ? trim($fields['name']) : $plugin;
+            $name = strtolower($name);
+            $fileName = isset($fields['filename']) ? $fields['fileName'] : $name . '.' . 'plugin.php';
+            $fileName = strtolower($fileName);
+            $fullPath = $this->targetCore . 'elements/plugins/' . $fileName;
+            $this->rewriteFile($fullPath);
+            $propsFileName = $this->helpers->getFileName($name, 'modPlugin', 'properties');
+            $propsFilePath = $this->targetBase . '_build/data/properties/' . $propsFileName;
+            if (file_exists($propsFilePath)) {
+                $this->rewriteFile($propsFilePath);
+            }
+        }
+
+        foreach($this->classFiles as $name => $path) {
+            $this->rewriteFile($path . '/' . $name);
+        }
+    }
+    public function rewriteFile($path) {
+        if (file_exists($path)) {
+
+            $content = file_get_contents($path);
+            if (strstr($content, '~~')) {
+                $this->output .= "\n    rewriting code file: " . $path;
+                $pattern = '/~~.*([\'\"][\),])/';
+                $replace = '$1';
+                $content = preg_replace($pattern, $replace, $content);
+
+                if (!empty($content)) {
+                    $fp = fopen($path, 'w');
+                    if ($fp) {
+                        fwrite($fp, $content);
+                        fclose($fp);
+                    }
+
+                }
+            }
+
+
+        } else {
+            $this->output .= "\n    No Code file at: " . $path;
+        }
+    }
     public  function getLexiconFileStrings() {
         $files = $this->loadedLexiconFiles;
         $included = array();
@@ -462,7 +532,8 @@ class LexiconHelper {
 
             $elements = empty($elementList)? array() : $elementList;
             foreach ($elements as $element => $fields ) {
-                $propsFileName = $this->helpers->getFileName($element, $type, 'properties');
+                $realType = 'mod' . ucfirst(substr($type, 0, -1));
+                $propsFileName = $this->helpers->getFileName($element, $realType, 'properties');
                 $propsFilePath = $this->targetBase . '_build/data/properties/' . $propsFileName;
                 /* process one properties file */
                 $missing = array();
@@ -497,6 +568,8 @@ class LexiconHelper {
                         $this->updateLexiconPropertiesFile($missing, $empty, $comment);
                     }
 
+                } else {
+                    $this->output .= "\n    No properties file for " . $element . ' ' . $propsFilePath;
                 }
             }
         }
@@ -510,7 +583,7 @@ class LexiconHelper {
             $this->output .= "\nNo empty property descriptions in lexicon file!";
             return;
         } else {
-            $lexFile = $this->targetCore . $this->primaryLanguage . '/properties.inc.php';
+            $lexFile = $this->targetCore . '/lexicon/' . $this->primaryLanguage . '/properties.inc.php';
             $lexFileContent = file_get_contents($lexFile);
             $original = $lexFileContent;
         }
@@ -670,7 +743,7 @@ class LexiconHelper {
             }
         }
         } else {
-            $output = "\nNo System Setting names to check";
+            $output = "\n\nNo System Setting names to check";
         }
     return $output;
     }
