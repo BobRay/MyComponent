@@ -732,7 +732,7 @@ class LexiconHelper {
         if (file_exists($file)) {
             $content = file_get_contents($file);
             if (!empty($content)) {
-                $content = $this->helpers->strip_comments($content);
+                // $content = $this->helpers->strip_comments($content);
                 $lines = explode ("\n", $content);
                 unset($content);
             } else {
