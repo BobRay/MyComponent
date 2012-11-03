@@ -208,7 +208,7 @@ class LexiconHelper {
 
     public function rewriteFiles($snippets, $plugins) {
         if ( (!empty($snippets)) || (!empty($plugins))) {
-            $this->output .= "\n\nRemoving ~~ strings from code files";
+            $this->output .= "\n\n******** Removing ~~ strings from code files ********";
         } else {
             return;
         }
