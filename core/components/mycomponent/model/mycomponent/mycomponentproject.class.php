@@ -1009,6 +1009,7 @@ class MyComponentProject {
         if (empty($directory)) {
             $directory = $this->myPaths['targetCore'] . 'elements/';
         }
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Action: ImportObjects');
         $toProcess = explode(',', $toProcess);
         foreach ($toProcess as $elementType) {
             $class = 'mod' . ucfirst(substr($elementType, 0, -1));
@@ -1044,6 +1045,18 @@ class MyComponentProject {
                                     '    Would be updating: ' . $element);
                             } else {
                                 $object->setContent($content);
+                                $propsDir = $this->targetRoot . '_build/data/properties/';
+                                $propsFileName = $this->helpers->getFileName($element, $class, 'properties');
+                                $propsFile = $propsDir . $propsFileName;
+                                if (file_exists($propsFile)) {
+                                    $props = include ($propsFile);
+                                    if (is_array($props)) {
+                                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                                            '    Setting properties for ' . $element);
+                                        $object->setProperties($props);
+                                    }
+                                }
+
                                 if ($object->save()) {
                                     $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
                                         '    Updated: ' . $element);
