@@ -225,9 +225,9 @@ abstract class ObjectAdapter
                 unset($this->myFields['tvValues']);
             }
             /* sets appropriate content field for elements and resources */
-            if (!isset($this->myFields['static']) || empty($this->myFields['static'])) {
+            //if (!isset($this->myFields['static']) || empty($this->myFields['static'])) {
                 $this->setContentField($name, $this->dbClass);
-            }
+            //}
             if (isset($this->myFields['filename'])) {
                 $tempFilename = $this->myFields['filename'];
                 unset($this->myFields['filename']);
@@ -415,7 +415,15 @@ abstract class ObjectAdapter
             if ( (! file_exists(($dir . '/' . $file))  || $overwrite)) {
                 $this->helpers->writeFile($dir, $file, $tpl, $dryRun);
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        File already exists: ' . $file);
+                $content = file_get_contents($dir .'/' . $file);
+                /* use Tpl for static elements files with minimal content
+                  (modx creates them empty on addToModx() ) */
+                if (strlen($content < 5) && isset($this->myFields['static']) &&
+                    ( !empty($this->myFields['static']))) {
+                    $this->helpers->writeFile($dir, $file, $tpl, $dryRun);
+                } else {
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        File already exists: ' . $file);
+                }
             }
         }
     }
