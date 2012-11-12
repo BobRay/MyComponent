@@ -52,8 +52,7 @@ class Helpers
         $this->props =& $props;
     }
     public function init() {
-        $this->source = $this->props['source'];
-        $this->tplPath = $this->source . 'core/components/mycomponent/elements/chunks/';
+        $this->tplPath = $this->props['mycomponentCore'] . 'elements/chunks/';
         if (substr($this->tplPath, -1) != "/") {
             $this->tplPath .= "/";
         }
@@ -70,7 +69,7 @@ class Helpers
             '[[+createdon]]' => $this->props['createdon'],
             '[[+authorSiteName]]' => $this->props['authorSiteName'],
             '[[+authorUrl]]' => $this->props['authorUrl'],
-            '[[+packageUrl]]' => $this->props['packageUrl'],
+            '[[+packageUrl]]' => $this->props['packageDocumentationUrl'],
             '[[+gitHubUsername]]' => $this->props['gitHubUsername'],
             '[[+gitHubRepository]]' => $this->props['gitHubRepository'],
 
@@ -107,14 +106,23 @@ class Helpers
             name chunk
             name file
         */
-        $text = $this->modx->getChunk('my' . $name);
+        $text = '';
+        // $text = $this->modx->getChunk('my' . $name);
+        $obj = $this->modx->getObject('modChunk', array('name' => 'my' . $name));
+        if ($obj) {
+            $text = $obj->getContent();
+        }
+
         if (empty($text)) {
             if (file_exists($this->tplPath . 'my' . $name)) {
                 $text = file_get_contents($this->tplPath . 'my' . $name);
             }
         }
         if (empty($text)) {
-            $text = $this->modx->getChunk($name);
+            $obj = $this->modx->getObject('modChunk', array('name' => $name));
+            if ($obj) {
+                $text = $obj->getContent();
+            }
         }
         if (empty($text)) {
             if (file_exists($this->tplPath . $name)) {
@@ -125,10 +133,10 @@ class Helpers
         if (strstr($name, '.php') && !empty($text)) {
             /* make sure the header made it and do alerts if not */
             if (empty($text)) {
-                $this->modx->log(MODX::LOG_LEVEL_ERROR, '    Problem loading Tpl file (text is empty) ' . $name  );
+                $this->sendLog(MODX::LOG_LEVEL_ERROR, '    [Helpers] Problem loading Tpl file (text is empty) ' . $name  );
                 $text = "<?php\n/* empty header */\n\n";
             } elseif (strpos($text, '<' . '?' . 'php') === false) {
-                $this->modx->log(MODX::LOG_LEVEL_ERROR, '    Problem loading Tpl file (text has no PHP tag) ' . $name);
+                $this->sendLog(MODX::LOG_LEVEL_ERROR, '    [Helpers] Problem loading Tpl file (text has no PHP tag) ' . $name);
                 $text = "<?php\n /* inserted PHP tag */\n\n" . $text;
             }
         }
@@ -158,6 +166,12 @@ class Helpers
         $suffix = substr(strtolower($elementType), 3); /* modPlugin -> plugin, etc.; default suffix */
         if ($suffix == 'templatevar') {
             $suffix = 'tv';
+        }
+        if ($suffix == 'systemsetting') {
+            $suffix = 'setting';
+        }
+        if ($suffix == 'systemevent') {
+            $suffix = 'event';
         }
         $output = '';
 
@@ -216,6 +230,9 @@ class Helpers
             case 'modResource':
                 $nameAlias = 'pagetitle';
                 break;
+            case 'modSystemSetting':
+                $nameAlias = 'key';
+                break;
             default:
                 $nameAlias = 'name';
                 break;
@@ -232,10 +249,12 @@ class Helpers
      * @param $dir string - directory for file (should not have trailing slash!)
      * @param $fileName string - file name
      * @param $content - file content
-     * @param string $dryRun string - if true, writes to stdout instead of file.
+     * @param $dryRun boolean - if true, writes to stdout instead of file.
      */
-    public function writeFile ($dir, $fileName, $content, $dryRun = false) {
-
+    public function writeFile ($dir, $fileName, $content, $dryRun = false, $suppressOutput = false) {
+        /* just in case */
+        $dir = str_replace('//', '/', $dir);
+        /* create directory if necessary */
         if (!is_dir($dir)) {
             mkdir($dir, $this->dirPermission, true);
         }
@@ -243,25 +262,34 @@ class Helpers
         if (substr($dir, -1) != "/") {
             $dir .= "/";
         }
+        $outFile = $dir . $fileName;
+        $outFile = str_replace('//','/', $outFile);
         /* write to stdout if dryRun is true */
+        $file = $dryRun? 'php://output' : $outFile;
 
-        $file = $dryRun? 'php://output' : $dir . $fileName;
-        if (empty($content)) {
-            $this->modx->log(MODX::LOG_LEVEL_ERROR, '    No content for file ' . $fileName . ' (normal for chunks and templates until content is added)');
-        }
+        $action = ($file == $outFile) && file_exists($outFile)? 'Updated' : 'Creating';
 
         $fp = fopen($file, 'w');
         if ($fp) {
-            if ( ! $dryRun) {
-                $this->modx->log(MODX::LOG_LEVEL_INFO, '    Creating ' . $file);
+
+
+            if ($dryRun) {
+                $this->sendLog(MODX::LOG_LEVEL_INFO, "\n\n ******** Begin File Content ********\n");
+            } elseif (! $suppressOutput) {
+                $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $action . ' ' . $file);
+            }
+            if (empty($content) && ! $suppressOutput) {
+                $this->sendLog(MODX::LOG_LEVEL_INFO, ' (empty)', true);
             }
             fwrite($fp, $content);
             fclose($fp);
             if (! $dryRun) {
                 chmod($file, $this->filePermission);
+            } else {
+                $this->sendLog(MODX::LOG_LEVEL_INFO, " ******** End File Content ********\n\n");
             }
         } else {
-            $this->modx->log(MODX::LOG_LEVEL_INFO, '    Could not write file ' . $file);
+            $this->sendLog(MODX::LOG_LEVEL_INFO, '    Could not write file ' . $file);
         }
 
 
@@ -319,139 +347,154 @@ class Helpers
     }
 
     /**
-     * @param $values array - array from project config file
      * @param $intersectType string (modTemplateVarTemplate, modPluginEvent, etc.)
-     * @param $mainObjectType string - (modTemplate, modSnppet, etc.)
-     * @param $subsidiaryObjectType string - (modTemplate, modSnippet, etc.)
-     * @param $fieldName1 string - intersect field name for main object.
-     * @param $fieldName2 string - intersect field name for subsidiary object.
-     */
-    public function createIntersects($values, $intersectType, $mainObjectType, $subsidiaryObjectType, $fieldName1, $fieldName2 ) {
-        $this->modx->log(MODX::LOG_LEVEL_INFO, 'Creating ' . $intersectType . ' objects');
+     * @param $intersects array  array of intersect objects */
 
+    public function createIntersects($intersectType, $intersects) {
+        $mainObjectType = 'missing';
+        $mainObjectName = 'missing';
+        $subsidiaryObjectType = 'missing';
+        $subsidiaryObjectName = 'missing';
+        $this->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Creating ' . $intersectType . ' objects');
+        foreach ($intersects as $values) {
 
-        if ($intersectType == 'modPluginEvent') {
-            /* create new System Event Names record, if set in config */
-            /* @var $obj modEvent */
-            $newEvents = $this->props['newSystemEvents'];
-            $newEventNames = empty($newEvents)? array() : explode(',', $newEvents);
-            foreach($newEventNames as $newEventName) {
-                $obj = $this->modx->getObject('modEvent', array('name' => $newEventName));
-                if (!$obj) {
-                    $obj = $this->modx->newObject('modEvent');
-                    {
-                        $obj->set('name', $newEventName);
-                        $obj->set('groupname', $this->props['category']);
-                        $obj->set('service', 1);
-
-                        if ($obj && $obj->save()) {
-                            $this->modx->log(MODX::LOG_LEVEL_INFO, '    Created new System Event name: ' . $newEventName);
+            $mainIdField = 'id';
+            $subIdField = 'id';
+            switch($intersectType) {
+                case 'modTemplateVarTemplate':
+                    $mainObjectType = 'modTemplate';
+                    $subsidiaryObjectType = 'modTemplateVar';
+                    $mainObjectName = $values['templateid'];
+                    if ($mainObjectName == 'default') {
+                        $defaultTemplateObj = $this->modx->getObject('modTemplate', $this->modx->getOption('default_template'));
+                        $mainObjectName = $defaultTemplateObj->get('templatename');
+                    }
+                    $subsidiaryObjectName = $values['tmplvarid'];
+                    break;
+                case 'modPluginEvent':
+                    $subIdField = 'name';
+                    $mainObjectType = 'modPlugin';
+                    $subsidiaryObjectType = 'modEvent';
+                    $mainObjectName = $values['pluginid'];
+                    $subsidiaryObjectName = $values['event'];
+                    if (isset($values['propertyset']) && !empty($values['propertyset'])) {
+                        $ps = $this->modx->getObject('modPropertySet', array('name' => $values['propertyset']));
+                        if ($ps) {
+                            $values['propertyset'] = $ps->get('id');
                         } else {
-                            $this->modx->log(MODX::LOG_LEVEL_ERROR, '   Error creating System Event name: Could not save  ' . $newEventName);
+                            $this->sendLog(MODX::LOG_LEVEL_ERROR, '[Helpers] Could not find Property Set: ' .
+                                $values['propertyset']);
                         }
                     }
-                } else {
-                    $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $newEventName . ': System Event name already exists');
-                }
+                    break;
+                case 'modElementPropertySet':
+                    $subIdField = 'id';
+                    $mainObjectType = $values['element_class'];
+                    $mainObjectName = $values['element'];
+                    $subsidiaryObjectType = 'modPropertySet';
+                    $subsidiaryObjectName = $values['property_set'];
+
+                    break;
+                default:
+                    $this->sendLog(MODX::LOG_LEVEL_ERROR, '[Helpers] Asked for unknown intersect type');
+                    break;
+
+
             }
-        }
-
-
-        if (empty($values)) {
-            $this->modx->log(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': value array is empty');
-            return;
-        }
-        foreach ($values as $mainObjectName => $subsidiaryObjectNames) {
-            if (empty($mainObjectName)) {
-                $this->modx->log(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': main object name is empty');
-                continue;
-            }
-
             $alias = $this->getNameAlias($mainObjectType);
-            if ($mainObjectType == 'modTemplate' && ($mainObjectName == 'default' || $mainObjectName == 'Default')) {
-                $defaultTemplateId = $this->modx->getOption('default_template');
-                $mainObject = $this->modx->getObject('modTemplate', $defaultTemplateId);
-            } else {
-                $mainObject = $this->modx->getObject($mainObjectType, array($alias => $mainObjectName) );
-            }
-            if (! $mainObject) {
-                $this->modx->log(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': Could not get main object ' . $mainObjectName);
-                continue;
-            }
-            $subsidiaryObjectNames = explode(',', $subsidiaryObjectNames);
-            if (empty($subsidiaryObjectNames)) {
-                $this->modx->log(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': subsidiary object name list is empty');
-                continue;
-            }
-            foreach ($subsidiaryObjectNames as $subsidiaryObjectName) {
-                $priority = 0;
-                if (empty($subsidiaryObjectName)) {
-                    $this->modx->log(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': subsidiary object name is empty');
-                    continue;
-                }
+            $searchFields = array($alias => $mainObjectName);
+            $mainObject = $this->modx->getObject($mainObjectType, $searchFields);
 
-                if (strstr($subsidiaryObjectName, ':')) {
-                    $s = explode(':', $subsidiaryObjectName);
-                    $subsidiaryObjectName = trim($s[0]);
-                    $subsidiaryObjectType = trim($s[1]);
-                    if ($intersectType == 'modPluginEvent') {
-                        $priority = (integer) trim($s[1]);
-                    }
-                }
-                $alias = $this->getNameAlias($subsidiaryObjectType);
-                $subsidiaryObjectType = $intersectType == 'modPluginEvent' ? 'modEvent' : $subsidiaryObjectType;
-                $subsidiaryObject = $this->modx->getObject($subsidiaryObjectType, array($alias => $subsidiaryObjectName));
-                if (! $subsidiaryObject) {
-                    $this->modx->log(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': Could not get subsidiary object ' . $subsidiaryObjectName);
-                    continue;
-                }
-                if ($mainObjectType == 'modTemplate' && $subsidiaryObjectType == 'modResource') {
-                    /* @var $mainObject modTemplate */
-                    /* @var $subsidiaryObject modResource */
-                    if ($subsidiaryObject->get('template') != $mainObject->get('id')) {
-                        $subsidiaryObject->set('template', $mainObject->get('id'));
-                        if ($subsidiaryObject->save()) {
-                            $this->modx->log(MODX::LOG_LEVEL_INFO, '    Connected ' . $mainObjectName . ' Template to ' . $subsidiaryObjectName . ' Resource');
-                        } else {
-                            $this->modx->log(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType);
-                        }
-                    } else {
-                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    ' . $mainObjectName . ' Template is already connected to ' . $subsidiaryObjectName . ' Resource');
-                    }
-                    continue;
-                } else {
-                    $fields = array(
-                        $fieldName1 => $mainObject->get('id'),
-                        $fieldName2 => $intersectType == 'modPluginEvent' ? $subsidiaryObjectName : $subsidiaryObject->get('id'),
+            if (!$mainObject) {
+                $this->sendLog(MODX::LOG_LEVEL_ERROR, '    [Helpers] Error creating intersect ' .
+                        $intersectType . ': Could not get main object ' . $mainObjectName .
+                        "\n    " . implode(',', $searchFields));
+                return false;
+            }
 
+            $alias = $this->getNameAlias($subsidiaryObjectType);
+            $searchFields = array($alias => $subsidiaryObjectName);
+            $subsidiaryObject = $this->modx->getObject($subsidiaryObjectType, $searchFields);
+            if (! $subsidiaryObject) {
+                $this->sendLog(MODX::LOG_LEVEL_ERROR, '    [Helpers] Error creating intersect ' .
+                        $intersectType . ': could not get subsidiary object ' .
+                        $subsidiaryObjectName ."\n    " . implode(', ', $searchFields));
+                return false;
+            }
+
+
+            switch($intersectType) {
+                case 'modTemplateVarTemplate':
+                    $searchFields = array(
+                        'templateid' => $mainObject->get($mainIdField),
+                        'tmplvarid' => $subsidiaryObject->get($subIdField),
                     );
-                    $intersect = $this->modx->getObject($intersectType, $fields);
-                    /* @var $intersect xPDOObject */
-                    if (!$intersect) {
-                        $intersect = $this->modx->newObject($intersectType);
-                        $intersect->set($fieldName1, $mainObject->get('id'));
-                        $intersect->set($fieldName2, $intersectType == 'modPluginEvent' ? $subsidiaryObjectName : $subsidiaryObject->get('id'));
-                        if ($intersectType == 'modPluginEvent') {
-                            $intersect->set('priority', $priority);
-                        }
-                        if ($intersectType == 'modElementPropertySet') {
-                            $intersect->set('element_class', $subsidiaryObjectType);
-                        }
+                    break;
+                case 'modPluginEvent':
+                    $searchFields = array(
+                        'pluginid' => $mainObject->get($mainIdField),
+                        'event' => $subsidiaryObject->get($subIdField),
+                    );
+                    break;
+                case 'modElementPropertySet':
+                    $searchFields = array(
+                        'element' => $mainObject->get($mainIdField),
+                        'element_class' => $mainObjectType,
+                        'property_set' => $subsidiaryObject->get($subIdField),
+                    );
 
-                        if ($intersect && $intersect->save()) {
-                            $this->modx->log(MODX::LOG_LEVEL_INFO, '    Created intersect ' . ' for ' . $mainObjectType . ' ' . $mainObjectName . ' -- ' . $subsidiaryObjectType . ' ' . $subsidiaryObjectName);
-                        } else {
-                            $this->modx->log(MODX::LOG_LEVEL_ERROR, '   Error creating intersect ' . $intersectType . ': Failed to save intersect');
-                        }
+                    break;
+                default:
+                    break;
+            }
+
+            $intersectObj = $this->modx->getObject($intersectType, $searchFields);
+
+            if ($intersectObj) {
+                $this->sendLog(MODX::LOG_LEVEL_INFO, '    Intersect already exists for ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
+
+            } else {
+                $intersectObj = $this->modx->newObject($intersectType);
+                if ($intersectObj) {
+                    /* add any extra fields */
+                    if ($intersectType != 'modElementPropertySet') {
+                        $extraValues = array_slice($values, 2);
+                        $values = array_merge($searchFields, $extraValues);
                     } else {
-                        $this->modx->log(MODX::LOG_LEVEL_INFO, '    Intersect ' . $intersectType . ' already exists for ' . $mainObjectType . ' ' . $mainObjectName . ' -- ' . $subsidiaryObjectType . ' ' . $subsidiaryObjectName);
+                        $values = $searchFields;
                     }
 
+                    foreach ($values as $k => $v) {
+                        /* make sure no fields are null */
+                        if (empty($v)) {
+                            $v = '';
+                        }
+                        /* set the values */
+                        $intersectObj->set($k, $v);
+                    }
+                    if ($intersectObj->save()) {
+                        $this->sendLog(MODX::LOG_LEVEL_INFO, '    Created Intersect ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
+
+                    }
+                } else {
+                    $this->sendLog(MODX::LOG_LEVEL_ERROR, '    [Helpers] Could not create intersect for ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
                 }
             }
+
         }
+
+    return true;
     }
 
+    /**
+     * Recursively search directories for certain file types
+     * Adapted from boen dot robot at gmail dot com's code on the scandir man page
+     * @param $dir - dir to search (no trailing slash)
+     * @param mixed $types - null for all files, or a comma-separated list of strings
+     *                       the filename must include (e.g., '.php,.class')
+     * @param bool $recursive - if false, only searches $dir, not it's descendants
+     * @param string $baseDir - used internally -- do not send
+     */
     public function dirWalk($dir, $types = null, $recursive = false, $baseDir = '') {
 
         if ($dh = opendir($dir)) {
@@ -500,11 +543,13 @@ class Helpers
             }
             else {
                 list($id, $text) = $token;
-
+                if (!defined('T_ML_COMMENT')) {
+                    define('T_ML_COMMENT', T_COMMENT); /* for PHP < 5 */
+                }
                 switch ($id) {
-                    case T_COMMENT:
-                    case T_ML_COMMENT: // we've defined this
-                    case T_DOC_COMMENT: // and this
+                    // case T_COMMENT:
+                    // case T_ML_COMMENT:
+                    case T_DOC_COMMENT:
                         break;
 
                     default:
@@ -520,5 +565,51 @@ class Helpers
                     '',
                     ''
                ), $ret));
+    }
+
+    public function sendLog($level, $message) {
+        $msg = '';
+
+        if ($level == MODX::LOG_LEVEL_ERROR) {
+            $msg .= 'ERROR -- ';
+        }
+        $msg .= $message;
+        $msg .= "\n";
+
+        if (php_sapi_name() != 'cli') {
+            $msg = nl2br($msg);
+        }
+        echo $msg;
+    }
+
+   public function serialize_array(&$array, $root = '$root', $depth = 0) {
+        $items = array();
+
+        foreach ($array as $key => &$value) {
+            if (is_array($value)) {
+                serialize_array($value, $root . '[\'' . $key . '\']', $depth + 1);
+            }
+            else {
+                $items[$key] = $value;
+            }
+        }
+
+        if (count($items) > 0) {
+            echo $root . ' = array(';
+
+            $prefix = '';
+            foreach ($items as $key => &$value) {
+                echo $prefix . '\'' . $key . '\' => \'' . addslashes($value) . '\'';
+                $prefix = ', ';
+            }
+
+            echo ');' . "\n";
+        }
+    }
+    public function beautify($ary) {
+        $ary = preg_replace("/\n[ ]+array/", " array", var_export($ary, true));
+        $ary =  str_replace("\n  ", "\n                ", $ary);
+        return str_replace("\n)", "\n            )", $ary);
+
     }
 }

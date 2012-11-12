@@ -93,7 +93,10 @@ if (!defined('MODX_CORE_PATH')) {
     die('build.config.php is not correct');
  }
 
-@include dirname(__FILE__) . '/config/current.project.php';
+/* Non standard setting for mycomponent */
+
+$currentProject = 'mycomponent';
+// @include dirname(__FILE__) . '/config/current.project.php';
 
 if (! $currentProject) {
     die('Could not get current project');
@@ -490,6 +493,13 @@ foreach($categories as $k => $categoryName) {
        target site's core/mycomponent directory on install.
      */
 
+    /* Transfer _build dir -- this is just for MyComponent. */
+    $helper->sendLog(MODX::LOG_LEVEL_INFO, 'Packaged _build/config directory files');
+    $vehicle->resolve('file', array(
+       'source' => $sources['root'] . '/_build/config',
+       'target' => "return MODX_CORE_PATH . 'components/mycomponent/_build/';",
+    ));
+
     if ($hasCore && $i == 1) {
         $helper->sendLog(MODX::LOG_LEVEL_INFO, 'Packaged core directory files');
         $vehicle->resolve('file',array(
@@ -497,6 +507,8 @@ foreach($categories as $k => $categoryName) {
                 'target' => "return MODX_CORE_PATH . 'components/';",
             ));
     }
+
+
 
     /* This section transfers every file in the local
        mycomponents/mycomponent/assets directory to the
@@ -590,5 +602,4 @@ $totalTime= sprintf("%2.4f s", $totalTime);
 
 $helper->sendLog(xPDO::LOG_LEVEL_INFO, "Package Built.");
 $helper->sendLog(xPDO::LOG_LEVEL_INFO, "Execution time: {$totalTime}");
-
-return '';
+exit();

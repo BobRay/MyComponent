@@ -1,0 +1,5 @@
+Changelog for MyComponent
+
+MyComponent 1.0.0
+-------------------
+Initial Version

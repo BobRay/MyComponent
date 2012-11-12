@@ -42,8 +42,8 @@ class UtHelpers
         $props = $bootstrap->props;
         $elements = $props['elements'];
         foreach($elements as $elementType => $objectList) {
-            $objectList = empty($objectList)? array() : explode(',', $objectList);
-            foreach ($objectList as $elementName) {
+            $elementType = 'mod' . ucFirst(substr($elementType, 0, -1));
+            foreach ($objectList as $elementName => $fields) {
                 /* @var $obj modElement */
                 $alias = $bootstrap->helpers->getNameAlias($elementType);
                 $obj = $modx->getObject($elementType, array($alias => $elementName) );
@@ -60,8 +60,8 @@ class UtHelpers
    public function removeResources(&$modx, &$bootstrap) {
        /* @var $r modResource */
        $resources = $bootstrap->props['resources'];
-       $resources = explode(',', $resources);
-       foreach ($resources as $resource) {
+
+       foreach ($resources as $resource => $fields) {
            $r = $modx->getObject('modResource', array('pagetitle' => $resource));
            if ($r) $r->remove();
        }
@@ -73,8 +73,8 @@ class UtHelpers
      */
     public function removePropertySets(&$modx, &$bootstrap) {
        /* @var $setObj modPropertySet */
-       $sets = $bootstrap->props['propertySets'];
-       $sets = empty ($sets)? array() : explode(',', $sets);
+       $sets = $bootstrap->props['elements']['propertySets'];
+
        foreach ($sets as $set) {
            $alias = $bootstrap->helpers->getNameAlias('modPropertySet');
            $setObj = $modx->getObject('modPropertySet', array($alias => $set));
@@ -120,10 +120,9 @@ class UtHelpers
         $props = $bootstrap->props;
         $elements = $props['elements'];
         foreach ($elements as $elementType => $objectList) {
-            $objectList = empty($objectList) ? array() : explode(',', $objectList);
             foreach ($objectList as $elementName) {
                 /* @var $obj modElement */
-                $alias = $bootstrap->helpers->getNameAlias($elementType);
+                $alias = $this->getNameAlias($elementType);
                 $obj = $modx->getObject($elementType, array($alias => $elementName));
                 if ($obj) $obj->setProperties($properties);
                 $obj->save();
@@ -144,12 +143,12 @@ class UtHelpers
             'property4' => 'value4',
         );
         $props = $bootstrap->props;
-        $elements = $props['propertySets'];
-        $elements = explode(',', $elements);
+        $elements = $props['elements']['propertySets'];
+
         $elementType = 'modPropertySet';
         foreach ($elements as $elementName) {
                 /* @var $obj modElement */
-                $alias = $bootstrap->helpers->getNameAlias($elementType);
+                $alias = $this->getNameAlias($elementType);
                 $obj = $modx->getObject($elementType, array($alias => $elementName));
                 if ($obj) $obj->setProperties($properties);
                 $obj->save();

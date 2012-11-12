@@ -17,7 +17,26 @@
 /* @var $modx modX */
 /* @var $pluginObj modPlugin */
 /* @var $pluginEvent modPluginEvent */
-/* @var $obj modEvent */
+/* @var $newEvents array */
+
+if (!function_exists('checkFields')) {
+    function checkFields($required, $objectFields) {
+
+        global $modx;
+        $fields = explode(',', $required);
+        foreach ($fields as $field) {
+            if (!isset($objectFields[$field])) {
+                $modx->log(MODX::LOG_LEVEL_ERROR, '[Plugin Resolver] Missing field: ' . $field);
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+
+$newEvents = '[[+newEvents]]';
+
 
 if ($object->xpdo) {
     $modx =& $object->xpdo;
@@ -25,26 +44,70 @@ if ($object->xpdo) {
         case xPDOTransport::ACTION_INSTALL:
         case xPDOTransport::ACTION_UPGRADE:
 
-            $newSystemEvents = '[[+newEvents]]';
-            $eventNames = empty($eventNames)? array() : explode(',', $eventNames);
-            foreach($eventNames as $eventName) {
-                $obj = $modx->getObject('modEvent', array('name' => $eventName));
-                if (! $obj) {
-                    $obj = $modx->newObject('modEvent');
-                    {
-                        $obj->set('name', $eventName);
-                        $obj->set('groupname', '[[+category]]');
-                        $obj->set('service', 1);
-                        $obj->save();
+            foreach($newEvents as $k => $fields) {
+
+                $event = $modx->getObject('modEvent', array('name' => $fields['name']));
+                if (!$event) {
+                    $event = $modx->newObject('modEvent');
+                    if ($event) {
+                        $event->fromArray($fields, "", true, true);
+                        $event->save();
                     }
                 }
             }
 
-            /* [[+code]] */
+            $intersects = '[[+intersects]]';
+
+            if (is_array($intersects)) {
+                foreach ($intersects as $k => $fields) {
+                    /* make sure we have all fields */
+                    if (!checkFields('pluginid,event,priority,propertyset', $fields)) {
+                        continue;
+                    }
+                    $event = $modx->getObject('modEvent', array('name' => $fields['event']));
+
+                    $plugin = $modx->getObject('modPlugin', array('name' => $fields['pluginid']));
+                    $propertySetObj = null;
+                    if (!empty($fields['propertyset'])) {
+                        $propertySetObj = $modx->getObject('modPropertySet',
+                            array('name' => $fields['propertyset']));
+                    }
+                    if (!$plugin || !$event) {
+                        $modx->log(xPDO::LOG_LEVEL_ERROR, 'Could not find Plugin and/or Event ' .
+                            $fields['plugin'] . ' - ' . $fields['event']);
+                        continue;
+                    }
+                    $pluginEvent = $modx->getObject('modPluginEvent', array('pluginid'=>$plugin->get('id'),'event' => $fields['event']) );
+                    
+                    if (!$pluginEvent) {
+                        $pluginEvent = $modx->newObject('modPluginEvent');
+                    }
+                    if ($pluginEvent) {
+                        $pluginEvent->set('event', $fields['event']);
+                        $pluginEvent->set('pluginid', (integer) $plugin->get('id'));
+                        $pluginEvent->set('priority', (integer) $fields['priority']);
+                        if ($propertySetObj) {
+                            $pluginEvent->set('propertyset', (integer) $propertySetObj->get('id'));
+                        } else {
+                            $pluginEvent->set('propertyset', 0);
+                        }
+
+                    }
+                    if (! $pluginEvent->save()) {
+                        $modx->log(xPDO::LOG_LEVEL_ERROR, 'Unknown error saving pluginEvent for ' .
+                            $fields['plugin'] . ' - ' . $fields['event']);
+                    }
+                }
+            }
             break;
 
         case xPDOTransport::ACTION_UNINSTALL:
-            /* [[+remove_new_events]] */
+            foreach($newEvents as $k => $fields) {
+                $event = $modx->getObject('modEvent', array('name' => $fields['name']));
+                if ($event) {
+                    $event->remove();
+                }
+            }
             break;
     }
 }

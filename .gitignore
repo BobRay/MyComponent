@@ -21,6 +21,10 @@ modext.js
 # ignore PHP files beginning with test
 test*.php
 
-# ignore objectarray file
+#ignore objectarray reference file and current.project.php
 
-_build/objectarray.txt
+objectarray.txt
+current.project.php
+projects.php
+
+

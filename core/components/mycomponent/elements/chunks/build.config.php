@@ -1,13 +1,17 @@
 <?php
 
-/* Location of config file for current project.
- * Change this when you start work on a different project!!!
- *
- * This assumes that all your project config files are in the
- * assets/mycomponents/mycomponent/_build/config directory
- * if not, change the MYCOMPONENT_ROOT define below.
- */
-$configFileName = 'yourcomponent.config.php';
+  /* next line require only for operating outside of MODX
+    Create a file outside of the MODX web root with this content:
+     <?php
+     $fields = array();
+     $fields['username'] = 'your_MODX_username';
+     $fields['password'] = 'your_MODX_password';
+     $fields['login_context'] = 'mgr';
+     $fields['add_contexts'] = 'mgr';
+
+     Put the full path to the file in the next line
+  */
+
 
 /* Define the MODX path constants necessary for connecting to your core and other directories.
  * If you have not moved the core, the current values should work.
@@ -20,11 +24,6 @@ if (!defined('MODX_CORE_PATH')) {
     define('MODX_ASSETS_PATH', MODX_BASE_PATH . 'assets/');
 }
 
-/* This define is used here, AND in the build.transport.php file - edit if necessary */
-define('MYCOMPONENT_ROOT', MODX_ASSETS_PATH . 'mycomponents/mycomponent /');
-$configFile = MYCOMPONENT_ROOT . '_build/utilities/config/' . $configFileName;
-
-
 /* not used -- here to prevent E_NOTICE warnings */
 if (!defined('MODX_BASE_URL')) {
     define('MODX_BASE_URL', 'http://localhost/addons/');
@@ -33,4 +32,3 @@ if (!defined('MODX_BASE_URL')) {
     define('MODX_CONNECTORS_URL', 'http://localhost/addons/connectors/');
 }
 
-return require $configFile;

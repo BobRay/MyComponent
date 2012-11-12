@@ -32,110 +32,93 @@
  * MyComponent to use in creating a transport package
  *
  * Warning: Will overwrite code files for resources and elements
- * (except static elements) if CreateObjectFiles is set and dryRun
- * is not set.
+ * (except static elements) if dryRun is not set.
  *
- * Warning: Will overwrite transport files and properties for
- * processed elements and resources if CreateTransportFiles is set
- * and dryRun is not set.
+ * Warning: Will overwrite transport files, resolvers, and
+ * properties for processed elements and resources if dryRun
+ * is not set.
  *
  * @package exportobjects
  *
  */
 /* @var $category string */
 
-/* Usage
+/*
  *
- * Create a snippet called ExportObjects, paste the code or
- * use this for the snippet code:
- *     return http://bit.ly/RJbUf8include 'path/to/this/file';
+ * Object source files will be written to
+ *  MODX_ASSETS_PATH/mycomponents/{packageNameLower}/core/components/
+ * {packageNameLower}/elements/{elementName}/
  *
- * Put a tag for the snippet on a page and preview the page
- *
- * elements in &category will be processed (for menus and system settings, ExportObjects
- * will use the 'namespace' field for the match).
- *
- * This file can be run outside of MODX (e.g., in your editor).
- *
- *  With &dryRun=`1`, no files will be written or modified and the output will go to the screen.
- *
- * Typical snippet call (use your package name instead of MyComponent):
- *
-    [[!ExportObjects?
-        &category=`MyComponent`
-        &packageName=`MyComponent`
-        &authorName=`Bob Ray`
-        &authorEmail=`<bobray@softville.com>`
-        &dryRun=`1`
-        &createTransportFiles=`1`
-        &createObjectFiles=`1`
-        &process=`snippets,chunks,plugins,templates,templateVars,menus,systemSettings`
-    ]]
-
- *
- *
- * Object source files will be written to MODX_ASSETS_PATH/mycomponents/{packageNameLower}/core/components/{packageNameLower}/elements/{elementName}/
- *
- * Transport files will be written to MODX_ASSETS_PATH/mycomponents/{packageNameLower}/_build/data/transport.{elementName}.php
+ * Transport files will be written to MODX_ASSETS_PATH/mycomponents/
+ * {packageNameLower}/_build/data/transport.{elementName}.php
  *
  * &transportPath (directory for transport.chunks.php file)
  * defaults to assets/mycomponents/{categoryLower}/_build/data/
  *
  *
-*/
+ */
 
-
-
+/* set start time */
+$mtime = microtime();
+$mtime = explode(" ", $mtime);
+$mtime = $mtime[1] + $mtime[0];
+$tstart = $mtime;
+set_time_limit(0);
+$mem_usage = memory_get_usage();
 
 /* @var $modx modX */
-$outsideModx = false;
-$sourceRoot = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/';
+
 if (!defined('MODX_CORE_PATH')) {
-    $outsideModx = true;
-    $configPath = $sourceRoot . '_build/build.config.php';
-    require_once $configPath;
-
-    require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
-    $modx= new modX();
-    $modx->initialize('mgr');
-    $modx->setLogLevel(modX::LOG_LEVEL_INFO);
-    $modx->setLogTarget('ECHO');
-}
-if (php_sapi_name() != 'cli') {
-    echo "<pre>\n"; /* used for nice formatting for log messages  */
-}
-/* These will override settings in the config file */
-
-if ($outsideModx) {
-    $scriptProperties = array(
-
-        //'category' => 'notify',
-        //'packageName' => 'Notify',
-        //'dryRun' => '1',
-        //'createTransportFiles' => '1',
-        //'createObjectFiles' => '1',
-        //'process' => 'elements,plugins,templateVars',
-        //'pagetitles' => 'Notify,NotifyPreview', // pagetitles of resources to process
-        //'parents' => '', //parents of resources to process
-        //'includeParents' => 0,
-    );
-}
-
-$props =& $scriptProperties;
-
-require_once $sourceRoot . 'core/components/mycomponent/model/mycomponent/export.class.php';
-
-$export = new Export($modx,$props);
-
-if ($export->init($sourceRoot . '_build/build.config.php')) {
-    $objects = explode(',', $props['process']);
-    foreach ($objects as $object) {
-        $export->process(trim($object));
+    $path1 = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/_build/build.config.php';
+    if (file_exists($path1)) {
+        include $path1;
+    } else {
+        $path2 = dirname(dirname(dirname(__FILE__))) . '/_build/build.config.php';
+        if (file_exists($path2)) {
+            include($path2);
+        }
     }
+    if (!defined('MODX_CORE_PATH')) {
+        die('[bootstrap.php] Could not find build.config.php');
+    }
+    require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
+    $modx = new modX();
+    /* Initialize and set up logging */
+    $modx->initialize('mgr');
+    $modx->setLogLevel(xPDO::LOG_LEVEL_INFO);
+    $modx->setLogTarget(XPDO_CLI_MODE
+        ? 'ECHO'
+        : 'HTML');
 
+    /* This section will only run when operating outside of MODX */
+    if (php_sapi_name() == 'cli') {
+        /* Set $modx->user and $modx->resource to avoid
+         * other people's plugins from crashing us */
+        $modx->getRequest();
+        $homeId = $modx->getOption('site_start');
+        $homeResource = $modx->getObject('modResource', $homeId);
+
+        if ($homeResource instanceof modResource) {
+            $modx->resource = $homeResource;
+        } else {
+            echo "\nNo Resource\n";
+        }
+    }
+} else {
+    if (!$modx->user->hasSessionContext('mgr')) {
+        die ('Unauthorized Access');
+    }
 }
+// include 'mycomponentproject.class.php';
+require_once $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'model/mycomponent/mycomponentproject.class.php';
 
-$modx->log(modX::LOG_LEVEL_INFO, 'All Finished');
-
-
-
+$project = new MyComponentProject($modx);
+$props = isset($scriptProperties) ? $scriptProperties : array();
+$project->init($props);
+$project->exportComponent(false);
+// echo print_r(ObjectAdapter::$myObjects, true);
+echo "\n\nInitial Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
+$mem_usage = memory_get_usage();
+$peak_usage = memory_get_peak_usage(true);
+echo "\nFinal Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
+echo "\nPeak Memory Used: " . round($peak_usage / 1048576, 2) . " megabytes";

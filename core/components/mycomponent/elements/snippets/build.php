@@ -8,6 +8,34 @@ set_time_limit(0);
 $mem_usage = memory_get_usage();
 
 /* @var $modx modX */
+if (! class_exists('BuildHelper')) {
+    class BuildHelper {
+
+        public function __construct(&$modx) {
+            $this->modx =& $modx;
+
+        }
+
+        public function getProps($configPath) {
+            $properties = @include $configPath;
+            return $properties;
+        }
+
+        public function sendLog($level, $message) {
+            $msg = '';
+            if ($level == MODX::LOG_LEVEL_ERROR) {
+                $msg .= 'ERROR -- ';
+            }
+            $msg .= $message;
+            $msg .= "\n";
+            if (php_sapi_name() != 'cli') {
+                $msg = nl2br($msg);
+            }
+            echo $msg;
+        }
+    }
+}
+
 
 if (!defined('MODX_CORE_PATH')) {
     $path1 = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/_build/build.config.php';
@@ -44,35 +72,41 @@ if (!defined('MODX_CORE_PATH')) {
         } else {
             echo "\nNo Resource\n";
         }
+
     }
+
 } else {
     if (!$modx->user->hasSessionContext('mgr')) {
         die ('Unauthorized Access');
     }
 }
 
-require_once $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'model/mycomponent/mycomponentproject.class.php';
-// include 'mycomponentproject.class.php';
+$buildPath =  $modx->getOption('mc.root', null, $modx->getOption('core_path') . 'components/mycomponent/') . '_build/';
 
-$project = new MyComponentProject($modx);
-$project->init();
+$file = 'config/current.project.php';
 
-//$project->removeObjects();
-$project->bootstrap();
+@include $buildPath . $file;
 
-// echo print_r(ObjectAdapter::$myObjects, true);
+if (! isset($currentProject)) {
+    die ('Could not find current project file at: ' . $buildPath . $file);
+}
+$configPath = $buildPath . 'config/' . $currentProject . '.config.php';
 
-echo "\n\nInitial Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
-$mem_usage = memory_get_usage();
-$peak_usage = memory_get_peak_usage(true);
-echo "\nFinal Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
-echo "\nPeak Memory Used: " . round($peak_usage / 1048576, 2) . " megabytes";
-/* report how long it took */
-$mtime = microtime();
-$mtime = explode(" ", $mtime);
-$mtime = $mtime[1] + $mtime[0];
-$tend = $mtime;
-$totalTime = ($tend - $tstart);
-$totalTime = sprintf("%2.4f s", $totalTime);
-echo "\nTotal time: " . $totalTime;
-return;
+if (! file_exists($configPath)) {
+    die('Could not find project config file at: ' . $configPath);
+} else {
+    $helper = new BuildHelper($modx);
+    $props = $helper->getProps($configPath);
+}
+
+if (! is_array($props)) {
+    die('Project Config file is corrupt');
+}
+
+$transportPath = $props['targetRoot'] . '_build/build.transport.php';
+
+if (! file_exists($transportPath)) {
+    die('Could not find build.transport.php at: ' . $transportPath);
+}
+
+return include $transportPath;

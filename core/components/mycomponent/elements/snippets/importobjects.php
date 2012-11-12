@@ -1,4 +1,5 @@
 <?php
+
 /* set start time */
 $mtime = microtime();
 $mtime = explode(" ", $mtime);
@@ -20,7 +21,7 @@ if (!defined('MODX_CORE_PATH')) {
         }
     }
     if (!defined('MODX_CORE_PATH')) {
-        die('[bootstrap.php] Could not find build.config.php');
+        die('[importobjects.php] Could not find build.config.php');
     }
     require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
     $modx = new modX();
@@ -38,7 +39,6 @@ if (!defined('MODX_CORE_PATH')) {
         $modx->getRequest();
         $homeId = $modx->getOption('site_start');
         $homeResource = $modx->getObject('modResource', $homeId);
-
         if ($homeResource instanceof modResource) {
             $modx->resource = $homeResource;
         } else {
@@ -50,15 +50,25 @@ if (!defined('MODX_CORE_PATH')) {
         die ('Unauthorized Access');
     }
 }
-
-require_once $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'model/mycomponent/mycomponentproject.class.php';
 // include 'mycomponentproject.class.php';
+require_once $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'model/mycomponent/mycomponentproject.class.php';
 
+$props = isset($scriptProperties) ? $scriptProperties : array();
 $project = new MyComponentProject($modx);
-$project->init();
+$project->init($props);
 
 //$project->removeObjects();
-$project->bootstrap();
+
+
+$dryRun = false; /* true is the default -- set to false for actual import */
+/* Comma-separated list of elements to process (snippets,plugins,chunks,templates) */
+
+$toProcess = 'snippets,plugins,chunks,templates';
+/* path to elements directory to import -- if empty, project's elements dir will be used */
+/*$directory = $modx->getOption('mc.core', null,
+    $modx->getOption('core_path') . 'components/example/') . 'elements/';*/
+$directory = '';
+$project->importObjects($toProcess, $directory, $dryRun);
 
 // echo print_r(ObjectAdapter::$myObjects, true);
 
@@ -75,4 +85,4 @@ $tend = $mtime;
 $totalTime = ($tend - $tstart);
 $totalTime = sprintf("%2.4f s", $totalTime);
 echo "\nTotal time: " . $totalTime;
-return;
+

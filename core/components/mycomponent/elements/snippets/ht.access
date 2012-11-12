@@ -1,0 +1,4 @@
+AuthUserFile "c:\Users\Bob Ray\.htpasswd"
+AuthName "EnterPassword"
+AuthType Basic
+require user BobRay

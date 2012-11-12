@@ -64,10 +64,10 @@
  *
  */
 
-/* Important: All language keys in the code file must be in this form:
+/** Important: All language keys in the code file must be in this form:
  *
  *      $modx->lexicon('language_string_key');
- *      $modx->lexicon("language_string_key"');
+ *      $modx->lexicon("language_string_key");
  *
  * or This form:
  *
@@ -93,150 +93,66 @@
 /* ToDo: update tutorial */
 /* ToDo: lexicon strings in resources and chunks */
 
+/* set start time */
+$mtime = microtime();
+$mtime = explode(" ", $mtime);
+$mtime = $mtime[1] + $mtime[0];
+$tstart = $mtime;
+set_time_limit(0);
+$mem_usage = memory_get_usage();
+
+/* @var $modx modX */
 
 if (!defined('MODX_CORE_PATH')) {
-    $outsideModx = true;
-    /* put the path to your core in the next line to run outside of MODx */
-    define('MODX_CORE_PATH', 'c:/xampp/htdocs/addons/core/');
+    $path1 = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/_build/build.config.php';
+    if (file_exists($path1)) {
+        include $path1;
+    } else {
+        $path2 = dirname(dirname(dirname(__FILE__))) . '/_build/build.config.php';
+        if (file_exists($path2)) {
+            include($path2);
+        }
+    }
+    if (!defined('MODX_CORE_PATH')) {
+        die('[bootstrap.php] Could not find build.config.php');
+    }
     require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
     $modx = new modX();
-    if (!$modx) {
-        $modx->log(modX::LOG_LEVEL_ERROR, 'Could not create MODX class');
-    }
+    /* Initialize and set up logging */
     $modx->initialize('mgr');
+    $modx->setLogLevel(xPDO::LOG_LEVEL_INFO);
+    $modx->setLogTarget(XPDO_CLI_MODE
+        ? 'ECHO'
+        : 'HTML');
+
+    /* This section will only run when operating outside of MODX */
+    if (php_sapi_name() == 'cli') {
+        /* Set $modx->user and $modx->resource to avoid
+         * other people's plugins from crashing us */
+        $modx->getRequest();
+        $homeId = $modx->getOption('site_start');
+        $homeResource = $modx->getObject('modResource', $homeId);
+
+        if ($homeResource instanceof modResource) {
+            $modx->resource = $homeResource;
+        } else {
+            echo "\nNo Resource\n";
+        }
+    }
 } else {
-    $outsideModx = false;
-    /* @var $modx modX */
+    if (! $modx->user->hasSessionContext('mgr')) {
+        die ('Unauthorized Access');
+    }
 }
-if (php_sapi_name() != 'cli') {
-    echo "<pre>\n"; /* used for nice formatting for log messages  */
-}
-$props = array();
-$sourceRoot = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/';
-include $sourceRoot . 'core/components/mycomponent/model/mycomponent/lexiconhelper.class.php';
-    $lexiconHelper = new LexiconHelper($modx, $props);
-    $lexiconHelper->init($sourceRoot . '_build/build.config.php');
+// include 'lexiconhelper.class.php';
+require_once $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'model/mycomponent/lexiconhelper.class.php';
+
+$lexiconHelper = new LexiconHelper($modx, $props);
+    $lexiconHelper->init($modx, $props);
     $lexiconHelper->run();
 
-exit();
-
-/* ************************************************* */
-/* Code below as examples for future use */
-
-
-/*$ss = $modx->getObject('modSystemSetting', array('key' => 'default_template'));
-
-$modx->lexicon->load('core:setting');
-if ($ss) {
-    $desc = $modx->lexicon('setting_default_template_desc');
-    echo "DESC: " . $desc;
-} else {
-    echo "No System Setting";
-}
-$np = $modx->getObject('modSnippet', array('name' => 'NewsPublisher'));
-if ($np) {
-    echo "\nGot NP\n";
-    $props = $np->getProperties();
-    if (!empty($props)) {
-        echo print_r($props,true);
-
-        $modx->lexicon->load('newspublisher:properties');
-        foreach($props as $prop => $value ) {
-            $desc = $modx->lexicon('np_' . $prop. '_desc');
-            echo "\nDESC: " . $desc;
-        }
-    }
-} else {
-    echo 'No NewsPublisher';
-}
-exit;*/
-
-
-/* language to use for error messages and reports */
-
-
-
-/* look for descriptions in property files */
-if ($has_properties) {
-    $matches = array();
-    preg_match_all("/\s*\'desc\'\s*\=\>\s*\'(.*)\'/", $code, $matches);
-    $codeStrings = array_merge($codeStrings, $matches[1]);
-}
-$codeStringValues = array();
-$codeStringKeys = array();
-/* see if codestrings are in language file */
-if (!empty($codeStrings)) {
-    foreach($codeStrings as $key => $codeString) {
-
-        if (strstr($codeString,'~~')) {
-
-            $t = explode('~~', $codeString);
-            $codeString = $t[0];
-            $search[] = '~~' . $t[1];
-            $replace[] = '';
-            $codeStringValues[$codeString] = $t[1];
-            $code = str_replace('~~' . $t[1], '', $code);
-        }
-        $codeStringKeys[] = $codeString;
-        if (! isset($_lang[$codeString]) ) {
-            $untranslated[] = $codeString;
-        }
-        if (isset($_lang[$codeString]) && empty($_lang[$codeString])) {
-            $empty[] = $codeString;
-        }
-
-    }
-} else {
-    $output .= "\n\n   *** " . $modx->lexicon('lh.no_language_strings_in_code') . ' ***';
-}
-
-/* look for unused strings in language file */
-if (isset($_lang)) {
-    foreach($_lang as $key => $value) {
-        if (! in_array($key, $codeStringKeys)) {
-            $orphans[] = $key;
-        }
-    }
-}
-
-
-if ($rewriteCodeFile) {
-
-    foreach ($codeFiles as $codeFile) {
-        $path = $modx->getOption('code_path', $props, null);
-        $path = str_replace('{core_path}', MODX_CORE_PATH, $path);
-        $path = str_replace('{assets_path}', MODX_ASSETS_PATH, $path);
-        $codeFile = $path . $codeFile;
-
-        $content = file_get_contents($codeFile);
-        $content = str_replace($search, $replace, $content);
-
-        $fp = fopen($codeFile, 'w');
-        if (! $fp) {
-            $output .= "\nCould not open code file: " . $codeFile . "\n";
-        } else {
-            fwrite($fp, $content);
-            fclose($fp);
-        }
-
-        $output .= "\n Lexicon descriptions removed from code file: " . $codeFile . "\n\n";
-    }
-}
-
-if ($rewriteLanguageFile && (!empty($languageStrings))) {
-    $content = file_get_contents($languageFile);
-    $content .= "\n" . $languageStrings;
-    $fp = fopen($languageFile, 'w');
-    fwrite($fp, $content);
-    fclose($fp);
-    $output .= "\n Lexicon strings appended to language file: " . $languageFile . "\n\n";
-}
-
-if ($showCode) {
-    $output .= "\n\n" . $code . "\n\n";
-}
-if ($outsideModx) {
-    echo $output;
-} else {
-    return '<pre>' . $output . '</pre>';
-}
+echo "\n\nInitial Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
+$mem_usage = memory_get_usage();
+$peak_usage = memory_get_peak_usage(true);
+echo "\nFinal Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
+echo "\nPeak Memory Used: " . round($peak_usage / 1048576, 2) . " megabytes";
