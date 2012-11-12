@@ -106,6 +106,15 @@ if (! is_array($props)) {
     die('Could not get project config file');
 }
 
+$criticalSettings = array('packageNameLower', 'packageName', 'version', 'release');
+
+foreach ($criticalSettings as $setting) {
+   if (!isset($setting)) {
+       die('Critical setting is not set in Project Config: ' . $setting);
+   }
+}
+
+
 if (strpos($props['packageNameLower'], '-') || strpos($props['packageNameLower'], ' ') ) {
     die ("\$packageNameLower cannot contain spaces or hyphens");
 }
@@ -155,12 +164,12 @@ $hasAssets = is_dir($sources['source_assets']); /* Transfer the files in the ass
 $hasCore = is_dir($sources['source_core']);   /* Transfer the files in the core dir. */
 $hasResources = file_exists($sources['data'] . 'transport.resources.php');
 $hasValidators = is_dir($sources['build'] . 'validators'); /* Run a validators before installing anything */
-$hasResolvers = is_dir($sources['data'] . 'resolvers');
+$hasResolvers = is_dir($sources['build'] . 'resolvers');
 $hasSetupOptions = is_dir($sources['data'] . 'install.options'); /* HTML/PHP script to interact with user */
 $hasMenu = file_exists($sources['data'] . 'transport.menus.php'); /* Add items to the MODx Top Menu */
 $hasSettings = file_exists($sources['data'] . 'transport.settings.php'); /* Add new MODx System Settings */
 $hasSubPackages = is_dir($sources['data'] .'subpackages');
-$minifyJS = $props['minifyJS'];
+$minifyJS = $modx->getOption('minifyJS', $props, false);
 
 $helper->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Project: ' . $currentProject);
 $helper->sendLog(MODX::LOG_LEVEL_INFO, "Action: Build\n");
@@ -464,7 +473,7 @@ foreach($categories as $k => $categoryName) {
     }
 
     /* Package script resolvers, if any */
-    if ($i == $count) { /* add resolvers to last category only */
+    if ( ($i == $count) && $hasResolvers) { /* add resolvers to last category only */
         $resolvers = empty($props['resolvers'])? array() : $props['resolvers'];
         $resolvers = array_merge(array('category','plugin','tv','resource','propertyset'), $resolvers);
         $helper->sendLog(MODX::LOG_LEVEL_INFO, 'Processing Resolvers');
@@ -568,7 +577,7 @@ $attr = array(
     'changelog' => file_get_contents($sources['docs'] . 'changelog.txt'),
 );
 
-if (!empty($props['install.options'])) {
+if ($hasSetupOptions && !empty($props['install.options'])) {
     $attr['setup-options'] = array(
         'source' => $sources['install_options'] . 'user.input.php',
     );

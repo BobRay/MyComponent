@@ -3,6 +3,21 @@
     <h3>MyComponent Actions</h3>
 
     <form method="post" action="[[~[[*id]]]]">
+        <p>&nbsp;<b>[[+message]]</b></p>
+        <label for="bootstrap">
+        Current Project:
+                    <input type="text" name="currentproject" value="[[+current_project]]" id="currentproject"/>
+
+                </label><input type="submit" name="newproject" value="New Project">
+                <br/><br />
+
+                <label for="selectproject">
+
+                   <select name="selectproject">
+                      [[+projects]]
+                   </select> <input type="submit" name="switchproject" value="Switch Project">
+                   <br />
+                   <br />
 
         <label for="bootstrap">
             <input type="radio" name="doit" value="bootstrap" id="bootstrap"/>

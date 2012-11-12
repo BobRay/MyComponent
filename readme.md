@@ -3,16 +3,16 @@ MyComponent Extra for MODx Revolution
 
 
 **Author:** Bob Ray <http://bobsguides.com> [Bob's Guides](http://bobsguides.com)
-**Author:** Shaun McCormick <shaun@modxcms.com>
+
+(outdated) Documentation is available at [Bob's Guides](http://bobsguides.com/mycomponent-tutorial.html)
+
+MyComponent provides a development environment for creating and distributing Extras
+for MODX Revolution.
 
 
-Documentation is available at [Bob's Guides](http://bobsguides.com/mycomponent-tutorial.html)
+This is a beta version of the new MyComponent 3.0. MyComponent has been completely refactored from the ground up and has very little in common with older versions (in fact, it installs in a different location).
 
-MyComponent is a generic build script for MODx Revolution components.
-Much of the code in this component was written by Shaun McCormick or patterned
-after his code.
+To create a new Extra with MyComponent 3.0, you edit a single project config. file and run the various MyComponent utilities, either directly from their source files or from a UI in the MODX Manager.
 
-Because MyComponent is itself a build script, it can't be installed directly
-through package Manager. You can download the files using the download link
-on this page, but a better method is to install the GetMyComponent package,
-which will install the files for you.
+Based on the config. file, MyComponent creates all the files and MODX objects necessary for your Extra. The files are automatically placed in the correct directories. In addition, MyComponent will write your lexicon files and the build.transport.php file necessary to create a MODX Transport Package you can submit to the MODX repository for distribution. MyComponent will also create all the resolvers necessary to establish the correct relationships between the objects in your extra (e.g., TV/Template, Resource/Parent, Plugin/Event, etc.).
+

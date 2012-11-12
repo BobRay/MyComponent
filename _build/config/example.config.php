@@ -131,7 +131,7 @@ $components = array(
         'Example' => array(
             'text' => 'Example',
             'parent' => 'components',
-            'description' => 'example.menu_desc',
+            'description' => 'ex_menu_desc',
             'icon' => '',
             'menuindex' => 0,
             'params' => '',
@@ -183,13 +183,15 @@ $components = array(
         ),
 
         'snippets' => array(
-            'Snippet1' => array( /* minimal example */
+            'Snippet1' => array(
                 'category' => 'Example',
+                'description' => 'Description for Snippet one',
                 'static' => true,
             ),
 
             'Snippet2' => array( /* example with static and property set(s)  */
                 'category' => 'Category2',
+                'description' => 'Description for Snippet two',
                 'static' => false,
                 'propertySets' => array(
                     'PropertySet1',
@@ -204,6 +206,7 @@ $components = array(
             ),
             'Plugin2' => array( /* example with static, events, and property sets */
                 'category' => 'Example',
+                'description' => 'Description for Plugin one',
                 'static' => false,
                 'propertySets' => array( /* all property sets to be connected to element */
                     'PropertySet1',
@@ -237,6 +240,7 @@ $components = array(
                 'category' => 'Example',
             ),
             'Chunk2' => array(
+                'description' => 'Description for Chunk two',
                 'category' => 'Example',
                 'static' => false,
                 'propertySets' => array(
@@ -250,6 +254,7 @@ $components = array(
             ),
             'Template2' => array(
                 'category' => 'Example',
+                'description' => 'Description for Template two',
                 'static' => false,
                 'propertySets' => array(
                     'PropertySet2',
@@ -259,6 +264,8 @@ $components = array(
         'templateVars' => array(
             'Tv1' => array(
                 'category' => 'Example',
+                'description' => 'Description for TV one',
+                'caption' => 'TV One',
                 'propertySets' => array(
                     'PropertySet1',
                     'PropertySet2',
@@ -273,6 +280,8 @@ $components = array(
             ),
             'Tv2' => array( /* example with templates, default, and static specified */
                 'category' => 'Example',
+                'description' => 'Description for TV two',
+                'caption' => 'TV Two',
                 'static' => false,
                 'default_text' => '@INHERIT',
                 'templates' => array(
@@ -462,7 +471,7 @@ $components = array(
 
     'exportResources' => array(
         'Resource1',
-        'Resource2'
+        'Resource2',
     ),
     /* Array of resource parent IDs to get children of. */
     'parents' => array(),
@@ -473,10 +482,8 @@ $components = array(
 
     /* ******************** LEXICON HELPER SETTINGS ***************** */
     /* These settings are used by LexiconHelper */
-    'rewriteCodeFiles' => false,
-    // remove ~~descriptions
-    'rewriteLexiconFiles' => true,
-    // automatically add missing strings to lexicon files
+    'rewriteCodeFiles' => false,  /* remove ~~descriptions */
+    'rewriteLexiconFiles' => true, /* automatically add missing strings to lexicon files */
     /* ******************************************* */
 
     /* Array of aliases used in code for the properties array.

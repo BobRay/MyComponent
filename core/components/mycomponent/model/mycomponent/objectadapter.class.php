@@ -225,9 +225,9 @@ abstract class ObjectAdapter
                 unset($this->myFields['tvValues']);
             }
             /* sets appropriate content field for elements and resources */
-            if (!isset($this->myFields['static']) || empty($this->myFields['static'])) {
+            //if (!isset($this->myFields['static']) || empty($this->myFields['static'])) {
                 $this->setContentField($name, $this->dbClass);
-            }
+            //}
             if (isset($this->myFields['filename'])) {
                 $tempFilename = $this->myFields['filename'];
                 unset($this->myFields['filename']);
@@ -353,6 +353,14 @@ abstract class ObjectAdapter
             }
             $tpl = str_replace('[[+elementType]]', strtolower(substr($this->dbClass, 3)), $tpl);
             $tpl = str_replace('[[+elementName]]', $this->getName(), $tpl);
+            if (isset($this->myFields['description'])) {
+                $description = $this->myFields['description'];
+                if (strstr($description, '~~')) {
+                    $split = explode('~~', $description);
+                    $description = $split[1];
+                }
+                $tpl = str_replace('[[+description]]', $description, $tpl);
+            }
             if (!empty ($tpl)) {
                 $tpl = $this->helpers->replaceTags($tpl);
             }
@@ -376,6 +384,14 @@ abstract class ObjectAdapter
             $tpl = $this->helpers->getTpl($tplName);
             $tpl = str_replace('[[+elementType]]', strtolower(substr($this->dbClass, 3)), $tpl);
             $tpl = str_replace('[[+elementName]]', $this->getName(), $tpl);
+            if (isset($this->myFields['description'])) {
+                $description = $this->myFields['description'];
+                if (strstr($description, '~~')) {
+                    $split = explode('~~', $description);
+                    $description = $split[1];
+                }
+                $tpl = str_replace('[[+description]]', $description, $tpl);
+            }
             if (!empty ($tpl)) {
                 $tpl = $this->helpers->replaceTags($tpl);
             }
@@ -399,7 +415,15 @@ abstract class ObjectAdapter
             if ( (! file_exists(($dir . '/' . $file))  || $overwrite)) {
                 $this->helpers->writeFile($dir, $file, $tpl, $dryRun);
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        File already exists: ' . $file);
+                $content = file_get_contents($dir .'/' . $file);
+                /* use Tpl for static elements files with minimal content
+                  (modx creates them empty on addToModx() ) */
+                if (strlen($content < 5) && isset($this->myFields['static']) &&
+                    ( !empty($this->myFields['static']))) {
+                    $this->helpers->writeFile($dir, $file, $tpl, $dryRun);
+                } else {
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        File already exists: ' . $file);
+                }
             }
         }
     }

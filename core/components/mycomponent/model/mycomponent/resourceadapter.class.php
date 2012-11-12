@@ -219,36 +219,6 @@ class ResourceAdapter extends ObjectAdapter
         parent::createTransportFile($helpers, $resources, '', 'modResource', $mode);
     }
 
-    /**
-     * Exports the Resource. Resources work a little differently than most other
-     * adapters. Instead, top-level resources call this function recursively. This
-     * allows for the tree to grow organically, if there is one.
-     *
-     * @param $overwrite boolean - (Optional) Allows the function to overwrite the
-     *        files. Default value is false.
-     *
-     * @return boolean - True, if successful; False, if not.
-     */
-/*    final public function exportObject($object, $overwrite = false)
-    {//For Quick Access
-        $mc = $this->myComponent;
-        $name = $this->getName();
-        
-    // Perform default export implementation
-        if (!parent::exportObject($name))
-        {   $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Transport File created for Resource: ' . $name);
-            return false;
-        }
-        $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Transport File created for Resource: ' . $name);
-    // Special functionality for Resources
-        $this->exportCode($overwrite);
-        $this->exportProperties($overwrite);
-    // Handle Children
-        $this->exportChildren($overwrite);
-    // Return Success
-        return true;
-    }*/
-
 
     static function exportResources(&$modx, &$helpers, $props, $mode = MODE_EXPORT) {
         /* @var $modx modX */
@@ -302,11 +272,15 @@ class ResourceAdapter extends ObjectAdapter
         }
         if (!empty($objects)) {
             /* @var $object modResource */
+            $dryRun = $props['dryRun'];
             foreach($objects as $object) {
                 $fields = $object->toArray();
                 $a = new ResourceAdapter($modx, $helpers, $fields, $mode);
                 if ($mode == MODE_REMOVE) {
                     $a->remove();
+                } elseif ($mode == MODE_EXPORT) {
+                    $content = $object->getContent();
+                    $a->createCodeFile(true, $content,  $mode, $dryRun );
                 }
             }
         } else {
