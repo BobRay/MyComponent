@@ -121,6 +121,7 @@ class LexiconHelper {
         $this->packageNameLower = $this->props['packageNameLower'];
         $this->targetBase = $this->props['targetRoot'];
         $this->targetCore = $this->targetBase . 'core/components/' . $this->packageNameLower . '/';
+        $this->targetAssets = $this->targetBase . 'assets/components/' . $this->packageNameLower . '/';
         $this->primaryLanguage = $this->modx->getOption('primaryLanguage', $this->props, '');
         if (empty($this->primaryLanguage)) {
             $this->primaryLanguage = 'en';
@@ -148,6 +149,19 @@ class LexiconHelper {
                 $plugin = $fields['name'];
             }
             $elements[trim($plugin)] = 'modPlugin';
+        }
+
+        /* Add any JS files to $elements array */
+        $dir = $this->targetAssets . 'js';
+        $jsFiles = array();
+        if (is_dir($dir)) {
+            $this->helpers->resetFiles();
+            $this->helpers->dirWalk($dir, 'js', true);
+            $jsFiles = $this->helpers->getFiles();
+            foreach($jsFiles as $fileName => $directory) {
+                $elements[$directory . '/' . $fileName] = 'jsFile';
+            }
+
         }
         if (empty($elements)) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'No elements to process');
@@ -204,12 +218,12 @@ class LexiconHelper {
 
         $rewriteFiles = $this->modx->getOption('rewriteCodeFiles', $this->props, false);
         if ($rewriteFiles) {
-            $this->rewriteFiles($snippets, $plugins);
+            $this->rewriteFiles($snippets, $plugins, $jsFiles);
         }
         $this->report();
     }
 
-    public function rewriteFiles($snippets, $plugins) {
+    public function rewriteFiles($snippets, $plugins, $jsFiles) {
         if ( (!empty($snippets)) || (!empty($plugins))) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n******** Removing ~~ strings from code files ********");
         } else {
@@ -245,6 +259,9 @@ class LexiconHelper {
         }
 
         foreach($this->classFiles as $name => $path) {
+            $this->rewriteFile($path . '/' . $name);
+        }
+        foreach($jsFiles as $name => $path) {
             $this->rewriteFile($path . '/' . $name);
         }
     }
@@ -772,23 +789,28 @@ class LexiconHelper {
             $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, 'Element is empty');
             return;
         }
-        /* get name of element directory */
-        $dirName = strtolower(substr($type, 3)) . 's';
-
-        /* Check for explicit filename */
-        $elementFileName = $this->modx->getOption('filename',
-            $this->props['elements'][$dirName][$element], '' );
-
-        if (!empty ($elementFileName)) {
-            $file = $this->targetCore . 'elements/' . $dirName . '/' . $elementFileName;
+        /* $element is the full path for js files */
+        if ($type == 'jsFile') {
+            $file = $element;
         } else {
-            $file = $this->targetCore . 'elements/' . $dirName . '/' .
-                strtolower($element) . '.' . substr($dirName, 0, -1) . '.php';
-        }
+            /* get name of element directory */
+            $dirName = strtolower(substr($type, 3)) . 's';
 
+            /* Check for explicit filename */
+            $elementFileName = $this->modx->getOption('filename',
+                $this->props['elements'][$dirName][$element], '' );
+
+            if (!empty ($elementFileName)) {
+                $file = $this->targetCore . 'elements/' . $dirName . '/' . $elementFileName;
+            } else {
+                $file = $this->targetCore . 'elements/' . $dirName . '/' .
+                    strtolower($element) . '.' . substr($dirName, 0, -1) . '.php';
+            }
+
+        }
         if (file_exists($file)) {
             $this->included[] = $file;
-            $this->getIncludes($file);
+            $this->getIncludes($file, $type);
         } else {
             $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, ' Could not find file: ' . $file);
         }
@@ -802,8 +824,9 @@ class LexiconHelper {
      * Also populates $this->lexiconCodeStrings and $this->loadedLexiconFiles
      *
      * @param $file - path to code file(s)
+     * @param $type - modSnippet, modChunk, jsFile, etc.
      */
-    public function getIncludes($file) {
+    public function getIncludes($file, $type) {
         $matches = array();
         $lines = array();
         // $fp = fopen($file, "r");
@@ -852,6 +875,24 @@ class LexiconHelper {
                         $this->lexiconCodeStrings[$lexString] = $value;
                     }
                 }
+            } elseif ($type == 'jsFile') {
+                preg_match('#_\(\s*[\'\"](.*)[\'\"]\)#', $line, $matches);
+                if (isset($matches[1]) && !empty($matches[1])) {
+                    if (strstr($matches[1], '~~')) {
+                        $s = explode('~~', $matches[1]);
+                        $lexString = $s[0];
+                        $value = $s[1];
+                    } else {
+                        $lexString = $matches[1];
+                        $value = '';
+                    }
+                    if (!in_array($lexString, array_keys($this->lexiconCodeStrings))) {
+                        $this->lexiconCodeStrings[$lexString] = $value;
+                    } elseif (empty($this->lexiconCodeStrings[$lexString]) && !empty($value)) {
+                        $this->lexiconCodeStrings[$lexString] = $value;
+                    }
+                }
+
             }
             /* recursively process includes files */
             if (strstr($line, 'include') || strstr($line, 'include_once') || strstr($line, 'require') || strstr($line, 'require_once')) {
@@ -899,7 +940,7 @@ class LexiconHelper {
                 // skip files we've already included
                 if (!in_array($fileName, $this->included)) {
                     $this->included[] = $fileName;
-                    $this->getIncludes($this->classFiles[$fileName] . '/' . $fileName);
+                    $this->getIncludes($this->classFiles[$fileName] . '/' . $fileName, $type);
                 }
             }
         }
