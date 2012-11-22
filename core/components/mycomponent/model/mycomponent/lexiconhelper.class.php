@@ -127,10 +127,6 @@ class LexiconHelper {
             $this->primaryLanguage = 'en';
         }
         clearstatcache(); /*  make sure is_dir() is current */
-
-
-
-
     }
 
     public function run() {
@@ -150,6 +146,31 @@ class LexiconHelper {
             }
             $elements[trim($plugin)] = 'modPlugin';
         }
+        $chunks = $this->modx->getOption('chunks', $this->props['elements'], array());
+        foreach ($chunks as $chunk => $fields) {
+            if (isset($fields['name'])) {
+                $plugin = $fields['name'];
+            }
+            $elements[trim($chunk)] = 'modChunk';
+        }
+        $templates = $this->modx->getOption('templates', $this->props['elements'], array());
+        foreach ($templates as $template => $fields) {
+            if (isset($fields['templatename'])) {
+                $template = $fields['templatename'];
+            }
+            $elements[trim($template)] = 'modTemplate';
+        }
+        /* Add any resource content files to $elements array */
+        $dir = $this->targetBase . '_build/data/resources';
+        $resources = array();
+        if (is_dir($dir)) {
+            $this->helpers->resetFiles();
+            $this->helpers->dirWalk($dir, 'html', true);
+            $resources = $this->helpers->getFiles();
+            foreach ($resources as $fileName => $directory) {
+                $elements[$directory . '/' . $fileName] = 'modResource';
+            }
+        }
 
         /* Add any JS files to $elements array */
         $dir = $this->targetAssets . 'js';
@@ -161,8 +182,8 @@ class LexiconHelper {
             foreach($jsFiles as $fileName => $directory) {
                 $elements[$directory . '/' . $fileName] = 'jsFile';
             }
-
         }
+
         if (empty($elements)) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'No elements to process');
             return;
@@ -209,7 +230,7 @@ class LexiconHelper {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, count($this->lexiconFileStrings) . ' lexicon strings in lexicon file(s)');
 
             $missing = $this->findMissing();
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, $this->reportMissing($missing));
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, $this->reportMissing($missing, $type));
         }
         $lexPropStrings = $this->getLexiconPropertyStrings();
         $this->checkPropertyDescriptions($lexPropStrings);
@@ -218,13 +239,14 @@ class LexiconHelper {
 
         $rewriteFiles = $this->modx->getOption('rewriteCodeFiles', $this->props, false);
         if ($rewriteFiles) {
-            $this->rewriteFiles($snippets, $plugins, $jsFiles);
+            $this->rewriteFiles($snippets, $plugins, $templates, $chunks, $jsFiles, $resources);
         }
         $this->report();
     }
 
-    public function rewriteFiles($snippets, $plugins, $jsFiles) {
-        if ( (!empty($snippets)) || (!empty($plugins))) {
+    public function rewriteFiles($snippets, $plugins, $templates, $chunks, $jsFiles, $resources) {
+        if ( (!empty($snippets)) || (!empty($plugins)) || (!empty($templates)) || (!empty($chunks))
+            || (!empty($jsFiles)) || (!empty($resources))) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n******** Removing ~~ strings from code files ********");
         } else {
             return;
@@ -235,12 +257,12 @@ class LexiconHelper {
             $fileName = isset($fields['filename']) ? $fields['filename'] : $name . '.' . 'snippet.php';
             $fileName = strtolower($fileName);
             $fullPath = $this->targetCore . 'elements/snippets/' . $fileName;
-            $this->rewriteFile($fullPath);
-            $propsFileName = $this->helpers->getFileName($name, 'modSnippet', 'properties');
+            $this->rewriteFile($fullPath, 'modScript');
+            /*$propsFileName = $this->helpers->getFileName($name, 'modSnippet', 'properties');
             $propsFilePath = $this->targetBase . '_build/data/properties/' . $propsFileName;
             if (file_exists($propsFilePath)) {
                 $this->rewriteFile($propsFilePath);
-            }
+            }*/
 
         }
         $plugins = $this->modx->getOption('plugins', $this->props['elements'], array());
@@ -250,29 +272,93 @@ class LexiconHelper {
             $fileName = isset($fields['filename']) ? $fields['fileName'] : $name . '.' . 'plugin.php';
             $fileName = strtolower($fileName);
             $fullPath = $this->targetCore . 'elements/plugins/' . $fileName;
-            $this->rewriteFile($fullPath);
-            $propsFileName = $this->helpers->getFileName($name, 'modPlugin', 'properties');
+            $this->rewriteFile($fullPath, 'modScript');
+            /*$propsFileName = $this->helpers->getFileName($name, 'modPlugin', 'properties');
             $propsFilePath = $this->targetBase . '_build/data/properties/' . $propsFileName;
             if (file_exists($propsFilePath)) {
                 $this->rewriteFile($propsFilePath);
+            }*/
+        }
+
+        foreach ($templates as $template => $fields) {
+            $name = isset($fields['templatename'])
+                ? $fields['templatename']
+                : $template;
+            $name = strtolower($name);
+            $fileName = isset($fields['filename'])
+                ? $fields['filename']
+                : $name . '.' . 'template.html';
+            $fileName = strtolower($fileName);
+            $fullPath = $this->targetCore . 'elements/templates/' . $fileName;
+            $this->rewriteFile($fullPath, 'modTemplate');
+            /*$propsFileName = $this->helpers->getFileName($name, 'modtemplate', 'properties');
+            $propsFilePath = $this->targetBase . '_build/data/properties/' . $propsFileName;
+            if (file_exists($propsFilePath)) {
+                $this->rewriteFile($propsFilePath);
+            }*/
+
+        }
+
+        foreach ($chunks as $chunk => $fields) {
+            $name = isset($fields['name'])
+                ? $fields['name']
+                : $chunk;
+            $name = strtolower($name);
+            $fileName = isset($fields['filename'])
+                ? $fields['filename']
+                : $name . '.' . 'chunk.html';
+            $fileName = strtolower($fileName);
+            $fullPath = $this->targetCore . 'elements/chunks/' . $fileName;
+            $this->rewriteFile($fullPath, 'modChunk');
+            /*$propsFileName = $this->helpers->getFileName($name, 'modChunk', 'properties');
+            $propsFilePath = $this->targetBase . '_build/data/properties/' . $propsFileName;
+            if (file_exists($propsFilePath)) {
+                $this->rewriteFile($propsFilePath);
+            }*/
+        }
+
+
+
+        foreach($this->classFiles as $name => $path) {
+            $this->rewriteFile($path . '/' . $name, 'modScript');
+        }
+        foreach($jsFiles as $name => $path) {
+            $this->rewriteFile($path . '/' . $name, 'modScript');
+        }
+        foreach($resources as $name => $path) {
+            $this->rewriteFile($path . '/' . $name, 'modResource');
+        }
+
+        $propsFiles = array();
+        $dir = $this->targetBase . '_build/data/properties';
+        /*  make sure there is a model dir */
+        if (is_dir(($dir))) {
+            $this->helpers->resetFiles();
+            $this->helpers->dirWalk($dir, 'php', true);
+            $propsFiles = $this->helpers->getFiles();
+            if (!empty($propsFiles)) {
+                foreach ($propsFiles as $name => $path) {
+                    $this->rewriteFile($path . '/' . $name, 'modScript');
+                }
             }
         }
 
-        foreach($this->classFiles as $name => $path) {
-            $this->rewriteFile($path . '/' . $name);
-        }
-        foreach($jsFiles as $name => $path) {
-            $this->rewriteFile($path . '/' . $name);
-        }
     }
-    public function rewriteFile($path) {
+    public function rewriteFile($path, $type = 'modScript') {
         if (file_exists($path)) {
 
             $content = file_get_contents($path);
             if (strstr($content, '~~')) {
+
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "    rewriting code file: " . $path);
-                $pattern = '/~~.*([\'\"][\),])/';
-                $replace = '$1';
+                if ($type == 'modScript') {
+                    $pattern = '/~~.*([\'\"][\),])/';
+                    $replace = '$1';
+                } else {
+                    $pattern = '/~~[^\]\?&]+/';
+                    $replace = '';
+                }
+
                 $content = preg_replace($pattern, $replace, $content);
 
                 if (!empty($content)) {
@@ -385,7 +471,7 @@ class LexiconHelper {
         return $qc;
     }
 
-    public function reportMissing($missing) {
+    public function reportMissing($missing, $type) {
         $output = "";
         if (!empty($missing)) {
             //$this->output .= "\nStrings missing from Language file(s):";
@@ -398,7 +484,8 @@ class LexiconHelper {
             if (($count == 1) && isset($this->props['rewriteLexiconFiles'])
                     && $this->props['rewriteLexiconFiles']) {
                 /* append $output to lexicon file  */
-                $comment = '/* used in ' . $this->element . ' or its included classes */';
+                $extra = $type == 'modPlugin' || $type == 'modSnippet'? ' or its included classes ' : '';
+                $comment = '/* used in ' . $this->element . $extra .  ' */';
                 $fileName = reset($this->loadedLexiconFiles);
 
 
@@ -514,7 +601,7 @@ class LexiconHelper {
         } else {
             $output =  "The following lexicon strings are in a lexicon file, but have no value:";
             foreach ($empty as $string) {
-                $output .=  "    \$_lang['" . $string . "'] = '';";
+                $output .=  "\n    \$_lang['" . $string . "'] = '';";
             }
         }
         return $output;
@@ -792,6 +879,9 @@ class LexiconHelper {
         /* $element is the full path for js files */
         if ($type == 'jsFile') {
             $file = $element;
+        } elseif($type == 'modResource') {
+            $file = $element;
+
         } else {
             /* get name of element directory */
             $dirName = strtolower(substr($type, 3)) . 's';
@@ -803,8 +893,13 @@ class LexiconHelper {
             if (!empty ($elementFileName)) {
                 $file = $this->targetCore . 'elements/' . $dirName . '/' . $elementFileName;
             } else {
+                if ($type == 'modSnippet' || $type == 'modPlugin') {
+                    $suffix = '.php';
+                } else {
+                    $suffix = '.html';
+                }
                 $file = $this->targetCore . 'elements/' . $dirName . '/' .
-                    strtolower($element) . '.' . substr($dirName, 0, -1) . '.php';
+                    strtolower($element) . '.' . substr($dirName, 0, -1) . $suffix;
             }
 
         }
@@ -848,7 +943,9 @@ class LexiconHelper {
 
         foreach ($lines as $line) {
             /* process lexicon->load() lines */
+
             if (strstr($line,'lexicon->load')) {
+                $matches = array();
                 preg_match('#lexicon->load\s*\s*\(\s*\'(.*)\'#', $line, $matches);
                 if (isset($matches[1]) && !empty($matches[1])) {
                     $fqn = $this->getLexFqn($matches[1]);
@@ -859,6 +956,7 @@ class LexiconHelper {
 
             /* process lexicon entries */
             } elseif (strstr($line, 'modx->lexicon')) {
+                $matches = array();
                 preg_match('#modx->lexicon\s*\s*\(\s*[\'\"](.*)[\'\"]#', $line, $matches);
                 if (isset($matches[1]) && !empty($matches[1])) {
                     if (strstr($matches[1], '~~' )) {
@@ -876,7 +974,38 @@ class LexiconHelper {
                     }
                 }
             } elseif ($type == 'jsFile') {
+                $matches = array();
                 preg_match('#_\(\s*[\'\"](.*)[\'\"]\)#', $line, $matches);
+                if (isset($matches[1]) && !empty($matches[1])) {
+                    if (strstr($matches[1], '~~')) {
+                        $s = explode('~~', $matches[1]);
+                        $lexString = $s[0];
+                        $value = $s[1];
+                    } else {
+                        $lexString = $matches[1];
+                        $value = '';
+                    }
+                    if (!in_array($lexString, array_keys($this->lexiconCodeStrings))) {
+                        $this->lexiconCodeStrings[$lexString] = $value;
+                    } elseif (empty($this->lexiconCodeStrings[$lexString]) && !empty($value)) {
+                        $this->lexiconCodeStrings[$lexString] = $value;
+                    }
+                }
+            /* handle lexicon tags */
+            } elseif (strstr($line, '[[%') || strstr($line, '[[!%')) {
+                $matches = array();
+                preg_match('#&topic=`(.*)`#', $line, $matches);
+                if (isset($matches[1]) && !empty($matches[1])) {
+                    $topic = $matches[1];
+                } else {
+                    $topic = 'default';
+                }
+                $fqn = $this->getLexFqn($topic);
+                if (!in_array($fqn, array_keys($this->loadedLexiconFiles))) {
+                    $this->loadedLexiconFiles[$fqn] = $this->getLexiconFilePath($fqn);
+                }
+                $matches = array();
+                preg_match('#\[\[!*%([^\?&\]]*)#', $line, $matches);
                 if (isset($matches[1]) && !empty($matches[1])) {
                     if (strstr($matches[1], '~~')) {
                         $s = explode('~~', $matches[1]);
