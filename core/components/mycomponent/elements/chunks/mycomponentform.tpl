@@ -53,6 +53,8 @@
                         ImportObjects</label><br/><br/>
         <label for="lexiconhelper"> <input type="radio" name="doit" value="lexiconhelper" id="lexiconhelper"/>
             LexiconHelper</label><br/><br/>
+        <label for="checkproperties"> <input type="radio" name="doit" value="checkproperties" id="lexiconhelper"/>
+            CheckProperties</label><br/><br/>
         <label for="build"> <input type="radio" name="doit" value="build" id="build"/>
             Build</label><br/><br/><br/><br/>
         <label for="removeobjects"> <input type="radio" name="doit" value="removeobjects" id="removeobjects"/>

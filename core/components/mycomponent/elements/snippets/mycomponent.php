@@ -131,6 +131,9 @@ if ( (!empty($_POST) ) && (isset($_POST['doit']) || isset($_POST['newproject']) 
         case 'build':
             $output = $modx->runSnippet('Build');
             break;
+        case 'checkproperties':
+            $output = $modx->runSnippet('CheckProperties');
+            break;
 
         case 'removeobjects':
             $output = $modx->runSnippet('RemoveObjects');

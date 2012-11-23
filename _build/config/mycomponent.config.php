@@ -154,6 +154,10 @@ $components = array(
                 'category' => 'MyComponent',
                 'filename' => 'lexiconhelper.php',
             ),
+            'CheckProperties' => array(
+                'category' => 'MyComponent',
+                'filename' => 'checkproperties.php',
+            ),
             'ImportObjects' => array (
                 'category' => 'MyComponent',
                 'filename' => 'importobjects.php',
