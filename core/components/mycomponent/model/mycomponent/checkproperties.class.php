@@ -42,61 +42,82 @@ class CheckProperties {
     public $output;
     public $spAliases;
     public $codeMatches;
+    /* @var $modx modX */
     public $modx;
+    /* @var $helpers Helpers */
     public $helpers;
     public $source;
+    public $packageNameLower;
 
 
-    function __construct(&$props = array()) {
+    function  __construct(&$modx, &$props = array()) {
+        /* @var $modx modX */
+        $this->modx =& $modx;
         $this->props =& $props;
     }
 
-    public function init($configPath) {
-        /** @var $modx modX */
-        if (!defined('MODX_CORE_PATH')) {
-
-            require_once dirname(dirname(__FILE__)) . '/build.config.php';
-            require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
-            $modx = new modX();
-            $modx->initialize('mgr');
-            $modx->setLogLevel(modX::LOG_LEVEL_INFO);
-            $modx->setLogTarget('ECHO');
-            $this->modx =& $modx;
-        }
-        if (!php_sapi_name() == 'cli') {
-            $this->output .= "<pre>\n"; /* used for nice formatting for log messages  */
-        }
+    public function init($scriptProperties = array()) {
         clearstatcache(); /*  make sure is_dir() is current */
-        $config = $configPath;
-        if (file_exists($config)) {
-            $configProps = @include $config;
-        }
-        else {
-            die('Could not find main config file at ' . $config);
+
+        require dirname(__FILE__) . '/mcautoload.php';
+        spl_autoload_register('mc_auto_load');
+        // Get the project config file
+        $currentProject = '';
+        $currentProjectPath = $this->modx->getOption('mc.root', null,
+            $this->modx->getOption('core_path') . 'components/mycomponent/') . '_build/config/current.project.php';
+        if (file_exists($currentProjectPath)) {
+            include $currentProjectPath;
+        } else {
+            die('Could not find current.project.php file at: ' . $currentProjectPath);
         }
 
-        if (empty($configProps)) {
-            /* @var $configFile string - defined in included build.config.php */
-            die('Could not find project config file at ' . $configFile);
+        $projectConfigPath = $this->modx->getOption('mc.root', null,
+            $this->modx->getOption('core_path') . 'components/mycomponent/') .
+            '_build/config/' . strtoLower($currentProject) . '.config.php';
+
+        if (file_exists($projectConfigPath)) {
+            $properties = include $projectConfigPath;
+        } else {
+            die('Could not find Project Config file at: ' . $projectConfigPath);
         }
-        $this->props = array_merge($configProps, $this->props);
-        unset($config, $configFile, $configProps);
-        $this->source = $this->props['source'];
+
+        /* Make sure that we get usable values */
+        if (!is_array($properties) or empty($properties)) {
+            die('Config File was not set up correctly: ' . $projectConfigPath);
+        }
+
+        $this->props = isset($this->props)
+            ? $this->props
+            : array();
+        $this->props = array_merge($properties, $this->props);
+        unset($currentProjectPath, $projectConfigPath);
+
+        // include 'helpers.class.php'
+        $this->helpers = new Helpers($this->modx, $this->props);
+        $this->helpers->init();
+
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Project: ' . $this->props['packageName']);
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "Action: Check Properties\n");
+        $this->source = $this->props['mycomponentRoot'];
         /* add trailing slash if missing */
         if (substr($this->source, -1) != "/") {
             $this->source .= "/";
         }
-        require_once $this->source . 'core/components/mycomponent/model/mycomponent/helpers.class.php';
-        $this->helpers = new Helpers($this->modx, $this->props);
-        $this->helpers->init();
 
-        $packageNameLower = $this->props['packageNameLower'];
-        $this->targetBase = MODX_BASE_PATH . 'assets/mycomponents/' . $packageNameLower . '/';
-        $this->targetCore = $this->targetBase . 'core/components/' . $packageNameLower . '/';
+
+        $this->packageNameLower = $this->props['packageNameLower'];
+        $this->targetBase = $this->props['targetRoot'];
+        $this->targetCore = $this->targetBase . 'core/components/' . $this->packageNameLower . '/';
+        //$this->targetAssets = $this->targetBase . 'assets/components/' . $this->packageNameLower . '/';
+        /*$this->primaryLanguage = $this->modx->getOption('primaryLanguage', $this->props, '');
+        if (empty($this->primaryLanguage)) {
+            $this->primaryLanguage = 'en';
+        }*/
         clearstatcache(); /*  make sure is_dir() is current */
+
+
         $aliases = $this->props['scriptPropertiesAliases'];
 
-        $aliases = explode(',', $aliases);
         $this->spAliases = array();
         foreach ($aliases as $alias) {
             $this->spAliases[] = '\$' . $alias;
@@ -107,19 +128,25 @@ class CheckProperties {
         $this->output = '';
     }
     public function run() {
-        $snippets = $this->props['elements']['modSnippet'];
+        $snippets = $this->modx->getOption('snippets', $this->props['elements'], array());
         $elements = array();
         /* get all plugins and snippets from config file */
-        foreach (explode(',', $snippets) as $snippet) {
+        foreach ($snippets as $snippet => $fields) {
+            if (isset($fields['name'])) {
+                $snippet = $fields['name'];
+            }
             $elements[strtolower(trim($snippet))] = 'modSnippet';
         }
-        $plugins = $this->props['elements']['modPlugin'];
-        foreach (explode(',', $plugins) as $plugin) {
+        $plugins = $this->modx->getOption('plugins',$this->props['elements'], array());
+        foreach ($plugins as $plugin => $fields) {
+            if (isset($fields['name'])) {
+                $plugin = $fields['name'];
+            }
             $elements[strtolower(trim($plugin))] = 'modPlugin';
         }
         $this->classFiles = array();
         $dir = $this->targetCore . 'model';
-        $this->helpers->dirWalk($$dir, null, true);
+        $this->helpers->dirWalk($dir, null, true);
         $this->classFiles = $this->helpers->getFiles();
         if(!empty($this->classFiles)) {
             $this->output .= "\nFound these class files: " . implode(', ', array_keys($this->classFiles));
@@ -199,25 +226,29 @@ class CheckProperties {
             if (strstr($line, 'modx->getService')) {
                 $pattern = "/modx\s*->\s*getService\s*\(\s*\'[^,]*,\s*'([^']*)/";
                 preg_match($pattern, $line, $matches);
-                $s = strtoLower($matches[1]);
-                if (strstr($s, '.')) {
-                    $r = strrev($s);
-                    $fileName = strrev(substr($r, 0, strpos($r, '.')));
-                }
-                else {
-                    $fileName = $s;
+                if (isset($matches[1])) {
+                    $s = strtoLower($matches[1]);
+                    if (strstr($s, '.')) {
+                        $r = strrev($s);
+                        $fileName = strrev(substr($r, 0, strpos($r, '.')));
+                    }
+                    else {
+                        $fileName = $s;
+                    }
                 }
             }
             if (strstr($line, 'modx->loadClass')) {
                 $pattern = "/modx\s*->\s*loadClass\s*\(\s*\'([^']*)/";
                 preg_match($pattern, $line, $matches);
-                $s = strtoLower($matches[1]);
-                if (strstr($s, '.')) {
-                    $r = strrev($s);
-                    $fileName = strrev(substr($r, 0, strpos($r, '.')));
-                }
-                else {
-                    $fileName = $s;
+                if (isset($matches[1])) {
+                    $s = strtoLower($matches[1]);
+                    if (strstr($s, '.')) {
+                        $r = strrev($s);
+                        $fileName = strrev(substr($r, 0, strpos($r, '.')));
+                    }
+                    else {
+                        $fileName = $s;
+                    }
                 }
             }
             $fileName = strstr($fileName, 'class.php')? $fileName : $fileName . '.class.php';
@@ -331,7 +362,7 @@ class CheckProperties {
     }
 
     public function getPropertyCode($missing, $properties) {
-        $prefix = $this->props['prefix'];
+        $prefix = $this->modx->getOption('prefix', $this->props, '');
         $packageNameLower = $this->props['packageNameLower'];
         $propertyTpl = "
         array(
