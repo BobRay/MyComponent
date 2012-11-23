@@ -1,8 +1,32 @@
+<script type="text/javascript">
+    function getRadioValue(formName, groupName) {
+        var radioGroup = document[formName][groupName];
+        for (var i=0; i<radioGroup.length; i++)  {
+           if (radioGroup[i].checked)  {
+           return radioGroup[i].value;
+           }
+        }
+        return null;
+    }
+
+    function confirmSubmit() {
+        val = getRadioValue('mc_form', 'doit');
+        if (val == 'removeobjects') {
+            return confirm("[[+confirm_remove_objects]]");
+        }
+        if (val == 'removeobjectsandfiles') {
+            return confirm("[[+confirm_remove_objects_and_files]]");
+        }
+
+    }
+
+</script>
+
 <div style="margin:50px;padding:50px">
 
     <h3>MyComponent Actions</h3>
 
-    <form method="post" action="[[~[[*id]]]]">
+    <form name="mc_form" method="post" action="[[~[[*id]]]]">
         <p>&nbsp;<b>[[+message]]</b></p>
         <label for="bootstrap">
         Current Project:
@@ -38,7 +62,7 @@
 
         
 
-        <input type="submit" value="Submit">
+        <input type="submit" value="Submit" onclick="return confirmSubmit();">
     </form>
 <br /><br/>
 

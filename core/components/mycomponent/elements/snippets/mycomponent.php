@@ -155,6 +155,8 @@ foreach ($projects as $k => $value) {
 $tpl = str_replace('[[+projects]]', $code, $tpl);
 $tpl = str_replace('[[+message]]', $message, $tpl);
 $tpl = str_replace('[[+current_project]]', $currentProject, $tpl);
+$tpl = str_replace('[[+confirm_remove_objects]]', 'Are you sure you want to remove all objects?', $tpl);
+$tpl = str_replace('[[+confirm_remove_objects_and_files]]', 'Are you sure you want to remove all objects and files?', $tpl);
 
 // $tpl .= "\nNEW PROJECT: " . $newProjectName . "\n" . 'URL: ' . $url . "\n\n" . print_r($projects, true);
 
