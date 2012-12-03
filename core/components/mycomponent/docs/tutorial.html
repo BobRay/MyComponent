@@ -1,72 +1,118 @@
-<p>I want to say up front that much of the code in this
-package was inspired by Shaun McCormick's build scripts for
-various MODX Revolution components and by the structure
+<p>Much of the code in this package was inspired by Shaun McCormick's
+build scripts for various MODX Revolution components and by the structure
 of the MODX Package Manager code.
 </p>
 
 <div class="box">
-    <h3>New Version on the Way</h3>
+    <h3>MyComponent 3.0</h3>
 
     <p>
-    The version described below will soon be replaced by a newer
-    and much more powerful and convenient version. The new version,
-    will require no cut-and-paste operations and no tedious file
+    MyComponent 3.0 is a much more powerful and convenient version. It installs in a
+    different location and uses very different methods than older versions. The best approach
+    to upgrading is to uninstall and remove all previous versions before installing 3.0 or newer versions.</p>
+
+    <p>
+    The newer versions will require no cut-and-paste operations and no tedious file
     or directory renaming. The only manual operation required is
     editing the project config file.
     </p>
 
-    <p>Here are just some features of the new version (not available yet).</p>
+    <p>Here are just some features of the new version</p>
 
     <p>Based on the objects described in the project config file,
     the new version will: </p>
     <ul>
-        <li><b>Bootstrap</b></li>
+        <li><b>Bootstrap</b>
 
-        <ul>
-            <li>Create all listed objects in MODX</li>
-            <li>Create all connections between listed objects (e.g., resources/templates, plugins/events,etc.)</li>
-            <li>Add license and header information to all PHP files</li>
-            <li>Create the build.transport.php file</li>
-            <li>Create code/content files for all objects, to be used in the build </li>
-            <li>optionally, make elements static and connect them to their files</li>
-            <li>Create core and assets directories and subdirectories</li>
-            <li>Create any listed lexicon files</li>
-            <li>Write all transport files for the build</li>
-            <li>Write all resolver files to connect objects</li>
-            <li>Optionally, write skeleton generic resolvers and validators</li>
-            <li>Create skeleton class files for all classes</li>
-        </ul>
+            <ul>
+                <li>Create all listed objects in MODX</li>
+                <li>Create all connections between listed objects (e.g., resources/templates, plugins/events,etc.)</li>
+                <li>Add license and header information to all PHP and JS files</li>
+                <li>Create the build.transport.php file</li>
+                <li>Create code/content files for all objects, to be used in the build </li>
+                <li>optionally, make elements static and connect them to their files</li>
+                <li>Create core and assets directories and subdirectories</li>
+                <li>Create any listed lexicon files</li>
+                <li>Write all transport files for the build</li>
+                <li>Write all resolver files to connect objects</li>
+                <li>Optionally, write skeleton generic resolvers and validators</li>
+                <li>Create skeleton class files for all classes</li>
+            </ul>
+        </li>
 
-        <li><b>ExportObjects</b></li>
+        <li><b>ExportObjects</b>
 
-        <ul>
-            <li>Find all of the component's objects in MODX</li>
-            <li>Create/update code/content files for objects that need one</li>
-            <li>Update all transport files, based on the actual objects</li>
-            <li>Update all resolver files based on existing connections between objects</li>
-        </ul>
+            <ul>
+                <li>Find all of the component's objects in MODX</li>
+                <li>Create/update code/content files for objects that need one</li>
+                <li>Update all transport files, based on the actual objects</li>
+                <li>Update all resolver files based on existing connections between objects</li>
+            </ul>
+        </li>
 
-        <li><b>LexiconHelper</b></li>
+        <li><b>LexiconHelper</b>
 
-        <ul>
-            <li>Search for lexicon usages in your PHP code</li>
-            <li>If possible, automatically create or update all lexicon files</li>
-            <li>if not, display lexicon string code for pasting</li>
-            <li>Audit lexicon files and code files for missing or unused lexicon strings</li>
-        </ul>
+            <ul>
+                <li>Search for lexicon usages in your PHP code</li>
+                <li>If possible, automatically create or update all lexicon files</li>
+                <li>if not, display lexicon string code for pasting</li>
+                <li>Audit lexicon files and code files for missing or unused lexicon strings</li>
+            </ul>
+        </li>
 
-        <li><b>CheckProperties</b></li>
+        <li><b>CheckProperties</b>
 
-        <ul>
-            <li>Search for scriptProperties usages in your PHP code</li>
-            <li>Audit properties files for missing or unused </li>
-            <li>Report missing or unused properties</li>
-            <li>Display code to paste in property file for missing properties</li>
-            <li>Manage property description lexicon strings</li>
-        </ul>
+            <ul>
+                <li>Search for scriptProperties usages in your PHP code</li>
+                <li>Audit properties files for missing or unused </li>
+                <li>Report missing or unused properties</li>
+                <li>Display code to paste in property file for missing properties</li>
+            </ul>
+        </li>
 
     </ul>
-    <h4>Summary</h4>
+
+    <h2>General Usage</h2>
+
+    <p>MyComponent installs with a built-in project called Example that you can play with to get familiar with the various MyComponent Utilities. The utilities can be run from the command line, or from inside any good code editor. There is also a User Interface to them that you can see by previewing the &quot;MyComponent&quot; Resources (which executes the MyComponent snippet). The rest of this tutorial will assume that you're using the User Interface, but the principles are the same for the command-line utilities.</p>
+
+    <p>If you view the MyComponent Resource in the front end, you'll see a set of radio buttons, one for each of the MyComponent Utilities, and a Submit button for executing them. Note that as a security precaution, you must be logged in to the Manager in order to use any of the utilities. When you run any of the utilities, a log of the results will appear below the form. You may have to scroll down to see it. </p>
+
+    <h3>The Project Config File</h3>
+
+    <p>Every project used with MyComponent must have its own project config file. The file is always named for the lowercase package name of your Extra: <fixedpre>
+        packageNameLower.config.php</fixedpre>. The files are always stored in the <fixedpre> core/components/mycomponent/_build/config</fixedpre> directory. The file for the Example project is called example.config.php. If you look at it now, you'll see all the objects that are part of that package.</p>
+
+    <h3>Bootstrap</h3>
+    <p>The Bootstrap utility should always be run at the beginning of any new project, but only after editing the project config file to meet your needs. Bootstrap creates the necessary files and directories for your project and also creates the MODX objects (e.g., snippets, chunks, etc.) specified in the project config file.</p>
+
+    <p>Bootstrap is completely non-destructive. It will not overwrite any existing MODX objects or their code files (though it will update some specific build files). You can re-run Bootstrap at any time during the development of your extra. The usual reason for doing this is discovering that you need another object (a new snippet, chunk, resource, template, etc.) for your project. Add the new object to the project config file and run Bootstrap. MyComponent will create the new object and any necessary files for it to be included in the build.</p>
+
+    <p>It's important to keep your project config file up-to-date with all objects used in your project.</p>
+
+    <p>For a first look, view the MyComponent Resource from the Manager. With the current package set to Example, check the Bootstrap radio
+    button in the UI and click on the Submit button. If you scroll down, you should see a log of all the actions performed by the Bootstrap
+    utility.</p>
+
+    <p>Follow up by looking at the directories and files created by Bootstrap. They will be in the
+    <fixedpre>assets/mycomponents/example/</fixedpre>
+    directory. All MyComponent projects will be placed in
+    <fixedpre>assets/mycomponents/</fixedpre>
+    unless you specify a different target directory in the project config file (not recommended).</p>
+
+    <p>You may notice that a copy of the project config file is placed in the project directory. This is a copy used by the build process,
+    but it's not the real project config file and you should never edit it. It is ignored by all the other MyComponent utilities. The real
+    project config file (the one used by MyComponent) is always in the
+    <fixedpre>core/components/mycomponent/_build/config/</fixedpre>
+    directory.</p>
+
+    <p>Once you've looked at all the files and directories created by Bootstrap, go back the the MODX Manager and look at the objects
+    created. You should see all the objects specified in the Example project config file. Notice too that the project config file specifies
+    a number of characteristics of some of the objects (e.g., parent, template, category, etc.). You should see these relationships in the
+    Manager as well.</p>
+
+    <h3>Workflows</h3>
+    <h4>New Project</h4>
     <p>If your component is new, you can edit the project config file and run Bootstrap and all your Resources, Elements, and other objects and all necessary files will be created for you. Once the component is finished, you can run ExportObjects and build.transport.php and your Extra will be ready to release.</p>
 
     <p>If your finished component already exists in MODX, you can edit the project config file and run Bootstrap, ExportObjects, and build.transport.php and your extra will be ready to release.</p>
