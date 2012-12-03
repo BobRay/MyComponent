@@ -18,15 +18,13 @@ $components = array(
     'copyright' => '2012',
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
-    /* Show package name and ask user to confirm before running */
-    'offerAbort' => false,
-    /* require login -- only necessary if on a live server */
-    'requireLogin' => false,
 
     'gitHubUsername' => 'BobRay',
     'gitHubRepository' => 'MyComponent',
+
     /* two-letter code of your primary language */
     'primaryLanguage' => 'en',
+
     /* Set directory and file permissions for project directories */
     'dirPermission' => 0755,
     /* No quotes!! */

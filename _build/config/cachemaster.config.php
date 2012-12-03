@@ -15,8 +15,8 @@ $components = array(
     'packageUrl' => 'http://bobsguides.com/cachemaster-tutorial.html',
     'copyright' => '2012',
     'createdon' => strftime('%m-%d-%Y'),
-    'offerAbort' => false, /* Show package name and ask user to confirm before running */
     'packageDescription' => 'CacheMaster allows you to clear the MODX cache for a single resource when saving it.',
+
     'gitHubUsername' => 'BobRay',
     'gitHubRepository' => 'CacheMaster',
 
