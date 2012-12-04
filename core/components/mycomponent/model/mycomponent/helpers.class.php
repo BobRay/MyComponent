@@ -233,6 +233,9 @@ class Helpers
             case 'modSystemSetting':
                 $nameAlias = 'key';
                 break;
+            case 'modContext':
+                $nameAlias = 'key';
+                break;
             default:
                 $nameAlias = 'name';
                 break;
