@@ -20,8 +20,8 @@ class ContextAdapter extends ObjectAdapter {
     public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
         /* @var $helpers Helpers */
         $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    Processing Contexts');
-        $settings = $helpers->modx->getOption('contexts', ObjectAdapter::$myObjects, array());
-        parent::createTransportFile($helpers, $settings, '', 'modContext', $mode);
+        $contexts = $helpers->modx->getOption('contexts', ObjectAdapter::$myObjects, array());
+        parent::createTransportFile($helpers, $contexts, '', 'modContext', $mode);
     }
 
 }
