@@ -601,7 +601,7 @@ abstract class ObjectAdapter
             $hasProperties = true;
             unset($fields['properties']);
         } else {
-            ($fields['properties'] ='');
+            // $fields['properties'] ='';
         }
         /* ************  */
         unset(

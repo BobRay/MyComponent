@@ -253,11 +253,17 @@ class MyComponentProject {
      */
     public function createObjects($mode = MODE_BOOTSTRAP) {
         if ($mode != MODE_REMOVE) {
+            /* create contexts */
+
+            $this->createContexts($mode);
+
             /*  Create namespace */
             $this->createNamespaces($mode);
 
             /* create category or categories*/
             $this->createCategories($mode);
+
+
         }
 
         /* create system settings */
@@ -284,9 +290,37 @@ class MyComponentProject {
 
             /* create category or categories*/
             $this->createCategories($mode);
+
+            $this->createContexts($mode);
         }
 
 
+    }
+
+    public function createContexts($mode = MODE_BOOTSTRAP) {
+        if (!empty($this->props['contexts'])) {
+            if ($mode != MODE_EXPORT) {
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+                    'Processing Context(s)');
+            }
+            foreach ($this->props['contexts'] as $context => $fields) {
+                if (! isset($fields['key'])) {
+                    $fields['key'] = $context;
+                }
+
+                if ($mode == MODE_BOOTSTRAP) {
+                    // include 'contextadapter.class.php';
+                    $this->addToModx('ContextAdapter', $fields);
+                } elseif ($mode == MODE_EXPORT || $mode == MODE_REMOVE) {
+                    $a = new ContextAdapter($this->modx, $this->helpers, $fields);
+                    if ($mode == MODE_REMOVE) {
+                        $a->remove();
+                    }
+
+                }
+
+            }
+        }
     }
 
     public function createNamespaces($mode = MODE_BOOTSTRAP) {
@@ -298,7 +332,7 @@ class MyComponentProject {
             foreach ($this->props['namespaces'] as $namespace => $fields) {
                 if ($mode == MODE_BOOTSTRAP) {
                     // include 'namespaceadapter.class.php';
-                    $this->addToModx('NameSpaceAdapter', $fields);
+                    $this->addToModx('NamespaceAdapter', $fields);
                 } elseif ($mode == MODE_EXPORT || $mode == MODE_REMOVE) {
                     $a = new NamespaceAdapter($this->modx, $this->helpers, $fields);
                     if ($mode == MODE_REMOVE) {
@@ -670,6 +704,8 @@ class MyComponentProject {
         SystemSettingAdapter::createTransportFiles($this->helpers, $mode);
         SystemEventAdapter::createTransportFiles($this->helpers, $mode);
         MenuAdapter::createTransportFiles($this->helpers, $mode);
+        ContextAdapter::createTransportFiles($this->helpers, $mode);
+
     }
 
     /** Creates main build.transport.php, build.config.php and

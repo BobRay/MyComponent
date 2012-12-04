@@ -162,6 +162,8 @@ if (empty ($categories)) {
 
 $hasAssets = is_dir($sources['source_assets']); /* Transfer the files in the assets dir. */
 $hasCore = is_dir($sources['source_core']);   /* Transfer the files in the core dir. */
+
+$hasContexts = file_exists($sources['data'] . 'transport.contexts.php');
 $hasResources = file_exists($sources['data'] . 'transport.resources.php');
 $hasValidators = is_dir($sources['build'] . 'validators'); /* Run a validators before installing anything */
 $hasResolvers = is_dir($sources['build'] . 'resolvers');
@@ -184,6 +186,29 @@ $builder->createPackage(PKG_NAME_LOWER, PKG_VERSION, PKG_RELEASE);
 $assetsPath = $hasAssets? '{assets_path}components/' . PKG_NAME_LOWER . '/' : '';
 $builder->registerNamespace(PKG_NAME_LOWER,false,true,'{core_path}components/'.PKG_NAME_LOWER.'/', $assetsPath);
 $modx->setLogLevel(MODX::LOG_LEVEL_INFO);
+
+/* Transport Contexts */
+
+if ($hasContexts) {
+    $contexts = include $sources['data'] . 'transport.contexts.php';
+    if (!is_array($contexts)) {
+        $helper->sendLog(modX::LOG_LEVEL_ERROR, 'contexts not an array.');
+    } else {
+        $attributes = array(
+            xPDOTransport::UNIQUE_KEY => 'key',
+            xPDOTransport::PRESERVE_KEYS => true,
+            xPDOTransport::UPDATE_OBJECT => false,
+        );
+        foreach ($contexts as $context) {
+            $vehicle = $builder->createVehicle($context, $attributes);
+            $builder->putVehicle($vehicle);
+        }
+        $helper->sendLog(modX::LOG_LEVEL_INFO, 'Packaged ' . count($contexts) . ' new context(s).');
+        unset($contexts, $context, $attributes);
+    }
+}
+
+
 /* Transport Resources */
 
 if ($hasResources) {
