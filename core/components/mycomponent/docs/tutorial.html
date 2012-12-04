@@ -3,6 +3,8 @@ build scripts for various MODX Revolution components and by the structure
 of the MODX Package Manager code.
 </p>
 
+
+
 <div class="box">
     <h3>MyComponent 3.0</h3>
 
@@ -71,19 +73,74 @@ of the MODX Package Manager code.
         </li>
 
     </ul>
+</div>
 
-    <h2>General Usage</h2>
+<h2>A Proper Transport Package</h2>
 
-    <p>MyComponent installs with a built-in project called Example that you can play with to get familiar with the various MyComponent Utilities. The utilities can be run from the command line, or from inside any good code editor. There is also a User Interface to them that you can see by previewing the &quot;MyComponent&quot; Resources (which executes the MyComponent snippet). The rest of this tutorial will assume that you're using the User Interface, but the principles are the same for the command-line utilities.</p>
+<p>In creating a Transport Package, it's not enough to just install
+the various pieces of the component. Even a simple snippet
+may have properties. Those properties should usually be
+installed as default properties of the snippet. The properties
+also need descriptions, which should be presented as lexicon strings so
+that they can be translated into other languages. Any messages
+displayed by the snippet (e.g., prompts and error messages) should also be
+in the form of MODX lexicon strings.</p>
 
-    <p>If you view the MyComponent Resource in the front end, you'll see a set of radio buttons, one for each of the MyComponent Utilities, and a Submit button for executing them. Note that as a security precaution, you must be logged in to the Manager in order to use any of the utilities. When you run any of the utilities, a log of the results will appear below the form. You may have to scroll down to see it. </p>
+<p>The snippet also needs a namespace with a corresponding namespace
+path so that MODX can find the lexicon strings. In addition, the
+snippet and any other parts of the package should be in a separate category named for
+your package. The files in the package also need to have appropriate
+comments at the top saying who wrote them, what they do, and in the case of
+executable files, a short version of the GPL license.</p>
+
+<p>All that sounds a lot more difficult than it is. The MyComponent
+package is designed to make it as easy as possible by doing most of the work for you.</p>
+
+<p>MyComponent assumes that you will put the files for any MODX add-ons
+you develop under the assets/mycomponents/ directory. When located there, MODX
+will leave them alone during site upgrades and they will not interfere with
+your component when you install it on the same site. (MyComponent itself, will be installed in
+the core/components/mycomponent/ directory.) If you develop an
+add-on called MySnippet, all of its files would then go in the
+assets/mycomponents/mysnippet/ directory.</p>
+
+<p>Because of the complexity of the process of creating an extra for MODX Revolution, MyComponent sounds about 10 times as complicated as it is. Please don't be scared off by how difficult this all sounds. MyComponent is actually *very* easy to use once you get used to it. It will let you create a transport package for your extra in a fraction of the time it would take you to do it all manually, so it's well worth the effort to learn how to use MyComponent.</p>
+
+
+<h2>General Usage</h2>
+
+    <p>MyComponent can be used in a variety of ways, but the basic process is to create a new project (either in the UI, or by manually creating a new project config. file and editing the current.project.php file). Once the new project exists, you edit the project config. file to meet your needs and run Bootstrap to get things started. After that, you either finish your project in the MODX Manager and run ExportObjects, or finish it by editing the files in your favorite editor and run ImportObjects (or some combination of those two processes). LexiconHelper writes your Lexicon files and CheckProperties makes sure any properties you use are present in your properties file. Finally, you run the Build utility to create the actual transport package.</p>
+
+    <h2>Example Project</h2>
+    <p>MyComponent installs with a built-in project called Example that you can play with to get familiar with the various MyComponent Utilities. The utilities can be run from the command line, or from inside any good code editor. There is also a User Interface for them that you can see by viewing the &quot;MyComponent&quot; Resource (which executes the MyComponent snippet). The rest of this tutorial will assume that you're using the User Interface, but the principles are the same for the command-line utilities. The command-line utility files are in the <fixedpre>core/components/mycomponent/elements/snippets/</fixedpre>directory</p>
+
+    <p>If you view the MyComponent Resource in the front end, you'll see a set of radio buttons, one for each of the MyComponent Utilities, and a Submit button for executing them. Note that as a security precaution, you must be logged in to the Manager in order to use any of the utilities. When you run any of the utilities, a log of the results will appear below the form. You may have to scroll down to see it.</p>
 
     <h3>The Project Config File</h3>
 
     <p>Every project used with MyComponent must have its own project config file. The file is always named for the lowercase package name of your Extra: <fixedpre>
-        packageNameLower.config.php</fixedpre>. The files are always stored in the <fixedpre> core/components/mycomponent/_build/config</fixedpre> directory. The file for the Example project is called example.config.php. If you look at it now, you'll see all the objects that are part of that package.</p>
+        packageNameLower.config.php</fixedpre>. The files are always stored in the <fixedpre> core/components/mycomponent/_build/config</fixedpre> directory. The file for the Example project is called <fixedpre>example.config.php</fixedpre>. If you look at it now, you'll see all the objects that are part of that package.</p>
+
+    <h2>MyComponent Utilities</h2>
+
+    <p>The basic utilities in the MyComponent package are Bootstrap, ExportObjects, ImportObjects, LexiconHelper, CheckProperties, and Build. Each one plays a separate role in the creation of a transport package.</p>
+
+<p>Basically, Bootstrap gets things off the ground by creating the files, directories, and MODX objects needed for your extra. Bootstrap can also be used to add additional objects you discover you need at any point in a project.
+
+<p>ExportObjects creates code files and build files based on the project as it exists in the MODX Manager.</p>
+
+<p>ImportObjects updated the objects in the Manager based on changes in their code files.</p>
+
+<p>LexiconHelper writes your Lexicon Files for you and checks to make sure that there are no empty, missing, or unused lexicon strings.</p>
+
+<p>CheckProperties looks for references to default properties of elements in code and produces code to be pasted in to the properties file for the build.</p>
+
+<p>Build created the actual transport package .zip file.</p>
+
+<p>Let's look at the utilities in more detail.</p>
 
     <h3>Bootstrap</h3>
+
     <p>The Bootstrap utility should always be run at the beginning of any new project, but only after editing the project config file to meet your needs. Bootstrap creates the necessary files and directories for your project and also creates the MODX objects (e.g., snippets, chunks, etc.) specified in the project config file.</p>
 
     <p>Bootstrap is completely non-destructive. It will not overwrite any existing MODX objects or their code files (though it will update some specific build files). You can re-run Bootstrap at any time during the development of your extra. The usual reason for doing this is discovering that you need another object (a new snippet, chunk, resource, template, etc.) for your project. Add the new object to the project config file and run Bootstrap. MyComponent will create the new object and any necessary files for it to be included in the build.</p>
@@ -111,412 +168,141 @@ of the MODX Package Manager code.
     a number of characteristics of some of the objects (e.g., parent, template, category, etc.). You should see these relationships in the
     Manager as well.</p>
 
-    <h3>Workflows</h3>
-    <h4>New Project</h4>
-    <p>If your component is new, you can edit the project config file and run Bootstrap and all your Resources, Elements, and other objects and all necessary files will be created for you. Once the component is finished, you can run ExportObjects and build.transport.php and your Extra will be ready to release.</p>
-
-    <p>If your finished component already exists in MODX, you can edit the project config file and run Bootstrap, ExportObjects, and build.transport.php and your extra will be ready to release.</p>
-
+<div class="box">
+    <p>There are a lot of things you don't have to worry about with MyComponent. It puts all files in the proper locations and gives them standard names. All relationships between objects are handled automatically. Resources get the proper Templates. TVs are attached to the proper Templates. Plugins are attached to their events. Property Sets are attached to Elements. Elements get put in the proper categories. MyComponent handles this all automatically behind the scenes. Unless you're doing something very exotic, you should never have to directly edit a transport or build file (though you can if you want to).</p>
 </div>
 
+    <h3>ExportObjects</h3>
+    <p>This utility creates code and build files for all the objects in your project based on the objects that exist in the MODX Manager. It will only process the objects listed in the <fixedpre>'process'</fixedpre> member of the array in the project config. file. </p>
 
-<h3>Current Version</h3>
+    <p>While Bootstrap uses the project config. file to decide which objects and files to create, ExportObjects (with one exception) uses the categories and namespaces of the actual objects. The exception is Resources. Since there is no way for MyComponent to know which Resources belong to your project, it uses the <fixedpre>'exportResources'</fixedpre> member in the project config. file.</p>
 
-<p>This sample build script will build an actual Transport Package
-that can be installed in MODX Revolution. It installs a number of
-useless resources, elements, menus, system settings, and a
-category
-called MyComponent. It also creates language strings for elements
-and for element properties. The elements have properties with
-property descriptions and they're placed in the MyComponent
-category.
-The resources are placed in a resource group called MyComponent.
-The plugins are attached to a couple of system events. In
-addition,
-there is a script that interacts with the user during the install,
-a couple of file resolvers that transfer the assets and core
-directories, and a script resolver that does some final work at
-the end of the install process. There is also a readme.txt file, a
-GPL license file, and a readme.md file for GitHub.</p>
+    <p>If any exported elements have default properties, ExportObjects will automatically create a properties file that will be used in the build to transport the properties.</p>
 
-<p>The script is designed so that when you need to create a package,
-you can copy it to a directory and modify it to meet your
-needs.</p>
+    <p>Unlike Bootstrap, ExportObjects will overwrite the code files for any objects that are processed unless the <fixedpre>'dryRun'</fixedpre> member of the project config. file is set to <fixedpre>true</fixedpre>. If that's the case, ExportObjects will report what files it would be changing without actually changing them.</p>
 
-<p>No build script could do everything you need for every package, but
-this one should handle almost any kind of package you might
-want.</p>
+    <p>The main function of ExportObjects is to let you create or modify MODX objects in the Manager, test them, then export them to files for the build phase of package creation. ExportObjects will not only update the code files for elements and resources, it will also create or update *all* the necessary files for making a transport package for your project.
 
-<p>Don't be alarmed by the size and complexity of the script. Most of
-it will go unused in many packages, and it's easy to make the
-script skip things you don't need.</p>
+<p>You should always run Bootstrap at least once after editing the project config. file (and before running ExportObjects for the first time). It's also a good practice to run ExportObjects as a last step before running Build.</p>
 
-<p>By changing the variables at the top of the build.transport.php
-file, you can customize the build script to include just the
-components you need. Of course you can also delete the files
-and directories you don't need.</p>
+<h3>ImportObjects</h3>
 
-<h3>A Proper Transport Package</h3>
-<p>In creating a Transport Package, it's not enough to just install
-the various pieces of the component. Even a simple snippet
-will have properties (parameters). Those properties should usually
-be
-installed as default properties of the snippet. The properties
-also
-need descriptions, which should be presented as lexicon strings so
-that they can be translated into other languages. Any messages
-displayed
-by the snippet (e.g., prompts and error messages) should also be
-in the
-form of MODX lexicon strings.</p>
+    <p>As you might guess, this is the opposite of ExportObjects, though it's use is more limited. ImportObjects updates any elements in MODX based on the code files on the disk. If you make changes to a snippet's code file, you can use ImportObjects to update the snippet. ImportObjects will only process the elements listed in the <fixedpre>'process'</fixedpre> member of the project config. file and it only processes elements that exist in the <fixedpre>'elements'</fixedpre> member.</p>
 
-<p>The snippet also needs a namespace with a corresponding namespace
-path so that MODX can find the lexicon strings. In addition, the
-snippet and any other
-parts of the package should be in a separate category named for
-your
-package. The files in the package also need to have appropriate
-comments
-at the top saying who wrote them, what they do, and in the case of
-executable files, a short version of the GPL license.</p>
+    <p>One common use of ImportObjects is to update elements in MODX after LexiconHelper has modified the language strings in the files.</p>
 
-<p>All that sounds a lot more difficult than it is. The MyComponent
-package
-is designed to make it as easy as possible by providing example
-templates for
-all the files necessary for a proper package and putting them in
-their proper
-places on your site.</p>
+    <h3>LexiconHelper</h3>
 
-<p>The assumption is that you will put the files for any MODX add-ons
-you
-develop under the assets/mycomponents/ directory. When located
-there, MODX
-will leave them alone during site upgrades and they will not
-interfere with
-your component when you install it on the same site. MyComponent,
-which serves
-as an example and a template for each add-on, will be installed in
-the
-assets/mycomponents/mycomponent/ directory. If you develop an
-add-on
-called MySnippet, all of its files would then go in the
-assets/mycomponents/mysnippet/ directory.</p>
+    <p>LexiconHelper will create your lexicon files for you (no, really). To get the full benefit of LexiconHelper, you need to put your lexicon strings in this form:</p>
 
-<p>Let's take a quick look at the process of developing an add-on
-using MyComponent</p>
+<fixedpre>'lexicon_key~~Actual Lexicon string'</fixedpre>
 
-<h3>A Brief Overview</h3>
-<p>To build a Transport package for a component of your own, you'd
-first copy
-the mycomponent directory, and all the files under it, to a new
-directory under
-assets/mycomponents/ and rename it to match the name of your
-package.</p>
+<p>For example, you might have this in the code of a snippet:</p>
 
-<p>The next step is to paste your own code into the appropriate files
-in the new
-directory, then rename them and edit the build.transport.php file
-(the script that
-actually builds the Transport Package) to meet your needs. You can
-do global
-search-and-replace operations to change the various strings in the
-files, to
-match your name, the package name, your site name, your email,
-etc.</p>
+<fixedpre>
+    $message = $modx->lexicon('mc_file_nf~~File Not Found');
+</fixedpre>
 
-<p>You'll also need to edit the lexicon files to contain the strings
-necessary for your package and edit any validator or resolver
-files if
-you need them for your package. Don't forget to edit the variables
-at the top of the resolver file (like the ones in build.transport.php).</p>
+        <p>Or you might have this language tag in a resource of chunk:</p>
 
-<p>When you run build.transport.php, your package will be created in
-the
-core/packages directory of your site. The final step is to submit
-that
+<fixedpre>[[%mc_file_nf~~File Not Found]]</fixedpre>
+
+<p>LexiconHelper will find all instances where you use the MODX Lexicon. It will create a language string and write it into the appropriate lexicon file for you (and optionally remove the part after the ~~ from the file). The only case where this will fail is if you have a file that uses more than one lexicon topic. If that's the case, LexiconHelper doesn't know which file to write the various language strings to. In that case LexiconHelper outputs the lexicon strings to the screen so you can paste them into the appropriate files.</p>
+
+<p>Whether LexiconHelper modifies the lexicon files and removes the ~~ and it's following string from the code files depend on the following two settings in the project config file:</p>
+
+<fixedpre>
+rewriteLexiconFiles
+rewriteCodeFiles
+</fixedpre>
+
+<p>By default the first one is true and the second one is false. Generally, you want to run LexiconHelper as the last step before doing the final build. I usually leave <fixedpre>rewriteCodeFiles</fixedpre> off until the very end of a project.</p>
+
+<p>If your project doesn't have any lexicon strings (e.g., a simple utility snippet or plugin), you can skip using LexiconHelper altogether.</p>
+
+<h3>CheckProperties</h3>
+        <p>This utility looks for cases in code where you use a default property. It checks any usages against the properties file(s) in the project's <fixedpre>_build</fixedpre> directory. CheckProperties uses the <fixedpre>'scriptPropertiesAliases'</fixedpre> member near the end of the project config. file to tell it how to find usages. It already knows about most common aliases for the <fixedpre>$scriptProperties</fixedpre> array, but feel free to add ones you use if they're not there already.</p>
+
+<p>If none of your elements have default properties, you can skip using this utility.</p>
+
+        <h3>Build</h3>
+<p>If your package is going to be distributed to the public, the final step is to submit your
 Transport Package .zip file at <a
-        href="http://MODXcms.com/extras">http://MODXcms.com/extras</a>
-</p>
-<h3>Getting Started</h3>
-
-<p>Because the MyComponent package builds a package, it can't be
-installed directly. It would be missing the _build directory and
-it would actually install a number of objects on your site that
-you
-don't want.</p>
-
-<p>Instead, install the GetMyComponent package in Package Manager.
-It will create the the assets/mycomponents directory (a good place
-for all your
-components) and put the mycomponent directory below that. When you
-execute the mycomponent/_build/build.transport.php file, it will
-create a transport package called MyComponent and place it in your
-core/packages directory. Try that first, and then go to Package
-Manager and click on &quot;Add Package&quot; and &quot;Search Locally for
-Packages.&quot;</p>
-
-<p>Try installing the MyComponent package and look around for it's
-various parts. Then try uninstalling it.</p>
-
-<h3>Tools</h3>
-
-<p>One of the handiest things you can have is a code editor that will
-do multi-file search and replace. You can use that to change
-MyComponent to the name of your package (but don't do it yet).</p>
-
-<p>It's particularly handy to have a code editor that will &quot;refactor&quot;
-for you. Both NetBeans and JetBrain's PhpStorm will do this. If
-you right-click on a file and select refactor -> rename, you can
-change the name of the file and the editor will search for all
-references to that file in your project and rename them to match.
-Always do this before editing the file content.</p>
-
-<p>Most of the components in the MyComponent package have names like
-&quot;mychunk1.chunk.tpl,&quot; &quot;mysnippet1.snippet.php,&quot;
-&quot;myplugin1.events.php,&quot;
-&quot;properties.mysnippet1.php,&quot; etc. You can refactor these to use
-the appropriate names for your components and the references to
-them in the various files of the project will change to match. If
-you
-do the search-and-replace operations and the refactoring in the
-order
-specified later in this tutorial, you should have very little work
-left to finish naming everything in the package.</p>
-
-<p>Rather than replacing the existing files with your own, it's almost
-always better to paste your own code into the files or edit them
-to meet your needs. That way, the PhpDoc comments at the top
-of the files will be correct and any necessary GPL license language
-will be there as well.
+        href="http://modx.com/extras">http://modx.com/extras</a>
 </p>
 
-<h3>Starting a New Package</h3>
+        <p>Of course, you'll need a transport.zip file first. That's the job of the Build utility. Build runs the <fixedpre>build.transport.php</fixedpre> file which actually creates the .zip file. The
+        <fixedpre>build.transport.php</fixedpre> file is universal (or almost universal). It examines the <fixedpre>_build</fixedpre> directory for your project and creates a package based on the files it finds. At present, it will not handle users or permission-related objects, but will do just about anything else (see the <fixedpre>example.config.php</fixedpre> file for examples of what it *will* handle).</p>
 
-<p>It's recommended that you not change anything in the mycomponent
-directory, with the exception of the changes you want in all
-your packages, e.g., author names, URLs, email addresses,
-copyright
-notices, etc. Don't change MyComponent.</p>
 
-<p>Once you've made those changes, it's not a bad idea to make it read
-only so that you won't modify anything by accident. It's easy to
-get confused about where you're working or to accidentally run
-search-and-replace or refactor on too many files.
-Another good way to protect it is to just put it in a
-safe place, far away from your development directory or in a .zip
-file.</p>
+<h2>Customizing MyComponent</h2>
+        Any of the Tpl chunks used by MyComponent (as well as the <fixedpre>example.config.php</fixedpre> file) can be customized. Rather than modifying the chunks (or files) directly, you should duplicate them and prefix the name with 'my' so your changes will survive upgrades to MyComponent.</p>
 
-<p>Start by copying the whole mycomponent directory (or just the parts
-of it you need) to a new directory (with a new name) under the
-assets/mycomponents directory. Name the directory for your
-package.
-If you want a package called &quot;BobsPackage,&quot; for example, you'd
-create
-a directory under assets/mycomponents called bobspackage,
-containing
-the _build, core, and assets directories and the readme.md
-file.</p>
-<p>Rename the two mycomponent directories inside your package: core/components/mycomponent and assets/components/mycomponent. Use lowercase
-names. You'll have to modify the references in the _build/build.transport.php file to match the changes.</p>
+    <h3>Customizing the Tpl chunks</h3>
+    <p>If you'd like to modify any of the MyComponent Tpl chunks, duplicate them and prefix the name with &quot;my&quot;. MyComponent will always look first for the prefixed version before using the default chunk or file. Here is the search order for the various Tpl chunks/files (the files are in the <fixedpre>core/components/mycomponent/elements/chunks</fixedpre> directory):</p>
 
-<h3>Do the Renaming and Refactoring</h3>
+<fixedpre>
+    my . name chunk
+    my . name file
+    name chunk
+    name file
+</fixedpre>
 
-<ul>
-    <li>
-        Start by changing the language string prefix in the language
-        files
-        with search-and-replace. All the language strings have the mc_
-        prefix
-        (mc for my component). Change that to an appropriate prefix
-        for your
-        package. You could use the full name of your package to make
-        sure
-        there won't be collisions with MODX strings and those of other
-        packages.
-    </li>
+    <p>Each chunk in the MyComponent category is duplicated as a file in the chunks directory mentioned above. If you prefer to work with the files, simply delete or rename the chunks in the MODX Manager and MyComponent will use the files in the chunks directory.</p>
 
-    <li>
-        If you didn't do so earlier, do a search-and-replace for Your
-        Name
-        and replace it with your actual name. Then search for
-        http://bobsguides/com
-        and replace it with your email address. Search for
-        YourGitHubUserName
-        and replace it with your GitHub username (if any).
-    </li>
 
-    <li>
-        Refactor the file names. Change the name of all the elements
-        and resources to the names you want to use in your package.
-        Watch
-        what's happening to make sure that nothing outside your
-        package
-        is changed. If you're using PhpStorm, be sure to check the
-        options
-        to search for references and to look in comments and strings.
-        Change
-        any property file names.
-    </li>
+    <p>The first chunk you'll want to modify is the <fixedpre>example.config.php</fixedpre> chunk. Duplicate it and call the chunk <fixedpre>myexample.config.php</fixedpre>. There are two important things to remember when editing the file. First, the file is mainly a large PHP array and it must be valid PHP in order for MyComponent to function. Use a good code editor and edit carefully. Second, do *not* change the word Example anywhere &mdash; it's necessary for the file to work properly as a template for new projects.</p>
 
-    <li>
-        Search-and-replace Operations
-        <ol>
-            <li>Do a case-sensitive global search-and-replace to
-                change mycomponent
-                to the lowercase name of your package.</li>
-            <li>Do another case-sensitive search-and-replace to change
-                MyComponent to the camel-case name of
-                your component.</li>
-            <li>Search for 1/1/11 and change it to the current
-                date.</li>
-            <li>Search for 2011 and replace it with the current
-                year.</li>
-            <li>Search for yoursite.com and change it to the domain
-                name of your site.</li>
-            <li>Check the file paths in the
-                _build/data/transport.*.php files.</li>
-            <li>Search for Description and add a description for each
-                file.</li>
-        </ol>
-    </li>
-    <li>Check the lines that refer to other files in the build.transport.php
-        file, and the transport.*.php files to makes sure they match the
-        renamed files.</li>
-    <li>
-        Look through the files to see if anything was missed. In most
-        cases,
-        you'll get a warning during the build for any path or filename
-        references
-        that are not correct.
-    </li>
-    <li>
-        Rewrite the readme.txt file. If you use GitHub, rewrite the
-        readme.md file. It's in MarkDown format, use the tool at
-        <a href="http://daringfireball.net/projects/markdown/dingus">http://daringfireball.net/projects/markdown/dingus</a>
-        to get it to look right before pushing to GitHub. Paste the text of the
-        file into the input section at the to and click on the
-        &quot;Convert&quot; button. Scroll down to the bottom to see the
-        rendered version of the text. If it doesn't look right (and it probably won't),
-        edit the text at the top and try again until it looks good, then
-        paste it back into your readme.md file.
-    </li>
-</ul>
+    <p>Keep in mind that the <fixedpre>example.config.php</fixedpre> file is a template for all future project config. files. When you create a new project, the <fixedpre>example.config.php</fixedpre> file will be your starting point. You edit it to meet the needs of whatever project you are currently working on *after* you create the new project in the UI. Once you have it the way you want it, you should never need to edit it again.</p>
 
-<h3>Configuring the Build</h3>
+    <p>What you mainly want to change is the personal information at the top of the file (e.g., your email address, web site, etc.). You may also want to remove some of the example objects (especially the second category) if you're sure that you will never need them. You'll always have the original <fixedpre>example.config.php</fixedpre> file to refer to. </p>
 
-<p>Edit the variables at the top of _build/build.transport.php to
-set the package name and version and to eliminate the components
-that your package doesn't have. You can delete the unwanted files
-and directories, or you can leave them there in case your package
-gets more complicated in the future. As long as the variables
-are set to false, the script will ignore them and they won't be
-placed in the package. Edit the variables
-at the top of _build/resolvers/install.script.php to meet your
-needs.</p>
-<p>Here is the list of the variables that you'll need to set:</p>
-<ul>
-    <li>define('PKG_NAME','MyComponent');</li>
-    <li>define('PKG_NAME_LOWER','mycomponent');</li>
-    <li>define('PKG_VERSION','1.0.0');</li>
-    <li>define('PKG_RELEASE','beta1');</li>
-    <li>define('PKG_CATEGORY','MyComponent');</li>
-    <br/>
-    <li>$hasAssets = true; /* Transfer the files in the assets dir.
-        */</li>
-    <li>$hasCore = true; /* Transfer the files in the core dir.
-        */</li>
-    <li>$hasSnippets = true;</li>
-    <li>$hasChunks = true;</li>
-    <li>$hasTemplates = true;</li>
-    <li>$hasResources = true;</li>
-    <li>$hasValidator = true; /* Run a validator before installing
-        anything */</li>
-    <li>$hasResolver = true; /* Run a resolver after installing
-        everything */</li>
-    <li>$hasSetupOptions = true; /* HTML/PHP script to interact with
-        user */</li>
-    <li>$hasMenu = true; /* Add items to the MODX Top Menu */</li>
-    <li>$hasSettings = true; /* Add new MODX System Settings */</li>
-    <li>$hasTemplateVariables = true;</li>
-    <li>$hasTemplates = true;</li>
-    <li>$hasPlugins = true;</li>
-    <li>$hasPluginEvents = true;</li>
+    <h2>Workflows</h2>
 
-</ul>
+    <p>MyComponent is designed to work with a variety of workflows. The odds are good that no matter how you prefer to work, MyComponent will make your life easier.</p>
 
-<p>Note that if you want to connect Template Variables to their
-templates or connect plugin events to their plugins, you'll do
-that in a resolver (see _build/resolvers/install.script.php).</p>
+    <h3>New Project</h3>
+    <p>If your component is new, the process is very simple. In the UI, type the name of your new project in the form fields next to the &quot;New Project&quot; button, then click on the button.<p>
 
-<h3>Plug In Your Code</h3>
+    <p>What happens when you click on the &quot;New Project&quot; button?  MyComponent creates a copy of the <fixedpre>example.config.php</fixedpre> Tpl chunk (or, more likely, the <fixedpre>
+    myexample.config.php</fixedpre> Tpl chunk) and places it in the MyComponent <fixedpre>
+    _build/config</fixedpre> directory. It renames the file after your new project and replaces all instances of the word &quot;example&quot; with the case-appropriate name of your project.</p>
 
-<p>Paste your plugin, template, snippet, resource content, chunk
-content, etc. into the appropriate files. After you change each
-file,
-edit the related _build/data file(s) and lexicon files to
-match.</p>
+    <p>Once that has occurred, you can edit the new file (<fixedpre>projectName.config.php</fixedpre>) to meet the needs of your project and then run Bootstrap. Comments in the project config. file will (hopefully) tell you all you need to know about the various members. You can generally delete any object types that you don't need in your project.</p>
 
-<p>After pasting your snippet code into the *.snippet.php file, for
-example, edit the _build/transport.snippets/php file to set
-the snippet name and the other snippet fields. Put the appropriate
-language strings into the core/lexicon/en/default.inc.php file.
-If your snippet (or other element) has default properties, edit
-the
-appropriate _build/properties file and then add the property strings to
-the core/lexicon/en/properties.inc.php file.</p>
+    <div class="box">
+        <p>Although there is a copy of your project config. file in your project directory, you should never edit that file. Most of it is ignored by the MyComponent Utilities. The &quot;official&quot; project config. file is in the <fixedpre>core/components/mycomponent/_build/config</fixedpre> directory and that's always the one you should modify.</p>
+    </div>
 
-<p>Put any class files in the core/model/mycomponent/ directory and
-make sure the references to them in any plugin or snippet code
-are correct. The correct reference would be something like:</p>
-<pre>
-MODX_CORE_PATH . components/mycomponents/model/mycomponents/myclass.class.php
-</pre>
+    <p>Once you're finished editing the project config. file, you can run Bootstrap and all your Resources, Elements, and other objects and all necessary files for the project will be created for you. You can work on them in the Manager until you get things working the way you want. Once the component is finished, you can run ExportObjects, LexiconHelper, and Build and your Extra will be ready to release.</p>
 
-<p>Edit the transport scripts in the _build/data directory to remove
-the sections for items you don't need, correct the fields for
-your elements and resources (if any), and correct the paths to
-the elements.</p>
+        <p>Note that any time you discover that your project needs another object, you can add it to the project config. file and re-run Bootstrap. Bootstrap will not modify any existing files or objects, so it's always save to do this and it's a good practice because it keeps your config file current.</p>
 
-<p>Validators run before the package components have been installed.
-They're often used to test for necessary items for your package
-to run (e.g., a graphics library or another installed element
-your package uses, such as getResources).
-If you need a validator, edit the code in
-_build/validators/preinstall.script.php to meet your needs.</p>
+    <h3>Existing Project</h3>
 
-<p>Resolvers run after the package components have been installed.
-They
-perform operations that aren't done in the install, such as
-connecting TVs to their templates, connecting plugin events to
-their plugins, setting the values of existing System Settings,
-setting
-System Settings or properties that depend on the the IDs of
-installed
-elements or resources (which aren't available during the install),
-etc.
-If you need a script resolver, edit the code in
-_build/resolvers/install.script.php to meet your needs.</p>
+    <p>If your finished component already exists in MODX and the files are in the proper directories, you can edit the project config file and run Bootstrap, ExportObjects, LexiconHelper, and Build and your extra will be ready to release.</p>
 
-<p>Do a global search for Description and edit the description of
-each item.</p>
+    <p>It's important that the files be in the proper locations and named properly so that MyComponent can find them. The easiest way to see where things go is to run Bootstrap on the Example project and look at the <fixedpre>assets/mycomponents/example/</fixedpre> directory.</p>
 
-<h3>Run the Build Script</h3>
+    <p>Normally, MyComponent uses standard naming conventions for all element code files:</p>
+<fixedpre>
+snippet1.snippet.php
+plugin1.plugin.php
+template1.template.html
+chunk1.chunk.html
+</fixedpre>
 
-<p>Execute the _build/build.transport.php script either in your editor
-or from the command line. You should see warnings and errors about
-anything that is not correct. Fix those.</p>
+    <p>For a new project, Bootstrap will create the files using this standard naming convention.</p>
+    <p>For an existing project, you can rename your files to match the format above, or you can specify the filename as a field for any element in the project config. file (see the examples in example.config.php) if your file names don't match the standard.
+    </p>
 
 <h3>Install the Package</h3>
 
-<p>The package will be placed in the core/packages directory (the one
-for the main MODX install, not the one in your package).</p>
+<p>Once you have run  the Build utility, the transport.zip file will be in the core/packages directory (the one for the main MODX install). If you go to System | Package Management in the MODX Manager and select &quot;Search Locally for Packages, your extra should show up in the grid where it can be installed like any other package. You may not want to do this, however.</p>
 
 <p>There is a potential source of confusion here. Let's say your
-package
-is called yourcomponent. If you install your package in the same
-install
-of MODX that contains your _build directory, you'll have duplicate
+package is called yourcomponent. If you install your package in the same
+install of MODX that contains your _build directory, you'll have duplicate
 files in</p>
 <pre>
     assets/mycomponents/yourcomponent/assets/yourcomponent
@@ -534,45 +320,22 @@ files in</p>
     core/yourcomponent
 </pre>
 
-<p>There's no harm in this, but it's easy to get confused and edit
-the wrong file when you're working on the package. One solution
-is to install the package a completely separate MODX installation.
-The other solution is to be really careful about where you are
-when
-working on the package.</p>
+<p>It's easy to get confused and edit the wrong file when you're working on the package.</p>
 
-<p>To install the package, once the transport .zip file has been
-copied
-to the core/packages directory, go to Package Manager and click on
-&quot;Add Package&quot; and &quot;Search
-Locally for Packages.&quot; You should see your package in the grid.
-Install it and then check to make sure it's all there. Check the
-assets/components/yourcomponent and core/components/yourcomponent
-directories to make sure the files were transferred.</p>
+<p>In addition, the objects created by Bootstrap or ImportObjects already exist in the Manager so you won't know whether they were installed by your packages or were already there.</p>
 
-<p>If you have to modify the build script or any files in the package,
-uninstall and remove (force removal) your package. Then you can
-run
-the build again, copy the .zip file, and try reinstalling.</p>
+
+<p>Often, the safest and best solution is to install the package a completely separate MODX installation. To do that, just copy the transport.zip file for your extra from the <fixedpre>core/packages</fixedpre> directory to the <fixedpre>core/packages</fixedpre> directory of the other MODX install. Then, in Package Manager, search locally for packages and install the package as usual.</p>
+
 
 <h3>Running Your Component</h3>
 
-<p>If you install your component it should run. If you need to
-make changes to any parts of it, remember that those changes
-won't show up when you run it until you uninstall, rebuild, and
-reinstall because MODX is running the version you installed,
-not the version you are building.</p>
+<p>If you install your component it should run. If you need to make changes to any parts of it, remember that those changes won't show up when you run it until you uninstall, rebuild, and reinstall because MODX is running the version you installed, not the version you are building.</p>
 
-<p>There's a way around that, thanks to a method developed by
-Shaun McCormick, but you have to remember what you're doing or
-it's easy to get confused.</p>
+<p>There's a way around that, thanks to a method developed by Shaun McCormick, but you have to remember what you're doing or it's easy to get confused.</p>
 
-<p>If you would like to actually run the code for plugins and snippets
-that your build script is packaging, you can create new System
-Settings with the paths and URLs for that version. Then in the
-code
-of your snippets and plugins, get that path with a line like
-this:</p>
+<p>If you would like to actually run the code for plugins and snippets that your build script is packaging, you can create new System Settings with the paths and URLs for that version. Then in the
+code of your snippets and plugins, get that path with a line like this (this example has &quot;mc.&quot; as a prefix &mdash; you would use your own prefix):</p>
 <pre>
     $path = $MODX->getOption('mc.core_path',null,
         $MODX->getOption('core_path').'components/yourcomponent/');
@@ -587,45 +350,28 @@ this:</p>
 $iFile = $path . "model/yourcomponent/yourclass.inc.php";
 require_once $iFile;
 </pre>
-<p>For you, the path will resolve to the area with your build script.
-For others who install the package, however, the system setting
-will come back empty, so the path will resolve to that of the
-installed component.</p>
+<p>For you, the path will resolve to the area with your build script. For others who install the package, however, the system setting will come back empty (because it doesn't exist), so the path will resolve to that of the installed component.</p>
 
-<p>You can also replace the snippet and plugin code with something
-like this:</p>
+<p>You can also replace the snippet and plugin code with something like this:</p>
 <pre>
     return include $MODX->getOption('mc.core_path') .
         'core/components/yourcomponent/elements/snippets/yoursnippet.snippet.php';
 </pre>
-<p>If you do this, however, don't forget that you are running off
-the build files. If any files are missing or mis-referenced in the
-build script, you won't know about it until you run your
-component in a MODX install that doesn't have the system
-settings.</p>
 
-<p>If that's all too confusing, just skip it and remember to
-uninstall,
-build, and install your package each time you make a change.</p>
+<p>Of course another method is to use static elements, though I generally don't recommend doing that. Any class files will be loaded from the installed location in core/packages but the snippets and plugins will come from your build location. That can be very confusing. It's also very easy to forget what you're doing and lose work with static elements.</p>
+
+
+<p>If you use any of these techniques, don't forget that you are running off the build files. If any files are missing or mis-referenced in the build script, you won't know about it until you run your component in a MODX install that doesn't have the system settings.</p>
+
+<p>If that's all too confusing, just skip it and remember to uninstall, build, and install your package each time you make a change.</p>
 
 <h3>Submitting Your Package</h3>
 <p>As we said earlier, when you run build.transport.php the Transport
-Package
-.zip file will be created in your site's core/packages directory.
-The final step
-is to submit that .zip file at <a
-        href="http://MODXcms.com/extras">http://MODXcms.com/extras</a>.
-You'll need to log in and then click on the &quot;submit a new extra&quot;
+Package .zip file will be created in your site's core/packages directory.
+The final step is to submit that .zip file at <a href="http://modx.com/extras">http://modx.com/extras</a>. You'll need to log in and then click on the &quot;submit a new extra&quot;
 link.</p>
 
 <p>
-Be sure to fill in all the appropriate sections of the submission
-form and designate the
-file you attach as a Transport Package. If you have installed the
-package on
-your site, there will also be another file with the same name, but
-without
-the .zip extension. Be sure to submit the .zip file rather than
-the other file.
+Be sure to fill in all the appropriate sections of the submission form and designate the file you attach as a Transport Package. If you have installed the package on your site, there will also be another file with the same name, but without the .zip extension. Be sure to submit the .zip file rather than the other file.
 </p>
 <p>&nbsp;</p>
