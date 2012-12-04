@@ -100,6 +100,18 @@ $components = array(
 
     ),
 
+    /* ************************ CONTEXT(S) ************************* */
+    /* (optional) List any contexts other than the 'web' context here
+    */
+
+    'contexts' => array(
+        'example' => array(
+            'key' => 'example',
+            'description' => 'example context',
+            'rank' => 2,
+        )
+    ),
+
     /* ************************* CATEGORIES *************************** */
     /* (optional) List of categories. This is only necessary if you
      * need to categories other than the one named for packageName
@@ -449,6 +461,7 @@ $components = array(
      * of desired resources
     */
     'process' => array(
+        'contexts',
         'snippets',
         'plugins',
         'templateVars',
