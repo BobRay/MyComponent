@@ -44,7 +44,7 @@ $components = array(
     /* If your extra needs new System Settings, set their field values here.
      * You can also create or edit them in the Manager (System -> System Settings),
      * and export them with exportObjects. If you do that, be sure to set
-     * their namespace and area to the lowercase package name of your extra */
+     * their namespace to the lowercase package name of your extra */
 
     'newSystemSettings' => array(
         'example_system_setting1' => array( // key
@@ -110,6 +110,38 @@ $components = array(
             'description' => 'example context',
             'rank' => 2,
         )
+    ),
+
+    /* *********************** CONTEXT SETTINGS ************************ */
+
+    /* If your extra needs Context Settings, set their field values here.
+     * You can also create or edit them in the Manager (Edit Context -> Context Settings),
+     * and export them with exportObjects. If you do that, be sure to set
+     * their namespace to the lowercase package name of your extra.
+     * The context_key should be the name of an actual context.
+     * */
+
+    'contextSettings' => array(
+        'example_context_setting1' => array(
+            'context_key' => 'example',
+            'key' => 'example_context_setting1',
+            'name' => 'Example Setting One',
+            'description' => 'Description for setting one',
+            'namespace' => 'example',
+            'xtype' => 'textField',
+            'value' => 'value1',
+            'area' => 'example',
+        ),
+        'example_context_setting2' => array(
+            'context_key' => 'example',
+            'key' => 'example_context_setting2',
+            'name' => 'Example Setting Two',
+            'description' => 'Description for setting two',
+            'namespace' => 'example',
+            'xtype' => 'combo-boolean',
+            'value' => true,
+            'area' => 'example',
+        ),
     ),
 
     /* ************************* CATEGORIES *************************** */
@@ -470,6 +502,7 @@ $components = array(
         'resources',
         'propertySets',
         'systemSettings',
+        'contextSettings',
         'systemEvents',
         'menus'
     ),

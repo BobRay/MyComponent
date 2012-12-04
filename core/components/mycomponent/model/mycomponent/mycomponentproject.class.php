@@ -269,6 +269,8 @@ class MyComponentProject {
         /* create system settings */
         $this->createNewSystemSettings($mode);
 
+        $this->createContextSettings($mode);
+
         /* create new system events */
         $this->createNewSystemEvents($mode);
 
@@ -445,6 +447,45 @@ class MyComponentProject {
             }
         }
     }
+
+    public function createContextSettings($mode = MODE_BOOTSTRAP) {
+
+        $newContextSettings = $this->modx->getOption('contextSettings', $this->props, array());
+        if (empty($newContextSettings)) {
+            return;
+        }
+        if ($mode != MODE_EXPORT) {
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+                'Processing Context Settings');
+        }
+        if ($mode == MODE_BOOTSTRAP) {
+            foreach ($this->props['contextSettings'] as $key => $fields) {
+                if (!isset($fields['key'])) {
+                    $fields['key'] = $key;
+                }
+                // include 'contextsettingadapter.class.php';
+                $this->addToModx('ContextSettingAdapter', $fields);
+            }
+
+        } elseif ($mode == MODE_EXPORT || $mode == MODE_REMOVE) {
+            /* These still come from the project config file  */
+            foreach ($newContextSettings as $setting => $fields) {
+                $obj = $this->modx->getObject('modContextSetting', array('key' => $fields['key']));
+                if ($obj) {
+                    $fields = $obj->toArray();
+                    $a = new ContextSettingAdapter($this->modx, $this->helpers, $fields, $mode);
+                    if ($mode == MODE_REMOVE) {
+                        $a->remove();
+                    }
+
+                } else {
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
+                        '[MyComponentProject] Could not find Context Setting with key: ' . $fields['key']);
+                }
+            }
+        }
+    }
+
 
     public function createNewSystemEvents($mode = MODE_BOOTSTRAP) {
         $newSystemEvents = $this->modx->getOption('newSystemEvents', $this->props, array());
@@ -705,6 +746,7 @@ class MyComponentProject {
         SystemEventAdapter::createTransportFiles($this->helpers, $mode);
         MenuAdapter::createTransportFiles($this->helpers, $mode);
         ContextAdapter::createTransportFiles($this->helpers, $mode);
+        ContextSettingAdapter::createTransportFiles($this->helpers, $mode);
 
     }
 
