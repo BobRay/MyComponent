@@ -1043,11 +1043,20 @@ class MyComponentProject {
             return;
         }
 
+
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Action: Export Objects');
         $mode = MODE_EXPORT;
 
         $toProcess = $this->modx->getOption('process', $this->props, array());
         $this->createNamespaces($mode);
+
+        if (in_array('contexts', $toProcess)) {
+            $this->createContexts($mode);
+        }
+
+        if (in_array('contextSettings', $toProcess)) {
+            $this->createContextSettings($mode);
+        }
 
         if (in_array('systemSettings', $toProcess)) {
             $this->createNewSystemSettings($mode);

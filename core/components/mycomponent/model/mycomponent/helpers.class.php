@@ -95,8 +95,7 @@ class Helpers
      * @param $name string  - Name of tpl file
      * @return string - Content of tpl file or '' if it doesn't exist
      */
-    public function getTpl($name)
-    {
+    public function getTpl($name) {
         $name = strtolower($name);
         /* add .tpl if there's no .php */
         $name = strstr($name, '.php')? $name : $name . '.tpl';
@@ -234,6 +233,9 @@ class Helpers
                 $nameAlias = 'key';
                 break;
             case 'modContext':
+                $nameAlias = 'key';
+                break;
+            case 'modContextSetting':
                 $nameAlias = 'key';
                 break;
             default:
