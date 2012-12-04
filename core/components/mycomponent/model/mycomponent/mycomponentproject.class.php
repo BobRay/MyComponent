@@ -435,9 +435,9 @@ class MyComponentProject {
                 $obj = $this->modx->getObject('modSystemSetting', array('key' => $fields['key']));
                 if ($obj) {
                     $fields = $obj->toArray();
-                    $a = new SystemSettingAdapter($this->modx, $this->helpers, $fields, $mode);
+                    new SystemSettingAdapter($this->modx, $this->helpers, $fields, $mode);
                     if ($mode == MODE_REMOVE) {
-                        $a->remove();
+                        $obj->remove();
                     }
 
                 } else {
@@ -449,8 +449,18 @@ class MyComponentProject {
     }
 
     public function createContextSettings($mode = MODE_BOOTSTRAP) {
+        $newContextSettings = array();
+        if ($mode == MODE_BOOTSTRAP) {
+            $newContextSettings = $this->modx->getOption('contextSettings', $this->props, array());
+        } else {
+            $namespaces = $this->modx->getOption('namespaces', $this->props, array());
+            foreach($namespaces as $namespace => $fields) {
+                $namespaceName = isset($fields['name'])? $fields['name'] : $namespace;
+                $settings = $this->modx->getCollection('modContextSetting', array('namespace' => $namespaceName));
+                $newContextSettings = array_merge($newContextSettings, $settings);
+            }
+        }
 
-        $newContextSettings = $this->modx->getOption('contextSettings', $this->props, array());
         if (empty($newContextSettings)) {
             return;
         }
@@ -468,20 +478,14 @@ class MyComponentProject {
             }
 
         } elseif ($mode == MODE_EXPORT || $mode == MODE_REMOVE) {
-            /* These still come from the project config file  */
-            foreach ($newContextSettings as $setting => $fields) {
-                $obj = $this->modx->getObject('modContextSetting', array('key' => $fields['key']));
-                if ($obj) {
-                    $fields = $obj->toArray();
-                    $a = new ContextSettingAdapter($this->modx, $this->helpers, $fields, $mode);
-                    if ($mode == MODE_REMOVE) {
-                        $a->remove();
-                    }
+            /* @var $obj modContextSetting  */
 
-                } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
-                        '[MyComponentProject] Could not find Context Setting with key: ' . $fields['key']);
-                }
+            foreach ($newContextSettings as $obj) {
+                    $fields = $obj->toArray();
+                    new ContextSettingAdapter($this->modx, $this->helpers, $fields, $mode);
+                    if ($mode == MODE_REMOVE) {
+                        $obj->remove();
+                    }
             }
         }
     }
