@@ -45,6 +45,8 @@ class Helpers
     protected $filePermission;
     /* @var $files array - files collected by dirWalk() */
     protected $files = array();
+
+    protected $output = '';
     
 
     function  __construct(&$modx, &$props = array()) {
@@ -584,7 +586,11 @@ class Helpers
         if (php_sapi_name() != 'cli') {
             $msg = nl2br($msg);
         }
-        echo $msg;
+        $this->output .= $msg;
+    }
+
+    public function getOutput() {
+        return $this->output;
     }
 
    public function serialize_array(&$array, $root = '$root', $depth = 0) {

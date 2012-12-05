@@ -9,6 +9,8 @@ $mem_usage = memory_get_usage();
 
 /* @var $modx modX */
 
+$cliMode = false;
+
 if (!defined('MODX_CORE_PATH')) {
     $path1 = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/_build/build.config.php';
     if (file_exists($path1)) {
@@ -33,6 +35,7 @@ if (!defined('MODX_CORE_PATH')) {
 
     /* This section will only run when operating outside of MODX */
     if (php_sapi_name() == 'cli') {
+        $cliMode = true;
         /* Set $modx->user and $modx->resource to avoid
          * other people's plugins from crashing us */
         $modx->getRequest();
@@ -60,13 +63,15 @@ $project->init();
 //$project->removeObjects();
 $project->bootstrap();
 
+$output = $project->helpers->getOutput();
+
 // echo print_r(ObjectAdapter::$myObjects, true);
 
-echo "\n\nInitial Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
+$output .= "\n\nInitial Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
 $mem_usage = memory_get_usage();
 $peak_usage = memory_get_peak_usage(true);
-echo "\nFinal Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
-echo "\nPeak Memory Used: " . round($peak_usage / 1048576, 2) . " megabytes";
+$output .= "\nFinal Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
+$output .= "\nPeak Memory Used: " . round($peak_usage / 1048576, 2) . " megabytes";
 /* report how long it took */
 $mtime = microtime();
 $mtime = explode(" ", $mtime);
@@ -74,5 +79,10 @@ $mtime = $mtime[1] + $mtime[0];
 $tend = $mtime;
 $totalTime = ($tend - $tstart);
 $totalTime = sprintf("%2.4f s", $totalTime);
-echo "\nTotal time: " . $totalTime;
-return;
+$output .=  "\nTotal time: " . $totalTime;
+
+if ($cliMode) {
+    echo $output;
+} else {
+    return $output;
+}
