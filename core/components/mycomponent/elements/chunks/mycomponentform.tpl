@@ -13,9 +13,10 @@
         val = getRadioValue('mc_form', 'doit');
         if (val == 'removeobjects') {
             return confirm("[[+confirm_remove_objects]]");
-        }
-        if (val == 'removeobjectsandfiles') {
+        } else if (val == 'removeobjectsandfiles') {
             return confirm("[[+confirm_remove_objects_and_files]]");
+        } else {
+            return true;
         }
 
     }
@@ -39,7 +40,7 @@
 
                    <select name="selectproject">
                       [[+projects]]
-                   </select> <input type="submit" name="switchproject" value="Switch Project">
+                   </select></label> <input type="submit" name="switchproject" value="Switch Project" id="selectproject">
                    <br />
                    <br />
 
@@ -53,20 +54,18 @@
                         ImportObjects</label><br/><br/>
         <label for="lexiconhelper"> <input type="radio" name="doit" value="lexiconhelper" id="lexiconhelper"/>
             LexiconHelper</label><br/><br/>
-        <label for="checkproperties"> <input type="radio" name="doit" value="checkproperties" id="lexiconhelper"/>
+        <label for="checkproperties"> <input type="radio" name="doit" value="checkproperties" id="checkproperties"/>
             CheckProperties</label><br/><br/>
         <label for="build"> <input type="radio" name="doit" value="build" id="build"/>
             Build</label><br/><br/><br/><br/>
         <label for="removeobjects"> <input type="radio" name="doit" value="removeobjects" id="removeobjects"/>
             RemoveObjects</label><br/><br/>
-            <label for="removeobjectsandfiles"> <input type="radio" name="doit" value="removeobjectsandfiles" id="removeobjectsandfiled"/>
+            <label for="removeobjectsandfiles"> <input type="radio" name="doit" value="removeobjectsandfiles" id="removeobjectsandfiles"/>
                         RemoveObjects and Files</label><br/><br/><br/>
-
-        
 
         <input type="submit" value="Submit" onclick="return confirmSubmit();">
     </form>
 <br /><br/>
 
-
+</div>
 
