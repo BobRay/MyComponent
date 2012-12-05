@@ -248,7 +248,7 @@ if ($hasSettings) {
         $attributes = array(
             xPDOTransport::UNIQUE_KEY => 'key',
             xPDOTransport::PRESERVE_KEYS => true,
-            xPDOTransport::UPDATE_OBJECT => false,
+            xPDOTransport::UPDATE_OBJECT => true,
         );
         foreach ($settings as $setting) {
             $vehicle = $builder->createVehicle($setting, $attributes);
@@ -268,7 +268,7 @@ if ($hasContextSettings) {
         $attributes = array(
             xPDOTransport::UNIQUE_KEY => 'key',
             xPDOTransport::PRESERVE_KEYS => true,
-            xPDOTransport::UPDATE_OBJECT => false,
+            xPDOTransport::UPDATE_OBJECT => true,
         );
         foreach ($settings as $setting) {
             $vehicle = $builder->createVehicle($setting, $attributes);
