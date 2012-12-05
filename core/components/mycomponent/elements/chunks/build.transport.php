@@ -170,6 +170,7 @@ $hasResolvers = is_dir($sources['build'] . 'resolvers');
 $hasSetupOptions = is_dir($sources['data'] . 'install.options'); /* HTML/PHP script to interact with user */
 $hasMenu = file_exists($sources['data'] . 'transport.menus.php'); /* Add items to the MODx Top Menu */
 $hasSettings = file_exists($sources['data'] . 'transport.settings.php'); /* Add new MODx System Settings */
+$hasContextSettings = file_exists($sources['data']) . 'transport.contextsettings.php';
 $hasSubPackages = is_dir($sources['data'] .'subpackages');
 $minifyJS = $modx->getOption('minifyJS', $props, false);
 
@@ -254,6 +255,26 @@ if ($hasSettings) {
             $builder->putVehicle($vehicle);
         }
         $helper->sendLog(modX::LOG_LEVEL_INFO, 'Packaged ' . count($settings) . ' new System Settings.');
+        unset($settings, $setting, $attributes);
+    }
+}
+
+/* load new context settings */
+if ($hasContextSettings) {
+    $settings = include $sources['data'] . 'transport.contextsettings.php';
+    if (!is_array($settings)) {
+        $helper->sendLog(modX::LOG_LEVEL_ERROR, 'Settings not an array.');
+    } else {
+        $attributes = array(
+            xPDOTransport::UNIQUE_KEY => 'key',
+            xPDOTransport::PRESERVE_KEYS => true,
+            xPDOTransport::UPDATE_OBJECT => false,
+        );
+        foreach ($settings as $setting) {
+            $vehicle = $builder->createVehicle($setting, $attributes);
+            $builder->putVehicle($vehicle);
+        }
+        $helper->sendLog(modX::LOG_LEVEL_INFO, 'Packaged ' . count($settings) . ' Context Settings.');
         unset($settings, $setting, $attributes);
     }
 }
