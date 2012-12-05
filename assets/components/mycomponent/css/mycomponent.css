@@ -1,22 +1,25 @@
-/* edit for your css */
+/**
+ * CSS file for MyComponent extra
+ *
+ * Copyright 2012 by Bob Ray
+ * Created on 12/05/2012
+ *
+ * @package mycomponent
+ */
 
-div.mycomponent table {
-    border: 3px solid #5E5E5E;
-    margin: 0;
-    padding: 20;
+div#my_component {
+    padding: 50px;
+    margin: 50px;
+}
+
+form#mc_form {
+    border:none;
     text-align: left;
-    width: 50%
+    padding: 0;
+    margin:0;
+    width:50%
+
 }
 
-div.mycomponent th {
-    background-color: #ccc;
-    padding: 10px;
-    border: 1px solid #ccc;
-    font-weight: bold
-}
 
-div.mycomponent td {
-    background-color: #FFFFFF;
-    padding: 10px;
-    border: 1px solid #ccc
-}
+

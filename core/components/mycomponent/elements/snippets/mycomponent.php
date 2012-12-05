@@ -13,9 +13,16 @@ $cpFile = $modx->getOption('mc.root', null, $modx->getOption('core_path') . 'com
 @include $cpFile;
 
 /* make sure we got it */
-if (! isset($currentProject)) {
+if (!isset($currentProject)) {
     die('Current Project is not set');
 }
+
+$cssFile = $modx->getOption('mc.assets_url', null, $modx->getOption('assets_url') . 'components/mycomponent/') . 'css/mycomponent.css';
+
+$modx->regClientCSS($cssFile);
+
+
+
 
 
 $newProjectName = '';
@@ -81,17 +88,7 @@ if ( (!empty($_POST) ) && (isset($_POST['doit']) || isset($_POST['newproject']) 
                 $currentProject = $newProjectLower;
                 /* create new project config file */
                 $tplPath = $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'elements/chunks/';
-
-                $newTpl = $modx->getChunk('myexample.config.php');
-
-                if (empty($newTpl) && file_exists($tplPath . 'myexample.config.php')) {
-                    $newTpl = file_get_contents($tplPath . 'myexample.config.php');
-                } else {
-                    $newTpl = $modx->getChunk('example.config.php');
-                    if (empty($newTpl)) {
-                        $newTpl = file_get_contents($tplPath . 'example.config.php');
-                    }
-                }
+                $newTpl = file_get_contents($tplPath . 'example.config.php');
                 if (empty($newTpl)) {
                     $message = 'Could not find example.config.php';
                     break;

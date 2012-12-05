@@ -23,11 +23,13 @@
 
 </script>
 
-<div style="margin:50px;padding:50px">
+
 
     <h3>MyComponent Actions</h3>
 
-    <form name="mc_form" method="post" action="[[~[[*id]]]]">
+
+
+    <form id="mc_form" name="mc_form" method="post" action="[[~[[*id]]]]">
         <p>&nbsp;<b>[[+message]]</b></p>
         <label for="bootstrap">
         Current Project:
@@ -67,5 +69,4 @@
     </form>
 <br /><br/>
 
-</div>
 
