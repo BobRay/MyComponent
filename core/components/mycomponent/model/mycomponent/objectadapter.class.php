@@ -418,7 +418,7 @@ abstract class ObjectAdapter
                 $content = file_get_contents($dir .'/' . $file);
                 /* use Tpl for static elements files with minimal content
                   (modx creates them empty on addToModx() ) */
-                if (strlen($content < 5) && isset($this->myFields['static']) &&
+                if ( (strlen($content) < 5) && isset($this->myFields['static']) &&
                     ( !empty($this->myFields['static']))) {
                     $this->helpers->writeFile($dir, $file, $tpl, $dryRun);
                 } else {
