@@ -349,9 +349,12 @@ $components = array(
         'Resource1' => array( /* minimal example */
             'pagetitle' => 'Resource1',
             'alias' => 'resource1',
+            'context_key' => 'example',
         ),
         'Resource2' => array( /* example with other fields */
             'pagetitle' => 'Resource2',
+            'alias' => 'resource2',
+            'context_key' => 'example',
             'parent' => 'Resource1',
             'template' => 'Template2',
             'richtext' => false,
