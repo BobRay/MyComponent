@@ -36,7 +36,7 @@ class ResourceAdapter extends ObjectAdapter
             $this->defaults['hidemenu'] = $modx->getOption('hidemenu_default', null);
             $this->defaults['cacheable'] = $modx->getOption('cache_default', null);
             $this->defaults['searchable'] = $modx->getOption('search_default', null);
-            $this->defaults['context'] = $modx->getOption('default_context', null);
+            $this->defaults['context_key'] = $modx->getOption('default_context', null);
 
             if (!isset($fields['class_key'])) {
                 $fields['class_key'] = 'modDocument';
