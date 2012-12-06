@@ -525,7 +525,7 @@ class LexiconHelper {
                     $content = file_get_contents($fileName);
                     $success = false;
                     if (strstr($content, $comment)) {
-                        $content = str_replace($comment, $comment , $code, $content);
+                        $content = str_replace($comment, $comment . $code, $content);
                         $fp = fopen($fileName , 'w');
                         if ($fp) {
                             fwrite($fp, $content);
