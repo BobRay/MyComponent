@@ -1047,7 +1047,7 @@ class LexiconHelper {
             /* process lexicon entries */
             } elseif (strstr($line, 'modx->lexicon')) {
                 $matches = array();
-                preg_match('#modx->lexicon\s*\s*\(\s*[\'\"](.*)[\'\"]#', $line, $matches);
+                preg_match('#modx->lexicon\s*\s*\(\s*[\'\"]([^\)]*)[\'\"]#', $line, $matches);
                 if (isset($matches[1]) && !empty($matches[1])) {
                     if (strstr($matches[1], '~~' )) {
                         $s = explode('~~', $matches[1]);
