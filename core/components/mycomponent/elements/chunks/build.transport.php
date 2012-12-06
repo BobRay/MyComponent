@@ -177,7 +177,7 @@ $hasResolvers = is_dir($sources['build'] . 'resolvers');
 $hasSetupOptions = is_dir($sources['data'] . 'install.options'); /* HTML/PHP script to interact with user */
 $hasMenu = file_exists($sources['data'] . 'transport.menus.php'); /* Add items to the MODx Top Menu */
 $hasSettings = file_exists($sources['data'] . 'transport.settings.php'); /* Add new MODx System Settings */
-$hasContextSettings = file_exists($sources['data']) . 'transport.contextsettings.php';
+$hasContextSettings = file_exists($sources['data'] . 'transport.contextsettings.php');
 $hasSubPackages = is_dir($sources['data'] .'subpackages');
 $minifyJS = $modx->getOption('minifyJS', $props, false);
 
