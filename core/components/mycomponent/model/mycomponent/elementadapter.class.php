@@ -73,7 +73,8 @@ abstract class ElementAdapter extends ObjectAdapter {
             $me = $this->modx->getObject($this->dbClass, array($alias => $this->getName()));
             /* @var $me modElement */
             if (!$me) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, "[ElementAdapter] Can't find myself");
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, "[ElementAdapter] " .
+                    $this->modx->lexicon('mc_self_nf~~Cannot find myself'));
             } else {
                 $eps = $me->getMany('PropertySets');
                 if (!empty($eps)) {
@@ -109,7 +110,9 @@ abstract class ElementAdapter extends ObjectAdapter {
         if ($categoryObj) {
             $fields['category'] = $categoryObj->get('category');
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[Element Adapter] Could not find category with name: ' . $fields['category']);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[Element Adapter] ' .
+                $this->modx->lexicon('mc_category_nf~~Could not find category')
+                . ': ' . $fields['category']);
         }
     }
 
@@ -133,19 +136,26 @@ abstract class ElementAdapter extends ObjectAdapter {
 
         $categories = $helpers->modx->getOption('ElementCategories', ObjectAdapter::$myObjects, array());
         if (empty($categories)) {
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    No Elements to process');
+            $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                $helpers->modx->lexicon('mc_no_elements_to_process~~No Elements to process'));
             return;
         }
 
         foreach($categories as $category => $elementList) {
             $category = strtolower($category);
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Processing Transport Files for Category: ' . $category);
+            $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+                $helpers->modx->lexicon('mc_processing_transport_files_for_category~~Processing Transport Files for Category')
+            . ': ' . $category);
             foreach($elementList['elements'] as $type => $elements) {
-                $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    Processing ' . $type);
+                $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
+                    $helpers->modx->lexicon('mc_processing~~Processing')
+                     . ' ' . $type);
 
                 foreach($elements as $k => $fields ) {
                     $alias = $helpers->getNameAlias($type);
-                    $helpers->sendLog(MODX::LOG_LEVEL_INFO, '        Processing object: ' . $fields[$alias]);
+                    $helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
+                        $helpers->modx->lexicon('mc_processing_object~~Processing object')
+                     . ': ' . $fields[$alias]);
 
                 }
                 parent::createTransportFile($helpers, $elements, $category, $type, $mode);
@@ -200,81 +210,20 @@ abstract class ElementAdapter extends ObjectAdapter {
             $path .= '/' . $fileName;
             $this->myFields['source'] = $this->modx->getOption('default_media_source');
             $this->myFields['static_file'] = $path;
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        Set static path to ' . $path);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
+                $this->modx->lexicon('mc_set_static_path_to~~Set static path to')
+                . ' ' . $path);
         }
         parent::addToMODx($overwrite);
     }
 
 
-   /* public function exportObject($element, $overwrite = false) {
-    //Perform default export implementation
-        if (!parent::exportObject())
-            return false;
-    // Special functionality for ALL Elements
-        if (static::xPDOClass != 'modCategory') {
-            exportCode();
-            exportProperties();
-        }
-    // Return Success
-        $myComponent->log(modX::LOG_LEVEL_INFO, 'Transport File created for Resource: '.$this->myColumns['pagetitle']);
-        return true;
-    }*/
-    
     /**
      * Creates the code file for an element or resource - skips static elements
      *
      * @param $elementObj modElement - element MODX object
      * @param $element - string name of element type ('plugin', 'snippet' etc.) used in dir name.
      */
-    /*public function exportCode ($elementObj, $element) {
-
-        // @var $elementObj modElement
-
-        if ($elementObj->get('static')) {
-            $this->modx->log(modX::LOG_LEVEL_INFO, 'Skipping object file for static object: ' . $elementObj->get('name'));
-            return;
-        }
-        $type = $this->elementType;
-        $name = $elementObj->get($this->helpers->getNameAlias($type));
-
-        $fileName = $this->helpers->getFileName($name, $type);
-        if ($fileName) {
-            $content = $elementObj->getContent();
-        } else {
-            $this->modx->log(modX::LOG_LEVEL_INFO, 'Skipping object file for: ' . $type . '; object (does not need source file)');
-            return;
-        }
-        if ($type == 'modResource') {
-            $dir = $this->resourcePath;
-        } else {
-            $dir = $this->helpers->getCodeDir($this->targetCore, $type);
-        }
-        if ($this->dryRun) {
-            $this->modx->log(modX::LOG_LEVEL_INFO, '    Would be creating: ' . $fileName . "\n");
-            $this->modx->log(modX::LOG_LEVEL_INFO, " --- Begin File Content --- ");
-        }
-        $tpl = '';
-        if ($type == 'modSnippet' || $type == 'modPlugin') {
-            if (! strstr($content, '<?')) {
-                $tpl .= '<'.'?'.'php'."\n\n";
-                //fwrite($fileFp,"<?php\n\n");
-            }
-            // add header if it's not already there
-            if ( (!strstr($content,'GNU')) && (!stristr($content,'License')) ) {
-                $tpl = $this->helpers->getTpl('phpfile.php');
-                $tpl = str_replace('[[+elementName]]', $elementObj->get('name'), $tpl);
-                $tpl = str_replace('[[+elementType]]', substr(strtolower($this->elementType), 3), $tpl);
-                $tpl = $this->helpers->replaceTags($tpl);
-            }
-        }
-        $tpl .= $content;
-
-        $this->helpers->writeFile($dir, $fileName, $tpl, $this->dryRun);
-        if ($this->dryRun) {
-            $this->modx->log(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
-        }
-        unset($tpl);
-    }*/
 
 
     /**
@@ -288,7 +237,9 @@ abstract class ElementAdapter extends ObjectAdapter {
         $fileName = $this->helpers->getFileName($this->getName(),
             $this->dbClass, 'properties');
         if (file_exists($dir . $fileName) && $mode != MODE_EXPORT) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    File already exists: ' . $fileName);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                $this->modx->lexicon('mc_file_already_exists~~File already exists')
+                . ': ' . $fileName);
         } else {
             $tpl = $this->helpers->getTpl('propertiesfile.php');
             $tpl = str_replace('[[+element]]',$objectName,$tpl);
@@ -301,12 +252,16 @@ abstract class ElementAdapter extends ObjectAdapter {
             $tpl .=  "\n\n" . $this->render_properties($properties) . "\n\n";
 
             if ($dryRun) {
-                $this->modx->log(modX::LOG_LEVEL_INFO, 'Would be creating: ' . $fileName . "\n");
-                $this->modx->log(modX::LOG_LEVEL_INFO, " --- Begin File Content --- ");
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
+                    $this->modx->lexicon('mc_would_be_creating~~Would be creating')
+                    . ': ' . $fileName . "\n");
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
+                    $this->modx->lexicon('mc_begin_file_content~~--- Begin File Content --- '));
             }
             $this->helpers->writeFile($dir, $fileName, $tpl, $dryRun);
             if ($dryRun) {
-                $this->modx->log(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, $this->modx->lexicon('mc_end_file_content~~--- End File Content ---')
+                . "\n");
             }
             unset($tpl);
         }

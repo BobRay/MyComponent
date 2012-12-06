@@ -178,17 +178,23 @@ abstract class ObjectAdapter
         }
     /* Object exists/Cannot Overwrite */
         if ($obj && !$overwrite) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $objClass . ' already exists: ' . $name);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $objClass . ' ' .
+                $this->modx->lexicon('mc_already_exists~~already exists')
+                .': ' . $name);
             $id = $obj->get($idKey);
 
             if (isset($this->myFields['category'])) {
                 $oldCat = $obj->get('category');
                 if ($oldCat && $oldCat != $this->myFields['category']) {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "Outdated Category " . $this->myFields['category']);
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                        $this->modx->lexicon('mc_outdated_category~~Outdated Category')
+                            . ' ' . $this->myFields['category']);
                     if (is_numeric($this->myFields['category'])) {
                         $obj->set('category', $this->myFields['category']);
                         $obj->save();
-                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "Updated category for " . $name);
+                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                            $this->modx->lexicon('mc_updated_category_for~~Updated category for')
+                                . ': ' . $name);
                     }
                 }
             }
@@ -203,7 +209,9 @@ abstract class ObjectAdapter
             /* @var $response modProcessorResponse */
             $response = $modx->runProcessor($processor, $this->myFields);
             if (empty($response) || $response->isError()) {
-                $msg = "[Object Adapter] Failed to create object \n    class: " . $objClass .
+                $msg = "[Object Adapter] " .
+                    $this->modx->lexicon('mc_failed_to_create_object~~Failed to create object')
+                     . "\n    class: " . $objClass .
                     "\n    nameKey: " . $nameKey . "\n    name: " . $name;
                 $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, $msg);
                 $id =  -1;
@@ -212,7 +220,9 @@ abstract class ObjectAdapter
                 $obj = $response->getObject();
                 $id = $obj->get($idKey);
 
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Created ' . $objClass . ': ' . $name);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                    $this->modx->lexicon('mc_created~~Created')
+                        . ' ' . $objClass . ': ' . $name);
             }
 
     /* Object does not exist - create it */
@@ -239,7 +249,9 @@ abstract class ObjectAdapter
                 unset($tempFilename);
             }
             if (empty($response) || $response->isError()) {
-                $msg = "[Object Adapter] Failed to create object \n    class: " . $objClass .
+                $msg = "[Object Adapter] " .
+                    $this->modx->lexicon('mc_failed_to_create_object~~Failed to create object')
+                    . "\n    class: " . $objClass .
                     "\n    nameKey: " . $nameKey . "\n    name: " . $name;
                 $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, $msg);
                 $id = false;
@@ -256,8 +268,9 @@ abstract class ObjectAdapter
                                 foreach($tvValues as $k => $v) {
                                     $resource->setTVValue($k, $v);
                                 }
-                                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Set TvValues for resource' .
-                                    $this->myFields['pagetitle']);
+                                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                                    $this->modx->lexicon('mc_set_tv_values~~Set TvValues for resource')
+                                    . ' ' . $this->myFields['pagetitle']);
                                 unset($resource);
                             }
                         }
@@ -265,11 +278,15 @@ abstract class ObjectAdapter
 
                 }
 
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Created ' . $objClass . ': ' . $name);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                    $this->modx->lexicon('mc_created~~Created')
+                        . ' '. $objClass . ': ' . $name);
             }
         }
         if (! $id) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[Object Adapter] No ID for ' . $objClass . ' ' . $name);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[Object Adapter] ' .
+                $this->modx->lexicon('mc_no_id_for~~No ID for')
+                    . ' ' . $objClass . ' ' . $name);
         } else {
             $this->myId = $id;
         }
@@ -290,12 +307,15 @@ abstract class ObjectAdapter
         if ($obj) {
             $obj->remove();
             $temp = $this->modx->setLogLevel(MODX::LOG_LEVEL_INFO);
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        Removed ' . $objClass . ': ' . $name);
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
+                $this->modx->lexicon('mc_removed~~Removed')
+                    . ' '. $objClass . ': ' . $name);
             $this->modx->setLogLevel($temp);
         } else {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                '[Object Adapter] Could not find ' . $objClass . ': ' .
-                    $name);
+                '[Object Adapter] ' .
+                    $this->modx->lexicon('mc_class_file_nf~~Could not find')
+                        . ' ' . $objClass . ': ' . $name);
         }
     }
     /**
@@ -368,8 +388,9 @@ abstract class ObjectAdapter
                 //$tpl = $this->helpers->replaceTags($tpl);
                 $this->myFields[$field] = $tpl;
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '    Could not find Tpl for: ' .
-                    $name);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '    ' .
+                    $this->modx->lexicon('mc_tpl_nf~~Could not find Tpl for')
+                    . ': ' . $name);
             }
         }
         return $tpl;
@@ -422,89 +443,14 @@ abstract class ObjectAdapter
                     ( !empty($this->myFields['static']))) {
                     $this->helpers->writeFile($dir, $file, $tpl, $dryRun);
                 } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        File already exists: ' . $file);
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
+                        $this->modx->lexicon('mc_file_already_exists~~File already exists')
+                        . ': ' . $file);
                 }
             }
         }
     }
-/* *****************************************************************************
-   Export Objects and Support Functions 
-***************************************************************************** */
-    /**
-     * Processes all elements of specified type that are in the category or area
-     * (resources are specified by parent and/or list of pagetitles).
-     *
-     * (optionally) writes code file and transport file
-     *
-     * @param $element - string element type('snippets', 'plugins' etc.)
-     */
-    /*public function exportObject($element, $overwrite = false) {
-        $mc = $this->mc;
-        $name = $this->getName();
-        $type = $this->getClass();
-        $safetype = $this->getSafeClass();
-    // For writing the Transport File
-        $path = $mc->getPath('data');
 
-        if (stristr($element,'menus')) { // note: may change in Revo 2.3
-            $element='Actions';
-        }
-
-        $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n\nProcessing " . $safetype . ': ' . $name);
-        
-        $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Category: ' . $this->category);
-        $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Element Type: ' . $type);
-        
-        // use namespace rather than category for these
-        $key = $type == 'modSystemSetting' ||  $type =='modAction' 
-            ? 'namespace' 
-            : 'category';
-        // category ID or category name, depending on what we're looking for
-        $value = $type =='modAction'  
-            ? strtolower($this->category) 
-            : $this->myId;
-        // get the objects
-        $this->elements = $this->modx->getCollection($type, array($key => $value));
-
-        // try again with actual category name (camel case)
-        if (empty($this->elements) 
-        &&  ($type == 'modSystemSetting' 
-            || $type == 'modSystemEvent' 
-            || $type == 'modAction')) 
-        {
-            $value = $this->category;
-            $this->elements = $this->modx->getCollection($type, array($key => $value));
-        }
-
-        if (empty($this->elements)) {
-            $mc->helpers->sendLog(modX::LOG_LEVEL_ERROR, '[Object Adapter] No objects found in category: ' . $this->category);
-            return;
-        }
-        
-    // Get the Transport File Name
-        $transportFile = getFileName('tranport');
-
-        // write transport header
-        $tpl = $this->getTpl('transportfile.php');
-        $tpl = str_replace('[[+elementType]]', $element, $tpl);
-        $tpl = $mc->replaceTags($tpl);
-
-        $tpl .= "\n\$" . strtolower($element) . " = array();\n\n";
-
-        $i=1;
-        // append the code (returned from writeObject) for each object to $tpl
-        foreach($this->elements as $elementObj) {
-            $tpl .= $this->exportColumns($elementObj, strtolower(substr($element, 0, -1)), $i);
-            $i++;
-        }
-        // write transport footer
-        $tpl .= 'return $' . strtolower($element) . ";\n";
-
-        $this->helpers->writeFile($path, $transportFile, $tpl, $this->dryRun);
-        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Finished processing: ' . $element);
-        
-        unset($tpl);
-    }*/
 
     public static function createTransportFile(&$helpers, $objects, $category, $type,  $mode = MODE_BOOTSTRAP) {
         /* @var $helpers Helpers */
@@ -532,7 +478,9 @@ abstract class ObjectAdapter
 
         /* Abort if file exists and not in Export mode */
         if (file_exists($path . $transportFile) && $mode != MODE_EXPORT) {
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, '        File already exists: ' . $transportFile);
+            $helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
+                $helpers->modx->lexicon('mc_file_already_exists~~File already exists')
+                    . ': ' .  $transportFile);
             return;
         }
 
@@ -562,9 +510,10 @@ abstract class ObjectAdapter
         if (! file_exists($path . $transportFile) || $mode != MODE_BOOTSTRAP) {
             $helpers->writeFile($path, $transportFile, $tpl, $dryRun);
         } else {
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, '        File already exists: ' . $transportFile);
+            $helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
+                $helpers->modx->lexicon('mc_file_already_exists~~File already exists')
+                    . ': ' . $transportFile);
         }
-        // $helpers->sendLog(modX::LOG_LEVEL_INFO, 'Finished processing: ' . $type);
 
         unset($tpl);
     }
@@ -687,120 +636,19 @@ abstract class ObjectAdapter
         $tpl .= "\n\n" . $this->render_properties($properties) . "\n\n";
 
         if ($this->dryRun) {
-            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Would be creating: ' . $fileName . "\n");
-            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, " --- Begin File Content --- ");
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
+                $this->modx->lexicon('mc_would_be_creating~~Would be creating')
+                    . ': '. $fileName . "\n");
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
+                $this->modx->lexicon('mc_begin_file_content~~--- Begin File Content --- '));
         }
         $this->helpers->writeFile($dir, $fileName, $tpl, $this->dryRun);
         if ($this->dryRun) {
-            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, " --- End File Content --- \n");
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
+                $this->modx->lexicon('mc_end_file_content~~--- End File Content ---')
+                 . "\n");
         }
         unset($tpl);
     }
 
-    /**
-     * Creates the code file for an element or resource - skips static elements
-     *
-     * @param $elementObj modElement - element MODX object
-     * @param $element - string name of element type ('plugin', 'snippet' etc.) used in dir name.
-     */
-    /*public function exportCode ($elementObj, $element)  {//For Quick Access
-        // @var $mc MyComponentProject
-        $mc = $this->mc;
-        $name = $this->getName();
-        $class = $this->getSafeClass();
-        
-        // @var $elementObj modElement
-
-        if ($elementObj->get('static')) {
-            $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Skipping object file for static object: ' . $name);
-            return;
-        }
-        $type = $this->elementType;
-        $name = $elementObj->get($this->getNameField());
-
-        $fileName = $this->getFileName('code');
-        if ($fileName) {
-            $content = $elementObj->getContent();
-        } else {
-            $mc->helpers->sendLog(modX::LOG_LEVEL_INFO, 'Skipping object file for: ' . $type . '; object (does not need source file)');
-            return;
-        }
-        if ($type == 'modResource') {
-            $dir = $this->resourcePath;
-        } else {
-            $dir = $this->getCodeDir($this->targetCore, $type);
-        }
-
-         $tpl = '';
-        if ($type == 'modSnippet' || $type == 'modPlugin') {
-            if (! strstr($content, '')) {
-                $tpl .= '<' . '?' . 'php' . "\n\n";
-
-            }
-
-            if ( (!strstr($content,'GNU')) && (!stristr($content,'License')) ) {
-                $tpl = $this->getTpl('phpfile.php');
-                $tpl = str_replace('[[+elementName]]', $name, $tpl);
-                $tpl = str_replace('[[+elementType]]', $class, $tpl);
-                $tpl = $mc->helpers->replaceTags($tpl);
-            }
-        }
-        $tpl .= $content;
-
-        $mc->writeFile($dir, $fileName, $tpl, $isDry);
-        unset($tpl);
-    }*/
-
-
-/* *****************************************************************************
-   General Support Functions 
-***************************************************************************** */
-    /**
-     * Get tpl file contents from the installed MODx Chunks or from the MC build 
-     * tpl directory. Chunks and files may be prefixed with 'safepackagename.' or
-     * 'my.'. Will automatically get 'packagename.', then 'my.', then default 
-     * (no prefix).
-     *
-     * @param $name string  - Name of tpl file
-     * @return string - Content of tpl file or '' if it doesn't exist
-     */
-    /*public function getTpl($name)
-    {//Initialize
-        $text = '';
-        $name = strtolower($name);
-    // For Quick Access
-        $mc = $this->mc;
-        $path = $mc->getPath('mcTpl');
-        $modx = $mc->modx;
-        
-    // Check MODx Chunks first
-    // Check for Package Specific Chunks
-        $prefix = $mc->getSafeName();
-        $tpl = $modx->getObject('modChunk', array('name' => $prefix . '.' . $name));
-        if (!empty($tpl))
-            return $tpl->get('snippet');
-    // Check for User Specified Chunks
-        $prefix = 'my.';
-        $tpl = $modx->getObject('modChunk', array('name' => $prefix . '.' . $name));
-        if (!empty($tpl))
-            return $tpl->get('snippet');
-    // Check for Default Chunks
-        $tpl = $modx->getObject('modChunk', array('name' => $name));
-        if (!empty($tpl))
-            return $tpl->get('snippet');
-        
-    // Resort to the File System
-        if (strstr($name, '.php')) { // already has extension
-            $text = @file_get_contents($path . 'my' . $name);
-            if (empty($text)) {
-                $text = @file_get_contents($path . $name);
-            }
-        } else { // use .tpl extension
-            $text = @file_get_contents($path . 'my' .  $name . '.tpl');
-            if (empty($text)) {
-                $text = @file_get_contents($path . $name . '.tpl');
-            }
-        }
-        return $text !== false ? $text : '';
-    }*/
 }

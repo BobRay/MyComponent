@@ -43,7 +43,8 @@ class SystemSettingAdapter extends ObjectAdapter
 
     public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
         /* @var $helpers Helpers */
-        $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    Processing System Settings');
+        $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
+            $helpers->modx->lexicon('mc_processing_system_settings~~Processing System Settings'));
         $settings = $helpers->modx->getOption('newSystemSettings',ObjectAdapter::$myObjects, array());
         parent::createTransportFile($helpers, $settings, '', 'modSystemSetting', $mode);
     }

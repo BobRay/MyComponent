@@ -24,12 +24,14 @@ class PropertySetAdapter extends ElementAdapter { //This will never change.
         /* Create tv.resolver.php resolver */
         /* @var $helpers Helpers */
         if (!empty($dir) && !empty($intersects)) {
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Creating elementPropertySet resolver');
+            $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+                $helpers->modx->lexicon('mc_creating_elementpropertyset_resolver~~Creating elementPropertySet resolver'));
             $tpl = $helpers->getTpl('propertysetresolver.php');
             $tpl = $helpers->replaceTags($tpl);
             if (empty($tpl)) {
                 $helpers->sendLog(MODX::LOG_LEVEL_ERROR,
-                    '[PropertySet Adapter] propertysetresolver tpl is empty');
+                    '[PropertySet Adapter] ' .
+                        $helpers->modx->lexicon('mc_propertysetresolvertpl_empty~~propertysetresolver tpl is empty'));
                 return false;
             }
 
@@ -41,7 +43,8 @@ class PropertySetAdapter extends ElementAdapter { //This will never change.
 
                 $helpers->writeFile($dir, $fileName, $tpl);
             } else {
-                $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+                $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName .
+                    $helpers->modx->lexicon('mc_already_exists~~already exists'));
             }
         }
         return true;

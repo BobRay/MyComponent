@@ -70,7 +70,8 @@ class ResourceAdapter extends ObjectAdapter
         } elseif ($mode == MODE_EXPORT) {
             $me = $this->modx->getObject('modResource', array('pagetitle' => $fields['pagetitle']));
             if (!$me) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[ResourceAdapter] Could not get myself');
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[ResourceAdapter] ' .
+                    $this->modx->lexicon('mc_self_nf~~Could not get myself'));
             } else {
                 /* Check for TVs (this is ugly, but we only want OUR TVs) */
                 $myId = $me->get('id');
@@ -115,8 +116,9 @@ class ResourceAdapter extends ObjectAdapter
             } else {
                 if ($mode != MODE_REMOVE) {
                     $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
-                        '[ResourceAdapter] Could not find parent for resource: ' .
-                        $fields['parent']);
+                        '[ResourceAdapter] ' .
+                            $this->modx->lexicon('mc_parent_nf~~Could not find parent for resource')
+                                . ': ' .  $fields['parent']);
                 }
             }
         }
@@ -146,7 +148,9 @@ class ResourceAdapter extends ObjectAdapter
             if ($parentObj) {
                 $fields['parent'] = $parentObj->get('id');
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[ResourceAdapter] Could not find parent for resource: ' . $fields['pagetitle']);
+                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[ResourceAdapter] ' .
+                    $this->modx->lexicon('mc_parent_nf~~Could not find parent for resource')
+                        . ': ' . $fields['pagetitle']);
             }
         }
         if (!isset($fields['template']) || empty($fields['template']) || $fields['template'] == 'default') {
@@ -190,11 +194,13 @@ class ResourceAdapter extends ObjectAdapter
         /* Create resource.resolver.php resolver */
         /* @var $helpers Helpers */
         if (!empty($dir) && !empty($intersects)) {
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Creating resource resolver');
+            $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+                $helpers->modx->lexicon('mc_creating_resource_resolver~~Creating resource resolver'));
             $tpl = $helpers->getTpl('resourceresolver.php');
             $tpl = $helpers->replaceTags($tpl);
             if (empty($tpl)) {
-                $helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[Resource Adapter] resourceresolver tpl is empty');
+                $helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[Resource Adapter] ' .
+                    $helpers->modx->lexicon('mc_resourceresolvertpl_empty~~resourceresolver tpl is empty'));
                 return false;
             }
 
@@ -206,7 +212,8 @@ class ResourceAdapter extends ObjectAdapter
 
                 $helpers->writeFile($dir, $fileName, $tpl);
             } else {
-                $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' already exists');
+                $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' ' .
+                    $helpers->modx->lexicon('mc_already_exists~~already exists'));
             }
         }
         return true;
@@ -214,7 +221,8 @@ class ResourceAdapter extends ObjectAdapter
 
     public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
         /* @var $helpers Helpers */
-        $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    Processing Resources');
+        $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
+            $helpers->modx->lexicon('mc_processing_resources~~Processing Resources'));
         $resources = $helpers->modx->getOption('resources', ObjectAdapter::$myObjects, array());
         parent::createTransportFile($helpers, $resources, '', 'modResource', $mode);
     }
@@ -227,7 +235,8 @@ class ResourceAdapter extends ObjectAdapter
 
         /* Add resources from exportResources array in the project config file
           to $this->myObjects array */
-        $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . 'Processing Resources');
+        $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $helpers->modx->lexicon('mc_processing_resources~~Processing Resources'));
         $byId = $modx->getOption('getResourcesById', $props, false);
         $method = $byId? 'ID' : 'pagetitle';
         $resources = $modx->getOption('exportResources', $props, array());
@@ -242,8 +251,9 @@ class ResourceAdapter extends ObjectAdapter
                     $objects[] = $resObject;
                 } else {
                     $helpers->sendLog(modX::LOG_LEVEL_ERROR,
-                        '[Resource Adapter] Could not get resource with ' .
-                            $method . ': ' . $resource);
+                        '[Resource Adapter] ' .
+                        $helpers->modx->lexicon('mc_could_not_get_resource_with_method~~Could not get resource with')
+                        . ' ' . $method . ': ' . $resource);
                 }
             }
         }
@@ -284,7 +294,8 @@ class ResourceAdapter extends ObjectAdapter
                 }
             }
         } else {
-            $helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[ResourceAdapter] No Resources found');
+            $helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[ResourceAdapter] ' .
+                $helpers->modx->lexicon('mc_no_resources_found~~No Resources found'));
         }
     }
 

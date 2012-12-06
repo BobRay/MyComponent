@@ -89,6 +89,7 @@ if (!defined('MODX_CORE_PATH')) {
 // include 'checkproperties.class.php';
 require_once $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'model/mycomponent/checkproperties.class.php';
 
+$modx->lexicon->load('mycomponent:default');
 
 /* @var $scriptProperties array */
 
@@ -98,12 +99,16 @@ $checkProperties->run();
 
 $output = $checkProperties->helpers->getOutput();
 
-$output .= "\n\nInitial Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
+$output .= "\n\n" . $modx->lexicon('mc_initial_memory_used~~Initial Memory Used') . ': ' . round($mem_usage / 1048576, 2) .
+    $modx->lexicon('mc_megabytes~~megabytes');
 $mem_usage = memory_get_usage();
 $peak_usage = memory_get_peak_usage(true);
-$output .= "\nFinal Memory Used: " . round($mem_usage / 1048576, 2) . " megabytes";
-$output .= "\nPeak Memory Used: " . round($peak_usage / 1048576, 2) . " megabytes";
-
+$output .= "\n" . $modx->lexicon('mc_final_memory_used~~Final Memory Used')
+    . ': ' . round($mem_usage / 1048576, 2) .
+    $modx->lexicon('mc_megabytes~~megabytes');
+$output .= "\n" . $modx->lexicon('mc_peak_memory_used~~Peak Memory Used')
+    . ': ' . round($peak_usage / 1048576, 2) .
+    $modx->lexicon('mc_megabytes~~megabytes');
 /* report how long it took */
 $mtime = microtime();
 $mtime = explode(" ", $mtime);
@@ -111,7 +116,8 @@ $mtime = $mtime[1] + $mtime[0];
 $tend = $mtime;
 $totalTime = ($tend - $tstart);
 $totalTime = sprintf("%2.4f s", $totalTime);
-$output .= "\nTotal time: " . $totalTime;
+$output .= "\n" . $modx->lexicon('mc_total_time~~Total time') .
+    ': ' . $totalTime;
 
 if ($cliMode) {
     echo $output;

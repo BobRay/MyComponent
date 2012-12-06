@@ -96,8 +96,15 @@ class CheckProperties {
         $this->helpers = new Helpers($this->modx, $this->props);
         $this->helpers->init();
 
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, 'Project: ' . $this->props['packageName']);
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "Action: Check Properties\n");
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+            $this->modx->lexicon('mc_project~~Project')
+            . ': ' . $this->props['packageName']);
+
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+            $this->modx->lexicon('mc_action~~Action')
+            . ': ' .
+                $this->modx->lexicon('mc_check_properties~~Check Properties')
+         . "\n");
         $this->source = $this->props['mycomponentRoot'];
         /* add trailing slash if missing */
         if (substr($this->source, -1) != "/") {
