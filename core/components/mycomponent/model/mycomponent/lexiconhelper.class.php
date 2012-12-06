@@ -227,7 +227,7 @@ class LexiconHelper {
             $this->getCode($element, $type);
             if (!empty($this->included)) {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                    $this->modx->lexicon('"Code File(s) analyzed')
+                    $this->modx->lexicon('mc_code_files_analyzed~~Code File(s) analyzed')
                      . ':'. "\n" . implode(", ", $this->included));
             }
             if (!empty($this->loadedLexiconFiles)) {

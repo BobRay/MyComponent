@@ -148,7 +148,11 @@ if (!defined('MODX_CORE_PATH')) {
         die ('Unauthorized Access');
     }
 }
+
 // include 'lexiconhelper.class.php';
+
+$modx->lexicon->load('mycomponent:default');
+
 require_once $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'model/mycomponent/lexiconhelper.class.php';
 
 $lexiconHelper = new LexiconHelper($modx, $props);
