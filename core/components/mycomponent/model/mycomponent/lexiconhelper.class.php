@@ -1046,6 +1046,11 @@ class LexiconHelper {
 
             /* process lexicon entries */
             } elseif (strstr($line, 'modx->lexicon')) {
+
+                /* ignore lines with # comments */
+                if (strstr($line, '#')) {
+                    continue;
+                }
                 $matches = array();
                 preg_match('#modx->lexicon\s*\s*\(\s*[\'\"]([^\)]*)[\'\"]#', $line, $matches);
                 if (isset($matches[1]) && !empty($matches[1])) {
