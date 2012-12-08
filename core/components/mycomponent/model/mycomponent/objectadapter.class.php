@@ -284,9 +284,9 @@ abstract class ObjectAdapter
             }
         }
         if (! $id) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[Object Adapter] ' .
+           /* $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[Object Adapter] ' .
                 $this->modx->lexicon('mc_no_id_for~~No ID for')
-                    . ' ' . $objClass . ' ' . $name);
+                    . ' ' . $objClass . ' ' . $name);*/
         } else {
             $this->myId = $id;
         }
