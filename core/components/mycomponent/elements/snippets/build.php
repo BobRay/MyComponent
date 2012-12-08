@@ -81,6 +81,9 @@ if (!defined('MODX_CORE_PATH')) {
     }
 }
 
+$modx->lexicon->load('mycomponent:default');
+// include build.transport.php
+
 $buildPath =  $modx->getOption('mc.root', null, $modx->getOption('core_path') . 'components/mycomponent/') . '_build/';
 
 $file = 'config/current.project.php';

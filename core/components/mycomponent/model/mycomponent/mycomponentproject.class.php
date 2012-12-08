@@ -630,11 +630,12 @@ class MyComponentProject {
      */
     protected function addToModx($adapter, $fields, $overwrite = false) {
         /* These are here for LexiconHelper */
+        // include 'pluginadapter.class.php';
         // include 'chunkadapter.class.php';
-        // include 'propertyset.adapter.class.php';
+        // include 'propertysetadapter.class.php';
         // include 'snippetadapter.class.php';
-        // include 'template.adapter.class.php';
-        // include 'templatevar.adapter.class.php'
+        // include 'templateadapter.class.php';
+        // include 'templatevaradapter.class.php'
 
         /* @var $o ObjectAdapter */
         // include 'objectadapter.class.php';
