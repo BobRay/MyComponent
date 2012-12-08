@@ -110,12 +110,12 @@ class LexiconHelper {
         $this->helpers->init();
 
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-            $this->modx->lexicon('mc_project')
+            $this->modx->lexicon('mc_project~~Project')
             . ': ' . $this->props['packageName']);
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-            $this->modx->lexicon('mc_action')
+            $this->modx->lexicon('mc_action~~Action')
             . ': ' .
-            $this->modx->lexicon('mc_lexicon_helper')
+            $this->modx->lexicon('mc_lexicon_helper~~Lexicon Helper')
             . "\n");
         $this->source = $this->props['mycomponentRoot'];
         /* add trailing slash if missing */
@@ -192,7 +192,7 @@ class LexiconHelper {
 
         if (empty($elements)) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                $this->modx->lexicon('mc_no_elements_to_process'));
+                $this->modx->lexicon('mc_no_elements_to_process~~No elements to process'));
             return;
         }
         $this->classFiles = array();
@@ -204,7 +204,7 @@ class LexiconHelper {
             $this->classFiles = $this->helpers->getFiles();
             if (!empty($this->classFiles)) {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                    $this->modx->lexicon('mc_found_these_class_files')
+                    $this->modx->lexicon('mc_found_these_class_files~~Found these class files')
                  . ': ');
                 foreach($this->classFiles as $name => $path) {
                     $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "    " . $name);
@@ -220,23 +220,23 @@ class LexiconHelper {
             $this->codeMatches = array();
             $this->missing = array();
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
-            $this->modx->lexicon('mc_stars'));
+            $this->modx->lexicon('mc_stars~~*********************************************'));
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                $this->modx->lexicon('mc_processing_element')
+                $this->modx->lexicon('mc_processing_element~~Processing Element')
                 . ': ' . $element . " -- Type: " . $type);
             $this->getCode($element, $type);
             if (!empty($this->included)) {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                    $this->modx->lexicon('mc_code_files_analyzed')
+                    $this->modx->lexicon('mc_code_files_analyzed~~Code File(s) analyzed')
                      . ':'. "\n" . implode(", ", $this->included));
             }
             if (!empty($this->loadedLexiconFiles)) {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                    $this->modx->lexicon('mc_lexicon_files_analyzed')
+                    $this->modx->lexicon('mc_lexicon_files_analyzed~~Lexicon File(s) analyzed')
                     . ': ' . implode(', ', array_keys($this->loadedLexiconFiles)));
             } else {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                    $this->modx->lexicon('mc_no_lexicon_files'));
+                    $this->modx->lexicon('mc_no_lexicon_files~~No Lexicon File(s) loaded'));
             }
             $this->usedSomewhere = array_merge($this->usedSomewhere, $this->lexiconCodeStrings);
 
@@ -244,9 +244,9 @@ class LexiconHelper {
             $this->definedSomeWhere = array_merge($this->definedSomeWhere, $this->lexiconFileStrings);
 
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,  count($this->lexiconCodeStrings) . ' ' .
-                $this->modx->lexicon('mc_lexicon_strings_in_code_files'));
+                $this->modx->lexicon('mc_lexicon_strings_in_code_files~~lexicon strings in code file(s)'));
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, count($this->lexiconFileStrings) . ' ' .
-                $this->modx->lexicon('mc_lexicon_strings_in_lex_files'));
+                $this->modx->lexicon('mc_lexicon_strings_in_lex_files~~lexicon strings in lexicon file(s)'));
 
             $missing = $this->findMissing();
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, $this->reportMissing($missing, $type));
@@ -267,9 +267,9 @@ class LexiconHelper {
         if ( (!empty($snippets)) || (!empty($plugins)) || (!empty($templates)) || (!empty($chunks))
             || (!empty($jsFiles)) || (!empty($resources))) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n********" .
-                $this->modx->lexicon('mc_removing')
+                $this->modx->lexicon('mc_removing~~Removing')
                 . ' ~~ ' .
-                $this->modx->lexicon('mc_strings_from_code_files')
+                $this->modx->lexicon('mc_strings_from_code_files~~strings from code files')
                  . '********');
         } else {
             return;
@@ -371,13 +371,17 @@ class LexiconHelper {
         if (file_exists($path)) {
 
             $content = file_get_contents($path);
-            if (strstr($content, '')) {
+            if (strstr($content, '~~')) {
+
+                if (strstr($path, '.php')) {
+                    $type = 'modScript';
+                }
 
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
-                    $this->modx->lexicon('mc_rewriting_code_file')
+                    $this->modx->lexicon('mc_rewriting_code_file~~rewriting code file')
                     . ': ' . $path);
                 if ($type == 'modScript') {
-                    $pattern = '/~~.*([\'\"][\),])/';
+                    $pattern = '/~~[^\'\"].*([\'\"][\),])/';
                     $replace = '$1';
                 } else {
                     $pattern = '/~~[^\]\?&]+/';
@@ -399,7 +403,7 @@ class LexiconHelper {
 
         } else {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
-            $this->modx->lexicon('mc_no_code_file_at')
+            $this->modx->lexicon('mc_no_code_file_at~~No Code file at')
             . ': ' . $path);
         }
     }
@@ -418,12 +422,12 @@ class LexiconHelper {
                         $this->lexiconFileStrings = array_merge($this->lexiconFileStrings, $_lang);
                     } else {
                         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                            $this->modx->lexicon('mc_no_language_strings_in_file')
+                            $this->modx->lexicon('mc_no_language_strings_in_file~~No language strings in file')
                         . ': ' . $fileName);
                     }
                 } else {
                     $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
-                        $this->modx->lexicon('mc_lexicon_file_nf')
+                        $this->modx->lexicon('mc_lexicon_file_nf~~Cannot find lexicon file')
                      . ': ' . $fileName);
                 }
             }
@@ -480,7 +484,7 @@ class LexiconHelper {
         }
         if (is_array($inCode) && !empty($inCode) && empty($missing)) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                $this->modx->lexicon('mc_no_missing_strings_in_lex_file'));
+                $this->modx->lexicon('mc_no_missing_strings_in_lex_file~~No missing strings in lexicon file!'));
         }
         return $missing;
 
@@ -540,16 +544,16 @@ class LexiconHelper {
                             $success = true;
                         } else {
                             $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
-                                $this->modx->lexicon('mc_could_not_open_lex_file')
+                                $this->modx->lexicon('mc_could_not_open_lex_file~~Could not open lexicon file')
                              . ': ' . $fileName );
 
                         }
                     }
                     if ($success) {
                         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                            $this->modx->lexicon('mc_updated_lex_file')
+                            $this->modx->lexicon('mc_updated_lex_file~~Updated Lexicon file')
                                 . ' -- ' . key($this->loadedLexiconFiles) . ' ' .
-                                $this->modx->lexicon('mc_with_these_strings')
+                                $this->modx->lexicon('mc_with_these_strings~~with these strings')
                                 . ":\n" . $code);
                     }
                 }
@@ -558,13 +562,13 @@ class LexiconHelper {
             } elseif (isset($this->props['rewriteLexiconFiles'])
                     && $this->props['rewriteLexiconFiles']) {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
-                    $this->modx->lexicon('mc_cannot_update_multiple_lex_files')
+                    $this->modx->lexicon('mc_cannot_update_multiple_lex_files~~Cannot update multiple Lexicon files')
                 . ";\n" .
-                $this->modx->lexicon('mc_paste_these_strings')
+                $this->modx->lexicon('mc_paste_these_strings~~paste these strings in the appropriate file')
                 . ":\n" . $code);
             } else {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                    $this->modx->lexicon('mc_missing_lex_strings')
+                    $this->modx->lexicon('mc_missing_lex_strings~~Missing Lexicon strings')
                      . ': ' . $code);
 
             }
@@ -596,13 +600,13 @@ class LexiconHelper {
                 }
             }
             if (!empty($code)) {
-                $output =  $this->modx->lexicon('mc_lex_strings_never_used')
+                $output =  $this->modx->lexicon('mc_lex_strings_never_used~~The following lexicon strings never used in code')
                  . ":\n" . $code;
             } else {
-                $output =  $this->modx->lexicon('mc_no_unused_lex_strings');
+                $output =  $this->modx->lexicon('mc_no_unused_lex_strings~~No unused strings in lexicon files!');
             }
         } else {
-            $output =  $this->modx->lexicon('mc_no_unused_lex_strings');
+            $output =  $this->modx->lexicon('mc_no_unused_lex_strings~~No unused strings in lexicon files!');
         }
         return $output;
 
@@ -623,9 +627,9 @@ class LexiconHelper {
         if (!empty($undefined)) {
 
             $output =  count($undefined) . ' ' .
-                $this->modx->lexicon('mc_missing_lex_strings');
+                $this->modx->lexicon('mc_missing_lex_strings~~lexicon strings in code are not defined in a language file (see above)');
         } else {
-            $output =  $this->modx->lexicon('mc_all_lex_strings_defined');
+            $output =  $this->modx->lexicon('mc_all_lex_strings_defined~~All lexicon strings are defined in lexicon files!');
         }
         return $output;
     }
@@ -643,9 +647,9 @@ class LexiconHelper {
     public function reportEmpty($empty) {
         $output = '';
         if (empty($empty)) {
-            $output  =  $this->modx->lexicon('mc_no_empty_lex_strings_in_files');
+            $output  =  $this->modx->lexicon('mc_no_empty_lex_strings_in_files~~No Empty Lexicon strings in lexicon files!');
         } else {
-            $output =  $this->modx->lexicon('mc_empty_lex_strings');
+            $output =  $this->modx->lexicon('mc_empty_lex_strings~~The following lexicon strings are in a lexicon file, but have no value:');
             foreach ($empty as $string) {
                 $output .=  "\n    \$_lang['" . $string . "'] = '';";
             }
@@ -656,7 +660,7 @@ class LexiconHelper {
     public function report() {
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, $this->checkSystemSettingDescriptions());
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n******** " .
-            $this->modx->lexicon('mc_final_audit')
+            $this->modx->lexicon('mc_final_audit~~Final Audit')
                  . '********');
         $undefined = $this->findUndefined();
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, $this->reportUndefined($undefined));
@@ -684,7 +688,7 @@ class LexiconHelper {
     public function checkPropertyDescriptions($lexStrings) {
 
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n******** " .
-            $this->modx->lexicon('mc_checking_for_property_lex_strings')
+            $this->modx->lexicon('mc_checking_for_property_lex_strings~~Checking for property description lexicon strings')
                  . '********');
         $ary = $this->modx->getOption('elements', $this->props, array());
         foreach($ary as $type => $elementList) {
@@ -700,18 +704,18 @@ class LexiconHelper {
                 if (file_exists($propsFilePath)) {
                     $props = include $propsFilePath;
                     $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n********\n" .
-                        $this->modx->lexicon('mc_checking_properties_for')
+                        $this->modx->lexicon('mc_checking_properties_for~~Checking Properties for')
                     . ' ' . $element . ' -- Type: ' . $type);
                     if (!is_array($props)) {
                         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                            $this->modx->lexicon('mc_no_properties_in')
+                            $this->modx->lexicon('mc_no_properties_in~~No properties in')
                                 . ' ' . $propsFileName);
                     } else {
                         foreach($props as $prop) {
                             $description = $prop['desc'];
 
-                            if (strstr($description, '')) {
-                                $s = explode('', $description);
+                            if (strstr($description, '~~')) {
+                                $s = explode('~~', $description);
                                 $lexKey = $s[0];
                             } else {
                                 $lexKey = $description;
@@ -733,7 +737,7 @@ class LexiconHelper {
 
                 } else {
                     $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
-                        $this->modx->lexicon('mc_no_properties_file_for')
+                        $this->modx->lexicon('mc_no_properties_file_for~~No properties file for')
                         . ' ' . $element . ' ' . $propsFilePath);
                 }
             }
@@ -745,9 +749,9 @@ class LexiconHelper {
         $code = '';
         if (empty($missing) && empty($empty) ) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                $this->modx->lexicon('mc_no_missing_property_descriptions_in_lex_file'));
+                $this->modx->lexicon('mc_no_missing_property_descriptions_in_lex_file~~No missing property descriptions in lexicon file!'));
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                $this->modx->lexicon('mc_no_empty_property_descriptions_in_lex_file'));
+                $this->modx->lexicon('mc_no_empty_property_descriptions_in_lex_file~~No empty property descriptions in lexicon file!'));
             return;
         } else {
             $lexFile = $this->targetCore . '/lexicon/' . $this->primaryLanguage . '/properties.inc.php';
@@ -757,10 +761,10 @@ class LexiconHelper {
 
         if (empty($missing)) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                $this->modx->lexicon('mc_no_missing_property_description_lex_strings'));
+                $this->modx->lexicon('mc_no_missing_property_description_lex_strings~~No missing property description lexicon strings!'));
         } else {
             foreach ($missing as $string) {
-                $val = strstr($string, '');
+                $val = strstr($string, '~~') ? explode('~~', $string) : array($string,'');
                 $qc = $this->getQc($val[1]);
                 $code  .= "\n\$_lang['" . $val[0] . "'] = {$qc}" . $val[1] . "{$qc};";
             }
@@ -781,13 +785,13 @@ class LexiconHelper {
                 $emptyFixed += $count;
             }
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                $this->modx->lexicon('mc_updated_lex_strings_with_these_keys'));
+                $this->modx->lexicon('mc_updated_lex_strings_with_these_keys~~Updated lexicon string(s) with these key(s)'));
                 foreach($empty as $key => $value) {
                     $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n    " . $key);
                 }
         } else {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                $this->modx->lexicon('mc_no_empty_property_descriptions_in_lex_file'));
+                $this->modx->lexicon('mc_no_empty_property_descriptions_in_lex_file~~No empty property descriptions in lexicon file!'));
         }
         if (isset($this->props['rewriteLexiconFiles'])
                 && $this->props['rewriteLexiconFiles']
@@ -801,9 +805,9 @@ class LexiconHelper {
                     fclose($fp);
                     if (!empty($missing)) {
                         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                            $this->modx->lexicon('mc_updated')
+                            $this->modx->lexicon('mc_updated~~Updated')
                             . ' ' . 'properties.inc.php' . ' '  .
-                                $this->modx->lexicon('mc_entries_with_these_keys')
+                                $this->modx->lexicon('mc_entries_with_these_keys~~entries with these keys')
                             . ': ');
                         foreach($missing as $key => $value) {
                             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "    " . $value);
@@ -815,17 +819,17 @@ class LexiconHelper {
 
                 } else {
                     $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
-                        $this->modx->lexicon('mc_could_not_open_lex_properties_file')
+                        $this->modx->lexicon('mc_could_not_open_lex_properties_file~~Could not open lexicon properties file for writing')
                         . ': ' . $lexFile);
                 }
             } else {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
-                    $this->modx->lexicon('mc_failed_to_update_lex_file')
+                    $this->modx->lexicon('mc_failed_to_update_lex_file~~Failed to update lexicon file; check for syntax errors in the lexicon file or lexicon strings')
                         . ' ' . $lexFile);
             }
         } else {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                $this->modx->lexicon('mc_lex_properties_code_to_add'));
+                $this->modx->lexicon('mc_lex_properties_code_to_add~~Code to add to lexicon properties file:'));
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . $comment . "\n" . $code . "\n\n");
         }
     }
@@ -857,17 +861,17 @@ class LexiconHelper {
             $_lang = array();
             $missing = array();
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n********  " .
-                $this->modx->lexicon('mc_checking_for_ss_lex_strings')
+                $this->modx->lexicon('mc_checking_for_ss_lex_strings~~Checking for System Setting lexicon strings')
                 . '********');
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                $this->modx->lexicon("mc_checking_ss_names_descriptions"));
+                $this->modx->lexicon("mc_checking_ss_names_descriptions~~Checking System Setting names and descriptions"));
             $fqn = $this->getLexFqn('default');
             $fileName = $this->getLexiconFilePath($fqn);
             include $fileName;
 
             if (empty($_lang)) {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                    $this->modx->lexicon('mc_no_lex_strings_in_dip'));
+                    $this->modx->lexicon('mc_no_lex_strings_in_dip~~No lexicon strings in default.inc.php'));
                 return '';
             }
             foreach($settings as $key => $value ) {
@@ -884,7 +888,7 @@ class LexiconHelper {
         if (!empty($missing)) {
 
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                $this->modx->lexicon('mc_missing_from_dip')
+                $this->modx->lexicon('mc_missing_from_dip~~Missing from default.inc.php file (Setting Name/Setting Description):')
             . "\n");
             $this->modx->lexicon->load($this->primaryLanguage . ':' . $this->packageNameLower . ':default');
             $code = '';
@@ -906,7 +910,7 @@ class LexiconHelper {
                         $success = true;
                     } else {
                         $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
-                            $this->modx->lexicon('mc_could_not_open_dip_append'));
+                            $this->modx->lexicon('mc_could_not_open_dip_append~~Could not open default.inc.php for appending'));
                     }
                 } else {
                     $content = str_replace($comment, $comment . $code, $content);
@@ -918,24 +922,24 @@ class LexiconHelper {
                     }
                     else {
                         $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
-                            $this->modx->lexicon('mc_could_not_open_dip_write'));
+                            $this->modx->lexicon('mc_could_not_open_dip_write~~Could not open default.inc.php for writing'));
                     }
                 }
                 if ($success) {
                     $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                        $this->modx->lexicon('mc_update_these_strings_in dip')
+                        $this->modx->lexicon('mc_update_these_strings_in dip~~Updated these strings in default.inc.php')
                         . ":\n" . $code);
                 }
 
             } else {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                    $this->modx->lexicon('mc_strings_missing_from_dip')
+                    $this->modx->lexicon('mc_strings_missing_from_dip~~These strings are missing from default.inc.php')
                       . ': '  . $code);
             }
         }
         } else {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
-                $this->modx->lexicon('mc_no_ss_names'));
+                $this->modx->lexicon('mc_no_ss_names~~No System Setting names to check'));
         }
     return $output;
     }
@@ -957,7 +961,7 @@ class LexiconHelper {
         $file = '';
         if (empty($element)) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
-                $this->modx->lexicon('mc_lex_element_is_empty'));
+                $this->modx->lexicon('mc_lex_element_is_empty~~Element is empty'));
             return;
         }
         /* $element is the full path for js files */
@@ -992,7 +996,7 @@ class LexiconHelper {
             $this->getIncludes($file, $type);
         } else {
             $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, ' ' .
-                $this->modx->lexicon('mc_file_nf')
+                $this->modx->lexicon('mc_file_nf~~Could not find file')
                 . ': ' . $file);
         }
 
@@ -1019,12 +1023,12 @@ class LexiconHelper {
                 unset($content);
             } else {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                    $this->modx->lexicon('mc_file_is_empty')
+                    $this->modx->lexicon('mc_file_is_empty~~File is empty')
                         . ' '. $file);
             }
         } else {
             $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
-                $this->modx->lexicon('mc_file_nf')
+                $this->modx->lexicon('mc_file_nf~~Could not find file')
                     . ' ' . $file);
             return;
         }
@@ -1055,7 +1059,7 @@ class LexiconHelper {
                 preg_match('#modx->lexicon\s*\s*\(\s*[\'\"]([^\)]*)[\'\"]#', $line, $matches);
                 if (isset($matches[1]) && !empty($matches[1])) {
                     if (strstr($matches[1], '~~' )) {
-                        $s = explode('', $matches[1]);
+                        $s = explode('~~', $matches[1]);
                         $lexString = $s[0];
                         $value = $s[1];
                     } else {
@@ -1072,8 +1076,8 @@ class LexiconHelper {
                 $matches = array();
                 preg_match('#_\(\s*[\'\"](.*)[\'\"]\)#', $line, $matches);
                 if (isset($matches[1]) && !empty($matches[1])) {
-                    if (strstr($matches[1], '')) {
-                        $s = explode('', $matches[1]);
+                    if (strstr($matches[1], '~~')) {
+                        $s = explode('~~', $matches[1]);
                         $lexString = $s[0];
                         $value = $s[1];
                     } else {
@@ -1102,8 +1106,8 @@ class LexiconHelper {
                 $matches = array();
                 preg_match('#\[\[!*%([^\?&\]]*)#', $line, $matches);
                 if (isset($matches[1]) && !empty($matches[1])) {
-                    if (strstr($matches[1], '')) {
-                        $s = explode('', $matches[1]);
+                    if (strstr($matches[1], '~~')) {
+                        $s = explode('~~', $matches[1]);
                         $lexString = $s[0];
                         $value = $s[1];
                     } else {
