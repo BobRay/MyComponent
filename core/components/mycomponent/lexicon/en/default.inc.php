@@ -40,6 +40,15 @@ $_lang['mc_you_must_specify_a_project_name'] = 'You must specify a project name'
 $_lang['mc_project_already_exists'] = 'Project already exists';
 
 /* used in Bootstrap or its included classes  */
+$_lang['mc_problem_loading_tpl_file_empty'] = 'Tpl file is empty';
+$_lang['mc_problem_loading_tpl_file_no_php_tag'] = 'Tpl file has no PHP tag';
+$_lang['mc_processing_namespaces'] = 'Processing namespaces';
+$_lang['mc_illegal_create_elements'] = 'Create elements called in export mode';
+$_lang['mc_no_events_for_plugin'] = 'Plugin has no events';
+$_lang['mc_cannot_find_self'] = 'Cannot find self';
+$_lang['mc_pluginresolver_empty'] = 'Plugin resolver is empty';
+$_lang['mc_propertysetresolvertpl_empty'] = 'PropertySet resolver is empty';
+$_lang['mc_tvresolvertpl_empty'] = 'TV resolver is empty';
 $_lang['mc_Updated'] = 'Updated';
 $_lang['mc_Creating'] = 'Creating';
 $_lang['mc_begin_file_content'] = '******** Begin File Content ********';
