@@ -16,12 +16,12 @@ of the MODX Package Manager code.
     <p>
     The newer versions will require no cut-and-paste operations and no tedious file
     or directory renaming. The only manual operation required is
-    editing the project config file.
+    editing the project config. file.
     </p>
 
     <p>Here are just some features of the new version</p>
 
-    <p>Based on the objects described in the project config file,
+    <p>Based on the objects described in the project config. file,
     the new version will: </p>
     <ul>
         <li><b>Bootstrap</b>
@@ -112,14 +112,13 @@ assets/mycomponents/mysnippet/ directory.</p>
     <p>MyComponent can be used in a variety of ways, but the basic process is to create a new project (either in the UI, or by manually creating a new project config. file and editing the current.project.php file). Once the new project exists, you edit the project config. file to meet your needs and run Bootstrap to get things started. After that, you either finish your project in the MODX Manager and run ExportObjects, or finish it by editing the files in your favorite editor and run ImportObjects (or some combination of those two processes). LexiconHelper writes your Lexicon files and CheckProperties makes sure any properties you use are present in your properties file. Finally, you run the Build utility to create the actual transport package.</p>
 
     <h2>Example Project</h2>
-    <p>MyComponent installs with a built-in project called Example that you can play with to get familiar with the various MyComponent Utilities. The utilities can be run from the command line, or from inside any good code editor. There is also a User Interface for them that you can see by viewing the &quot;MyComponent&quot; Resource (which executes the MyComponent snippet). The rest of this tutorial will assume that you're using the User Interface, but the principles are the same for the command-line utilities. The command-line utility files are in the <fixedpre>core/components/mycomponent/elements/snippets/</fixedpre>directory</p>
+    <p>MyComponent installs with a built-in project called Example that you can play with to get familiar with the various MyComponent utilities. The utilities can be run from the command line, or from inside any good code editor. There is also a User Interface for them that you can see by viewing the &quot;MyComponent&quot; Resource (which executes the MyComponent snippet). The rest of this tutorial will assume that you're using the User Interface, but the principles are the same for the command-line utilities. The command-line utility files are in the <fixedpre>core/components/mycomponent/elements/snippets/</fixedpre> directory</p>
 
-    <p>If you view the MyComponent Resource in the front end, you'll see a set of radio buttons, one for each of the MyComponent Utilities, and a Submit button for executing them. Note that as a security precaution, you must be logged in to the Manager in order to use any of the utilities. When you run any of the utilities, a log of the results will appear below the form. You may have to scroll down to see it.</p>
+    <p>If you view the MyComponent Resource in the front end, you'll see a set of radio buttons, one for each of the MyComponent utilities, and a Submit button for executing them. Note that as a security precaution, you must be logged in to the Manager in order to use any of the utilities. When you run any of the utilities, a log of the results will appear below the form. You may have to scroll down to see it.</p>
 
-    <h3>The Project Config File</h3>
+    <h3>The Project Config. File</h3>
 
-    <p>Every project used with MyComponent must have its own project config file. The file is always named for the lowercase package name of your Extra: <fixedpre>
-        packageNameLower.config.php</fixedpre>. The files are always stored in the <fixedpre> core/components/mycomponent/_build/config</fixedpre> directory. The file for the Example project is called <fixedpre>example.config.php</fixedpre>. If you look at it now, you'll see all the objects that are part of that package.</p>
+    <p>Every project used with MyComponent must have its own project config. file. The file is always named for the lowercase package name of your Extra (<fixedpre>packageNameLower.config.php</fixedpre>). The files are always stored in the <fixedpre> core/components/mycomponent/_build/config</fixedpre> directory. The file for the Example project is called <fixedpre>example.config.php</fixedpre>. If you look at it now, you'll see all the objects that are part of that package.</p>
 
     <h2>MyComponent Utilities</h2>
 
@@ -135,17 +134,17 @@ assets/mycomponents/mysnippet/ directory.</p>
 
 <p>CheckProperties looks for references to default properties of elements in code and produces code to be pasted in to the properties file for the build.</p>
 
-<p>Build created the actual transport package .zip file.</p>
+<p>Build creates the actual transport package .zip file.</p>
 
 <p>Let's look at the utilities in more detail.</p>
 
     <h3>Bootstrap</h3>
 
-    <p>The Bootstrap utility should always be run at the beginning of any new project, but only after editing the project config file to meet your needs. Bootstrap creates the necessary files and directories for your project and also creates the MODX objects (e.g., snippets, chunks, etc.) specified in the project config file.</p>
+    <p>The Bootstrap utility should always be run at the beginning of any new project, but only after editing the project config. file to meet your needs. Bootstrap creates the necessary files and directories for your project and also creates the MODX objects (e.g., snippets, chunks, etc.) specified in the project config. file.</p>
 
-    <p>Bootstrap is completely non-destructive. It will not overwrite any existing MODX objects or their code files (though it will update some specific build files). You can re-run Bootstrap at any time during the development of your extra. The usual reason for doing this is discovering that you need another object (a new snippet, chunk, resource, template, etc.) for your project. Add the new object to the project config file and run Bootstrap. MyComponent will create the new object and any necessary files for it to be included in the build.</p>
+    <p>Bootstrap is completely non-destructive. It will not overwrite any existing MODX objects or their code files (though it will update some specific build files). You can re-run Bootstrap at any time during the development of your extra. The usual reason for doing this is discovering that you need another object (a new snippet, chunk, resource, template, etc.) for your project. Add the new object to the project config. file and run Bootstrap. MyComponent will create the new object and any necessary files for it to be included in the build.</p>
 
-    <p>It's important to keep your project config file up-to-date with all objects used in your project.</p>
+    <p>It's important to keep your project config. file up-to-date with all objects used in your project.</p>
 
     <p>For a first look, view the MyComponent Resource from the Manager. With the current package set to Example, check the Bootstrap radio
     button in the UI and click on the Submit button. If you scroll down, you should see a log of all the actions performed by the Bootstrap
@@ -155,16 +154,16 @@ assets/mycomponents/mysnippet/ directory.</p>
     <fixedpre>assets/mycomponents/example/</fixedpre>
     directory. All MyComponent projects will be placed in
     <fixedpre>assets/mycomponents/</fixedpre>
-    unless you specify a different target directory in the project config file (not recommended).</p>
+    unless you specify a different target directory in the project config. file (not recommended).</p>
 
-    <p>You may notice that a copy of the project config file is placed in the project directory. This is a copy used by the build process,
-    but it's not the real project config file and you should never edit it. It is ignored by all the other MyComponent utilities. The real
-    project config file (the one used by MyComponent) is always in the
+    <p>You may notice that a copy of the project config. file is placed in the project directory. This is a copy used by the build process,
+    but it's not the real project config. file and you should never edit it. It is ignored by all the other MyComponent utilities. The real
+    project config. file (the one used by MyComponent) is always in the
     <fixedpre>core/components/mycomponent/_build/config/</fixedpre>
     directory.</p>
 
     <p>Once you've looked at all the files and directories created by Bootstrap, go back the the MODX Manager and look at the objects
-    created. You should see all the objects specified in the Example project config file. Notice too that the project config file specifies
+    created. You should see all the objects specified in the Example project config. file. Notice too that the project config. file specifies
     a number of characteristics of some of the objects (e.g., parent, template, category, etc.). You should see these relationships in the
     Manager as well.</p>
 
@@ -195,26 +194,31 @@ assets/mycomponents/mysnippet/ directory.</p>
 
     <p>LexiconHelper will create your lexicon files for you (no, really). To get the full benefit of LexiconHelper, you need to put your lexicon strings in this form:</p>
 
-<fixedpre>'lexicon_key~~Actual Lexicon string'</fixedpre>
+<pre><fixedpre>
+'lexicon_key~~Actual Lexicon string'
+</fixedpre></pre>
 
 <p>For example, you might have this in the code of a snippet:</p>
 
-<fixedpre>
-    $message = $modx->lexicon('mc_file_nf~~File Not Found');
-</fixedpre>
+<pre><fixedpre>
+$message = $modx->lexicon('mc_file_nf~~File Not Found');
+</fixedpre></pre>
 
         <p>Or you might have this language tag in a resource of chunk:</p>
 
-<fixedpre>[[%mc_file_nf~~File Not Found]]</fixedpre>
+<pre><fixedpre>
+[[%mc_file_nf~~File Not Found]]
+</fixedpre></pre>
 
 <p>LexiconHelper will find all instances where you use the MODX Lexicon. It will create a language string and write it into the appropriate lexicon file for you (and optionally remove the part after the ~~ from the file). The only case where this will fail is if you have a file that uses more than one lexicon topic. If that's the case, LexiconHelper doesn't know which file to write the various language strings to. In that case LexiconHelper outputs the lexicon strings to the screen so you can paste them into the appropriate files.</p>
 
-<p>Whether LexiconHelper modifies the lexicon files and removes the ~~ and it's following string from the code files depend on the following two settings in the project config file:</p>
+<p>Whether LexiconHelper modifies the lexicon files and removes the ~~ and it's following string from the code files depend on the following two settings in the project config. file:</p>
 
-<fixedpre>
+<pre><fixedpre>
 rewriteLexiconFiles
 rewriteCodeFiles
-</fixedpre>
+</fixedpre></pre>
+
 
 <p>By default the first one is true and the second one is false. Generally, you want to run LexiconHelper as the last step before doing the final build. I usually leave <fixedpre>rewriteCodeFiles</fixedpre> off until the very end of a project.</p>
 
@@ -241,12 +245,12 @@ Transport Package .zip file at <a
     <h3>Customizing the Tpl chunks</h3>
     <p>If you'd like to modify any of the MyComponent Tpl chunks, duplicate them and prefix the name with &quot;my&quot;. MyComponent will always look first for the prefixed version before using the default chunk or file. Here is the search order for the various Tpl chunks/files (the files are in the <fixedpre>core/components/mycomponent/elements/chunks</fixedpre> directory):</p>
 
-<fixedpre>
-    my . name chunk
-    my . name file
-    name chunk
-    name file
-</fixedpre>
+<pre>
+<fixedpre>my . name</fixedpre> (chunk)
+<fixedpre>my . name</fixedpre> (file)
+<fixedpre>name</fixedpre> (chunk)
+<fixedpre>name</fixedpre> (file)
+</pre>
 
     <p>Each chunk in the MyComponent category is duplicated as a file in the chunks directory mentioned above. If you prefer to work with the files, simply delete or rename the chunks in the MODX Manager and MyComponent will use the files in the chunks directory.</p>
 
@@ -259,7 +263,7 @@ Transport Package .zip file at <a
 
     <h2>Workflows</h2>
 
-    <p>MyComponent is designed to work with a variety of workflows. The odds are good that no matter how you prefer to work, MyComponent will make your life easier.</p>
+    <p>MyComponent is designed to work with a variety of workflows. The odds are good that no matter how you prefer to work, MyComponent will make your life easier. These workflows assume that you have created a duplicate of the <fixedpre>example.config.php</fixedpre> Tpl chunk (or file) called <fixedpre>myexample.config.php</fixedpre> and modified the information at the top of it to include your information. Important: Do *not* change the word &quot;Example&quot; anywhere in the file. When you create a new project, all instances of &quot;Example&quot; will automatically be changed for you. Keep in mind that this config. file is a template for *all* projects, not just your current one, so it should not be modified for any specific project.</p>
 
     <h3>New Project</h3>
     <p>If your component is new, the process is very simple. In the UI, type the name of your new project in the form fields next to the &quot;New Project&quot; button, then click on the button.<p>
@@ -268,29 +272,29 @@ Transport Package .zip file at <a
     myexample.config.php</fixedpre> Tpl chunk) and places it in the MyComponent <fixedpre>
     _build/config</fixedpre> directory. It renames the file after your new project and replaces all instances of the word &quot;example&quot; with the case-appropriate name of your project.</p>
 
-    <p>Once that has occurred, you can edit the new file (<fixedpre>projectName.config.php</fixedpre>) to meet the needs of your project and then run Bootstrap. Comments in the project config. file will (hopefully) tell you all you need to know about the various members. You can generally delete any object types that you don't need in your project.</p>
+    <p>Once that has occurred, you can edit the new file (<fixedpre>projectName.config.php</fixedpre>) to meet the needs of your project and then run Bootstrap. Comments in the project config. file will (hopefully) tell you all you need to know about the various members. You can generally delete any object types that you don't need in your project. Note that all config. files are a single large PHP array. They must contain valid PHP code in order for MyComponent to run, so using a good code editor such as PhpStorm can be really helpful.</p>
 
     <div class="box">
-        <p>Although there is a copy of your project config. file in your project directory, you should never edit that file. Most of it is ignored by the MyComponent Utilities. The &quot;official&quot; project config. file is in the <fixedpre>core/components/mycomponent/_build/config</fixedpre> directory and that's always the one you should modify.</p>
+        <p>Although there is a copy of your project config. file in your project directory, you should never edit that file. Most of it is ignored by the MyComponent utilities. The &quot;official&quot; project config. file is the one in the <fixedpre>core/components/mycomponent/_build/config</fixedpre> directory and that's always the one you should modify.</p>
     </div>
 
     <p>Once you're finished editing the project config. file, you can run Bootstrap and all your Resources, Elements, and other objects and all necessary files for the project will be created for you. You can work on them in the Manager until you get things working the way you want. Once the component is finished, you can run ExportObjects, LexiconHelper, and Build and your Extra will be ready to release.</p>
 
-        <p>Note that any time you discover that your project needs another object, you can add it to the project config. file and re-run Bootstrap. Bootstrap will not modify any existing files or objects, so it's always save to do this and it's a good practice because it keeps your config file current.</p>
+        <p>Note that any time you discover that your project needs another object, you can add it to the project config. file and re-run Bootstrap. Bootstrap will not modify any existing files or objects, so it's always safe to do this and it's a good practice because it keeps your config. file current.</p>
 
     <h3>Existing Project</h3>
 
-    <p>If your finished component already exists in MODX and the files are in the proper directories, you can edit the project config file and run Bootstrap, ExportObjects, LexiconHelper, and Build and your extra will be ready to release.</p>
+    <p>If your finished component already exists in MODX and the files are in the proper directories, you can edit the project config. file and run Bootstrap, ExportObjects, LexiconHelper, and Build and your extra will be ready to release.</p>
 
     <p>It's important that the files be in the proper locations and named properly so that MyComponent can find them. The easiest way to see where things go is to run Bootstrap on the Example project and look at the <fixedpre>assets/mycomponents/example/</fixedpre> directory.</p>
 
     <p>Normally, MyComponent uses standard naming conventions for all element code files:</p>
-<fixedpre>
+<pre><fixedpre>
 snippet1.snippet.php
 plugin1.plugin.php
 template1.template.html
 chunk1.chunk.html
-</fixedpre>
+</fixedpre></pre>
 
     <p>For a new project, Bootstrap will create the files using this standard naming convention.</p>
     <p>For an existing project, you can rename your files to match the format above, or you can specify the filename as a field for any element in the project config. file (see the examples in example.config.php) if your file names don't match the standard.
@@ -298,31 +302,31 @@ chunk1.chunk.html
 
 <h3>Install the Package</h3>
 
-<p>Once you have run  the Build utility, the transport.zip file will be in the core/packages directory (the one for the main MODX install). If you go to System | Package Management in the MODX Manager and select &quot;Search Locally for Packages, your extra should show up in the grid where it can be installed like any other package. You may not want to do this, however.</p>
+<p>Once you have run the Build utility, the transport.zip file will be in the core/packages directory (the one for the main MODX install). If you go to System | Package Management in the MODX Manager and select &quot;Search Locally for Packages,&quot; your extra should show up in the grid where it can be installed like any other package. You may not want to do this, however.</p>
 
 <p>There is a potential source of confusion here. Let's say your
 package is called yourcomponent. If you install your package in the same
 install of MODX that contains your _build directory, you'll have duplicate
 files in</p>
-<pre>
-    assets/mycomponents/yourcomponent/assets/yourcomponent
-</pre>
+<pre><fixedpre>
+assets/mycomponents/yourcomponent/assets/yourcomponent
+</fixedpre></pre>
 <p>and</p>
-<pre>
-    assets/yourcomponent
-</pre>
+<pre><fixedpre>
+assets/yourcomponent
+</fixedpre></pre>
 <p>as well as</p>
-<pre>
-    core/mycomponents/yourcomponent/core/yourcomponent
-</pre>
+<pre><fixedpre>
+core/mycomponents/yourcomponent/core/yourcomponent
+</fixedpre></pre>
 <p>and</p>
-<pre>
+<pre><fixedpre>
     core/yourcomponent
-</pre>
+</fixedpre></pre>
 
 <p>It's easy to get confused and edit the wrong file when you're working on the package. In addition, the objects created by Bootstrap or ImportObjects already exist in the Manager so you won't know whether they were installed by your packages or were already there.</p>
 
-<p>Often, the safest and best solution is to install the package a completely separate MODX installation. To do that, just copy the transport.zip file for your extra from the <fixedpre>core/packages</fixedpre> directory to the <fixedpre>core/packages</fixedpre> directory of the other MODX install. Then, in Package Manager, search locally for packages and install the package as usual.</p>
+<p>Often, the safest and best solution is to install the package a completely separate MODX installation. To do that, just copy the transport.zip file for your extra from the <fixedpre>core/packages</fixedpre> directory to the <fixedpre>core/packages</fixedpre> directory of the other MODX install. Then, in Package Manager, search locally for packages and install the package as usual. Even if you don't do this during development, you should do it at least once before releasing the package to make sure that it installs and runs as it should.</p>
 
 
 <h3>Running Your Component</h3>
@@ -333,27 +337,27 @@ files in</p>
 
 <p>If you would like to actually run the code for plugins and snippets that your build script is packaging, you can create new System Settings with the paths and URLs for that version. Then in the
 code of your snippets and plugins, get that path with a line like this (this example has &quot;mc.&quot; as a prefix &mdash; you would use your own prefix):</p>
-<pre>
-    $path = $MODX->getOption('mc.core_path',null,
-        $MODX->getOption('core_path').'components/yourcomponent/');
-</pre>
+<pre><fixedpre>
+$path = $MODX->getOption('mc.core_path',null,
+    $MODX->getOption('core_path').'components/yourcomponent/');
+</fixedpre></pre>
 <p>If, for example, you set the mc.core_path system setting to:</p>
-<pre>
+<pre><fixedpre>
 {assets_path}components/yourcomponent/core/components/yourcomponent/
-</pre>
+</fixedpre></pre>
 <p>You can load your class file in the snippet with code like
 this:</p>
-<pre>
+<pre><fixedpre>
 $iFile = $path . "model/yourcomponent/yourclass.inc.php";
 require_once $iFile;
-</pre>
+</fixedpre></pre>
 <p>For you, the path will resolve to the area with your build script. For others who install the package, however, the system setting will come back empty (because it doesn't exist), so the path will resolve to that of the installed component.</p>
 
 <p>You can also replace the snippet and plugin code with something like this:</p>
-<pre>
-    return include $MODX->getOption('mc.core_path') .
-        'core/components/yourcomponent/elements/snippets/yoursnippet.snippet.php';
-</pre>
+<pre><fixedpre>
+return include $MODX->getOption('mc.core_path') .
+    'core/components/yourcomponent/elements/snippets/yoursnippet.snippet.php';
+</fixedpre></pre>
 
 <p>Of course another method is to use static elements, though I generally don't recommend doing that. Any class files will be loaded from the installed location in core/packages but the snippets and plugins will come from your build location. That can be very confusing. It's also very easy to forget what you're doing and lose work with static elements.</p>
 
