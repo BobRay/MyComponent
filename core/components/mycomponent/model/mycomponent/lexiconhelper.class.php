@@ -387,8 +387,11 @@ class LexiconHelper {
                     $pattern = '/~~[^\]\?&]+/';
                     $replace = '';
                 }
-
-                $content = preg_replace($pattern, $replace, $content);
+                $lines = explode("\n", $content);
+                foreach ($lines as &$line) {
+                    $line = preg_replace($pattern, $replace, $line);
+                }
+                $content = implode("\n", $lines);
 
                 if (!empty($content)) {
                     $fp = fopen($path, 'w');
