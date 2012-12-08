@@ -36,7 +36,7 @@ class PluginAdapter extends ElementAdapter
             /* bail out if no events in project config */
             if (! isset($fields['events']) || empty($fields['events'])) {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
-                    $this->modx->lexicon('mc_no_events_for_plugin~~No events for plugin')
+                    $this->modx->lexicon('mc_no_events_for_plugin')
                     . ': ' . $this->getName());
                 return;
             }
@@ -55,7 +55,7 @@ class PluginAdapter extends ElementAdapter
             $me = $this->modx->getObject('modPlugin', array('name' => $this->getName()));
             if (!$me) {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[Plugin Adapter] ' .
-                $this->modx->lexicon('mc_cannot_find_self~~Cannot find myself'));
+                $this->modx->lexicon('mc_cannot_find_self'));
             } else {
                 $pes = $me->getMany('PluginEvents');
                 if (! empty($pes)) {
@@ -114,12 +114,12 @@ class PluginAdapter extends ElementAdapter
         /* @var $helpers Helpers */
         if (!empty($dir) && !empty($intersects)) {
             $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
-                $helpers->modx->lexicon('mc_creating_plugin_resolver~~Creating plugin resolver'));
+                $helpers->modx->lexicon('mc_creating_plugin_resolver'));
             $tpl = $helpers->getTpl('pluginresolver.php');
             $tpl = $helpers->replaceTags($tpl);
             if (empty($tpl)) {
                 $helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[PluginAdapter] ' .
-                    $helpers->modx->lexicon('mc_pluginresolver_empty~~pluginresolver tpl is empty'));
+                    $helpers->modx->lexicon('mc_pluginresolver_empty'));
                 return false;
             }
 
@@ -133,7 +133,7 @@ class PluginAdapter extends ElementAdapter
                 $helpers->writeFile($dir, $fileName, $tpl);
             } else {
                 $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' ' .
-                    $helpers->modx->lexicon('mc_already_exists~~already exists'));
+                    $helpers->modx->lexicon('mc_already_exists'));
             }
         }
         return true;

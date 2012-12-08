@@ -530,21 +530,4 @@ $components = array(
 
     /* ******************** LEXICON HELPER SETTINGS ***************** */
     /* These settings are used by LexiconHelper */
-    'rewriteCodeFiles' => false,  /* remove ~~descriptions */
-    'rewriteLexiconFiles' => true, /* automatically add missing strings to lexicon files */
-    /* ******************************************* */
-
-    /* Array of aliases used in code for the properties array.
-     * Used by the checkproperties utility to check properties in code against
-     * the properties in your properties transport files.
-     * if you use something else, add it here (OK to remove ones you never use.
-     * Search also checks with '$this->' prefix -- no need to add it here. */
-    'scriptPropertiesAliases' => array(
-        'props',
-        'sp',
-        'config',
-        'scriptProperties'
-    ),
-);
-
-return $components;
+    'rewriteCodeFiles' => false,  /* remove 

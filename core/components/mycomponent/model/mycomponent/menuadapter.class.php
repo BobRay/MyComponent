@@ -22,12 +22,12 @@ class MenuAdapter extends ObjectAdapter {
 
             if (empty($actionFields)) {
                 $helpers->sendLog(MODX::LOG_LEVEL_ERROR, '    ' .
-                    $this->modx->lexicon('mc_menu_has_no_action~~Menu has no action'));
+                    $this->modx->lexicon('mc_menu_has_no_action'));
                 return;
             }
             if (empty($actionFields['namespace'])) {
                 $helpers->sendLog(MODX::LOG_LEVEL_ERROR, '    ' .
-                    $this->modx->lexicon('mc_menu_action_no_namespace~~Menu Action has no namespace'));
+                    $this->modx->lexicon('mc_menu_action_no_namespace'));
                 return;
             }
             ObjectAdapter::$myObjects['menus'][] = $fields;
@@ -53,12 +53,12 @@ class MenuAdapter extends ObjectAdapter {
             $menu->addOne($action);
             if ($menu->save()) {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
-                    $this->modx->lexicon('mc_created_menu~~Created Menu')
+                    $this->modx->lexicon('mc_created_menu')
                     . ': ' . $fields['text']);
             }
         } else {
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO,
-                $this->modx->lexicon('mc_menu_already_exists~~Menu already exists')
+                $this->modx->lexicon('mc_menu_already_exists')
                     . ' ' . $fields['text']);
         }
     }
@@ -68,7 +68,7 @@ class MenuAdapter extends ObjectAdapter {
         $menuFields = array();
         $actionFields = array();
         $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
-            $helpers->modx->lexicon('mc_processing_menus~~Processing Menus'));
+            $helpers->modx->lexicon('mc_processing_menus'));
         if ($mode == MODE_BOOTSTRAP) {
             $menus = $helpers->modx->getOption('menus', ObjectAdapter::$myObjects, array());
             foreach($menus as $menu => $fields) {
@@ -144,7 +144,7 @@ class MenuAdapter extends ObjectAdapter {
                 $helpers->writeFile($path, $transportFile, $tpl, $dryRun);
             } else {
                 $helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
-                    $helpers->modx->lexicon('mc_file_already_exists~~File already exists')
+                    $helpers->modx->lexicon('mc_file_already_exists')
                     . ': ' . $transportFile);
             }
         }
@@ -162,7 +162,7 @@ class MenuAdapter extends ObjectAdapter {
                 if ($action->remove()) {
                     $temp = $this->modx->setLogLevel(MODX::LOG_LEVEL_INFO);
                     $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
-                        $this->modx->lexicon('mc_removed_menu_item~~Removed menu item')
+                        $this->modx->lexicon('mc_removed_menu_item')
                         . ': ' . $fields['text']);
                     $this->modx->setLogLevel($temp);
                 }
@@ -170,7 +170,7 @@ class MenuAdapter extends ObjectAdapter {
             if ($menu->remove()) {
                 $temp = $this->modx->setLogLevel(MODX::LOG_LEVEL_INFO);
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
-                    $this->modx->lexicon('mc_removed_action~~Removed action for menu')
+                    $this->modx->lexicon('mc_removed_action')
                     . ': '. $fields['text']);
                 $this->modx->setLogLevel($temp);
             }

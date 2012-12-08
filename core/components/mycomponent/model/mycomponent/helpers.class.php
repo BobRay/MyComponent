@@ -135,12 +135,12 @@ class Helpers
             /* make sure the header made it and do alerts if not */
             if (empty($text)) {
                 $this->sendLog(MODX::LOG_LEVEL_ERROR, '    [Helpers] ' .
-                    $this->modx->lexicon('mc_problem_loading_tpl_file_empty~~Problem loading Tpl file (text is empty)')
+                    $this->modx->lexicon('mc_problem_loading_tpl_file_empty')
                       . ' '  . $name  );
                 $text = "<?php\n/* empty header */\n\n";
             } elseif (strpos($text, '<' . '?' . 'php') === false) {
                 $this->sendLog(MODX::LOG_LEVEL_ERROR, '    [Helpers] ' .
-                    $this->modx->lexicon('mc_problem_loading_tpl_file_no_php_tag~~Problem loading Tpl file (text has no PHP tag)')
+                    $this->modx->lexicon('mc_problem_loading_tpl_file_no_php_tag')
                      . ' ' . $name);
                 $text = "<?php\n /* inserted PHP tag */\n\n" . $text;
             }
@@ -278,8 +278,8 @@ class Helpers
         /* write to stdout if dryRun is true */
         $file = $dryRun? 'php://output' : $outFile;
 
-        $action = ($file == $outFile) && file_exists($outFile)? $this->modx->lexicon('mc_Updated~~Updated') :
-            $this->modx->lexicon('mc_Creating~~Creating');
+        $action = ($file == $outFile) && file_exists($outFile)? $this->modx->lexicon('mc_Updated') :
+            $this->modx->lexicon('mc_Creating');
 
         $fp = fopen($file, 'w');
         if ($fp) {
@@ -287,14 +287,14 @@ class Helpers
 
             if ($dryRun) {
                 $this->sendLog(MODX::LOG_LEVEL_INFO, "\n\n" .
-                $this->modx->lexicon('mc_begin_file_content~~******** Begin File Content ********')
+                $this->modx->lexicon('mc_begin_file_content')
                     . "\n");
             } elseif (! $suppressOutput) {
                 $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $action . ' ' . $file);
             }
             if (empty($content) && ! $suppressOutput) {
                 $this->sendLog(MODX::LOG_LEVEL_INFO, ' ' .
-                    $this->modx->lexicon('mc_empty~~(empty)'), true);
+                    $this->modx->lexicon('mc_empty'), true);
             }
             fwrite($fp, $content);
             fclose($fp);
@@ -302,12 +302,12 @@ class Helpers
                 chmod($file, $this->filePermission);
             } else {
                 $this->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
-                    $this->modx->lexicon('mc_end_file_content~~******** End File Content ********')
+                    $this->modx->lexicon('mc_end_file_content')
                 . "\n\n");
             }
         } else {
             $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
-                $this->modx->lexicon('mc_could_not_write_file~~Could not write file')
+                $this->modx->lexicon('mc_could_not_write_file')
             . ' ' . $file);
         }
 
@@ -375,9 +375,9 @@ class Helpers
         $subsidiaryObjectType = 'missing';
         $subsidiaryObjectName = 'missing';
         $this->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
-            $this->modx->lexicon('mc_creating~~Creating')
+            $this->modx->lexicon('mc_creating')
             . ' ' . $intersectType . ' ' .
-            $this->modx->lexicon('mc_objects~~objects'));
+            $this->modx->lexicon('mc_objects'));
         foreach ($intersects as $values) {
 
             $mainIdField = 'id';
@@ -405,7 +405,7 @@ class Helpers
                             $values['propertyset'] = $ps->get('id');
                         } else {
                             $this->sendLog(MODX::LOG_LEVEL_ERROR, '[Helpers] ' .
-                                $this->modx->lexicon('mc_property_set_nf~~Could not find Property Set')
+                                $this->modx->lexicon('mc_property_set_nf')
                             . ': ' . $values['propertyset']);
                         }
                     }
@@ -420,7 +420,7 @@ class Helpers
                     break;
                 default:
                     $this->sendLog(MODX::LOG_LEVEL_ERROR, '[Helpers] ' .
-                        $this->modx->lexicon('mc_asked_for_unknown_intersect_type~~Asked for unknown intersect type'));
+                        $this->modx->lexicon('mc_asked_for_unknown_intersect_type'));
                     break;
 
 
@@ -431,9 +431,9 @@ class Helpers
 
             if (!$mainObject) {
                 $this->sendLog(MODX::LOG_LEVEL_ERROR, '    [Helpers] ' .
-                    $this->modx->lexicon('mc_error_creating_intersect~~Error creating intersect')
+                    $this->modx->lexicon('mc_error_creating_intersect')
                     . ' ' . $intersectType . ': ' .
-                    $this->modx->lexicon('mc_could_not_get_main_object~~Could not get main object')
+                    $this->modx->lexicon('mc_could_not_get_main_object')
                      . ' ' . $mainObjectName .
                     "\n    " . implode(',', $searchFields));
                 return false;
@@ -444,9 +444,9 @@ class Helpers
             $subsidiaryObject = $this->modx->getObject($subsidiaryObjectType, $searchFields);
             if (! $subsidiaryObject) {
                 $this->sendLog(MODX::LOG_LEVEL_ERROR, '    [Helpers] ' .
-                    $this->modx->lexicon('mc_error_creating_intersect~~Error creating intersect')
+                    $this->modx->lexicon('mc_error_creating_intersect')
                         . ' ' .  $intersectType . ': ' .
-                        $this->modx->lexicon('mc_could_not_get_subsidiary_object~~could not get subsidiary object')
+                        $this->modx->lexicon('mc_could_not_get_subsidiary_object')
                          . ' ' .  $subsidiaryObjectName ."\n    " .
                         implode(', ', $searchFields));
                 return false;
@@ -482,7 +482,7 @@ class Helpers
 
             if ($intersectObj) {
                 $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
-                    $this->modx->lexicon('mc_intersect_already_exists_for~~Intersect already exists for')
+                    $this->modx->lexicon('mc_intersect_already_exists_for')
                 . ' ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
 
             } else {
@@ -506,13 +506,13 @@ class Helpers
                     }
                     if ($intersectObj->save()) {
                         $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
-                            $this->modx->lexicon('mc_created_intersect~~Created Intersect')
+                            $this->modx->lexicon('mc_created_intersect')
                              . ' ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
 
                     }
                 } else {
                     $this->sendLog(MODX::LOG_LEVEL_ERROR, '    [Helpers] ' .
-                        $this->modx->lexicon('mc_could_not_create_intersect_for~~Could not create intersect for')
+                        $this->modx->lexicon('mc_could_not_create_intersect_for')
                         . ' ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
                 }
             }

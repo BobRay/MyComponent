@@ -69,8 +69,8 @@
  *
  * or This form:
  *
- *#      $modx->lexicon('language_string_key~~Actual Language String');
- *#      $modx->lexicon("language_string_key~~Actual Language String");
+ *#      $modx->lexicon('language_string_key');
+ *#      $modx->lexicon("language_string_key");
  *
  * Use no spaces in the key (the left side).
  *
@@ -158,16 +158,16 @@ $lexiconHelper = new LexiconHelper($modx, $props);
     $lexiconHelper->run();
 $output = $lexiconHelper->helpers->getOutput();
 
-$output .= "\n\n" . $modx->lexicon('mc_initial_memory_used~~Initial Memory Used') . ': ' . round($mem_usage / 1048576, 2) . ' ' .
-    $modx->lexicon('mc_megabytes~~megabytes');
+$output .= "\n\n" . $modx->lexicon('mc_initial_memory_used') . ': ' . round($mem_usage / 1048576, 2) . ' ' .
+    $modx->lexicon('mc_megabytes');
 $mem_usage = memory_get_usage();
 $peak_usage = memory_get_peak_usage(true);
-$output .= "\n" . $modx->lexicon('mc_final_memory_used~~Final Memory Used')
+$output .= "\n" . $modx->lexicon('mc_final_memory_used')
     . ': ' . round($mem_usage / 1048576, 2) . ' ' .
-    $modx->lexicon('mc_megabytes~~megabytes');
-$output .= "\n" . $modx->lexicon('mc_peak_memory_used~~Peak Memory Used')
+    $modx->lexicon('mc_megabytes');
+$output .= "\n" . $modx->lexicon('mc_peak_memory_used')
     . ': ' . round($peak_usage / 1048576, 2) . ' ' .
-    $modx->lexicon('mc_megabytes~~megabytes');
+    $modx->lexicon('mc_megabytes');
 /* report how long it took */
 $mtime = microtime();
 $mtime = explode(" ", $mtime);
@@ -175,7 +175,7 @@ $mtime = $mtime[1] + $mtime[0];
 $tend = $mtime;
 $totalTime = ($tend - $tstart);
 $totalTime = sprintf("%2.4f s", $totalTime);
-$output .= "\n" . $modx->lexicon('mc_total_time~~Total time') .
+$output .= "\n" . $modx->lexicon('mc_total_time') .
     ': ' . $totalTime;
 
 if ($cliMode) {

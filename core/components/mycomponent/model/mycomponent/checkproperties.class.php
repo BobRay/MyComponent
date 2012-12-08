@@ -97,13 +97,13 @@ class CheckProperties {
         $this->helpers->init();
 
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-            $this->modx->lexicon('mc_project~~Project')
+            $this->modx->lexicon('mc_project')
             . ': ' . $this->props['packageName']);
 
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-            $this->modx->lexicon('mc_action~~Action')
+            $this->modx->lexicon('mc_action')
             . ': ' .
-                $this->modx->lexicon('mc_check_properties~~Check Properties')
+                $this->modx->lexicon('mc_check_properties')
          . "\n");
         $this->source = $this->props['mycomponentRoot'];
         /* add trailing slash if missing */
@@ -374,7 +374,7 @@ class CheckProperties {
         $propertyTpl = "
         array(
             'name' => '[[+name]]',
-            'desc' => '{$prefix}[[+name]]_desc~~(optional)Add description here for LexiconHelper',
+            'desc' => '{$prefix}[[+name]]_desc',
             'type' => 'textfield',
             'options' => '',
             'value' => '',

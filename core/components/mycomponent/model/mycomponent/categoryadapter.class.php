@@ -68,12 +68,12 @@ class CategoryAdapter extends ObjectAdapter {
         /* @var $helpers Helpers */
         if (!empty($dir) && !empty($intersects)) {
             $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
-                $helpers->modx->lexicon('mc_creating_category_resolver~~Creating Category resolver'));
+                $helpers->modx->lexicon('mc_creating_category_resolver'));
             $tpl = $helpers->getTpl('categoryresolver.php');
             $tpl = $helpers->replaceTags($tpl);
             if (empty($tpl)) {
                 $helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[Category Adapter] ' .
-                    $helpers->modx->lexicon('mc_categoryresolver_tpl_empty~~categoryresolver tpl is empty'));
+                    $helpers->modx->lexicon('mc_categoryresolver_tpl_empty'));
                 return false;
             }
 
@@ -87,7 +87,7 @@ class CategoryAdapter extends ObjectAdapter {
             }
             else {
                 $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' ' .
-                    $helpers->modx->lexicon('mc_already_exists~~already exists'));
+                    $helpers->modx->lexicon('mc_already_exists'));
             }
         }
         return true;
@@ -132,15 +132,15 @@ class CategoryAdapter extends ObjectAdapter {
             if (!empty($elements)) {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
                     "\n" .
-                        $this->modx->lexicon('mc_processing~~Processing')
+                        $this->modx->lexicon('mc_processing')
                         . ' ' .  $elementType . ' ' .
-                        $this->modx->lexicon('mc_in_category~~in category')
+                        $this->modx->lexicon('mc_in_category')
                         . ': ' . $this->getName());
             } else {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
-                    $this->modx->lexicon('mc_no~~No')
+                    $this->modx->lexicon('mc_no')
                     . ' ' . $elementType . ' ' .
-                    $this->modx->lexicon('mc_found_in_category~~found in category')
+                    $this->modx->lexicon('mc_found_in_category')
                     . ': ' . $this->getName());
             }
             foreach($elements as $element) {
@@ -171,7 +171,7 @@ class CategoryAdapter extends ObjectAdapter {
 
                 $o = new $adapterName($this->modx, $this->helpers, $fields, MODE_EXPORT);
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
-                    $this->modx->lexicon('mc_processing~~Processing')
+                    $this->modx->lexicon('mc_processing')
                 . ' ' . $o->getName());
 
                 if (isset($fields['properties']) && !empty($fields['properties'])) {
@@ -182,12 +182,12 @@ class CategoryAdapter extends ObjectAdapter {
                         $o->createCodeFile(true, $content, MODE_EXPORT, $dryRun);
                     } else {
                         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
-                            $this->modx->lexicon('mc_skipping_static_element_code_file~~Skipping code file for static element')
+                            $this->modx->lexicon('mc_skipping_static_element_code_file')
                         . ': ' . $o->getName());
                     }
                 } else {
                     $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                        '        ' . $this->modx->lexicon('mc_no_code_file_required~~(no code file required)'));
+                        '        ' . $this->modx->lexicon('mc_no_code_file_required'));
                 }
             }
         }
@@ -199,7 +199,7 @@ class CategoryAdapter extends ObjectAdapter {
         if ($obj) {
             $temp = $this->modx->setLogLevel(MODX::LOG_LEVEL_INFO);
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
-                $this->modx->lexicon('mc_removed~~Removed')
+                $this->modx->lexicon('mc_removed')
                 . ' ' . 'modCategory' . ': ' . $name);
             $this->modx->setLogLevel($temp);
             $obj->remove();

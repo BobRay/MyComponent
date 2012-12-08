@@ -71,9 +71,9 @@ if ( (!empty($_POST) ) && (isset($_POST['doit']) || isset($_POST['newproject']) 
             break;
         case 'newproject':
             if (empty($_POST['currentproject'])) {
-                $message = $modx->lexicon('mc_you_must_specify_a_project_name~~You must specify a project name');
+                $message = $modx->lexicon('mc_you_must_specify_a_project_name');
             } elseif(isset($projects[strtolower($_POST['currentproject'])])) {
-                $message = $modx->lexicon('mc_project_already_exists~~Project already exists');
+                $message = $modx->lexicon('mc_project_already_exists');
             } else {
                 $newProjectName = $_POST['currentproject'];
                 $newProjectLower = strtolower($newProjectName);
