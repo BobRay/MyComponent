@@ -308,7 +308,7 @@ if ($hasContextSettings) {
 /* minify JS */
 
 if ($minifyJS) {
-    $helper->sendLog(modX::LOG_LEVEL_INFO, 'Creating js-min file(s)');
+    $helper->sendLog(modX::LOG_LEVEL_INFO, $modx->lexicon('mc_Creating~~Creating') . ' js-min ' .  $modx->lexicon('mc_files~~file(s)'));
     // require $sources['build'] . 'utilities/jsmin.class.php';
     require $sources['utilities'] . 'jsmin.class.php';
 

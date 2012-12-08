@@ -86,7 +86,7 @@ class CategoryAdapter extends ObjectAdapter {
                 $helpers->writeFile($dir, $fileName, $tpl);
             }
             else {
-                $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName .
+                $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' ' .
                     $helpers->modx->lexicon('mc_already_exists~~already exists'));
             }
         }

@@ -1,6 +1,7 @@
 <?php
 /* @var $modx modX */
 
+$modx->lexicon->load('mycomponent:default');
 if (! $modx->user->hasSessionContext('mgr')) {
     die('This file can not be run outside of MODX. ');
 }
@@ -70,9 +71,9 @@ if ( (!empty($_POST) ) && (isset($_POST['doit']) || isset($_POST['newproject']) 
             break;
         case 'newproject':
             if (empty($_POST['currentproject'])) {
-                $message = 'You must specify a project name';
+                $message = $modx->lexicon('mc_you_must_specify_a_project_name~~You must specify a project name');
             } elseif(isset($projects[strtolower($_POST['currentproject'])])) {
-                $message = 'Project already exists';
+                $message = $modx->lexicon('mc_project_already_exists~~Project already exists');
             } else {
                 $newProjectName = $_POST['currentproject'];
                 $newProjectLower = strtolower($newProjectName);

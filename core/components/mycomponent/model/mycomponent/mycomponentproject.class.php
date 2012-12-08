@@ -547,7 +547,7 @@ class MyComponentProject {
                 foreach ($elements as $element => $elementObjects) {
                     $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n    " .
                         $this->modx->lexicon('mc_processing~~Processing')
-                        . ucfirst($element));
+                        . ' ' . ucfirst($element));
                     foreach ($elementObjects as $elementName => $fields) {
                         /* @var $adapter elementAdapter */
                         /* @var $o ObjectAdapter */
@@ -805,7 +805,7 @@ class MyComponentProject {
             $dir = $this->myPaths['targetBuild'];
             $this->helpers->writeFile($dir, $fileName, $tpl);
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName .
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' '.
                 $this->modx->lexicon('mc_already_exists~~already exists'));
         }
 
@@ -816,7 +816,7 @@ class MyComponentProject {
             $tpl = $this->helpers->getTpl('example.config.php');
             $this->helpers->writeFile($dir, $fileName, $tpl);
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName .
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' '.
                 $this->modx->lexicon('mc_already_exists~~already exists'));
         }
 
@@ -836,7 +836,7 @@ class MyComponentProject {
     if (! file_exists($dir . $fileName)) {
         $this->helpers->writeFile($dir, $fileName, $tpl);
     } else {
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName .
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' '.
             $this->modx->lexicon('mc_already_exists~~already exists'));
     }
 
@@ -954,7 +954,7 @@ class MyComponentProject {
                     . ': ' . $mcConfigDir . $fileName);
             }
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName .
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' '.
                 $this->modx->lexicon('mc_already_exists~~already exists'));
         }
 

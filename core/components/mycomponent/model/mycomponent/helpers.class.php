@@ -278,7 +278,8 @@ class Helpers
         /* write to stdout if dryRun is true */
         $file = $dryRun? 'php://output' : $outFile;
 
-        $action = ($file == $outFile) && file_exists($outFile)? 'Updated' : 'Creating';
+        $action = ($file == $outFile) && file_exists($outFile)? $this->modx->lexicon('mc_Updated~~Updated') :
+            $this->modx->lexicon('mc_Creating~~Creating');
 
         $fp = fopen($file, 'w');
         if ($fp) {
