@@ -22,8 +22,6 @@
  *
  * Description: The LexiconHelper snippet identifies lexicon strings
  * in code and checks them against strings in a language file.
- * In the code, the references must be in this form:
- * $modx->lexicon('language_string_key')
  *
  * You must use single quotes and no spaces.
  *
