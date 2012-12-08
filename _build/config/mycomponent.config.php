@@ -8,7 +8,7 @@ $components = array(
     /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
     'packageDescription' => 'MyComponent MODX Extra development tool',
-    'version' => '3.0.0',
+    'version' => '3.0.1',
     'release' => 'beta1',
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
