@@ -8,7 +8,7 @@ $components = array(
     /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
     'packageDescription' => 'MyComponent MODX Extra development tool',
-    'version' => '3.0.1',
+    'version' => '3.0.2',
     'release' => 'beta1',
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
@@ -362,7 +362,7 @@ $components = array(
      * (other resolvers may be created above for TVs and plugins).
      * Suffix 'resolver.php' will be added automatically */
     'resolvers' => array(
-        /*'default',*/
+        'default',
     ),
 
     /* (optional) Validators can abort the install after checking
