@@ -1,6 +1,6 @@
 Changelog for MyComponent
 
-MyComponent 3.0.1
+MyComponent 3.0.3
 -----------------
 Refactored Version
 Numerous changes (see docs)
