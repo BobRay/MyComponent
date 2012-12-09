@@ -475,6 +475,36 @@ foreach($categories as $k => $categoryName) {
         }
     }
 
+    /* Transfer _build dir -- this is just for MyComponent. */
+    $helper->sendLog(MODX::LOG_LEVEL_INFO, 'Packaged _build/config directory files');
+    $vehicle->resolve('file', array(
+                                   'source' => $sources['root'] . '/_build/config',
+                                   'target' => "return MODX_CORE_PATH . 'components/mycomponent/_build/';",
+                              ));
+
+    if ($hasCore && $i == 1) {
+        $helper->sendLog(MODX::LOG_LEVEL_INFO, 'Packaged core directory files');
+        $vehicle->resolve('file', array(
+                                       'source' => $sources['source_core'],
+                                       'target' => "return MODX_CORE_PATH . 'components/';",
+                                  ));
+    }
+
+
+    /* This section transfers every file in the local
+       mycomponents/mycomponent/assets directory to the
+       target site's assets/mycomponent directory on install.
+     */
+
+    if ($hasAssets && $i == 1) {
+        $helper->sendLog(MODX::LOG_LEVEL_INFO, 'Packaged assets directory files');
+        $vehicle->resolve('file', array(
+                                       'source' => $sources['source_assets'],
+                                       'target' => "return MODX_ASSETS_PATH . 'components/';",
+                                  ));
+    }
+
+
     /* Package script resolvers, if any */
     if ( ($i == $count) && $hasResolvers) { /* add resolvers to last category only */
         $resolvers = empty($props['resolvers'])? array() : $props['resolvers'];
@@ -502,35 +532,6 @@ foreach($categories as $k => $categoryName) {
        target site's core/mycomponent directory on install.
      */
 
-    /* Transfer _build dir -- this is just for MyComponent. */
-    $helper->sendLog(MODX::LOG_LEVEL_INFO, 'Packaged _build/config directory files');
-    $vehicle->resolve('file', array(
-       'source' => $sources['root'] . '/_build/config',
-       'target' => "return MODX_CORE_PATH . 'components/mycomponent/_build/';",
-    ));
-
-    if ($hasCore && $i == 1) {
-        $helper->sendLog(MODX::LOG_LEVEL_INFO, 'Packaged core directory files');
-        $vehicle->resolve('file',array(
-                'source' => $sources['source_core'],
-                'target' => "return MODX_CORE_PATH . 'components/';",
-            ));
-    }
-
-
-
-    /* This section transfers every file in the local
-       mycomponents/mycomponent/assets directory to the
-       target site's assets/mycomponent directory on install.
-     */
-
-    if ($hasAssets && $i == 1) {
-        $helper->sendLog(MODX::LOG_LEVEL_INFO, 'Packaged assets directory files');
-        $vehicle->resolve('file',array(
-            'source' => $sources['source_assets'],
-            'target' => "return MODX_ASSETS_PATH . 'components/';",
-        ));
-    }
 
     /* Add subpackages */
     /* The transport.zip files will be copied to core/packages

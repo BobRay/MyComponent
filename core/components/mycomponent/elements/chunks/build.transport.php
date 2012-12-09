@@ -617,6 +617,34 @@ foreach ($categories as $k => $categoryName) {
             }
         }
     }
+    /* This section transfers every file in the local
+           mycomponents/mycomponent/core directory to the
+           target site's core/mycomponent directory on install.
+         */
+
+    if ($hasCore && $i == 1) {
+        $helper->sendLog(MODX::LOG_LEVEL_INFO,
+            $modx->lexicon('mc_packaged_core_files'));
+        $vehicle->resolve('file', array(
+                                       'source' => $sources['source_core'],
+                                       'target' => "return MODX_CORE_PATH . 'components/';",
+                                  ));
+    }
+
+    /* This section transfers every file in the local
+       mycomponents/mycomponent/assets directory to the
+       target site's assets/mycomponent directory on install.
+     */
+
+    if ($hasAssets && $i == 1) {
+        $helper->sendLog(MODX::LOG_LEVEL_INFO,
+            $modx->lexicon('mc_packaged_assets_files'));
+        $vehicle->resolve('file', array(
+                                       'source' => $sources['source_assets'],
+                                       'target' => "return MODX_ASSETS_PATH . 'components/';",
+                                  ));
+    }
+
 
     /* Package script resolvers, if any */
     if (($i == $count) && $hasResolvers) { /* add resolvers to last category only */
@@ -656,33 +684,6 @@ foreach ($categories as $k => $categoryName) {
                     . '.');
             }
         }
-    }
-    /* This section transfers every file in the local
-       mycomponents/mycomponent/core directory to the
-       target site's core/mycomponent directory on install.
-     */
-
-    if ($hasCore && $i == 1) {
-        $helper->sendLog(MODX::LOG_LEVEL_INFO,
-            $modx->lexicon('mc_packaged_core_files'));
-        $vehicle->resolve('file', array(
-                                       'source' => $sources['source_core'],
-                                       'target' => "return MODX_CORE_PATH . 'components/';",
-                                  ));
-    }
-
-    /* This section transfers every file in the local
-       mycomponents/mycomponent/assets directory to the
-       target site's assets/mycomponent directory on install.
-     */
-
-    if ($hasAssets && $i == 1) {
-        $helper->sendLog(MODX::LOG_LEVEL_INFO,
-            $modx->lexicon('mc_packaged_assets_files'));
-        $vehicle->resolve('file', array(
-                                       'source' => $sources['source_assets'],
-                                       'target' => "return MODX_ASSETS_PATH . 'components/';",
-                                  ));
     }
 
     /* Add subpackages */
