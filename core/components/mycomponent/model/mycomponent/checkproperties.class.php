@@ -153,8 +153,10 @@ class CheckProperties {
         }
         $this->classFiles = array();
         $dir = $this->targetCore . 'model';
-        $this->helpers->dirWalk($dir, null, true);
-        $this->classFiles = $this->helpers->getFiles();
+        if (is_dir($dir)) {
+            $this->helpers->dirWalk($dir, null, true);
+            $this->classFiles = $this->helpers->getFiles();
+        }
         if(!empty($this->classFiles)) {
             $this->output .= "\nFound these class files: " . implode(', ', array_keys($this->classFiles));
 
