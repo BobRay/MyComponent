@@ -2,6 +2,7 @@ Changelog for MyComponent
 
 MyComponent 3.0.4
 -----------------
+Fixed bug with System Settings in lexicon helper
 Fixed typo in textfield x-type that prevented system setting updates
 Fixed typo in readme.txt
 Fixed bug in checkproperties.php when there is no model dir.
