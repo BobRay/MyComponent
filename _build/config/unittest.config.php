@@ -49,7 +49,7 @@ $components = array(
     'newSystemSettings' => array(
         'ut_system_setting1' => array(
             'key' => 'ut_system_setting1',
-            'xtype' => 'textField',
+            'xtype' => 'textfield',
             'value' => 'value1',
             'namespace' => 'unittest',
         ),
