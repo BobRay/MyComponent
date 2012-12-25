@@ -868,7 +868,8 @@ class LexiconHelper {
             if (empty($_lang)) {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
                     $this->modx->lexicon('mc_no_lex_strings_in_dip'));
-                return '';
+                // return '';
+                $_lang = array();
             }
             foreach($settings as $key => $value ) {
                 $key = strtoLower($key);
