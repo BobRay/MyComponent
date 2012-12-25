@@ -8,7 +8,7 @@ $components = array(
     /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
     'packageDescription' => 'MyComponent MODX Extra development tool',
-    'version' => '3.0.4',
+    'version' => '3.0.5',
     'release' => 'beta1',
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
@@ -54,7 +54,7 @@ $components = array(
             'name' => 'Example Setting One',
             'description' => 'Description for setting one',
             'namespace' => 'example',
-            'xtype' => 'textField',
+            'xtype' => 'textfield',
             'value' => 'value1',
             'area' => 'area1',
         ),
