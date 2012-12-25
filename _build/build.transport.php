@@ -90,6 +90,7 @@ $modx->setLogTarget(XPDO_CLI_MODE
     : 'HTML');
 
 if (!defined('MODX_CORE_PATH')) {
+    session_write_close();
     die('build.config.php is not correct');
  }
 
@@ -99,6 +100,7 @@ $currentProject = 'mycomponent';
 // @include dirname(__FILE__) . '/config/current.project.php';
 
 if (! $currentProject) {
+    session_write_close();
     die('Could not get current project');
 }
 
@@ -106,6 +108,7 @@ $helper = new BuildHelper($modx);
 $props = $helper->getProps(dirname(__FILE__) . '/config/' . $currentProject . '.config.php');
 
 if (! is_array($props)) {
+    session_write_close();
     die('Could not get project config file');
 }
 
@@ -113,6 +116,7 @@ $criticalSettings = array('packageNameLower', 'packageName', 'version', 'release
 
 foreach ($criticalSettings as $setting) {
    if (!isset($setting)) {
+       session_write_close();
        die('Critical setting is not set in Project Config: ' . $setting);
    }
 }

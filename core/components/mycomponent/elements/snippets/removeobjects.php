@@ -23,6 +23,7 @@ if (!defined('MODX_CORE_PATH')) {
         }
     }
     if (!defined('MODX_CORE_PATH')) {
+        session_write_close();
         die('[importobjects.php] Could not find build.config.php');
     }
     require_once MODX_CORE_PATH . 'model/modx/modx.class.php';

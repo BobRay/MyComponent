@@ -3,6 +3,7 @@
 
 $modx->lexicon->load('mycomponent:default');
 if (! $modx->user->hasSessionContext('mgr')) {
+    session_write_close();
     die('This file can not be run outside of MODX. ');
 }
 $message = '&nbsp;';
@@ -15,6 +16,7 @@ $cpFile = $modx->getOption('mc.root', null, $modx->getOption('core_path') . 'com
 
 /* make sure we got it */
 if (!isset($currentProject)) {
+    session_write_close();
     die('Current Project is not set');
 }
 

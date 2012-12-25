@@ -62,6 +62,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
         $this->category = key($this->mc->props['categories']);
         $this->packageNameLower = $this->mc->packageNameLower;
         if ($this->category != 'UnitTest') {
+            session_write_close();
             die('wrong config - NEVER run unit test on a real project!');
         }
         $category = $this->modx->getCollection('modCategory', array('category' => 'UnitTest'));

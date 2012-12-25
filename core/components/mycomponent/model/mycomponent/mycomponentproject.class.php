@@ -47,6 +47,7 @@ class MyComponentProject {
     public function __construct(&$modx) {
 
         if (!defined('MODE_BOOTSTRAP')) {
+            session_write_close();
             die("bootstrap not defined");
         }
         $this->modx =& $modx;
@@ -64,10 +65,12 @@ class MyComponentProject {
             if (file_exists($currentProjectPath)) {
                 include $currentProjectPath;
             } else {
+                session_write_close();
                 die('Could not find current.project.php file at: ' . $currentProjectPath);
             }
         }
         if (empty($currentProject)) {
+            session_write_close();
             die('No current Project Set');
         }
 
@@ -78,11 +81,13 @@ class MyComponentProject {
         if (file_exists($projectConfigPath)) {
             $properties = include $projectConfigPath;
         } else {
+            session_write_close();
             die('Could not find Project Config file at: ' . $projectConfigPath);
         }
 
         /* Make sure that we get usable values */
         if (!is_array($properties) or empty($properties)) {
+            session_write_close();
             die('Config File was not set up correctly: ' . $projectConfigPath);
         }
 
@@ -94,9 +99,11 @@ class MyComponentProject {
             ? $properties['mycomponentRoot']
             : '';
         if (empty($this->mcRoot)) {
+            session_write_close();
             die('mcRoot is not set in Project Config: ' . $projectConfigPath);
         }
         if (!is_dir($this->mcRoot)) {
+            session_write_close();
             die('mcRoot set in project config is not a directory: ' . $projectConfigPath);
         }
         $this->mcRoot = $this->modx->getOption('mc.root', null,
@@ -105,6 +112,7 @@ class MyComponentProject {
         $this->targetRoot = $this->modx->getOption('targetRoot', $properties, '');
 
         if (empty($this->targetRoot)) {
+            session_write_close();
             die('targetRoot is not set in project config file');
         }
         $this->props = $properties;
@@ -359,6 +367,7 @@ class MyComponentProject {
         if (empty($categories)) {
             $packageName = $this->modx->GetOption('packageName', $this->props, '');
             if (empty($packageName)) {
+                session_write_close();
                 die('PackageName nor categories found in project config');
             }
             /* If no categories, create one based on packageName */
@@ -1256,6 +1265,7 @@ class MyComponentProject {
         if ($removeFiles) {
             $dir = $this->targetRoot;
             if (! ($this->targetRoot == $this->props['targetRoot'])) {
+                session_write_close();
                 die('mismatched targetRoot -- aborting removeObjects');
             }
             $temp = $this->modx->setLogLevel(MODX::LOG_LEVEL_INFO);

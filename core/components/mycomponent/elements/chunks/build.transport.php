@@ -94,12 +94,14 @@ $modx->setLogTarget(XPDO_CLI_MODE
     : 'HTML');
 
 if (!defined('MODX_CORE_PATH')) {
+    session_write_close();
     die('build.config.php is not correct');
 }
 
 @include dirname(__FILE__) . '/config/current.project.php';
 
 if (!$currentProject) {
+    session_write_close();
     die('Could not get current project');
 }
 
@@ -110,6 +112,7 @@ $modx->lexicon->load('mycomponent:default');
 $props = $helper->getProps(dirname(__FILE__) . '/config/' . $currentProject . '.config.php');
 
 if (!is_array($props)) {
+    session_write_close();
     die($modx->lexicon('mc_no_config_file'));
 }
 
@@ -122,6 +125,7 @@ $criticalSettings = array(
 
 foreach ($criticalSettings as $setting) {
     if (!isset($setting)) {
+        session_write_close();
         die($modx->lexicon('mc_critical_setting_not_set')
             . ': ' . $setting);
     }

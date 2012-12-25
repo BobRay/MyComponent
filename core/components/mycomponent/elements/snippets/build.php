@@ -48,6 +48,7 @@ if (!defined('MODX_CORE_PATH')) {
         }
     }
     if (!defined('MODX_CORE_PATH')) {
+        session_write_close();
         die('[bootstrap.php] Could not find build.config.php');
     }
     require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
@@ -96,6 +97,7 @@ if (! isset($currentProject)) {
 $configPath = $buildPath . 'config/' . $currentProject . '.config.php';
 
 if (! file_exists($configPath)) {
+    session_write_close();
     die('Could not find project config file at: ' . $configPath);
 } else {
     $helper = new BuildHelper($modx);
@@ -103,12 +105,14 @@ if (! file_exists($configPath)) {
 }
 
 if (! is_array($props)) {
+    session_write_close();
     die('Project Config file is corrupt');
 }
 
 $transportPath = $props['targetRoot'] . '_build/build.transport.php';
 
 if (! file_exists($transportPath)) {
+    session_write_close();
     die('Could not find build.transport.php at: ' . $transportPath);
 }
 

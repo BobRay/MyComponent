@@ -68,6 +68,7 @@ class CheckProperties {
         if (file_exists($currentProjectPath)) {
             include $currentProjectPath;
         } else {
+            session_write_close();
             die('Could not find current.project.php file at: ' . $currentProjectPath);
         }
 
@@ -78,11 +79,13 @@ class CheckProperties {
         if (file_exists($projectConfigPath)) {
             $properties = include $projectConfigPath;
         } else {
+            session_write_close();
             die('Could not find Project Config file at: ' . $projectConfigPath);
         }
 
         /* Make sure that we get usable values */
         if (!is_array($properties) or empty($properties)) {
+            session_write_close();
             die('Config File was not set up correctly: ' . $projectConfigPath);
         }
 
