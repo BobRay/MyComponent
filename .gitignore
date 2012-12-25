@@ -26,5 +26,7 @@ test*.php
 objectarray.txt
 current.project.php
 projects.php
+_build/config/*
+
 
 
