@@ -1,182 +1,321 @@
 <?php
 
+$packageNameLower = 'cachemaster'; /* No spaces, no dashes */
 
 $components = array(
     /* These are used to define the package and set values for placeholders */
-    'packageName' => 'CacheMaster',
-    'packageNameLower' => 'cachemaster',
-    'version' => '1.0.0',
+    'packageName' => 'CacheMaster',  /* No spaces, no dashes */
+    'packageNameLower' => $packageNameLower,
+    'packageDescription' => 'CacheMaster project for MyComponent extra',
+    'version' => '1.0.3',
     'release' => 'beta1',
-    'category' => 'CacheMaster',
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
     'authorUrl' => 'http://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
-    'packageUrl' => 'http://bobsguides.com/cachemaster-tutorial.html',
+    'packageDocumentationUrl' => 'http://bobsguides.com/cachemaster-tutorial.html',
     'copyright' => '2012',
+
+    /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
-    'packageDescription' => 'CacheMaster allows you to clear the MODX cache for a single resource when saving it.',
 
     'gitHubUsername' => 'BobRay',
     'gitHubRepository' => 'CacheMaster',
 
-    /* Set directory permissions for project directories */
-    'dirPermission' => 0755, /* No quotes!! */
+    /* two-letter code of your primary language */
+    'primaryLanguage' => 'en',
+
+    /* Set directory and file permissions for project directories */
+    'dirPermission' => 0755,  /* No quotes!! */
     'filePermission' => 0644, /* No quotes!! */
 
-    /* Define source directories (mycomponent root and core directories) */
-    'source' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/', /* path to MyComponent source files */
-    'sourceCore' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/',
+    /* Define source and target directories (mycomponent root and core directories) */
+    'mycomponentRoot' => $this->modx->getOption('mc.root', null,
+        MODX_CORE_PATH . 'components/mycomponent/'),
+    /* path to MyComponent source files */
+    'mycomponentCore' => $this->modx->getOption('mc.core_path', null,
+        MODX_CORE_PATH . 'components/mycomponent/core/components/mycomponent/'),
+    /* path to new project root */
+    'targetRoot' => MODX_ASSETS_PATH . 'mycomponents/' . $packageNameLower . '/',
 
-    /* ********************************************* */
-    /* Define default directories and files to be created in project*/
-    'initialize' => true,
-    'defaultStuff' => array(
-        'utilities' => false, /* copy entire utilities dir to target dir -- Usually unnecessary */
-        'lexicon' => true, /* create lexicon directory */
-        'docs' => 'readme.txt,license.txt,changelog.txt,tutorial.html',
-        'readme.md' => true, /* Description file for GitHub project home page */
-        'languages' => 'en', /* only list languages for which you have language files */
+
+    /* *********************** NEW SYSTEM SETTINGS ************************ */
+
+    /* If your extra needs new System Settings, set their field values here.
+     * You can also create or edit them in the Manager (System -> System Settings),
+     * and export them with exportObjects. If you do that, be sure to set
+     * their namespace to the lowercase package name of your extra */
+
+    'newSystemSettings' => array(
+
     ),
 
-    'hasCore' => true, /* assume every package has a core directory */
+    /* ************************ NEW SYSTEM EVENTS ************************* */
 
-    /* ********************************************* */
-    /* Define optional directories to create under assets
-     * add your own as needed
-     * set to true to create directory
-     * set to false to skip
-     * Empty js and css files will be created
-     */
-    'hasAssets' => true,
-    'minifyJS' => true, /* minify any JS files */
-    'assetsDirs' => array(
-        'css' => true,
-        'js' => true,
-        'images' => true,
-        'audio' => true,
-        'video' => true,
-        'themes' => true,
-    ),
-    /* ********************************************* */
-    /* comma-separated list of extra script resolver(s) to be run
-     * during install. Note that resolvers to connect plugins to events
-     * and TVs to templates will be created automatically -- don't list those here
+    /* Array of your new System Events (not default
+     * MODX System Events). Listed here so they can be created during
+     * install and removed during uninstall.
      *
-     * 'default' creates a default resolver named after the package
-     * (other resolvers may be created above for TVs and plugins)
-     * suffix 'resolver.php' will be added
+     * Warning: Do *not* list regular MODX System Events here !!! */
+
+    'newSystemEvents' => array(
+    ),
+
+    /* ************************ NAMESPACE(S) ************************* */
+    /* (optional) Typically, there's only one namespace which is set
+     * to the $packageNameLower value. Paths should end in a slash
+    */
+
+    'namespaces' => array(
+        'cachemaster' => array(
+            'name' => 'cachemaster',
+            'path' => '{core_path}components/cachemaster/',
+            'assets_path' => '{assets_path}components/cachemaster/',
+        ),
+
+    ),
+
+    /* ************************ CONTEXT(S) ************************* */
+    /* (optional) List any contexts other than the 'web' context here
+    */
+
+    'contexts' => array(
+    ),
+
+    /* *********************** CONTEXT SETTINGS ************************ */
+
+    /* If your extra needs Context Settings, set their field values here.
+     * You can also create or edit them in the Manager (Edit Context -> Context Settings),
+     * and export them with exportObjects. If you do that, be sure to set
+     * their namespace to the lowercase package name of your extra.
+     * The context_key should be the name of an actual context.
+     * */
+
+    'contextSettings' => array(
+    ),
+
+    /* ************************* CATEGORIES *************************** */
+    /* (optional) List of categories. This is only necessary if you
+     * need to categories other than the one named for packageName
+     * or want to nest categories.
+    */
+
+    'categories' => array(
+        'CacheMaster' => array(
+            'category' => 'CacheMaster',
+            'parent' => '',  /* top level category */
+        ),
+    ),
+
+    /* *************************** MENUS ****************************** */
+
+    /* If your extra needs Menus, you can create them here
+     * or create them in the Manager, and export them with exportObjects.
+     * Be sure to set their namespace to the lowercase package name
+     * of your extra.
+     *
+     * Every menu should have exactly one action */
+
+    'menus' => array(
+    ),
+
+
+    /* ************************* ELEMENTS **************************** */
+
+    /* Array containing elements for your extra. 'category' is required
+       for each element, all other fields are optional.
+       Property Sets (if any) must come first!
+
+       The standard file names are in this form:
+           SnippetName.snippet.php
+           PluginName.plugin.php
+           ChunkName.chunk.html
+           TemplateName.template.html
+
+       If your file names are not standard, add this field:
+          'filename' => 'actualFileName',
+    */
+
+
+    'elements' => array(
+
+        'plugins' => array(
+            'CacheMaster' => array( /* minimal cachemaster */
+                'category' => 'CacheMaster',
+                'events' => array(
+                    'OnDocFormSave' => array(),
+                ),
+            ),
+        ),
+    ),
+    /* (optional) will make all element objects static - 'static' field above will be ignored */
+    'allStatic' => false,
+
+
+    /* ************************* RESOURCES ****************************
+     Important: This list only affects Bootstrap. There is another
+     list of resources below that controls ExportObjects.
+     * ************************************************************** */
+    /* Array of Resource pagetitles for your Extra; All other fields optional.
+       You can set any resource field here */
+    'resources' => array(),
+
+
+    /* Array of languages for which you will have language files,
+     *  and comma-separated list of topics
+     *  ('.inc.php' will be added as a suffix). */
+    'languages' => array(
+        'en' => array(
+            'default',
+            'properties',
+        ),
+    ),
+    /* ********************************************* */
+    /* Define optional directories to create under assets.
+     * Add your own as needed.
+     * Set to true to create directory.
+     * Set to hasAssets = false to skip.
+     * Empty js and/or css files will be created.
      */
-    'resolvers' => 'default,extra',
+    'hasAssets' => false,
+    'minifyJS' => false,
+    /* minify any JS files */
+    'assetsDirs' => array(
+    ),
 
-    /* validators can abort the install after checking conditions.
-     * comma-separated list of validator names (no prefix of suffix) or ''
-     * 'default' creates a default resolver named after the package
-     * suffix 'validator.php' will be added
-     */
 
-    'validators' => 'default,extra',
+    /* ********************************************* */
+    /* Define basic directories and files to be created in project*/
 
-    /* install.options is needed if you will interact with user during the install.
+    'docs' => array(
+        'readme.txt',
+        'license.txt',
+        'changelog.txt',
+        'tutorial.html'
+    ),
+
+    /* (optional) Description file for GitHub project home page */
+    'readme.md' => true,
+    /* assume every package has a core directory */
+    'hasCore' => true,
+
+    /* ********************************************* */
+    /* (optional) Array of extra script resolver(s) to be run
+     * during install. Note that resolvers to connect plugins to events,
+     * property sets to elements, resources to templates, and TVs to
+     * templates will be created automatically -- *don't* list those here!
+     *
+     * 'default' creates a default resolver named after the package.
+     * (other resolvers may be created above for TVs and plugins).
+     * Suffix 'resolver.php' will be added automatically */
+    'resolvers' => array(
+    ),
+
+    /* (optional) Validators can abort the install after checking
+     * conditions. Array of validator names (no
+     * prefix of suffix) or '' 'default' creates a default resolver
+     *  named after the package suffix 'validator.php' will be added */
+
+    'validators' => array(
+    ),
+
+    /* (optional) install.options is needed if you will interact
+     * with user during the install.
      * See the user.input.php file for more information.
      * Set this to 'install.options' or ''
      * The file will be created as _build/install.options/user.input.php
-     * Don't change the filename or directory name.
-     */
-    'install.options' => 'install.options',
+     * Don't change the filename or directory name. */
+    // 'install.options' => '',
 
-    /* suffixes for files */
+
+    /* Suffixes to use for resource and element code files (not implemented)  */
     'suffixes' => array(
-        'plugin' => '.php',
-        'snippet' => '.php',
-        'chunk' => '.html',
-        'template' => '.html',
-        'tv' => '.tv',
-        'resource' => '.html',
-        'default' => '.php',
+        'modPlugin' => '.php',
+        'modSnippet' => '.php',
+        'modChunk' => '.html',
+        'modTemplate' => '.html',
+        'modResource' => '.html',
     ),
+
+
     /* ********************************************* */
-    /* These control the creation of elements */
-    'createElementFiles' => true, /* create element files */
-    'createElementObjects' => true, /* also create objects in MODX */
-    'makeStatic' => 'CacheMaster', /* Comma-separated list of elements to set as static */
-    'createResourceObjects' => false,
-    'createResourceFiles' => false,
-    'allStatic' => true, /* will make all element objects static - makeStatic will be ignored */
-
-
-    /* array containing the actual Element Names */
-    'elements' => array(
-        'snippets' => '',
-        'plugins' => 'CacheMaster',
-        'tvs' => '',
-        'templates' => '',
-        'chunks' => '',
-    ),
-    /* comma-separated lists of the actual Resource pagetitles */
-    'resources' => '',
-
-    /* array of plugin names and comma-separated list of their events.
-     * automatically generates resolver
-     */
-    'pluginEvents' => array(
-        'CacheMaster' => 'OnDocFormSave',
-    ),
-
-    /* Array of Templates and comma-separated list of TVs to attach to them.
-     * Automatically generates resolver (use 'default' for default template).
-     * TV names and Template names are both case-sensitive
-     */
-    'templateVarTemplates' => array(
-        'default' => 'MyTvOne,MyTvTwo',
-        'Collapsible' => 'MyTvOne,MyTvTwo,MyTvThree',
-    ),
-    /* ********************************************* */
-    /* These properties control exportObjects.php */
-    'dryRun' => '0',
-    'createTransportFiles' => '1',
-    'createObjectFiles' => '1',
-    /* comma-separated list of elements to export. All elements in the category
-     * set above will be handled.
+    /* (optional) Only necessary if you will have class files.
      *
-     * To export resources, list pagetitles and/or IDs of parents
-     * of desired resources (
-    */
-    'process' => 'plugins,templateVars',
-    'pagetitles' => 'Notify,NotifyPreview', // comma-separated list of pagetitles of resources to process
-    'parents' => '', // comma-separated list of parent IDs to get children of
-    'includeParents' => false,  // include listed parent resources
-
-    /* ********************************************* */
-    /* (NOT IMPLEMENTED) Array of new events to create, plugins to attach, and fields */
-    'newEvents' => array(
-        'OnEvent1' => array(
-            'plugins' => 'CacheMaster',
-            'fields' => array(
-                'event' => 'OnEvent1',
-                'priority' => 0,
-                'propertyset' => 0,
-            ),
-        ),
-        'OnEvent2' => array(
-            'plugins' => 'CacheMaster',
-            'fields' => array(
-                'event' => 'OnEvent2',
-                'priority' => 0,
-                'propertyset' => 0,
-            ),
-        )
+     * Array of class files to be created.
+     *
+     * Format is:
+     *
+     * 'ClassName' => 'directory:filename',
+     *
+     * or
+     *
+     *  'ClassName' => 'filename',
+     *
+     * ('.class.php' will be appended automatically)
+     *
+     *  Class file will be created as:
+     * yourcomponent/core/components/yourcomponent/model/[directory/]{filename}.class.php
+     *
+     * Set to array() if there are no classes. */
+    'classes' => array(
     ),
-    /* (NOT IMPLEMENTED) comma-separated lists naming other new objects
-     * to create */
-    /* ToDo: Implement Property Sets */
-    'otherObjects' => array(
-        'menus' => '',
-        'propertySets' => '',
-        'newSystemEvents' => '', /* *new* System Events to be created for the extra */
-        'newSystemSettings' => '', /* *new* SystemSettings to be created for the extra */
 
-    )
+    /* *******************************************
+     * These settings control exportObjects.php  *
+     ******************************************* */
+    /* ExportObjects will update existing files. If you set dryRun
+       to '1', ExportObjects will report what it would have done
+       without changing anything. Note: On some platforms,
+       dryRun is *very* slow  */
+
+    'dryRun' => '0',
+
+    /* Array of elements to export. All elements set below will be handled.
+     *
+     * To export resources, be sure to list pagetitles and/or IDs of parents
+     * of desired resources
+    */
+    'process' => array(
+
+        'plugins',
+        'templateVars',
+    ),
+    /*  Array  of resources to process. You can specify specific resources
+        or parent (container) resources, or both.
+
+        They can be specified by pagetitle or ID, but you must use the same method
+        for all settings and specify it here. Important: use IDs if you have
+        duplicate pagetitles */
+    'getResourcesById' => false,
+
+    'exportResources' => array(
+    ),
+    /* Array of resource parent IDs to get children of. */
+    'parents' => array(),
+    /* Also export the listed parent resources
+      (set to false to include just the children) */
+    'includeParents' => false,
+
+
+    /* ******************** LEXICON HELPER SETTINGS ***************** */
+    /* These settings are used by LexiconHelper */
+    'rewriteCodeFiles' => true,
+    /*# remove ~~descriptions */
+    'rewriteLexiconFiles' => true,
+    /* automatically add missing strings to lexicon files */
+    /* ******************************************* */
+
+    /* Array of aliases used in code for the properties array.
+    * Used by the checkproperties utility to check properties in code against
+    * the properties in your properties transport files.
+    * if you use something else, add it here (OK to remove ones you never use.
+    * Search also checks with '$this->' prefix -- no need to add it here. */
+    'scriptPropertiesAliases' => array(
+        'props',
+        'sp',
+        'config',
+        'scriptProperties'
+    ),
 );
 
 return $components;
