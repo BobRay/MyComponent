@@ -2,6 +2,7 @@ Changelog for MyComponent
 
 MyComponent 3.0.5
 -----------------
+Updated installation instructions
 Fixed bugs in CreateSettingsTable
 Fixed bug with System Settings in lexicon helper
 Fixed typo in textfield x-type that prevented system setting updates
