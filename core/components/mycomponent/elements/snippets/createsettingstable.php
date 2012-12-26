@@ -23,7 +23,7 @@
  * Description: The CreateSettingsTable snippet creates a table of
  * System Settings and descriptions to paste into tutorials and documentation.
  * The table is based on the settings in a transport.settings.php file
- * and on a language file to pull descriptions from.
+ * and on a default.inc.php language file to pull descriptions from.
  * /
 
 /*
@@ -31,45 +31,138 @@
   $packageName = 'mycomponent';
 */
 
-$base = 'c:/xampp/htdocs/addons/assets/mycomponents/subscribe/';
-$settingsFile = '_build/data/transport.settings.php';
-$settingsFile = $base . $settingsFile;
-$languageFile = 'core/components/subscribe/lexicon/en/default.inc.php';
-$languageFile = $base . $languageFile;
-$rewriteCodeFile = false;
-$codeFile = $settingsFile;
+
+if ( (! isset($scriptProperties)) || empty($scriptProperties)) {
+    $scriptProperties = array();
+}
+
+/* @var $modx modX */
+
+/* config file must be retrieved in a class */
+if (!class_exists('SettingsHelper')) {
+    class SettingsHelper {
+
+        public function __construct(&$modx) {
+            /* @var $modx modX */
+            $this->modx =& $modx;
+
+        }
+
+        public function getProps($configPath) {
+            $properties = include $configPath;
+            return $properties;
+        }
+
+        public function sendLog($level, $message) {
+
+            $msg = '';
+            if ($level == MODX::LOG_LEVEL_ERROR) {
+                $msg .= $this->modx->lexicon('mc_error')
+                    . ' -- ';
+            }
+            $msg .= $message;
+            $msg .= "\n";
+            if (php_sapi_name() != 'cli') {
+                $msg = nl2br($msg);
+            }
+            echo $msg;
+        }
+    }
+}
+
+/* Instantiate MODx -- if this require fails, check your
+ * _build/build.config.php file
+ */
+require_once dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/_build/build.config.php';
+require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
+$modx = new modX();
+$modx->initialize('mgr');
+$modx->setLogLevel(xPDO::LOG_LEVEL_INFO);
+$modx->setLogTarget(XPDO_CLI_MODE
+    ? 'ECHO'
+    : 'HTML');
+
+if (!defined('MODX_CORE_PATH')) {
+    session_write_close();
+    die('build.config.php is not correct');
+}
+
+include dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/_build/config/current.project.php';
+
+if (!$currentProject) {
+    session_write_close();
+    die('Could not get current project');
+}
+
+$helper = new SettingsHelper($modx);
+
+$modx->lexicon->load('mycomponent:default');
+$projectConfigPath = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/_build/config/' . $currentProject . '.config.php';
+$props = $helper->getProps($projectConfigPath);
+
+if (!is_array($props)) {
+    session_write_close();
+    die($modx->lexicon('mc_no_config_file'));
+}
+
+$criticalSettings = array(
+    'packageNameLower',
+    'packageName',
+    'version',
+    'release',
+    'targetRoot',
+);
+
+foreach ($criticalSettings as $setting) {
+    if (!isset($setting)) {
+        session_write_close();
+        die($modx->lexicon('mc_critical_setting_not_set')
+            . ': ' . $setting);
+    }
+}
 
 
 $settingsInjected = false; /* This will be set automatically if settings are injected */
 
-$outsideModx = false;
-/* @var $modx modX */
-if (!defined('MODX_CORE_PATH')) {
-    $outsideModx = true;
-    define ('MODX_BASE_URL', '');
-    define ('MODX_MANAGER_URL', '');
-    define ('MODX_ASSETS_URL', '');
-    define ('MODX_CONNECTORS_URL', '');
-    require_once dirname(dirname(__FILE__)) . '/build.config.php';
-    require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
-    $modx= new modX();
-    $modx->initialize('mgr');
-    $modx->setLogLevel(modX::LOG_LEVEL_INFO);
-    $modx->setLogTarget('ECHO');
-    echo '<pre>'; /* used for nice formatting for log messages  */
-} else {
-    if (!$modx->user->hasSessionContext('mgr')) {
-        die ('Unauthorized Access');
-    }
-}
-
-if (php_sapi_name() != 'cli') {
-    echo "<pre>\n"; /* used for nice formatting for log messages  */
-}
 
 if (! defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
 }
+
+
+/* Properties sent in method call will override those in Project Config file */
+$properties = array_merge($props, $scriptProperties);
+$packageNameLower = $properties['packageNameLower'];
+
+$myComponentRoot = isset($properties['mycomponentRoot'])
+    ? $properties['mycomponentRoot']
+    : '';
+if (empty($myComponentRoot)) {
+    session_write_close();
+    die('myComponentRoot is not set in Project Config: ' . $projectConfigPath);
+}
+if (!is_dir($myComponentRoot)) {
+    session_write_close();
+    die('myComponentRoot set in project config is not a directory: ' . $projectConfigPath);
+}
+$mcRoot = $modx->getOption('mc.root', null,
+    $modx->getOption('core_path') . 'components/mycomponent/');
+
+$targetRoot = $modx->getOption('targetRoot', $properties, '');
+
+if (empty($targetRoot)) {
+    session_write_close();
+    die('targetRoot is not set in project config file');
+}
+$props = $properties;
+
+$settingsFile = $targetRoot . '_build/data/transport.settings.php';
+
+$languageFile = $targetRoot . 'core/components/stagecoach/lexicon/en/default.inc.php';
+$rewriteCodeFile = $modx->getOption('rewriteCodeFiles', $props, false);
+$codeFile = $settingsFile;
+
+
 
 if (!file_exists($settingsFile)) {
     echo 'Could not find settings file';
@@ -157,6 +250,7 @@ function parseDesc($text, &$fields) {
 //echo "COUNT: " . count($settings) . "\n";
 $settingsComment = '';
 foreach($settings as $settingObject) {
+    /* @var $settingObject modSystemSetting */
     $setting = $settingObject->toArray();
     $fields = array();
 
@@ -178,6 +272,10 @@ foreach($settings as $settingObject) {
     if (isset($fields['default']) && empty($replaceFields['default'])) {
             $replaceFields['default'] = $fields['default'];
     }
+    $replaceFields['default'] = $replaceFields['default'] === false? 'false' : $replaceFields['default'];
+    $replaceFields['default'] = $replaceFields['default'] === true
+        ? 'true'
+        : $replaceFields['default'];
     $row = str_replace($findFields,$replaceFields,$rowTpl);
 
     $rows .= $row;
@@ -199,7 +297,8 @@ if ($rewriteCodeFile && !empty($codeFile) ) {
     if (!empty($content) && !empty($settingsComment)) {
         $settingsComment = wrapComment($settingsComment);
         $content = str_replace('[[+properties]]', "Properties:\n" . $settingsComment, $content, $count);
-
+        /* write settings to transport file; this should only happen if they're
+         * not there already */
         if ($count == 1) {
 
             $fp = fopen($codeFile, 'w');
