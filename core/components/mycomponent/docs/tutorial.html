@@ -379,4 +379,11 @@ link.</p>
 <p>
 Be sure to fill in all the appropriate sections of the submission form and designate the file you attach as a Transport Package. If you have installed the package on your site, there will also be another file with the same name, but without the .zip extension. Be sure to submit the .zip file rather than the other file.
 </p>
+
+<h2>Avoiding Trouble</h2>
+<p>MyComponent is a complex and powerful extra. I've tried to make it difficult to shoot yourself in the foot with it, but you can still do it. Here is one common way. You make some changes to the build files (perhaps adding a new System Setting or changing the fields of a Resource). You rung ImportObjects, but System Settings and Resource fields are not updated in that process. If you later run ExportObjects, you will lose your changes.</p>
+
+<p>There are two ways to avoid this kind of trouble. One is to always add new objects to the Project Config File and run Bootstrap. Then, always make your modifications in MODX rather than the files. That way ExportObjects will always reflect your changes. The second way is to stop using MyComponent at some point in the project and rely solely on the files. You can still run LexiconHelper as needed, but stop running ImportObjects and ExportObjects.</p>
+
+<p>Whatever method you use, it's critical to have a version control system, such as Git, in place. I commit any changes just before running ExportObjects or LexiconHelper, and after running them, do a <fixedpre>git status</fixedpre> and sometimes <fixedpre>git diff</fixedpre> to make sure no unwanted changes have occurred.</p>
 <p>&nbsp;</p>
