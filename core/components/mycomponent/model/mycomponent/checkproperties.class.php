@@ -342,7 +342,7 @@ class CheckProperties {
         }
         if ($hasCodeProperties) {
             foreach($this->codeMatches as $key => $value) {
-                if (! in_array($value, $names)) {
+                if (! in_array($value, $missing)) {
                     $missing[] = $value;
                 }
             }
