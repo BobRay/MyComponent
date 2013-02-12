@@ -1,5 +1,10 @@
 Changelog for MyComponent
 
+MyComponent 3.0.6
+-----------------
+Fixed bug with content field being ignored in Bootstrap
+Minor bug fixes
+
 MyComponent 3.0.5
 -----------------
 Updated installation instructions

@@ -223,7 +223,7 @@ rewriteCodeFiles
 <p>By default the first one is true and the second one is false. Generally, you want to run LexiconHelper as the last step before doing the final build. I usually leave <fixedpre>rewriteCodeFiles</fixedpre> off until the very end of a project.</p>
 
 <div class="box">
-    <p>Important warning! If any of your $modx->lexicon() calles is malformed, rewriteCodeFiles can trash some of your code. Always back up all your code files, including any properties files (preferably with Git) before running LexiconHelper with rewriteCodeFiles = true.</p>
+    <p>Important warning! If any of your $modx->lexicon() calls are malformed, rewriteCodeFiles can trash some of your code. Always back up all your code files, including any properties files (preferably with Git) before running LexiconHelper with <fixedpre>rewriteCodeFiles = true</fixedpre>.</p>
 </div>
 
 <p>If your project doesn't have any lexicon strings (e.g., a simple utility snippet or plugin), you can skip using LexiconHelper altogether.</p>
