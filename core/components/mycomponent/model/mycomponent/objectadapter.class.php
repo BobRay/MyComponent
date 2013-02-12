@@ -384,7 +384,7 @@ abstract class ObjectAdapter
             if (!empty ($tpl)) {
                 $tpl = $this->helpers->replaceTags($tpl);
             }
-            if (!empty($tpl) && !empty($field)) {
+            if (!empty($tpl) && empty($field)) {
                 //$tpl = $this->helpers->replaceTags($tpl);
                 $this->myFields[$field] = $tpl;
             } else {
