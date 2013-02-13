@@ -179,7 +179,18 @@ class CategoryAdapter extends ObjectAdapter {
                 }
                 if ($class !== 'modPropertySet' && $class !== 'modTemplateVar') {
                     if (!isset($fields['static']) || empty($fields['static'])) {
-                        $o->createCodeFile(true, $content, MODE_EXPORT, $dryRun);
+                        if ($class != 'modSnippet' && $class!='modPlugin') {
+                            $o->createCodeFile(true, $content, MODE_EXPORT, $dryRun);
+                        } else {
+                            /* skip single-line plugins and snippets with 'return' */
+                            if ( (substr_count($content, ';') == 1) && (stristr($content, 'include'))) {
+                                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                                    $this->modx->lexicon('mc_skipping_include_element_code_file')
+                                    . ': ' . $o->getName());
+                            } else {
+                                $o->createCodeFile(true, $content, MODE_EXPORT, $dryRun);
+                            }
+                        }
                     } else {
                         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
                             $this->modx->lexicon('mc_skipping_static_element_code_file')

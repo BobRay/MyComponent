@@ -89,6 +89,7 @@ $_lang['mc_set_static_path_to'] = 'Set static path to';
 $_lang['mc_file_already_exists'] = 'File already exists';
 $_lang['mc_would_be_creating'] = 'Would be creating';
 $_lang['mc_skipping_static_element_code_file'] = 'Skipping code file for static element';
+$_lang['mc_skipping_include_element_code_file'] = 'Skipping single-line include snippet';
 $_lang['mc_no_code_file_required'] = 'No code file required';
 $_lang['mc_removed'] = 'Removed';
 $_lang['mc_processing_new_system_settings'] = 'Processing New System Settings';
