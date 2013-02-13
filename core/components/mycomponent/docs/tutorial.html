@@ -229,6 +229,21 @@ rewriteCodeFiles
     <p>Important warning! If any of your $modx->lexicon() calls are malformed, rewriteCodeFiles can trash some of your code. Always back up all your code files, including any properties files (preferably with Git) before running LexiconHelper with <fixedpre>rewriteCodeFiles = true</fixedpre>.</p>
 </div>
 
+<p>LexiconHelper's search algorithm for lexicon strings is very smart but it's not perfect. It will correctly handle single quotes inside double quotes and vice versa (assuming the code is valid PHP), but it will fail on a line like this:/p>
+
+<pre><fixedpre>
+echo $this->modx->lexicon('mc_file_nf~~File Not Found') . ': ' . $filename;
+</fixedpre><pre>
+
+    <p>Because LexiconHelper processes the file a line at a time, the solution is easy. Just make sure that each <fixedpre>$modx->lexicon()</fixedpre> is on it's own line with a hard return at the end and no quotation marks after the call. In other words, the code above should look like this:</p>
+
+<pre><fixedpre>
+echo $this->modx->lexicon('mc_file_nf~~File Not Found')
+    . ': ' . $filename;
+</fixedpre><pre>
+
+<p>It's fine to have code ahead of and behind the <fixedpre>$modx->lexicon()</fixedpre> call as long as there are no quotation marks following the call.</p>
+
 <p>If your project doesn't have any lexicon strings (e.g., a simple utility snippet or plugin), you can skip using LexiconHelper altogether.</p>
 
 <h3>CheckProperties</h3>
