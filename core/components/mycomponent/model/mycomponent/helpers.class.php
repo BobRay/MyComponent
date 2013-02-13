@@ -254,7 +254,7 @@ class Helpers
 
 
     /**
-     * Write a file to disk - non-destructive -- will not overwrite existing files
+     * Write a file to disk -- will overwrite existing files
      * Creates dir if necessary
      *
      * @param $dir string - directory for file (should not have trailing slash!)
