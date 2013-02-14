@@ -1042,6 +1042,10 @@ class LexiconHelper {
                 $matches = array();
                 preg_match('#lexicon->load\s*\s*\(\s*\'(.*)\'#', $line, $matches);
                 if (isset($matches[1]) && !empty($matches[1])) {
+                    /* skip dynamic lex loads */
+                    if (strpos($matches[1], '$')) {
+                        continue;
+                    }
                     $fqn = $this->getLexFqn($matches[1]);
                     if (! in_array($fqn, array_keys($this->loadedLexiconFiles ))) {
                         $this->loadedLexiconFiles[$fqn] = $this->getLexiconFilePath($fqn);
