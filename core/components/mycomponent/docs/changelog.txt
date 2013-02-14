@@ -4,6 +4,7 @@ MyComponent 3.0.6
 -----------------
 Export ignores one-line include snippets
 Fixed bug with content field being ignored in Bootstrap
+LexiconHelper skips dynamic load specifications
 Minor bug fixes
 
 MyComponent 3.0.5
