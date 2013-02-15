@@ -121,6 +121,7 @@ if (!defined('MODX_CORE_PATH')) {
     $modx = new modX();
     /* Initialize and set up logging */
     $modx->initialize('mgr');
+    $modx->getService('error', 'error.modError', '', '');
     $modx->setLogLevel(xPDO::LOG_LEVEL_INFO);
     $modx->setLogTarget(XPDO_CLI_MODE
         ? 'ECHO'
@@ -153,7 +154,7 @@ if (!defined('MODX_CORE_PATH')) {
 $modx->lexicon->load('mycomponent:default');
 
 require_once $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'model/mycomponent/lexiconhelper.class.php';
-
+$props = isset($scriptProperties) ? $scriptProperties : array();
 $lexiconHelper = new LexiconHelper($modx, $props);
     $lexiconHelper->init($modx, $props);
     $lexiconHelper->run();
