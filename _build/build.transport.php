@@ -84,6 +84,7 @@ require_once dirname(dirname(__FILE__)) . '/_build/build.config.php';
 require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
 $modx = new modX();
 $modx->initialize('mgr');
+$modx->getService('error', 'error.modError', '', '');
 $modx->setLogLevel(xPDO::LOG_LEVEL_INFO);
 $modx->setLogTarget(XPDO_CLI_MODE
     ? 'ECHO'
@@ -123,6 +124,7 @@ foreach ($criticalSettings as $setting) {
 
 
 if (strpos($props['packageNameLower'], '-') || strpos($props['packageNameLower'], ' ') ) {
+    session_write_close();
     die ("\$packageNameLower cannot contain spaces or hyphens");
 }
 /* Set package info. These are initially set from the the the project config
@@ -160,6 +162,7 @@ unset($root);
 $categories = require_once $sources['build'] . 'config/categories.php';
 
 if (empty ($categories)) {
+    session_write_close();
     die ("No Categories");
 }
 
@@ -175,6 +178,7 @@ $hasResolvers = is_dir($sources['build'] . 'resolvers');
 $hasSetupOptions = is_dir($sources['data'] . 'install.options'); /* HTML/PHP script to interact with user */
 $hasMenu = file_exists($sources['data'] . 'transport.menus.php'); /* Add items to the MODx Top Menu */
 $hasSettings = file_exists($sources['data'] . 'transport.settings.php'); /* Add new MODx System Settings */
+$hasContextSettings = file_exists($sources['data'] . 'transport.contextsettings.php');
 $hasSubPackages = is_dir($sources['data'] .'subpackages');
 $minifyJS = $modx->getOption('minifyJS', $props, false);
 
@@ -236,6 +240,26 @@ if ($hasSettings) {
             $builder->putVehicle($vehicle);
         }
         $helper->sendLog(modX::LOG_LEVEL_INFO, 'Packaged ' . count($settings) . ' new System Settings.');
+        unset($settings, $setting, $attributes);
+    }
+}
+
+/* load new context settings */
+if ($hasContextSettings) {
+    $settings = include $sources['data'] . 'transport.contextsettings.php';
+    if (!is_array($settings)) {
+        $helper->sendLog(modX::LOG_LEVEL_ERROR, 'Settings not an array.');
+    } else {
+        $attributes = array(
+            xPDOTransport::UNIQUE_KEY => 'key',
+            xPDOTransport::PRESERVE_KEYS => true,
+            xPDOTransport::UPDATE_OBJECT => false,
+        );
+        foreach ($settings as $setting) {
+            $vehicle = $builder->createVehicle($setting, $attributes);
+            $builder->putVehicle($vehicle);
+        }
+        $helper->sendLog(modX::LOG_LEVEL_INFO, 'Packaged ' . count($settings) . ' Context Settings.');
         unset($settings, $setting, $attributes);
     }
 }
