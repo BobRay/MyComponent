@@ -68,6 +68,7 @@ class ExportTest extends PHPUnit_Framework_TestCase
 
         $modx = new modX();
         $modx->initialize('mgr');
+        $modx->getService('error', 'error.modError', '', '');
         $this->utHelpers = new UtHelpers();
         $this->bootstrap = new Bootstrap($modx);
         $this->bootstrap->init(dirname(__FILE__) . '/build.config.php');

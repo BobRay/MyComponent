@@ -40,6 +40,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
 
         $modx = new modX();
         $modx->initialize('mgr');
+        $modx->getService('error', 'error.modError', '', '');
         $modx->getRequest();
         $homeId = $modx->getOption('site_start');
         $homeResource = $modx->getObject('modResource', $homeId);
