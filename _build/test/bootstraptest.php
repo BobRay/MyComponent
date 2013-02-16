@@ -158,6 +158,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
     }
 
     public function testCreateNewSystemSettings() {
+
         $this->mc->createNamespaces();
         $this->mc->createNewSystemSettings();
         $settings = $this->mc->props['newSystemSettings'];
@@ -291,11 +292,17 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
 
         $this->assertNotEmpty($this->mc->props['languages']);
         $languages = $this->mc->props['languages'];
-        foreach ($languages as $language => $files) {
-            $fileNames = explode(',', $files);
-            foreach ($fileNames as $fileName){
-                $this->assertFileExists($this->mc->myPaths['targetCore'] . 'lexicon/' . $language . '/' . $fileName . '.inc.php', 'LANGUAGE: ' . $language . '  FILE: ' . $fileName . '.inc.php');
-                $this->assertNotEmpty(file_get_contents($this->mc->myPaths['targetCore'] . 'lexicon/' . $language . '/' . $fileName . '.inc.php', 'LANGUAGE: ' . $language . '  FILE: ' . $fileName . '.inc.php'));
+        foreach ($languages as $dir => $language) {
+
+            foreach ($language as $k => $file){
+
+                $this->assertFileExists($this->mc->myPaths['targetCore'] . 'lexicon/' . $dir
+                    . '/' . $file . '.inc.php', 'LANGUAGE: ' . $language .
+                    '  FILE: ' . $file . '.inc.php');
+                $this->assertNotEmpty(file_get_contents($this->mc->myPaths['targetCore'] .
+                    'lexicon/' . $dir . '/' . $file . '.inc.php', 'LANGUAGE: ' .
+                    $language . '  FILE: ' . $file . '.inc.php'));
+
             }
         }
         $file = $this->mc->myPaths['targetBuild'] . 'utilities/' . 'jsmin.class.php';
@@ -500,9 +507,10 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
         $this->utHelpers->removeElements($this->modx, $this->mc);
         $elements = $this->mc->props['elements'];
         foreach ($elements as $elementType => $elementNames) {
+            $elementType = 'mod' . ucFirst(substr($elementType,0, -1));
             $alias = $this->mc->helpers->getNameAlias($elementType);
-            $elementNames = empty($elementNames)? array() : explode(',', $elementNames);
-            foreach($elementNames as $elementName) {
+            // $elementNames = empty($elementNames)? array() : explode(',', $elementNames);
+            foreach($elementNames as $elementName => $fields) {
                 $obj = $this->modx->getObject($elementType, array($alias => $elementName));
                 $this->assertNull($obj);
             }
@@ -511,9 +519,9 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
         $this->mc->createResources();
         $this->utHelpers->removeResources($this->modx, $this->mc);
         $resources = $this->mc->props['resources'];
-        $resources = explode(',', $resources);
-        foreach ($resources as $resource) {
-            $r = $this->modx->getObject('modResource', array('pagetitle' => $resource));
+
+        foreach ($resources as $pagetitle => $fields) {
+            $r = $this->modx->getObject('modResource', array('pagetitle' => $pagetitle));
             $this->assertNull($r);
         }
 

@@ -63,7 +63,9 @@ class UtHelpers
 
        foreach ($resources as $resource => $fields) {
            $r = $modx->getObject('modResource', array('pagetitle' => $resource));
-           if ($r) $r->remove();
+           if ($r) {
+               $r->remove();
+           }
        }
    }
 

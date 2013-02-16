@@ -1,0 +1,27 @@
+Insert this at line 1589 of modx.class.php to make unit tests work -- just above this line:
+ if (!empty($className)) {
+
+/* *************** inserted for Unit Tests **************** */
+                if ($className == 'modWorkspaceNamespaceCreateProcessor') {
+                    $className = 'modNamespaceCreateProcessor';
+                }
+                if ($className == 'modElementPropertysetCreateProcessor') {
+                    $className = 'modPropertysetCreateProcessor';
+                }
+                if ($className == 'modElementSnippetCreateProcessor') {
+                    $className = 'modSnippetCreateProcessor';
+                }
+                if ($className == 'modElementPluginCreateProcessor') {
+                    $className = 'modPluginCreateProcessor';
+                }
+                if ($className == 'modElementChunkCreateProcessor') {
+                    $className = 'modChunkCreateProcessor';
+                }
+                if ($className == 'modElementTemplateCreateProcessor') {
+                    $className = 'modTemplateCreateProcessor';
+                }
+
+                if ($className == 'modElementTvCreateProcessor') {
+                    $className = 'modTemplateVarCreateProcessor';
+                }
+/* *************************************** */

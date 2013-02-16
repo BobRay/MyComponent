@@ -35,9 +35,11 @@ $components = array(
     'tplDir' => 'buildtpls',
 
     /* Define source and target directories (mycomponent root and core directories) */
-    'mycomponentRoot' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/',
+    'mycomponentRoot' => $this->modx->getOption('mc.root', null,
+        MODX_CORE_PATH . 'components/mycomponent/'),
     /* path to MyComponent source files */
-    'mycomponentCore' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/core/components/mycomponent/',
+    'mycomponentCore' => $this->modx->getOption('mc.core_path', null,
+        MODX_CORE_PATH . 'components/mycomponent/core/components/mycomponent/'),
     /* path to new project root */
     'targetRoot' => MODX_ASSETS_PATH . 'mycomponents/' . $packageNameLower . '/',
 
@@ -402,7 +404,7 @@ $components = array(
         'menus'
     ),
     /*  Array  of pagetitles of resources to process. */
-    'pagetitles' => array(
+    'exportResources' => array(
         'utResource1',
         'utResource2'
     ),
