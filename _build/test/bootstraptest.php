@@ -292,8 +292,9 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
 
         $this->assertNotEmpty($this->mc->props['languages']);
         $languages = $this->mc->props['languages'];
+        $this->assertNotEmpty($languages);
         foreach ($languages as $dir => $language) {
-
+            $this->assertNotEmpty($language);
             foreach ($language as $k => $file){
 
                 $this->assertFileExists($this->mc->myPaths['targetCore'] . 'lexicon/' . $dir
@@ -336,6 +337,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
 
             if ($name == 'plugin') {
                 $names = $this->mc->props['newSystemEvents'];
+                $this->assertNotEmpty($names);
                 foreach($names as $key => $fields) {
                     $this->assertNotEmpty(strstr($content, $fields['name']));
                 }
@@ -506,10 +508,12 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
         // $this->mc->createElements();
         $this->utHelpers->removeElements($this->modx, $this->mc);
         $elements = $this->mc->props['elements'];
+        $this->assertNotEmpty($elements);
         foreach ($elements as $elementType => $elementNames) {
             $elementType = 'mod' . ucFirst(substr($elementType,0, -1));
             $alias = $this->mc->helpers->getNameAlias($elementType);
             // $elementNames = empty($elementNames)? array() : explode(',', $elementNames);
+            $this->assertNotEmpty($elementNames);
             foreach($elementNames as $elementName => $fields) {
                 $obj = $this->modx->getObject($elementType, array($alias => $elementName));
                 $this->assertNull($obj);
@@ -519,7 +523,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
         $this->mc->createResources();
         $this->utHelpers->removeResources($this->modx, $this->mc);
         $resources = $this->mc->props['resources'];
-
+        $this->assertNotEmpty($resources);
         foreach ($resources as $pagetitle => $fields) {
             $r = $this->modx->getObject('modResource', array('pagetitle' => $pagetitle));
             $this->assertNull($r);
