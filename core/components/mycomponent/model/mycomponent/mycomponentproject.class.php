@@ -972,7 +972,7 @@ class MyComponentProject {
 
     /** Creates assets directories and (optionally) empty css and js files
      * if set in project config file */
-    public function CreateAssetsDirs() {
+    public function createAssetsDirs() {
         if (!$this->props['hasAssets']) {
             return;
         }
@@ -983,17 +983,19 @@ class MyComponentProject {
             $this->modx->lexicon('mc_creating_assets_directories'));
         foreach ($optionalDirs as $dir => $val) {
             $targetDir = $this->myPaths['targetAssets'] . $dir;
-            if ($val && (!is_dir($targetDir))) {
-                if (mkdir($targetDir, $this->dirPermission, true)) {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
-                        $this->modx->lexicon('mc_created')
-                        . ' ' . $targetDir .
-                        $this->modx->lexicon('mc_directory'));
+            if ($val) {
+                if (!is_dir($targetDir)) {
+                    if (mkdir($targetDir, $this->dirPermission, true)) {
+                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                            $this->modx->lexicon('mc_created')
+                            . ' ' . $targetDir .
+                            $this->modx->lexicon('mc_directory'));
+                    }
+                } else {
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Assets/' . $dir . ' ' .
+                        $this->modx->lexicon('mc_directory')
+                        . ' ' . $this->modx->lexicon('mc_already_exists'));
                 }
-            } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Assets/' . $dir . ' ' .
-                    $this->modx->lexicon('mc_directory')
-                    . ' ' . $this->modx->lexicon('mc_already_exists'));
             }
             if ($dir == 'css' || $dir == 'js') {
                 $path = $this->myPaths['targetAssets'] . $dir;
