@@ -2,7 +2,7 @@
 /**
  * ExportObjects script for MyComponent Extra
  *
- * Copyright 2012 by Bob Ray <http://bobsguides.com>
+ * Copyright 2012-2013 by Bob Ray <http://bobsguides.com>
  *
  * @author Bob Ray
  * 3/27/12
