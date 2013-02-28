@@ -51,8 +51,6 @@ class ExportTest extends PHPUnit_Framework_TestCase
         $mc->createElements();
         $mc = null;
         $modx = null;
-
-
     }
 
     public static function tearDownAfterClass() {
@@ -90,8 +88,12 @@ class ExportTest extends PHPUnit_Framework_TestCase
         if ($this->export->props['categories']['UnitTest']['category'] != 'UnitTest') {
             die('wrong config');
         }
+        if (strstr($this->mc->targetRoot, 'unittest') ){
+            $this->utHelpers->rrmdir($this->mc->targetRoot);
 
-        $this->utHelpers->rrmdir($this->mc->targetRoot);
+        } else {
+            die('Wrong Target Root!');
+        }
 
         $modx->setLogLevel(modX::LOG_LEVEL_INFO);
         $modx->setLogTarget('ECHO');
@@ -104,7 +106,11 @@ class ExportTest extends PHPUnit_Framework_TestCase
     protected function tearDown() {
         /* comment out this next line to leave the objects in the
          * directory for inspection */
-        $this->utHelpers->rrmdir($this->mc->targetRoot);
+        if (strstr($this->mc->targetRoot, 'unittest')) {
+            $this->utHelpers->rrmdir($this->mc->targetRoot);
+        } else {
+            die('Not our Target Root!');
+        }
 
         $this->export->modx = null;
         $this->modx = null;
@@ -139,15 +145,16 @@ class ExportTest extends PHPUnit_Framework_TestCase
     }
 
     public function testProcessResources() {
-        $this->mc->createResources();
-        $this->export->exportComponent();
+
+        $this->mc->exportComponent();
+       // $this->mc->createResources(MODE_EXPORT);
         $resources = $this->mc->props['exportResources'];
         $this->assertNotEmpty($resources);
         $fileName = $this->mc->targetRoot . '_build/data/transport.resources.php';
         $this->assertFileExists($fileName);
         $this->assertNotEmpty(file_get_contents($fileName));
         $this->assertNotEmpty($resources);
-        foreach($resources as $resource) {
+        foreach($resources as $k => $resource) {
             $this->assertNotEmpty($resource);
             $fileName = $this->mc->targetRoot . '_build/data/resources/' . strtolower($resource) . '.content.html';
             $this->assertFileExists($fileName);
@@ -159,7 +166,6 @@ class ExportTest extends PHPUnit_Framework_TestCase
     public function testProcessPropertySets() {
         $this->mc->exportComponent();
         $this->utHelpers->createPropertysetProperties($this->modx, $this->mc);
-        $this->export->process('propertySets');
         $fileName = $this->mc->targetRoot . '_build/data/transport.propertysets.php';
         $this->assertFileExists($fileName);
         $this->assertNotEmpty(file_get_contents($fileName));
@@ -175,9 +181,7 @@ class ExportTest extends PHPUnit_Framework_TestCase
 
         $sets = $this->mc->props['propertySets'];
         $this->assertNotEmpty($sets);
-        $sets = explode(',', $sets);
-        $this->assertNotEmpty($sets);
-        foreach($sets as $setName) {
+        foreach($sets as $setName => $fields) {
             $setName = strtolower($setName);
             $fileName = $this->mc->targetRoot . '_build/data/properties/properties.' . $setName . '.propertyset.php';
             $this->assertFileExists($fileName);
@@ -185,9 +189,6 @@ class ExportTest extends PHPUnit_Framework_TestCase
 
 
         }
-
-
-
     }
     /**
      * @covers Export::process

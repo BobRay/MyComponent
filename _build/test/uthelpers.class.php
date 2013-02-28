@@ -148,7 +148,7 @@ class UtHelpers
         $elements = $props['elements']['propertySets'];
 
         $elementType = 'modPropertySet';
-        foreach ($elements as $elementName) {
+        foreach ($elements as $elementName => $fields) {
                 /* @var $obj modElement */
                 $alias = $this->getNameAlias($elementType);
                 $obj = $modx->getObject($elementType, array($alias => $elementName));
