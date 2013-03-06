@@ -7,14 +7,14 @@ $components = array(
     'packageName' => 'CacheMaster',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
     'packageDescription' => 'CacheMaster project for MyComponent extra',
-    'version' => '1.0.3',
+    'version' => '1.1.0',
     'release' => 'beta1',
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
     'authorUrl' => 'http://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
     'packageDocumentationUrl' => 'http://bobsguides.com/cachemaster-tutorial.html',
-    'copyright' => '2012',
+    'copyright' => '2012-2013',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
@@ -143,7 +143,19 @@ $components = array(
             'CacheMaster' => array( /* minimal cachemaster */
                 'category' => 'CacheMaster',
                 'events' => array(
-                    'OnDocFormSave' => array(),
+                    'OnBeforeDocFormSave' => array(),
+                    'OnBeforeChunkFormSave' => array(),
+                    'OnBeforeSnipFormSave' => array(),
+                    'OnBeforePluginFormSave' => array(),
+                    'OnBeforeTempFormSave' => array(),
+                    'OnBeforeTVFormSave' => array(),
+                    'OnDocFormPrerender' => array(),
+                    'OnDocChunkPrerender' => array(),
+                    'OnSnipFormPrerender' => array(),
+                    'OnPluginFormPrerender' => array(),
+                    'OnTempFormPrerender' => array(),
+                    'OnTVFormPrerender' => array(),
+
                 ),
             ),
         ),
