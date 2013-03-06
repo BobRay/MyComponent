@@ -31,10 +31,10 @@
   $packageName = 'mycomponent';
 */
 
-$base = 'c:/xampp/htdocs/addons/assets/mycomponents/notify/';
-$propertiesFile = '_build/data/properties/properties.notify.php';
+$base = 'c:/xampp/htdocs/addons/assets/mycomponents/cachemaster/';
+$propertiesFile = '_build/data/properties/properties.cachemaster.plugin.php';
 $propertiesFile = $base . $propertiesFile;
-$languageFile = 'core/components/notify/lexicon/en/properties.inc.php';
+$languageFile = 'core/components/cachemaster/lexicon/en/properties.inc.php';
 $languageFile = $base . $languageFile;
 $rewriteCodeFile = false;
 $codeFile = $base . 'core/components/notify/elements/snippets/notify.snippet.php';
@@ -44,9 +44,10 @@ $propertiesInjected = false; /* This will be set automatically if properties are
 
 if (php_sapi_name() != 'cli') {
     echo "<pre>\n"; /* used for nice formatting for log messages  */
-} else {
-    if (!$modx->user->hasSessionContext('mgr')) {
-        die ('Unauthorized Access');
+    if (defined('MODX_CORE_PATH')) {
+        if (!$modx->user->hasSessionContext('mgr')) {
+            die ('Unauthorized Access');
+        }
     }
 }
 
