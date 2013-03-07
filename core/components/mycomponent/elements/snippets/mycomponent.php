@@ -90,8 +90,12 @@ if ( (!empty($_POST) ) && (isset($_POST['doit']) || isset($_POST['newproject']) 
                 }
                 $currentProject = $newProjectLower;
                 /* create new project config file */
-                $tplPath = $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'elements/chunks/';
-                $newTpl = file_get_contents($tplPath . 'example.config.php');
+                $props = array();
+                $props['mycomponentCore'] = $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/');
+                require_once $props['mycomponentCore'] . 'model/mycomponent/helpers.class.php';
+                $helpers = new Helpers($modx, $props);
+                $helpers->init();
+                $newTpl = $helpers->getTpl('example.config.php');
                 if (empty($newTpl)) {
                     $message = 'Could not find example.config.php';
                     break;
