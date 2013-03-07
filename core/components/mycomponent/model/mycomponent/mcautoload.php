@@ -8,6 +8,14 @@
  *
  * @param string $class_name Class called by the user
  */
+if (!function_exists('lower_basename')) {
+    function lower_basename($string) {
+        return strtolower(basename($string));
+    }
+}
+
+
+
 if (! function_exists('mc_auto_load')) {
     function mc_auto_load($class_name) {
         static $files = null;
@@ -21,15 +29,20 @@ if (! function_exists('mc_auto_load')) {
                 /* may want to add controllers/processors dirs here */
             );
 
-            $lower_basename = function ($string) {
+           /* $lower_basename = function ($string) {
                 return strtolower(basename($string));
-            };
+            };*/
+            /*if (!function_exists('lower_basename')) {
+                function lower_basename($string) {
+                    return strtolower(basename($string));
+                }
+            }*/
 
             // For each directory, save the available files in the $files array.
             foreach ($dirs as $dir) {
                 $glob = glob($dir . '/*.class.php');
                 if ($glob === false || empty($glob)) continue;
-                $fnames = array_map($lower_basename, $glob);
+                $fnames = array_map('lower_basename', $glob);
                 $files = array_merge($files, array_combine($fnames, $glob));
             }
         }
