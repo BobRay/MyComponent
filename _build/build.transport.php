@@ -172,6 +172,8 @@ if (empty ($categories)) {
 
 $hasAssets = is_dir($sources['source_assets']); /* Transfer the files in the assets dir. */
 $hasCore = is_dir($sources['source_core']);   /* Transfer the files in the core dir. */
+
+$hasContexts = file_exists($sources['data'] . 'transport.contexts.php');
 $hasResources = file_exists($sources['data'] . 'transport.resources.php');
 $hasValidators = is_dir($sources['build'] . 'validators'); /* Run a validators before installing anything */
 $hasResolvers = is_dir($sources['build'] . 'resolvers');
@@ -307,111 +309,166 @@ $count = count($categories);
 
 foreach($categories as $k => $categoryName) {
     /* @var $categoryName string */
+    $categoryNameLower = strtolower($categoryName);
 
     /* See what we have based on the files */
-    $hasSnippets = file_exists($sources['data'] . $categoryName . '/transport.snippets.php');
-    $hasChunks = file_exists($sources['data'] . $categoryName . '/transport.chunks.php');
-    $hasTemplates = file_exists($sources['data'] . $categoryName . '/transport.templates.php');
-    $hasTemplateVariables = file_exists($sources['data'] . $categoryName . '/transport.tvs.php');
-    $hasPlugins = file_exists($sources['data'] . $categoryName . '/transport.plugins.php');
-    $hasPropertySets = file_exists($sources['data'] . $categoryName . '/transport.propertysets.php');
+    $hasSnippets = file_exists($sources['data'] . $categoryNameLower . '/transport.snippets.php');
+    $hasChunks = file_exists($sources['data'] . $categoryNameLower . '/transport.chunks.php');
+    $hasTemplates = file_exists($sources['data'] . $categoryNameLower . '/transport.templates.php');
+    $hasTemplateVariables = file_exists($sources['data'] . $categoryNameLower . '/transport.tvs.php');
+    $hasPlugins = file_exists($sources['data'] . $categoryNameLower . '/transport.plugins.php');
+    $hasPropertySets = file_exists($sources['data'] . $categoryNameLower . '/transport.propertysets.php');
 
     /* @var $category modCategory */
     $category= $modx->newObject('modCategory');
     $i++;  /* will be 1 for the first category */
     $category->set('id',$i);
     $category->set('category',$categoryName);
-    $helper->sendLog(MODX::LOG_LEVEL_INFO, "Creating Category: " . $categoryName);
-    $helper->sendLog(MODX::LOG_LEVEL_INFO, "Processing Elements in Category: " . $categoryName);
+    $helper->sendLog(MODX::LOG_LEVEL_INFO,
+        $modx->lexicon('mc_creating_category')
+            . ': ' . $categoryName);
+    $helper->sendLog(MODX::LOG_LEVEL_INFO, $modx->lexicon('mc_processing_elements_in_category')
+        . ': ' . $categoryName);
 
     /* add snippets */
     if ($hasSnippets) {
 
-        $snippets = include $sources['data'] . $categoryName . '/transport.snippets.php';
+        $snippets = include $sources['data'] . $categoryNameLower  . '/transport.snippets.php';
 
         /* note: Snippets' default properties are set in transport.snippets.php */
         if (is_array($snippets)) {
             if ($category->addMany($snippets, 'Snippets')) {
-                $helper->sendLog(modX::LOG_LEVEL_INFO, '    Packaged ' . count($snippets) . ' Snippets.');
+                $helper->sendLog(modX::LOG_LEVEL_INFO, '    ' .
+                    $modx->lexicon('mc_packaged')
+                    . ' ' . count($snippets) . ' ' .
+                    $modx->lexicon('mc_snippets')
+                    . '.');
             } else {
-                $helper->sendLog(modX::LOG_LEVEL_FATAL,'    Adding Snippets failed.');
+                $helper->sendLog(modX::LOG_LEVEL_FATAL, '    ' . $modx->lexicon('mc_adding_snippets_failed')
+                    . '.');
             }
         } else {
-            $helper->sendLog(modX::LOG_LEVEL_FATAL, '    Non-array in transport.snippets.php');
+            $helper->sendLog(modX::LOG_LEVEL_FATAL, '    ' .
+                $modx->lexicon('mc_non_array_in')
+                . ' transport.snippets.php');
         }
     }
 
     if ($hasPropertySets) {
-        $propertySets = include $sources['data'] . $categoryName.'/transport.propertysets.php';
+        $propertySets = include $sources['data'] . $categoryNameLower .'/transport.propertysets.php';
         //  note: property set' properties are set in transport.propertysets.php
         if (is_array($propertySets)) {
             if ($category->addMany($propertySets, 'PropertySets')) {
-                $helper->sendLog(modX::LOG_LEVEL_INFO, '    Packaged ' . count($propertySets) . ' Property Sets.');
+                $helper->sendLog(modX::LOG_LEVEL_INFO, '    ' .
+                    $modx->lexicon('mc_packaged')
+                    . ' ' . count($propertySets) . ' ' .
+                    $modx->lexicon('mc_property_sets')
+                    . '.');
             } else {
-                $helper->sendLog(modX::LOG_LEVEL_FATAL, '    Adding Property Sets failed.');
+                $helper->sendLog(modX::LOG_LEVEL_FATAL, '    ' .
+                    $modx->lexicon('mc_adding_property_sets_failed~~Adding Property Sets
+                failed')
+                    . '.');
             }
         } else {
-            $helper->sendLog(modX::LOG_LEVEL_FATAL, '    Non-array in transport.propertysets.php');
+            $helper->sendLog(modX::LOG_LEVEL_FATAL, '    ' . $modx->lexicon('mc_non_array_in')
+                . ' transport.propertysets.php');
         }
     }
     if ($hasChunks) { /* add chunks  */
     $helper->sendLog(modX::LOG_LEVEL_INFO,'Adding Chunks.');
         /* note: Chunks' default properties are set in transport.chunks.php */
-        $chunks = include $sources['data'] . $categoryName .'/transport.chunks.php';
+        $chunks = include $sources['data'] . $categoryNameLower .'/transport.chunks.php';
         if (is_array($chunks)) {
             if ($category->addMany($chunks, 'Chunks')) {
-                $helper->sendLog(modX::LOG_LEVEL_INFO, '    Packaged ' . count($chunks) . ' Chunks.');
+                $helper->sendLog(modX::LOG_LEVEL_INFO, '    ' .
+                    $modx->lexicon('mc_packaged')
+                    . ' ' . count($chunks) . ' ' .
+                    $modx->lexicon('mc_chunks')
+                    . '.');
             } else {
-                $helper->sendLog(modX::LOG_LEVEL_FATAL, '    Adding Chunks failed.');
+                $helper->sendLog(modX::LOG_LEVEL_FATAL, '    ' .
+                    $modx->lexicon('mc_adding_chunks_failed')
+                    . '.');
             }
         } else {
-            $helper->sendLog(modX::LOG_LEVEL_FATAL, '    Non-array in transport.chunks.php');
+            $helper->sendLog(modX::LOG_LEVEL_FATAL, '    ' .
+                $modx->lexicon('mc_non_array_in')
+                . ' transport.chunks.php');
         }
     }
 
 
     if ($hasTemplates) { /* add templates  */
-    $helper->sendLog(modX::LOG_LEVEL_INFO,'Adding Templates.');
+        $helper->sendLog(modX::LOG_LEVEL_INFO,
+            $modx->lexicon('mc_adding_templates')
+                . '.');
         /* note: Templates' default properties are set in transport.templates.php */
-        $templates = include $sources['data'] . $categoryName .'/transport.templates.php';
+        $templates = include $sources['data'] . $categoryNameLower .'/transport.templates.php';
         if (is_array($templates)) {
             if ($category->addMany($templates, 'Templates')) {
-                $helper->sendLog(modX::LOG_LEVEL_INFO, '    Packaged ' . count($templates) . ' Templates.');
+                $helper->sendLog(modX::LOG_LEVEL_INFO, '    ' .
+                    $modx->lexicon('mc_packaged')
+                    . ' ' . count($templates) . ' ' .
+                    $modx->lexicon('mc_templates')
+                    . '.');
             } else {
-                $helper->sendLog(modX::LOG_LEVEL_FATAL, '    Adding Templates failed.');
+                $helper->sendLog(modX::LOG_LEVEL_FATAL, '    ' .
+                    $modx->lexicon('mc_adding_templates_failed')
+                    . '.');
             }
         } else {
-            $helper->sendLog(modX::LOG_LEVEL_FATAL, '    Non-array in transport.templates.php');
+            $helper->sendLog(modX::LOG_LEVEL_FATAL, '    ' .
+                $modx->lexicon('mc_non_array_in')
+                . ' transport.templates.php');
         }
     }
 
     if ($hasTemplateVariables) { /* add template variables  */
-    $helper->sendLog(modX::LOG_LEVEL_INFO,'Adding Template Variables.');
+        $helper->sendLog(modX::LOG_LEVEL_INFO,
+            $modx->lexicon('mc_adding_template_variables')
+                . '.');
     /* note: Template Variables' default properties are set in transport.tvs.php */
-        $tvs = include $sources['data'] . $categoryName .'/transport.tvs.php';
+        $tvs = include $sources['data'] . $categoryNameLower .'/transport.tvs.php';
         if (is_array($tvs)) {
             if ($category->addMany($tvs, 'TemplateVars')) {
-                $helper->sendLog(modX::LOG_LEVEL_INFO, '    Packaged ' . count($tvs) . ' TVs.');
+                $helper->sendLog(modX::LOG_LEVEL_INFO, '    ' .
+                    $modx->lexicon('mc_packaged')
+                    . ' ' . count($tvs) . ' ' .
+                    $modx->lexicon('mc_tvs')
+                    . '.');
             } else {
-                $helper->sendLog(modX::LOG_LEVEL_FATAL, '    Adding TVs failed.');
+                $helper->sendLog(modX::LOG_LEVEL_FATAL, '    ' .
+                    $modx->lexicon('mc_adding_tvs_failed')
+                    . '.');
             }
         } else {
-            $helper->sendLog(modX::LOG_LEVEL_FATAL, '    Non-array in transport.tvs.php');
+            $helper->sendLog(modX::LOG_LEVEL_FATAL, '    ' .
+                $modx->lexicon('mc_non_array_in')
+                . ' transport.tvs.php');
         }
     }
 
 
     if ($hasPlugins) {
         /* Plugins' default properties are set in transport.plugins.php */
-        $plugins = include $sources['data'] . $categoryName . '/transport.plugins.php';
+        $plugins = include $sources['data'] . $categoryNameLower . '/transport.plugins.php';
         if (is_array($plugins)) {
             if ($category->addMany($plugins, 'Plugins')) {
-                $helper->sendLog(modX::LOG_LEVEL_INFO, '    Packaged ' . count($plugins) . ' Plugins.');
+                $helper->sendLog(modX::LOG_LEVEL_INFO, '    ' .
+                    $modx->lexicon('mc_packaged')
+                    . ' ' . count($plugins) . ' ' .
+                    $modx->lexicon('mc_plugins')
+                    . '.');
             } else {
-                $helper->sendLog(modX::LOG_LEVEL_FATAL, '    Adding Plugins failed.');
+                $helper->sendLog(modX::LOG_LEVEL_FATAL, '    ' .
+                    $modx->lexicon('mc_adding_plugins_failed')
+                    . '.');
             }
         } else {
-            $helper->sendLog(modX::LOG_LEVEL_FATAL, '    Non-array in transport.plugins.php');
+            $helper->sendLog(modX::LOG_LEVEL_FATAL, '    ' .
+                $modx->lexicon('mc_non_array_in')
+                . ' transport.plugins.php');
         }
     }
 
@@ -483,8 +540,11 @@ foreach($categories as $k => $categoryName) {
     $vehicle = $builder->createVehicle($category,$attr);
 
     if ($hasValidators && $i == 1) { /* only install these on first pass */
-        $helper->sendLog(MODX::LOG_LEVEL_INFO, 'Processing Validators');
-        $validators = empty($props['validators']) ? array() : $props['validators'];
+        $helper->sendLog(MODX::LOG_LEVEL_INFO,
+            $modx->lexicon('mc_processing_validators'));
+        $validators = empty($props['validators'])
+            ? array()
+            : $props['validators'];
         if (! empty($validators)) {
             foreach ($validators as $validator) {
                 if ($validator == 'default') {
@@ -492,12 +552,18 @@ foreach($categories as $k => $categoryName) {
                 }
                 $file = $sources['validators'] . $validator . '.validator.php';
                 if (file_exists($file)) {
-                    $helper->sendLog(modX::LOG_LEVEL_INFO,'    Packaging ' . $validator . ' Validator.');
+                    $helper->sendLog(modX::LOG_LEVEL_INFO, '    ' . $modx->lexicon('mc_packaging')
+                        . ' ' .
+                        $validator . ' ' . $modx->lexicon('mc_validator')
+                        . '.');
                     $vehicle->validate('php',array(
                         'source' => $file,
                     ));
                 } else {
-                    $helper->sendLog(modX::LOG_LEVEL_ERROR, 'Could not find Validator file: ' . $file );
+                    $helper->sendLog(modX::LOG_LEVEL_ERROR,
+                        $modx->lexicon('mc_could_not_find_validator_file~~Could not find Validator
+                    file')
+                            . ': ' . $file);
                 }
             }
         }
@@ -511,7 +577,8 @@ foreach($categories as $k => $categoryName) {
                               ));
 
     if ($hasCore && $i == 1) {
-        $helper->sendLog(MODX::LOG_LEVEL_INFO, 'Packaged core directory files');
+        $helper->sendLog(MODX::LOG_LEVEL_INFO,
+            $modx->lexicon('mc_packaged_core_files'));
         $vehicle->resolve('file', array(
                                        'source' => $sources['source_core'],
                                        'target' => "return MODX_CORE_PATH . 'components/';",
@@ -525,7 +592,8 @@ foreach($categories as $k => $categoryName) {
      */
 
     if ($hasAssets && $i == 1) {
-        $helper->sendLog(MODX::LOG_LEVEL_INFO, 'Packaged assets directory files');
+        $helper->sendLog(MODX::LOG_LEVEL_INFO,
+            $modx->lexicon('mc_packaged_assets_files'));
         $vehicle->resolve('file', array(
                                        'source' => $sources['source_assets'],
                                        'target' => "return MODX_ASSETS_PATH . 'components/';",
@@ -583,11 +651,15 @@ foreach($categories as $k => $categoryName) {
 /* Transport Menus */
 if ($hasMenu) {
     /* load menu */
-    $helper->sendLog(modX::LOG_LEVEL_INFO,'Packaging menu...');
+    $helper->sendLog(modX::LOG_LEVEL_INFO,
+        $modx->lexicon('mc_packaging_menu')
+            . '.');
     $menus = include $sources['data'].'transport.menus.php';
     foreach ($menus as $menu) {
         if (empty($menu)) {
-            $helper->sendLog(modX::LOG_LEVEL_ERROR,'Could not package menu.');
+            $helper->sendLog(modX::LOG_LEVEL_ERROR,
+                $modx->lexicon('mc_could_not_package_menu')
+                    . '.');
         } else {
             $vehicle= $builder->createVehicle($menu,array (
             xPDOTransport::PRESERVE_KEYS => true,
@@ -605,7 +677,11 @@ if ($hasMenu) {
             $builder->putVehicle($vehicle);
             unset($vehicle, $menu);
         }
-        $helper->sendLog(modX::LOG_LEVEL_INFO, 'Packaged ' . count($menus) . ' menu items.');
+        $helper->sendLog(modX::LOG_LEVEL_INFO,
+            $modx->lexicon('mc_packaged')
+                . ' ' . count($menus) . ' ' .
+                $modx->lexicon('mc_menu_items')
+                . '.');
     }
 }
 
@@ -638,7 +714,9 @@ $tend= $mtime;
 $totalTime= ($tend - $tstart);
 $totalTime= sprintf("%2.4f s", $totalTime);
 
-$helper->sendLog(xPDO::LOG_LEVEL_INFO, "Package Built.");
-$helper->sendLog(xPDO::LOG_LEVEL_INFO, "Execution time: {$totalTime}");
+$helper->sendLog(xPDO::LOG_LEVEL_INFO, $modx->lexicon('mc_package_built')
+    . '.');
+$helper->sendLog(xPDO::LOG_LEVEL_INFO, $modx->lexicon('mc_execution_time')
+    . ': ' . $totalTime);
 
 return '';

@@ -363,14 +363,15 @@ $count = count($categories);
 
 foreach ($categories as $k => $categoryName) {
     /* @var $categoryName string */
+    $categoryNameLower = strtolower($categoryName);
 
     /* See what we have based on the files */
-    $hasSnippets = file_exists($sources['data'] . $categoryName . '/transport.snippets.php');
-    $hasChunks = file_exists($sources['data'] . $categoryName . '/transport.chunks.php');
-    $hasTemplates = file_exists($sources['data'] . $categoryName . '/transport.templates.php');
-    $hasTemplateVariables = file_exists($sources['data'] . $categoryName . '/transport.tvs.php');
-    $hasPlugins = file_exists($sources['data'] . $categoryName . '/transport.plugins.php');
-    $hasPropertySets = file_exists($sources['data'] . $categoryName . '/transport.propertysets.php');
+    $hasSnippets = file_exists($sources['data'] . $categoryNameLower . '/transport.snippets.php');
+    $hasChunks = file_exists($sources['data'] . $categoryNameLower . '/transport.chunks.php');
+    $hasTemplates = file_exists($sources['data'] . $categoryNameLower . '/transport.templates.php');
+    $hasTemplateVariables = file_exists($sources['data'] . $categoryNameLower . '/transport.tvs.php');
+    $hasPlugins = file_exists($sources['data'] . $categoryNameLower . '/transport.plugins.php');
+    $hasPropertySets = file_exists($sources['data'] . $categoryNameLower . '/transport.propertysets.php');
 
     /* @var $category modCategory */
     $category = $modx->newObject('modCategory');
@@ -386,7 +387,7 @@ foreach ($categories as $k => $categoryName) {
     /* add snippets */
     if ($hasSnippets) {
 
-        $snippets = include $sources['data'] . $categoryName . '/transport.snippets.php';
+        $snippets = include $sources['data'] . $categoryNameLower  . '/transport.snippets.php';
 
         /* note: Snippets' default properties are set in transport.snippets.php */
         if (is_array($snippets)) {
@@ -408,7 +409,7 @@ foreach ($categories as $k => $categoryName) {
     }
 
     if ($hasPropertySets) {
-        $propertySets = include $sources['data'] . $categoryName . '/transport.propertysets.php';
+        $propertySets = include $sources['data'] . $categoryNameLower .'/transport.propertysets.php';
         //  note: property set' properties are set in transport.propertysets.php
         if (is_array($propertySets)) {
             if ($category->addMany($propertySets, 'PropertySets')) {
@@ -431,7 +432,7 @@ foreach ($categories as $k => $categoryName) {
     if ($hasChunks) { /* add chunks  */
         $helper->sendLog(modX::LOG_LEVEL_INFO, 'Adding Chunks.');
         /* note: Chunks' default properties are set in transport.chunks.php */
-        $chunks = include $sources['data'] . $categoryName . '/transport.chunks.php';
+        $chunks = include $sources['data'] . $categoryNameLower .'/transport.chunks.php';
         if (is_array($chunks)) {
             if ($category->addMany($chunks, 'Chunks')) {
                 $helper->sendLog(modX::LOG_LEVEL_INFO, '    ' .
@@ -457,7 +458,7 @@ foreach ($categories as $k => $categoryName) {
             $modx->lexicon('mc_adding_templates')
                 . '.');
         /* note: Templates' default properties are set in transport.templates.php */
-        $templates = include $sources['data'] . $categoryName . '/transport.templates.php';
+        $templates = include $sources['data'] . $categoryNameLower .'/transport.templates.php';
         if (is_array($templates)) {
             if ($category->addMany($templates, 'Templates')) {
                 $helper->sendLog(modX::LOG_LEVEL_INFO, '    ' .
@@ -482,7 +483,7 @@ foreach ($categories as $k => $categoryName) {
             $modx->lexicon('mc_adding_template_variables')
                 . '.');
         /* note: Template Variables' default properties are set in transport.tvs.php */
-        $tvs = include $sources['data'] . $categoryName . '/transport.tvs.php';
+        $tvs = include $sources['data'] . $categoryNameLower .'/transport.tvs.php';
         if (is_array($tvs)) {
             if ($category->addMany($tvs, 'TemplateVars')) {
                 $helper->sendLog(modX::LOG_LEVEL_INFO, '    ' .
@@ -505,7 +506,7 @@ foreach ($categories as $k => $categoryName) {
 
     if ($hasPlugins) {
         /* Plugins' default properties are set in transport.plugins.php */
-        $plugins = include $sources['data'] . $categoryName . '/transport.plugins.php';
+        $plugins = include $sources['data'] . $categoryNameLower . '/transport.plugins.php';
         if (is_array($plugins)) {
             if ($category->addMany($plugins, 'Plugins')) {
                 $helper->sendLog(modX::LOG_LEVEL_INFO, '    ' .
@@ -622,10 +623,6 @@ foreach ($categories as $k => $categoryName) {
             }
         }
     }
-    /* This section transfers every file in the local
-           mycomponents/mycomponent/core directory to the
-           target site's core/mycomponent directory on install.
-         */
 
     if ($hasCore && $i == 1) {
         $helper->sendLog(MODX::LOG_LEVEL_INFO,
