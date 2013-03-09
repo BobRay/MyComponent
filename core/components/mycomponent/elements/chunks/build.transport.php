@@ -85,10 +85,14 @@ set_time_limit(0);
  * _build/build.config.php file
  */
 require_once dirname(dirname(__FILE__)) . '/_build/build.config.php';
-require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
-$modx = new modX();
-$modx->initialize('mgr');
-$modx->getService('error', 'error.modError', '', '');
+
+if ( (! isset($modx)) || (! $modx instanceof modX) ) {
+    require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
+    $modx = new modX();
+    $modx->initialize('mgr');
+    $modx->getService('error', 'error.modError', '', '');
+}
+
 $modx->setLogLevel(xPDO::LOG_LEVEL_INFO);
 $modx->setLogTarget(XPDO_CLI_MODE
     ? 'ECHO'
