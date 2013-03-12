@@ -2,8 +2,19 @@ Changelog for MyComponent
 
 MyComponent 3.0.6
 -----------------
+Bruno17 - initialize MODX only if necessary in build file
+Bruno17 - mods for lowercase category
+Bruno17 - mods for PHP < 5/3
+Bruno17 - Option to get example Tpl from file
+E_NOTICE and Fatal Error bug fixes
+Updated copyright year
+Added Context settings to build
+get Error service when initializing MODX
+Fixed bug with System Setting updates
+Fixed LexiconHelper bug with System Setting descriptions
 Export ignores one-line include snippets
 Fixed bug with content field being ignored in Bootstrap
+Fixed bug in CheckProperties
 LexiconHelper skips dynamic load specifications
 Minor bug fixes
 
