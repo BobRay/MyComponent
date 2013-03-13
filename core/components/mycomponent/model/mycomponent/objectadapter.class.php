@@ -393,7 +393,6 @@ abstract class ObjectAdapter
                 $tpl = $this->helpers->replaceTags($tpl);
             }
             if (!empty($tpl) && empty($field)) {
-                //$tpl = $this->helpers->replaceTags($tpl);
                 $this->myFields[$field] = $tpl;
             } else {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '    ' .
