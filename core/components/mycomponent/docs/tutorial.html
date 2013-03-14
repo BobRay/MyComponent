@@ -276,6 +276,11 @@ Transport Package .zip file at <a
 
     <p>Each chunk in the MyComponent category is duplicated as a file in the chunks directory mentioned above. If you prefer to work with the files, simply delete or rename the chunks in the MODX Manager and MyComponent will use the files in the chunks directory.</p>
 
+<div class="box"><p>Be careful, the Tpl files are in the
+<fixedpre>core/components/mycomponent/elements/chunks</fixedpre>
+directory, so modify the
+<fixedpre>example.config.php</fixedpre>
+file there, not the one under the _build directory.</p></div>
 
     <p>The first chunk you'll want to modify is the <fixedpre>example.config.php</fixedpre> chunk. Duplicate it and call the chunk <fixedpre>myexample.config.php</fixedpre>. There are two important things to remember when editing the file. First, the file is mainly a large PHP array and it must be valid PHP in order for MyComponent to function. Use a good code editor and edit carefully. Second, do *not* change the word Example anywhere &mdash; it's necessary for the file to work properly as a template for new projects.</p>
 
