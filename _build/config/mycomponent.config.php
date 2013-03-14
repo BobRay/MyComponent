@@ -370,7 +370,7 @@ $components = array(
      * prefix of suffix) or '' 'default' creates a default resolver
      *  named after the package suffix 'validator.php' will be added */
 
-    'xxxvalidators' => array(
+    'validators' => array(
 
     ),
 
@@ -380,7 +380,7 @@ $components = array(
      * Set this to 'install.options' or ''
      * The file will be created as _build/install.options/user.input.php
      * Don't change the filename or directory name. */
-    'xxxinstall.options' => 'install.options',
+    'install.options' => '',
 
 
     /* Suffixes to use for resource and element code files (not implemented)  */
