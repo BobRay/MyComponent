@@ -233,14 +233,14 @@ rewriteCodeFiles
 
 <pre><fixedpre>
 echo $this->modx->lexicon('mc_file_nf~~File Not Found') . ': ' . $filename;
-</fixedpre><pre>
+</fixedpre></pre>
 
     <p>Because LexiconHelper processes the file a line at a time, the solution is easy. Just make sure that each <fixedpre>$modx->lexicon()</fixedpre> is on it's own line with a hard return at the end and no quotation marks after the call. In other words, the code above should look like this:</p>
 
 <pre><fixedpre>
 echo $this->modx->lexicon('mc_file_nf~~File Not Found')
     . ': ' . $filename;
-</fixedpre><pre>
+</fixedpre></pre>
 
 <p>It's fine to have code ahead of and behind the <fixedpre>$modx->lexicon()</fixedpre> call as long as there are no quotation marks following the call.</p>
 
@@ -262,7 +262,7 @@ Transport Package .zip file at <a
 
 
 <h2>Customizing MyComponent</h2>
-        Any of the Tpl chunks used by MyComponent (as well as the <fixedpre>example.config.php</fixedpre> file) can be customized. Rather than modifying the chunks (or files) directly, you should duplicate them and prefix the name with 'my' so your changes will survive upgrades to MyComponent.</p>
+        <p>Any of the Tpl chunks used by MyComponent (as well as the <fixedpre>example.config.php</fixedpre> file) can be customized. Rather than modifying the chunks (or files) directly, you should duplicate them and prefix the name with 'my' so your changes will survive upgrades to MyComponent.</p>
 
     <h3>Customizing the Tpl chunks</h3>
     <p>If you'd like to modify any of the MyComponent Tpl chunks, duplicate them and prefix the name with &quot;my&quot;. MyComponent will always look first for the prefixed version before using the default chunk or file. Here is the search order for the various Tpl chunks/files (the files are in the <fixedpre>core/components/mycomponent/elements/chunks</fixedpre> directory):</p>
