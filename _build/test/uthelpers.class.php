@@ -36,16 +36,16 @@ class UtHelpers
 
     /**
      * @param $modx modX
-     * @param $bootstrap Bootstrap
+     * @param $mc mc
      * Remove all elements specified in project config */
-    public function removeElements(&$modx, &$bootstrap) {
-        $props = $bootstrap->props;
+    public function removeElements(&$modx, &$mc) {
+        $props = $mc->props;
         $elements = $props['elements'];
         foreach($elements as $elementType => $objectList) {
             $elementType = 'mod' . ucFirst(substr($elementType, 0, -1));
             foreach ($objectList as $elementName => $fields) {
                 /* @var $obj modElement */
-                $alias = $bootstrap->helpers->getNameAlias($elementType);
+                $alias = $mc->helpers->getNameAlias($elementType);
                 $obj = $modx->getObject($elementType, array($alias => $elementName) );
                 if ($obj) $obj->remove();
 
@@ -55,11 +55,11 @@ class UtHelpers
 
     /**
      * @param $modx modX
-     * @param $bootstrap Bootstrap
+     * @param $mc mc
      * Remove all resources specified in project config */
-   public function removeResources(&$modx, &$bootstrap) {
+   public function removeResources(&$modx, &$mc) {
        /* @var $r modResource */
-       $resources = $bootstrap->props['resources'];
+       $resources = $mc->props['resources'];
 
        foreach ($resources as $resource => $fields) {
            $r = $modx->getObject('modResource', array('pagetitle' => $resource));
@@ -71,14 +71,14 @@ class UtHelpers
 
     /**
      * @param $modx modX
-     * @param $bootstrap Bootstrap
+     * @param $mc mc
      */
-    public function removePropertySets(&$modx, &$bootstrap) {
+    public function removePropertySets(&$modx, &$mc) {
        /* @var $setObj modPropertySet */
-       $sets = $bootstrap->props['elements']['propertySets'];
+       $sets = $mc->props['elements']['propertySets'];
 
        foreach ($sets as $set) {
-           $alias = $bootstrap->helpers->getNameAlias('modPropertySet');
+           $alias = $mc->helpers->getNameAlias('modPropertySet');
            $setObj = $modx->getObject('modPropertySet', array($alias => $set));
            if ($setObj) {
                $setObj->remove();
@@ -111,7 +111,7 @@ class UtHelpers
 
     }
     /** Add properties to elements for testing */
-    public function createProperties(&$modx, &$bootstrap) {
+    public function createProperties(&$modx, &$mc) {
         /* @var $modx modX */
         $properties = array(
             'property1' => 'value1',
@@ -119,15 +119,20 @@ class UtHelpers
             'property3' => 'value3',
             'property4' => 'value4',
         );
-        $props = $bootstrap->props;
+        $props = $mc->props;
         $elements = $props['elements'];
         foreach ($elements as $elementType => $objectList) {
-            foreach ($objectList as $elementName) {
+            $elementType = 'mod' . ucfirst(substr($elementType, 0, -1));
+            foreach ($objectList as $name => $fields) {
                 /* @var $obj modElement */
+
                 $alias = $this->getNameAlias($elementType);
-                $obj = $modx->getObject($elementType, array($alias => $elementName));
-                if ($obj) $obj->setProperties($properties);
-                $obj->save();
+
+                $obj = $modx->getObject($elementType, array($alias => $name));
+                if ($obj) {
+                    $obj->setProperties($properties);
+                    $obj->save();
+                }
 
             }
         }
@@ -135,7 +140,7 @@ class UtHelpers
     }
 
     /** Add properties to elements for testing */
-    public function createPropertysetProperties(&$modx, &$bootstrap)
+    public function createPropertysetProperties(&$modx, &$mc)
     {
         /* @var $modx modX */
         $properties = array(
@@ -144,7 +149,7 @@ class UtHelpers
             'property3' => 'value3',
             'property4' => 'value4',
         );
-        $props = $bootstrap->props;
+        $props = $mc->props;
         $elements = $props['elements']['propertySets'];
 
         $elementType = 'modPropertySet';
@@ -158,15 +163,35 @@ class UtHelpers
 
     }
 
-    public function removeSystemSettings(&$modx, &$bootstrap) {
+    public function removeSystemSettings(&$modx, &$mc) {
         /* @var $modx modX */
         /* @var $setting modSystemSetting */
-        $settings = $modx->getCollection('modSystemSetting', array('namespace' => $bootstrap->props['category']));
-        foreach($settings as $setting) {
-            $setting->remove();
+        foreach ($mc->props['namespaces'] as $namespace => $fields) {
+            $settings = $modx->getCollection('modSystemSetting',
+                array('namespace' => $namespace));
+            foreach($settings as $setting) {
+                $setting->remove();
+            }
         }
+    }
+    public function removeNamespaces(&$modx, &$mc) {
+        /* @var $modx modX */
+        foreach ($mc->props['namespaces'] as $namespace => $fields) {
+            $ns = $modx->getObject('modNamespace', array('name' => $namespace));
+            if ($ns) {
+                $ns->remove();
+            }
+        }
+    }
 
-
+    public function removeCategories(&$modx, &$mc) {
+        /* @var $modx modX */
+        foreach ($mc->props['categories'] as $category => $fields) {
+            $ct = $modx->getObject('modCategory', array('category' => $category));
+            if ($ct) {
+                $ct->remove();
+            }
+        }
     }
 }
 

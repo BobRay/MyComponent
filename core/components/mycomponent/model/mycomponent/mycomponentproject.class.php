@@ -55,7 +55,6 @@ class MyComponentProject {
 
 
     public function init($scriptProperties = array(), $currentProject = '') {
-
         require dirname(__FILE__) . '/mcautoload.php';
         spl_autoload_register('mc_auto_load');
 
@@ -128,6 +127,7 @@ class MyComponentProject {
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
             "\n" . $this->modx->lexicon('mc_project')
             . ': ' . $this->props['packageName']);
+        ObjectAdapter::$myObjects = array();
     }
 
 
@@ -219,6 +219,7 @@ class MyComponentProject {
         /* enable garbage collection() */
         // gc_enable();
         $mode = MODE_BOOTSTRAP;
+        ObjectAdapter::$myObjects = array();
         if (!$this->isMCInstalled()) { /* Only run if MC is installed */
             $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[MyComponentProject]' . $this->modx->lexicon('mc_mycomponent_not_installed_create_new'));
             return;
@@ -1113,7 +1114,7 @@ class MyComponentProject {
                 $this->modx->lexicon('mc_mycomponent_not_installed_export'));
             return;
         }
-
+        ObjectAdapter::$myObjects = array();
 
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
             $this->modx->lexicon('mc_action')

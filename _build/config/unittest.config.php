@@ -73,7 +73,7 @@ $components = array(
         ),
         'OnUtEvent2' => array(
             'name' => 'OnUtEvent2',
-            'groupname' => 'Example',
+            'groupname' => 'UnitTest',
             'service' => 1,
         ),
     ),
@@ -84,7 +84,7 @@ $components = array(
     */
 
     'namespaces' => array(
-        'example' => array(
+        'unittest' => array(
             'name' => 'unittest',
             'path' => '{core_path}components/unittest/',
             'assets_path' => '{assets_path}components/unittest/',
@@ -369,7 +369,7 @@ $components = array(
      *
      * Set to array() if there are no classes. */
     'classes' => array(
-        'Example' => 'example:example',
+        'unittest' => 'unittest:unittest',
     ),
 
 
@@ -400,7 +400,7 @@ $components = array(
         'chunks',
         'resources',
         'propertySets',
-        'SystemSettings',
+        'systemSettings',
         'menus'
     ),
     /*  Array  of pagetitles of resources to process. */
