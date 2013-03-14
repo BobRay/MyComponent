@@ -88,7 +88,7 @@ if ((!isset($modx)) || (!$modx instanceof modX)) {
     $modx->initialize('mgr');
     $modx->getService('error', 'error.modError', '', '');
 }
-
+$modx->lexicon->load('mycomponent:default');
 $modx->setLogLevel(xPDO::LOG_LEVEL_INFO);
 $modx->setLogTarget(XPDO_CLI_MODE
     ? 'ECHO'
