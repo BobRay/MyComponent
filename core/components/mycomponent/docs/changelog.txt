@@ -1,5 +1,11 @@
 Changelog for MyComponent
 
+MyComponent 3.0.7
+-----------------
+Report Version and Release in build
+Create assets dir if set in config even if it will be empty
+Export System Settings from DB rather than config file
+
 MyComponent 3.0.6
 -----------------
 Bruno17 - initialize MODX only if necessary in build file
