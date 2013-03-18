@@ -429,7 +429,7 @@ class MyComponentProject {
     public function createNewSystemSettings($mode = MODE_BOOTSTRAP) {
 
         $newSystemSettings = $this->modx->getOption('newSystemSettings', $this->props, array());
-        if (empty($newSystemSettings)) {
+        if (empty($newSystemSettings) && $mode == MODE_BOOTSTRAP) {
             return;
         }
         if ($mode != MODE_EXPORT) {
@@ -446,21 +446,43 @@ class MyComponentProject {
             }
 
         } elseif ($mode == MODE_EXPORT || $mode == MODE_REMOVE) {
-            /* These still come from the project config file  */
-            foreach ($newSystemSettings as $setting => $fields) {
-                $obj = $this->modx->getObject('modSystemSetting', array('key' => $fields['key']));
-                if ($obj) {
-                    $fields = $obj->toArray();
-                    new SystemSettingAdapter($this->modx, $this->helpers, $fields, $mode);
-                    if ($mode == MODE_REMOVE) {
-                        $obj->remove();
-                    }
+            $nameSpaces = $this->modx->getOption('namespaces', $this->props, array());
+            /* Get namespaces from Project config */
+            if (empty($nameSpaces)) {
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                    '    ' .
+                    $this->modx->lexicon('mc_no_namespaces~~No Namespaces in config file'));
+                return;
+            }
 
+            foreach ($nameSpaces as $nameSpace => $n_fields) {
+                $name = isset($n_fields['name']) ? $n_fields['name'] : $nameSpace;
+                $nameSpace = $this->modx->getObject('modNamespace',
+                    array('name' => $name));
+                if ($nameSpace) {
+                    /* Get settings as namespace related objects */
+                    $settings = $nameSpace->getMany('SystemSettings');
+                    $count = count($settings);
+                    if (! empty ($settings)) {
+                        foreach ($settings as $setting) {
+                            /* @var $setting modSystemSetting */
+                            $fields = $setting->toArray();
+                            new SystemSettingAdapter($this->modx, $this->helpers, $fields, $mode);
+                            if ($mode == MODE_REMOVE) {
+                                $setting->remove();
+                            }
+                        }
+                    } else {
+                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                            '    ' .
+                                $this->modx->lexicon('mc_no_settings~~No Settings found in namespace')
+                                . ': ' . $name);
+                    }
                 } else {
                     $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
-                        '[MyComponentProject]' .
-                            $this->modx->lexicon('mc_system_setting_nf')
-                            . ': ' . $fields['key']);
+                        '[MyComponentProject] ' .
+                            $this->modx->lexicon('mc_namespace_nf~~Could not find namespace')
+                            . ': ' . $name);
                 }
             }
         }
@@ -982,6 +1004,11 @@ class MyComponentProject {
             : array();
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
             $this->modx->lexicon('mc_creating_assets_directories'));
+        /* Create Assets dir even if it will be empty */
+        $targetDir = $this->myPaths['targetAssets'];
+        if (! is_dir($targetDir)) {
+            mkdir($targetDir, $this->dirPermission, true);
+        }
         foreach ($optionalDirs as $dir => $val) {
             $targetDir = $this->myPaths['targetAssets'] . $dir;
             if ($val) {
