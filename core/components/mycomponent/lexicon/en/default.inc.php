@@ -237,6 +237,7 @@ $_lang['mc_resources_not_an_array'] = 'Resources not an array';
 $_lang['mc_resources'] = 'resources';
 $_lang['mc_settings_not_an_array'] = 'Settings not an array';
 $_lang['mc_new_system_settings'] = 'new System Settings';
+$_lang['mc_new_contexts'] = 'new Context(s)';
 $_lang['mc_context_settings_not_an_array'] = 'Context Settings not an array';
 $_lang['mc_context_settings'] = 'Context Settings';
 $_lang['mc_could_not_open'] = 'Could not open outfile';

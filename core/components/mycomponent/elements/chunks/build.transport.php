@@ -199,11 +199,11 @@ $helper->sendLog(MODX::LOG_LEVEL_INFO, "\n" . $modx->lexicon('mc_project')
     . ': ' . $currentProject);
 $helper->sendLog(MODX::LOG_LEVEL_INFO, $modx->lexicon('mc_action')
     . ': ' . $modx->lexicon('mc_build')
-    );
+);
 $helper->sendLog(MODX::LOG_LEVEL_INFO, $modx->lexicon('mc_created_package')
+    . ': ' . PKG_NAME_LOWER . '-' . PKG_VERSION . '-' . PKG_RELEASE);
+$helper->sendLog(MODX::LOG_LEVEL_INFO, "\n" . $modx->lexicon('mc_created_namespace')
     . ': ' . PKG_NAME_LOWER);
-$helper->sendLog(MODX::LOG_LEVEL_INFO, $modx->lexicon('mc_created_namespace')
-    . ': ' . PKG_NAME_LOWER . ' ' . PKG_VERSION . ' ' . PKG_VERSION);
 /* load builder */
 $modx->setLogLevel(MODX::LOG_LEVEL_ERROR);
 $modx->loadClass('transport.modPackageBuilder', '', false, true);
