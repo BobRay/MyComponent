@@ -7,4 +7,4 @@
  *  file (which must be named {packageNameLower}.config.php)
   * */
 
-$currentProject = 'example';
+$currentProject = 'mycomponent';
