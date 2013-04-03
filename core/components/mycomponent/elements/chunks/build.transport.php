@@ -48,7 +48,6 @@ if (!class_exists('BuildHelper')) {
         public function __construct(&$modx) {
             /* @var $modx modX */
             $this->modx =& $modx;
-
         }
 
         public function getProps($configPath) {
@@ -727,21 +726,21 @@ if ($hasMenu) {
                     . '.');
         } else {
             $vehicle = $builder->createVehicle($menu, array(
-                                                           xPDOTransport::PRESERVE_KEYS => true,
-                                                           xPDOTransport::UPDATE_OBJECT => true,
-                                                           xPDOTransport::UNIQUE_KEY => 'text',
-                                                           xPDOTransport::RELATED_OBJECTS => true,
-                                                           xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array(
-                                                               'Action' => array(
-                                                                   xPDOTransport::PRESERVE_KEYS => false,
-                                                                   xPDOTransport::UPDATE_OBJECT => true,
-                                                                   xPDOTransport::UNIQUE_KEY => array(
-                                                                       'namespace',
-                                                                       'controller'
-                                                                   ),
-                                                               ),
-                                                           ),
-                                                      ));
+               xPDOTransport::PRESERVE_KEYS => true,
+               xPDOTransport::UPDATE_OBJECT => true,
+               xPDOTransport::UNIQUE_KEY => 'text',
+               xPDOTransport::RELATED_OBJECTS => true,
+               xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array(
+                   'Action' => array(
+                       xPDOTransport::PRESERVE_KEYS => false,
+                       xPDOTransport::UPDATE_OBJECT => true,
+                       xPDOTransport::UNIQUE_KEY => array(
+                           'namespace',
+                           'controller'
+                        ),
+                   ),
+               ),
+            ));
             $builder->putVehicle($vehicle);
             unset($vehicle, $menu);
         }
@@ -751,6 +750,11 @@ if ($hasMenu) {
                 $modx->lexicon('mc_menu_items')
                 . '.');
     }
+    $helper->sendLog(modX::LOG_LEVEL_INFO,
+        $modx->lexicon('mc_packaged')
+            . ' ' . count($menus) . ' ' .
+            $modx->lexicon('mc_menu_items')
+            . '.');
 }
 
 /* Next-to-last step - pack in the license file, readme.txt, changelog,

@@ -110,8 +110,8 @@ class MenuAdapter extends ObjectAdapter {
             $tpl = $helpers->replaceTags($tpl);
             $tpl .= '/' . '*' . ' @var xPDOObject[] ' . '$' . $variableName . ' *' . "/\n\n";
             $i = 0;
-            $code = '';
             foreach($menuFields as $k => $fields) {
+                $code = '';
                 $actionFields[$i]['id'] = $i + 1;
                 /* do Action */
                 $code .= "\$action = \$modx->newObject('modAction');\n";
@@ -120,6 +120,7 @@ class MenuAdapter extends ObjectAdapter {
                 $code  .= ", '', true, true);\n";
 
                 /* do Menu item */
+                $menuFields[$i]['id'] = $i + 1;
                 $code .= "\n";
                 $code .= "\$";
                 $code .= "menus[";
@@ -133,11 +134,12 @@ class MenuAdapter extends ObjectAdapter {
                 $code .= "menus[";
                 $code .= $i + 1 . ']->addOne(';
                 $code .= "\$action);\n";
-                $code .= "\nreturn \$menus;\n";
+
 
                 $tpl .= $code;
                 $i++;
             }
+            $tpl .= "\nreturn \$menus;\n";
             $dryRun = $mode == MODE_EXPORT && !empty($helpers->props['dryRun']);
             $path = $helpers->props['targetRoot'] . '_build/data/';
             if (!file_exists($path . $transportFile) || $mode != MODE_BOOTSTRAP) {
