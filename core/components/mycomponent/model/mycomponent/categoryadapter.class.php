@@ -178,7 +178,10 @@ class CategoryAdapter extends ObjectAdapter {
                     $o->writePropertiesFile($o->getName(), $fields['properties'], MODE_EXPORT);
                 }
                 if ($class !== 'modPropertySet' && $class !== 'modTemplateVar') {
-                    if (!isset($fields['static']) || empty($fields['static'])) {
+                    /*if (!isset($fields['static']) || empty($fields['static'])) {*/
+                    /* Overwrite unless static - leave static element files alone */
+                    // $overwrite = (!isset($fields['static'])) || (empty($fields['static']));
+
                         if ($class != 'modSnippet' && $class!='modPlugin') {
                             $o->createCodeFile(true, $content, MODE_EXPORT, $dryRun);
                         } else {
@@ -191,11 +194,11 @@ class CategoryAdapter extends ObjectAdapter {
                                 $o->createCodeFile(true, $content, MODE_EXPORT, $dryRun);
                             }
                         }
-                    } else {
+                    /*} else {
                         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
                             $this->modx->lexicon('mc_skipping_static_element_code_file')
                         . ': ' . $o->getName());
-                    }
+                    }*/
                 } else {
                     $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
                         '        ' . $this->modx->lexicon('mc_no_code_file_required'));
