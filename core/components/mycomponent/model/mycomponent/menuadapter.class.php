@@ -1,15 +1,10 @@
 <?php
 
-/* ToDo: make this work */
-
 class MenuAdapter extends ObjectAdapter {
     protected $dbClass = 'modMenu';
     protected $dbClassIDKey = 'id';
     protected $dbClassNameKey = 'text';
     protected $dbClassParentKey = 'parent';
-
-
-
     protected $myFields;
 
     final public function __construct(&$modx, $helpers, $fields, $mode = MODE_BOOTSTRAP) {
