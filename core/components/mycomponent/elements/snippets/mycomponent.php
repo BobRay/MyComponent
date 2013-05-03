@@ -1,6 +1,12 @@
 <?php
 /* @var $modx modX */
 
+/* These are for Orphans
+changelog.txt.tpl categoryresolver.php changelog.txt.tpl css.tpl js.tpl license.tpl license.txt.tpl modchunk.tpl
+modresource.tpl modtemplate.tpl pluginresolver.php propertiesfile.php propertysetresolver.php readme.md.tpl
+readme.txt.tpl removenewevents.php resourceresolver.php transportfile.php tutorial.html.tpl tvresolver.php */
+
+
 $modx->lexicon->load('mycomponent:default');
 if (! $modx->user->hasSessionContext('mgr')) {
     session_write_close();
