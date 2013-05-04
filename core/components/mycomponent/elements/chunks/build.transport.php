@@ -191,7 +191,7 @@ $hasSetupOptions = is_dir($sources['data'] . 'install.options'); /* HTML/PHP scr
 $hasMenu = file_exists($sources['data'] . 'transport.menus.php'); /* Add items to the MODx Top Menu */
 $hasSettings = file_exists($sources['data'] . 'transport.settings.php'); /* Add new MODx System Settings */
 $hasContextSettings = file_exists($sources['data'] . 'transport.contextsettings.php');
-$hasSubPackages = is_dir($sources['data'] . 'subpackages');
+$hasSubPackages = is_dir($sources['packages']);
 $minifyJS = $modx->getOption('minifyJS', $props, false);
 
 $helper->sendLog(MODX::LOG_LEVEL_INFO, "\n" . $modx->lexicon('mc_project')
@@ -702,9 +702,9 @@ foreach ($categories as $k => $categoryName) {
             $modx->lexicon('mc_packaging_subpackages')
                 . '.');
         $vehicle->resolve('file', array(
-                                       'source' => $sources['packages'],
-                                       'target' => "return MODX_CORE_PATH;",
-                                  ));
+            'source' => $sources['packages'],
+            'target' => "return MODX_CORE_PATH;",
+        ));
     }
 
     /* Put the category vehicle (with all the stuff we added to the
