@@ -145,7 +145,7 @@ class CategoryAdapter extends ObjectAdapter {
             }
             foreach($elements as $element) {
 
-                if ($class !== 'modPropertySet') {
+                if ($class !== 'modPropertySet' && $class !== 'modTemplateVar') {
                     $content = $element->getContent();
                     $element->setContent('');
                     $fields['content'] = $content;
