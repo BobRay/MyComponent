@@ -89,7 +89,7 @@ class ExportTest extends PHPUnit_Framework_TestCase
             die('wrong config');
         }
         if (strstr($this->mc->targetRoot, 'unittest') ){
-            $this->utHelpers->rrmdir($this->mc->targetRoot);
+            // $this->utHelpers->rrmdir($this->mc->targetRoot);
 
         } else {
             die('Wrong Target Root!');
@@ -111,7 +111,7 @@ class ExportTest extends PHPUnit_Framework_TestCase
         $this->utHelpers->removeCategories($this->modx, $this->mc);
 
         if (strstr($this->mc->targetRoot, 'unittest')) {
-            $this->utHelpers->rrmdir($this->mc->targetRoot);
+            // $this->utHelpers->rrmdir($this->mc->targetRoot);
         } else {
             die('Not our Target Root!');
         }
@@ -172,8 +172,8 @@ class ExportTest extends PHPUnit_Framework_TestCase
      */
     public function testProcessElements($element) {
         /* @var $utHelpers utHelpers */
-        $sources['data'] = 'c:/xampp/htdocs/assets/mycomponents/unittest/_build/data/';
-        $sources['source_core'] = 'c:/xampp/htdocs/assets/mycomponents/unittest/core/';
+        $sources['data'] = 'c:/xampp/htdocs/addons/assets/mycomponents/unittest/_build/data/';
+        $sources['source_core'] = 'c:/xampp/htdocs/addons/assets/mycomponents/unittest/core/components/unittest';
         $this->mc->createElements();
         $this->utHelpers->createProperties($this->modx, $this->mc);
         $data = explode(':', $element);
