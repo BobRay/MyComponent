@@ -309,6 +309,7 @@ $components = array(
                 'category' => 'Example',
                 'description' => 'Description for TV one',
                 'caption' => 'TV One',
+                'default_text' => 'Tv1 Default Text',
                 'propertySets' => array(
                     'PropertySet1',
                     'PropertySet2',
@@ -363,7 +364,7 @@ $components = array(
                 'Tv1' => 'SomeValue',
                 'Tv2' => 'SomeOtherValue',
             ),
-        )
+        ),
     ),
 
 
@@ -385,17 +386,33 @@ $components = array(
      * Empty js and/or css files will be created.
      */
     'hasAssets' => true,
-    'minifyJS' => true,
+
     /* minify any JS files */
     'assetsDirs' => array(
-        'css' => true,
         /* If true, a default (empty) CSS file will be created */
-        'js' => true,
+        'css' => true,
+
         /* If true, a default (empty) JS file will be created */
+        'js' => true,
+
         'images' => true,
         'audio' => true,
         'video' => true,
         'themes' => true,
+    ),
+    'minifyJS' => true,
+    'useJSMinPlus' => true,
+    'createJSMinAll' => true,
+
+    /* These will automatically go under assets/components/yourcomponent/js/
+       Format: directory:filename
+       (no trailing slash on directory)
+    */
+    $jsFiles = array(
+        'sections:home.js',
+        'widgets:getlist.js',
+        'widgets:home.js',
+        'widgets:snippet.grid.js',
     ),
 
 
@@ -480,6 +497,42 @@ $components = array(
         'Example' => 'example:example',
     ),
 
+    /* ************************************
+     *  These values are for CMPs.
+     *  Set any of these to an empty array if you don't need them.
+     *  **********************************/
+
+    /* This is the main action file for your component.
+       It will automatically go in core/component/yourcomponent/
+    */
+    'actionFile' => 'index.php',
+
+    /* These will automatically go to core/components/youcomponent/processors/
+       format directory:filename */
+    'processors' => array(
+        'mgr/snippet:getlist.php',
+        'mgr/snippet:delete.php',
+        'mgr/snippet:rename.php',
+    ),
+
+    /* These will automatically go to core/components/yourcomponent/controllers[/directory]/filename
+       Format: directory:filename */
+
+    'controllers' => array(
+        ':index.php',
+        'mgr:header.php',
+        'mgr:home.php',
+
+
+    ),
+
+    /* These will automatically go in assets/components/yourcomponent/ */
+    'connectors' => array(
+        'connector.php'
+
+    ),
+
+
     /* *******************************************
      * These settings control exportObjects.php  *
      ******************************************* */
@@ -520,6 +573,7 @@ $components = array(
     'exportResources' => array(
         'Resource1',
         'Resource2',
+        'MyWeblink'
     ),
     /* Array of resource parent IDs to get children of. */
     'parents' => array(),

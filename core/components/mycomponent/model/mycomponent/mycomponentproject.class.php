@@ -189,15 +189,17 @@ class MyComponentProject {
         $paths['targetRoot'] = $this->targetRoot;
         /* Basic Paths */
         $paths['targetCore'] = $paths['targetRoot'] . 'core/components/' . $name . '/';
-        $paths['targetControl'] = $paths['targetCore'] . 'controllers/';
+        $paths['targetControllers'] = $paths['targetCore'] . 'controllers/';
+        $paths['targetProcessors'] = $paths['targetCore'] . 'processors/';
         $paths['targetDocs'] = $paths['targetCore'] . 'docs/';
         $paths['targetElements'] = $paths['targetCore'] . 'elements/';
         $paths['targetLexicon'] = $paths['targetCore'] . 'lexicon/';
         $paths['targetModel'] = $paths['targetCore'] . 'model/' . $name . '/';
-        $paths['targetProcess'] = $paths['targetCore'] . 'processors/';
+
         $paths['targetAssets'] = $paths['targetRoot'] . 'assets/components/' . $name . '/';
         $paths['targetCss'] = $paths['targetAssets'] . 'css/';
         $paths['targetJs'] = $paths['targetAssets'] . 'js/';
+        $paths['targetConnectors'] = $paths['targetJs'];
         $paths['targetImages'] = $paths['targetAssets'] . 'images/';
         $paths['targetBuild'] = $paths['targetRoot'] . '_build/';
         $paths['targetData'] = $paths['targetBuild'] . 'data/';
@@ -206,7 +208,7 @@ class MyComponentProject {
         $paths['targetResolve'] = $paths['targetBuild'] . 'resolvers/';
         $paths['targetValidate'] = $paths['targetBuild'] . 'validators/';
 
-        /* Set myPathc class member */
+        /* Set myPaths class member */
         $this->myPaths = $paths;
 
     }
@@ -940,28 +942,35 @@ class MyComponentProject {
         $hasAssets = $this->modx->getOption('hasAssets', $this->props, false);
         $doJsMin = $this->modx->getOption('minifyJS', $this->props, false);
         if ($hasAssets && $doJsMin) {
+            /* copy minimizer to project _build/utilities directory */
+            if ($this->modx->getOption('useJSMinPlus', $this->props, false)) {
+                $minimizer = 'jsminplus.class.php';
+            } else {
+                $minimizer = 'jsmin.class.php';
+            }
             $path = $this->modx->getOption('mc.core_path',
                 null, $this->modx->getOption('core_path') .
-                    'components/mycomponent/') . 'model/mycomponent/jsmin.class.php';
+                    'components/mycomponent/') . 'model/mycomponent/' . $minimizer;
             if (file_exists($path)) {
                 $fileContent = file_get_contents($path);
             }
             if (!empty($fileContent)) {
-                if (!file_exists($this->myPaths['targetBuild'] . 'utilities/jsmin.class.php')) {
+                if (!file_exists($this->myPaths['targetBuild'] . 'utilities/' . $minimizer)) {
                     $this->helpers->writeFile($this->myPaths['targetBuild'] .
-                        'utilities', 'jsmin.class.php', $fileContent);
+                        'utilities', $minimizer, $fileContent);
                 } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    jsmin class file ' .
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $minimizer . ' ' .
                         $this->modx->lexicon('mc_already_exists'));
                 }
             } else {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '    ' .
-                    $this->modx->lexicon('mc_jsmin_nf'));
+                    $this->modx->lexicon('mc_jsmin_nf') . $minimizer);
             }
         }
 
         $this->createInstallOptions();
         $this->createAssetsDirs();
+        $this->createCMPFiles();
         $this->createClassFiles();
 
         return true;
@@ -1041,6 +1050,91 @@ class MyComponentProject {
         }
     }
 
+    /** Create PHP and JS CMP files specified in project config file */
+    public function createCMPFiles() {
+
+        $actionFile = $this->modx->getOption('actionFile', $this->props, array());
+        $processors = $this->modx->getOption('processors', $this->props, array());
+        $controllers = $this->modx->getOption('controllers', $this->props, array());
+        $connectors = $this->modx->getOption('connectors', $this->props, array());
+        if ((!empty($actionFile)) || (!empty($processors)) ||
+            (!empty($controllers)) || (!empty($connectors))) {
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                $this->modx->lexicon('mc_writing_cmp_files'));
+        }
+        if (!empty($actionFile)) {
+            $dir = $this->myPaths['targetCore'];
+            $file = 'index.php';
+            $tpl = $this->helpers->getTpl('actionfile.php');
+            $tpl = $this->helpers->replaceTags($tpl);
+            if (! file_exists($dir . $file)) {
+                $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
+            } else {
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
+                    $this->modx->lexicon('mc_already_exists'));
+            }
+
+
+
+        }
+        if (!empty($processors)) {
+            $dir = $this->myPaths['targetProcessors'];
+            foreach($processors as $processor) {
+                $tpl = '';
+                $couple = explode(':', $processor);
+                $dir = $dir . $couple[0];
+                $file = $couple[1];
+                if (! file_exists(rtrim($dir,'/') . '/' . $file)) {
+                    $tpl = $this->helpers->getTpl('processorFile.php');
+                    $tpl = $this->helpers->replaceTags($tpl);
+                    $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
+                } else {
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
+                        $this->modx->lexicon('mc_already_exists'));
+                }
+
+            }
+        }
+        if (!empty($controllers)) {
+            $dir = $this->myPaths['targetControllers'];
+            foreach($controllers as $controller){
+                $tpl = '';
+                $couple = explode(':', $controller);
+                $dir = $dir . $couple[0];
+                $file = $couple[1];
+                if (!file_exists(rtrim($dir, '/') . '/' . $file)) {
+                    if (strstr($file, 'index')) {
+                        $tpl = $this->helpers->getTpl('controllerindex');
+                    } elseif(strstr($file, 'header')) {
+                        $tpl = $this->helpers->getTpl('controllerheader');
+                    } elseif(strstr($file, 'home')) {
+                        $tpl = $this->helpers->getTpl('controllerhome');
+                    }
+                    $tpl = $this->helpers->replaceTags($tpl);
+                    $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
+                } else {
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
+                        $this->modx->lexicon('mc_already_exists'));
+                }
+            }
+
+        }
+        if (!empty($connectors)) {
+            $dir = $this->myPaths['targetConnectors'];
+            $tpl = $this->helpers->getTpl('connectorfile');
+            $tpl = $this->helpers->replaceTags($tpl);
+            foreach($connectors as $connector) {
+                $file = $connector;
+                if (! file_exists($dir . $file)) {
+                    $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
+                } else {
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
+                        $this->modx->lexicon('mc_already_exists'));
+                }
+            }
+
+        }
+    }
 
     /** Creates example file for user input during install if set in project config file */
     public function createInstallOptions() {
