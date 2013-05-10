@@ -89,7 +89,7 @@ class ExportTest extends PHPUnit_Framework_TestCase
             die('wrong config');
         }
         if (strstr($this->mc->targetRoot, 'unittest') ){
-            // $this->utHelpers->rrmdir($this->mc->targetRoot);
+            $this->utHelpers->rrmdir($this->mc->targetRoot);
 
         } else {
             die('Wrong Target Root!');
@@ -111,7 +111,7 @@ class ExportTest extends PHPUnit_Framework_TestCase
         $this->utHelpers->removeCategories($this->modx, $this->mc);
 
         if (strstr($this->mc->targetRoot, 'unittest')) {
-            // $this->utHelpers->rrmdir($this->mc->targetRoot);
+            $this->utHelpers->rrmdir($this->mc->targetRoot);
         } else {
             die('Not our Target Root!');
         }
@@ -213,6 +213,10 @@ class ExportTest extends PHPUnit_Framework_TestCase
                 $this->assertGreaterThan(1, count($objects));
             } else {
                 $this->assertGreaterThan(0, count($objects));
+            }
+            if ($class == 'modTemplateVar') {
+                /* @var $templateVars array */
+                $this->assertNotEmpty($templateVars[1]->get('default_text'), 'TV default_text is empty');
             }
             $this->assertInstanceOf($class, $objects[1]);
             foreach ($objects as $object) {

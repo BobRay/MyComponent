@@ -218,6 +218,7 @@ $components = array(
         'templateVars' => array( /* minimal example */
             'utTv1' => array(
                 'category' => 'UnitTest',
+                'default_text' => 'utTv1 Default Text',
                 'propertySets' => array(
                     'utPropertySet1',
                     'utPropertySet2',
