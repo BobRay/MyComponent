@@ -453,7 +453,7 @@ class MyComponentProject {
             if (empty($nameSpaces)) {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
                     '    ' .
-                    $this->modx->lexicon('mc_no_namespaces~~No Namespaces in config file'));
+                    $this->modx->lexicon('mc_no_namespaces'));
                 return;
             }
 
@@ -477,13 +477,13 @@ class MyComponentProject {
                     } else {
                         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
                             '    ' .
-                                $this->modx->lexicon('mc_no_settings~~No Settings found in namespace')
+                                $this->modx->lexicon('mc_no_settings')
                                 . ': ' . $name);
                     }
                 } else {
                     $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
                         '[MyComponentProject] ' .
-                            $this->modx->lexicon('mc_namespace_nf~~Could not find namespace')
+                            $this->modx->lexicon('mc_namespace_nf')
                             . ': ' . $name);
                 }
             }
@@ -1012,6 +1012,8 @@ class MyComponentProject {
         $optionalDirs = $this->modx->getOption('assetsDirs', $this->props, array());
         if (! is_array($optionalDirs)) {
             $optionalDirs = array();
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+                $this->modx->lexicon('mc_assets_dirs_not_an_array'));
         }
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
             $this->modx->lexicon('mc_creating_assets_directories'));
