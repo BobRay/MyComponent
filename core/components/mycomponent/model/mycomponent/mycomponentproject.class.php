@@ -1005,12 +1005,14 @@ class MyComponentProject {
     /** Creates assets directories and (optionally) empty css and js files
      * if set in project config file */
     public function createAssetsDirs() {
-        if (!$this->props['hasAssets']) {
+        $hasAssets = $this->modx->getOption('hasAssets', $this->props, false);
+        if (! $hasAssets) {
             return;
         }
-        $optionalDirs = !empty($this->props['assetsDirs'])
-            ? $this->props['assetsDirs']
-            : array();
+        $optionalDirs = $this->modx->getOption('assetsDirs', $this->props, array());
+        if (! is_array($optionalDirs)) {
+            $optionalDirs = array();
+        }
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
             $this->modx->lexicon('mc_creating_assets_directories'));
         /* Create Assets dir even if it will be empty */
