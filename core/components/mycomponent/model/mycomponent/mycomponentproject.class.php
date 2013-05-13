@@ -115,18 +115,18 @@ class MyComponentProject {
             die('targetRoot is not set in project config file');
         }
         $this->props = $properties;
-        $this->initPaths();
+
         // include 'helpers.class.php';
         $helpers = new Helpers($this->modx, $this->props);
         $this->helpers = $helpers;
         $this->helpers->init();
-
-        $this->dirPermission = $this->props['dirPermission'];
+        $this->initPaths();
+        $this->dirPermission = $this->helpers->getProp('dirPermission');
         $this->updateProjectsFile($projectConfigPath);
         $this->configPath = $projectConfigPath;
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
             "\n" . $this->modx->lexicon('mc_project')
-            . ': ' . $this->props['packageName']);
+            . ': ' . $this->helpers->getProp('packageName'));
         ObjectAdapter::$myObjects = array();
     }
 
@@ -175,7 +175,7 @@ class MyComponentProject {
     public function initPaths() {
 
         $paths = array();
-        $name = $this->props['packageNameLower'];
+        $name = $this->helpers->getProp('packageNameLower');
         // @var $ns modNameSpace
 
         $paths['mcRoot'] = $this->mcRoot;
@@ -316,12 +316,13 @@ class MyComponentProject {
     }
 
     public function createContexts($mode = MODE_BOOTSTRAP) {
-        if (!empty($this->props['contexts'])) {
+        $contexts = $this->helpers->getProp('contexts', array());
+        if (!empty($contexts)) {
             if ($mode != MODE_EXPORT) {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
                     $this->modx->lexicon('mc_processing_contexts'));
             }
-            foreach ($this->props['contexts'] as $context => $fields) {
+            foreach ($contexts as $context => $fields) {
                 if (! isset($fields['key'])) {
                     $fields['key'] = $context;
                 }
@@ -342,12 +343,13 @@ class MyComponentProject {
     }
 
     public function createNamespaces($mode = MODE_BOOTSTRAP) {
-        if (!empty($this->props['namespaces'])) {
+        $namespaces = $this->helpers->getProp('namespaces', array());
+        if (!empty($namespaces)) {
             if ($mode != MODE_EXPORT) {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
                     $this->modx->lexicon('mc_processing_namespaces'));
             }
-            foreach ($this->props['namespaces'] as $namespace => $fields) {
+            foreach ($namespaces as $namespace => $fields) {
                 if ($mode == MODE_BOOTSTRAP) {
                     // include 'namespaceadapter.class.php';
                     $this->addToModx('NamespaceAdapter', $fields);
@@ -415,7 +417,8 @@ class MyComponentProject {
                 }
                 unset($elementsToProcess, $possibleElements);
                 if ($mode == MODE_EXPORT) {
-                    $o->exportElements($toProcess, !empty($this->props['dryRun']));
+                    $dryRun = $this->helpers->getProp('dryRun');
+                    $o->exportElements($toProcess, !empty($dryRun));
                 } elseif ($mode = MODE_REMOVE) {
                     $o->remove($toProcess);
                 }
@@ -439,7 +442,8 @@ class MyComponentProject {
                 $this->modx->lexicon('mc_processing_new_system_settings'));
         }
         if ($mode == MODE_BOOTSTRAP) {
-            foreach ($this->props['newSystemSettings'] as $key => $fields) {
+            $settings = $this->helpers->getProp('newSystemSettings', array());
+            foreach ($settings as $key => $fields) {
                 if (!isset($fields['key'])) {
                     $fields['key'] = $key;
                 }
@@ -511,7 +515,8 @@ class MyComponentProject {
                 $this->modx->lexicon('mc_processing_context_settings'));
         }
         if ($mode == MODE_BOOTSTRAP) {
-            foreach ($this->props['contextSettings'] as $key => $fields) {
+            $contextSettings = $this->helpers->getProp('contextSettings', array());
+            foreach ($contextSettings as $key => $fields) {
                 if (!isset($fields['key'])) {
                     $fields['key'] = $key;
                 }
@@ -577,7 +582,7 @@ class MyComponentProject {
             if (isset($this->props['elements']) && !empty($this->props['elements'])) {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
                     $this->modx->lexicon('mc_processing_elements'));
-                $elements = $this->props['elements'];
+                $elements = $this->helpers->getProp('elements', array());
                 foreach ($elements as $element => $elementObjects) {
                     $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n    " .
                         $this->modx->lexicon('mc_processing')
@@ -612,7 +617,8 @@ class MyComponentProject {
                 $o = null;
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
                     $this->modx->lexicon('mc_processing_resources'));
-                foreach ($this->props['resources'] as $resource => $fields) {
+                $resources = $this->helpers->getProp('resources', array());
+                foreach ($resources as $resource => $fields) {
                     $fields['pagetitle'] = empty($fields['pagetitle'])
                         ? $resource
                         : $fields['pagetitle'];
@@ -630,12 +636,13 @@ class MyComponentProject {
     }
 
     public function createMenus($mode = MODE_BOOTSTRAP) {
-        if (!empty($this->props['menus'])) {
+        $menus = $this->helpers->getProp('menus', array());
+        if (!empty($menus)) {
             if ($mode != MODE_EXPORT) {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
                     $this->modx->lexicon('mc_processing_menus'));
             }
-            foreach ($this->props['menus'] as $k => $fields) {
+            foreach ($menus as $k => $fields) {
                 if ($mode == MODE_BOOTSTRAP) {
                     // include 'menuadapter.class.php';
                     $this->addToModx('MenuAdapter', $fields);
@@ -1392,9 +1399,10 @@ class MyComponentProject {
         $this->createObjects(MODE_REMOVE);
         if ($removeFiles) {
             $dir = $this->targetRoot;
-            if (! ($this->targetRoot == $this->props['targetRoot'])) {
+            $tr = $this->helpers->getProp('targetRoot');
+            if (empty($dir) || (! ($this->targetRoot == $tr))) {
                 session_write_close();
-                die('mismatched targetRoot -- aborting removeObjects');
+                die('mismatched or empty targetRoot -- aborting removeObjects');
             }
             $temp = $this->modx->setLogLevel(MODX::LOG_LEVEL_INFO);
             $this->helpers->sendLog(MODx::LOG_LEVEL_INFO,

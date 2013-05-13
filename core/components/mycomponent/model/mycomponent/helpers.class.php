@@ -53,40 +53,33 @@ class Helpers
         $this->modx =& $modx;
         $this->props =& $props;
     }
-    
-    /**
-     * Avoid PHP notices
-     */
-    private function _get_prop($propname) {
-    	if (isset($this->props[$propname])) {
-    		return $this->props[$propname]; 
-    	}
-    	else {
-    		return '';
-    	}
+
+    /**  Avoid PHP notices */
+    public function getProp($propName, $default = '') {
+        return $this->modx->getOption($propName, $this->props, $default);
     }
     
     public function init() {
-        $this->tplPath = $this->_get_prop('mycomponentCore') . 'elements/chunks/';
+        $this->tplPath = $this->getProp('mycomponentCore') . 'elements/chunks/';
         if (substr($this->tplPath, -1) != "/") {
             $this->tplPath .= "/";
         }
-        $this->dirPermission = $this->_get_prop('dirPermission');
-        $this->filePermission = $this->_get_prop('filePermission');
+        $this->dirPermission = $this->getProp('dirPermission');
+        $this->filePermission = $this->getProp('filePermission');
 
         $this->replaceFields = array(
-            '[[+packageName]]' => $this->_get_prop('packageName'),
-            '[[+packageNameLower]]' => $this->_get_prop('packageNameLower'),
-            '[[+packageDescription]]' => $this->_get_prop('packageDescription'),
-            '[[+author]]' => $this->_get_prop('author'),
-            '[[+email]]' => $this->_get_prop('email'),
-            '[[+copyright]]' => $this->_get_prop('copyright'),
-            '[[+createdon]]' => $this->_get_prop('createdon'),
-            '[[+authorSiteName]]' => $this->_get_prop('authorSiteName'),
-            '[[+authorUrl]]' => $this->_get_prop('authorUrl'),
-            '[[+packageUrl]]' => $this->_get_prop('packageDocumentationUrl'),
-            '[[+gitHubUsername]]' => $this->_get_prop('gitHubUsername'),
-            '[[+gitHubRepository]]' => $this->_get_prop('gitHubRepository'),
+            '[[+packageName]]' => $this->getProp('packageName'),
+            '[[+packageNameLower]]' => $this->getProp('packageNameLower'),
+            '[[+packageDescription]]' => $this->getProp('packageDescription'),
+            '[[+author]]' => $this->getProp('author'),
+            '[[+email]]' => $this->getProp('email'),
+            '[[+copyright]]' => $this->getProp('copyright'),
+            '[[+createdon]]' => $this->getProp('createdon'),
+            '[[+authorSiteName]]' => $this->getProp('authorSiteName'),
+            '[[+authorUrl]]' => $this->getProp('authorUrl'),
+            '[[+packageUrl]]' => $this->getProp('packageDocumentationUrl'),
+            '[[+gitHubUsername]]' => $this->getProp('gitHubUsername'),
+            '[[+gitHubRepository]]' => $this->getProp('gitHubRepository'),
 
         );
         $license = $this->getTpl('license');
@@ -365,7 +358,7 @@ class Helpers
                         $this->copyDir($source . '/' . $file, $destination . '/' . $file);
                     } else {
                         if ($file == 'build.config.php') continue;
-                        if (strstr($file, 'config.php') && $file != $this->props['packageNameLower'] . '.config.php') continue ;
+                        if (strstr($file, 'config.php') && $file != $this->getProp('packageNameLower') . '.config.php') continue ;
                         copy($source . '/' . $file, $destination . '/' . $file);
                     }
                 }

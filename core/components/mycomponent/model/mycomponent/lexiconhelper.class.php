@@ -114,21 +114,21 @@ class LexiconHelper {
 
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
             $this->modx->lexicon('mc_project')
-            . ': ' . $this->props['packageName']);
+            . ': ' . $this->helpers->getProp('packageName'));
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
             $this->modx->lexicon('mc_action')
             . ': ' .
             $this->modx->lexicon('mc_lexicon_helper')
             . "\n");
-        $this->source = $this->props['mycomponentRoot'];
+        $this->source = $this->helpers->getProp('mycomponentRoot');
         /* add trailing slash if missing */
         if (substr($this->source, -1) != "/") {
             $this->source .= "/";
         }
 
 
-        $this->packageNameLower = $this->props['packageNameLower'];
-        $this->targetBase = $this->props['targetRoot'];
+        $this->packageNameLower = $this->helpers->getProp('packageNameLower');
+        $this->targetBase = $this->helpers->getProp('targetRoot');
         $this->targetCore = $this->targetBase . 'core/components/' . $this->packageNameLower . '/';
         $this->targetAssets = $this->targetBase . 'assets/components/' . $this->packageNameLower . '/';
         $this->primaryLanguage = $this->modx->getOption('primaryLanguage', $this->props, '');
@@ -139,7 +139,8 @@ class LexiconHelper {
     }
 
     public function run() {
-        $snippets = $this->modx->getOption('snippets', $this->props['elements'], array());
+        $snippets = $this->modx->getOption('snippets',
+            $this->helpers->getProp('elements', array()), array());
         $elements = array();
         /* get all plugins and snippets from config file */
         foreach ($snippets as $snippet => $fields) {
@@ -148,21 +149,24 @@ class LexiconHelper {
             }
             $elements[trim($snippet)] = 'modSnippet';
         }
-        $plugins = $this->modx->getOption('plugins', $this->props['elements'], array());
+        $plugins = $this->modx->getOption('plugins',
+            $this->helpers->getProp('elements', array()), array());
         foreach ($plugins as $plugin => $fields) {
             if (isset($fields['name'])) {
                 $plugin = $fields['name'];
             }
             $elements[trim($plugin)] = 'modPlugin';
         }
-        $chunks = $this->modx->getOption('chunks', $this->props['elements'], array());
+        $chunks = $this->modx->getOption('chunks',
+            $this->helpers->getProp('elements', array()), array());
         foreach ($chunks as $chunk => $fields) {
             if (isset($fields['name'])) {
                 $plugin = $fields['name'];
             }
             $elements[trim($chunk)] = 'modChunk';
         }
-        $templates = $this->modx->getOption('templates', $this->props['elements'], array());
+        $templates = $this->modx->getOption('templates',
+            $this->helpers->getProp('elements', array()), array());
         foreach ($templates as $template => $fields) {
             if (isset($fields['templatename'])) {
                 $template = $fields['templatename'];
@@ -291,7 +295,8 @@ class LexiconHelper {
             }*/
 
         }
-        $plugins = $this->modx->getOption('plugins', $this->props['elements'], array());
+        $plugins = $this->modx->getOption('plugins',
+            $this->helpers->getProp('elements', array()), array());
         foreach ($plugins as $plugin => $fields) {
             $name = isset($fields['name']) ? trim($fields['name']) : $plugin;
             $name = strtolower($name);
@@ -445,7 +450,7 @@ class LexiconHelper {
             return '';
         }
         $language = $languages[0];
-        $namespace = $this->props['packageNameLower'];
+        $namespace = $this->helpers->getProp('packageNameLower');
         if ($nspos === false) {
             $topic_parsed = $lexFileSpec;
 
@@ -899,7 +904,7 @@ class LexiconHelper {
                 $qc = strstr($value, "'") ? '"' : "'";
                 $code .= "\n\$_lang['" . $key . "'] = {$qc}" . $value . "{$qc};";
             }
-            if ($this->props['rewriteLexiconFiles']) {
+            if ($this->helpers->getProp('rewriteLexiconFiles', false)) {
                 $content = file_get_contents($fileName);
                 $success = false;
                 if (! strstr($content, $comment)) {

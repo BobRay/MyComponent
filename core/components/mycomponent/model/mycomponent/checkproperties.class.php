@@ -101,22 +101,22 @@ class CheckProperties {
 
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
             $this->modx->lexicon('mc_project')
-            . ': ' . $this->props['packageName']);
+            . ': ' . $this->helpers->getProp('packageName'));
 
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
             $this->modx->lexicon('mc_action')
             . ': ' .
                 $this->modx->lexicon('mc_check_properties')
          . "\n");
-        $this->source = $this->props['mycomponentRoot'];
+        $this->source = $this->helpers->getProp('mycomponentRoot');
         /* add trailing slash if missing */
         if (substr($this->source, -1) != "/") {
             $this->source .= "/";
         }
 
 
-        $this->packageNameLower = $this->props['packageNameLower'];
-        $this->targetBase = $this->props['targetRoot'];
+        $this->packageNameLower = $this->helpers->getProp('packageNameLower');
+        $this->targetBase = $this->helpers->getProp('targetRoot');
         $this->targetCore = $this->targetBase . 'core/components/' . $this->packageNameLower . '/';
         //$this->targetAssets = $this->targetBase . 'assets/components/' . $this->packageNameLower . '/';
         /*$this->primaryLanguage = $this->modx->getOption('primaryLanguage', $this->props, '');
@@ -126,7 +126,7 @@ class CheckProperties {
         clearstatcache(); /*  make sure is_dir() is current */
 
 
-        $aliases = $this->props['scriptPropertiesAliases'];
+        $aliases = $this->helpers->getProp('scriptPropertiesAliases', array());
 
         $this->spAliases = array();
         foreach ($aliases as $alias) {
@@ -138,7 +138,7 @@ class CheckProperties {
         $this->output = '';
     }
     public function run() {
-        $snippets = $this->modx->getOption('snippets', $this->props['elements'], array());
+        $snippets = $this->modx->getOption('snippets', $this->helpers->getProp('elements', array()), array());
         $elements = array();
         /* get all plugins and snippets from config file */
         foreach ($snippets as $snippet => $fields) {
@@ -147,7 +147,7 @@ class CheckProperties {
             }
             $elements[strtolower(trim($snippet))] = 'modSnippet';
         }
-        $plugins = $this->modx->getOption('plugins',$this->props['elements'], array());
+        $plugins = $this->modx->getOption('plugins',$this->helpers->getProp('elements', array()), array());
         foreach ($plugins as $plugin => $fields) {
             if (isset($fields['name'])) {
                 $plugin = $fields['name'];
@@ -375,7 +375,7 @@ class CheckProperties {
 
     public function getPropertyCode($missing, $properties) {
         $prefix = $this->modx->getOption('prefix', $this->props, '');
-        $packageNameLower = $this->props['packageNameLower'];
+        $packageNameLower = $this->helpers->getProp('packageNameLower');
         $propertyTpl = "
         array(
             'name' => '[[+name]]',
