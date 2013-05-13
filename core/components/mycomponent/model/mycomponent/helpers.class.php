@@ -53,27 +53,40 @@ class Helpers
         $this->modx =& $modx;
         $this->props =& $props;
     }
+    
+    /**
+     * Avoid PHP notices
+     */
+    private function _get_prop($propname) {
+    	if (isset($this->props[$propname])) {
+    		return $this->props[$propname]; 
+    	}
+    	else {
+    		return '';
+    	}
+    }
+    
     public function init() {
-        $this->tplPath = $this->props['mycomponentCore'] . 'elements/chunks/';
+        $this->tplPath = $this->_get_prop('mycomponentCore') . 'elements/chunks/';
         if (substr($this->tplPath, -1) != "/") {
             $this->tplPath .= "/";
         }
-        $this->dirPermission = $this->props['dirPermission'];
-        $this->filePermission = $this->props['filePermission'];
+        $this->dirPermission = $this->_get_prop('dirPermission');
+        $this->filePermission = $this->_get_prop('filePermission');
 
         $this->replaceFields = array(
-            '[[+packageName]]' => $this->props['packageName'],
-            '[[+packageNameLower]]' => $this->props['packageNameLower'],
-            '[[+packageDescription]]' => $this->props['packageDescription'],
-            '[[+author]]' => $this->props['author'],
-            '[[+email]]' => $this->props['email'],
-            '[[+copyright]]' => $this->props['copyright'],
-            '[[+createdon]]' => $this->props['createdon'],
-            '[[+authorSiteName]]' => $this->props['authorSiteName'],
-            '[[+authorUrl]]' => $this->props['authorUrl'],
-            '[[+packageUrl]]' => $this->props['packageDocumentationUrl'],
-            '[[+gitHubUsername]]' => $this->props['gitHubUsername'],
-            '[[+gitHubRepository]]' => $this->props['gitHubRepository'],
+            '[[+packageName]]' => $this->_get_prop('packageName'),
+            '[[+packageNameLower]]' => $this->_get_prop('packageNameLower'),
+            '[[+packageDescription]]' => $this->_get_prop('packageDescription'),
+            '[[+author]]' => $this->_get_prop('author'),
+            '[[+email]]' => $this->_get_prop('email'),
+            '[[+copyright]]' => $this->_get_prop('copyright'),
+            '[[+createdon]]' => $this->_get_prop('createdon'),
+            '[[+authorSiteName]]' => $this->_get_prop('authorSiteName'),
+            '[[+authorUrl]]' => $this->_get_prop('authorUrl'),
+            '[[+packageUrl]]' => $this->_get_prop('packageDocumentationUrl'),
+            '[[+gitHubUsername]]' => $this->_get_prop('gitHubUsername'),
+            '[[+gitHubRepository]]' => $this->_get_prop('gitHubRepository'),
 
         );
         $license = $this->getTpl('license');
