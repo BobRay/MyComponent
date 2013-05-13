@@ -199,7 +199,7 @@ class MyComponentProject {
         $paths['targetAssets'] = $paths['targetRoot'] . 'assets/components/' . $name . '/';
         $paths['targetCss'] = $paths['targetAssets'] . 'css/';
         $paths['targetJs'] = $paths['targetAssets'] . 'js/';
-        $paths['targetConnectors'] = $paths['targetJs'];
+        $paths['targetConnectors'] = $paths['targetAssets'];
         $paths['targetImages'] = $paths['targetAssets'] . 'images/';
         $paths['targetBuild'] = $paths['targetRoot'] . '_build/';
         $paths['targetData'] = $paths['targetBuild'] . 'data/';
@@ -1063,19 +1063,22 @@ class MyComponentProject {
 
     /** Create PHP and JS CMP files specified in project config file */
     public function createCMPFiles() {
-
+        $createCmpFiles = $this->helpers->getProp('createCmpFiles');
+        if (empty($createCmpFiles)) {
+            return;
+        }
         $actionFile = $this->modx->getOption('actionFile', $this->props, array());
         $processors = $this->modx->getOption('processors', $this->props, array());
         $controllers = $this->modx->getOption('controllers', $this->props, array());
         $connectors = $this->modx->getOption('connectors', $this->props, array());
         if ((!empty($actionFile)) || (!empty($processors)) ||
             (!empty($controllers)) || (!empty($connectors))) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
                 $this->modx->lexicon('mc_writing_cmp_files'));
         }
         if (!empty($actionFile)) {
             $dir = $this->myPaths['targetCore'];
-            $file = 'index.php';
+            $file = $actionFile;
             $tpl = $this->helpers->getTpl('actionfile.php');
             $tpl = $this->helpers->replaceTags($tpl);
             if (! file_exists($dir . $file)) {
@@ -1089,11 +1092,11 @@ class MyComponentProject {
 
         }
         if (!empty($processors)) {
-            $dir = $this->myPaths['targetProcessors'];
+            $processorDir = $this->myPaths['targetProcessors'];
             foreach($processors as $processor) {
                 $tpl = '';
                 $couple = explode(':', $processor);
-                $dir = $dir . $couple[0];
+                $dir = $processorDir . $couple[0];
                 $file = $couple[1];
                 if (! file_exists(rtrim($dir,'/') . '/' . $file)) {
                     $tpl = $this->helpers->getTpl('processorFile.php');
@@ -1107,11 +1110,11 @@ class MyComponentProject {
             }
         }
         if (!empty($controllers)) {
-            $dir = $this->myPaths['targetControllers'];
+            $controllerDir = $this->myPaths['targetControllers'];
             foreach($controllers as $controller){
                 $tpl = '';
                 $couple = explode(':', $controller);
-                $dir = $dir . $couple[0];
+                $dir = $controllerDir . $couple[0];
                 $file = $couple[1];
                 if (!file_exists(rtrim($dir, '/') . '/' . $file)) {
                     if (strstr($file, 'index')) {

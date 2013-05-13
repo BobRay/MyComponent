@@ -505,6 +505,8 @@ $components = array(
     /* This is the main action file for your component.
        It will automatically go in core/component/yourcomponent/
     */
+    'createCmpFiles' => true,
+
     'actionFile' => 'index.php',
 
     /* These will automatically go to core/components/youcomponent/processors/
