@@ -10,6 +10,8 @@
  * @package [[+packageNameLower]]
  * @subpackage controllers
  */
+
+/* @var $modx modX */
 $modx->regClientCSS($[[+packageNameLower]]->config['cssUrl'].'mgr.css');
 $modx->regClientStartupScript($[[+packageNameLower]]->config['jsUrl'].'[[+packageNameLower]].js');
 $modx->regClientStartupHTMLBlock('

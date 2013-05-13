@@ -10,6 +10,7 @@
  * @package [[+packageNameLower]]
  * @subpackage controllers
  */
+/* @var $modx modX */
 
 $modx->regClientStartupScript($[[+packageNameLower]]->config['jsUrl'].'widgets/home.panel.js');
 $modx->regClientStartupScript($[[+packageNameLower]]->config['jsUrl'].'sections/home.js');

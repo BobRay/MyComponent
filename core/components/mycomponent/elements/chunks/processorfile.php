@@ -10,3 +10,5 @@
  * @package [[+packageNameLower]]
  * @subpackage processors
  */
+
+/* @var $modx modX */
