@@ -40,6 +40,14 @@ $_lang['mc_you_must_specify_a_project_name'] = 'You must specify a project name'
 $_lang['mc_project_already_exists'] = 'Project already exists';
 
 /* used in Bootstrap or its included classes  */
+$_lang['mc_creating_cmp_class_file'] = 'Creating CMP class file';
+$_lang['mc_creating_cmp_css_file'] = 'Creating CMP css file';
+$_lang['mc_creating_controller_request_file'] = 'Creating CMP controller request file';
+$_lang['mc_creating_cmp_index_file'] = 'Creating CMP index (action) file';
+$_lang['mc_creating_cmp_processors'] = 'Creating CMP processors';
+$_lang['mc_creating_cmp_controllers'] = 'Creating CMP controllers';
+$_lang['mc_creating_cmp_connectors'] = 'Creating CMP connectors';
+$_lang['mc_creating_cmp_js_files'] = 'Creating CMP JS files';
 $_lang['mc_problem_loading_tpl_file_empty'] = 'Tpl file is empty';
 $_lang['mc_problem_loading_tpl_file_no_php_tag'] = 'Tpl file has no PHP tag';
 $_lang['mc_processing_namespaces'] = 'Processing namespaces';
@@ -233,7 +241,7 @@ $_lang['mc_build'] = 'Build';
 $_lang['mc_created_package'] = 'Creating Package';
 $_lang['mc_created_namespace'] = 'Created namespace';
 $_lang['mc_no_namespaces'] = 'No Namespaces in config file';
-$_lang['md_namespace_nf'] = 'Could not find namespace';
+$_lang['mc_namespace_nf'] = 'Could not find namespace';
 $_lang['mc_contexts_not_an_array'] = 'contexts not an array.';
 $_lang['mc_packaged'] = 'Packaged';
 $_lang['mc_resources_not_an_array'] = 'Resources not an array';
