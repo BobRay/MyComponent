@@ -17,11 +17,9 @@
     /** @var $props array */
     public $props;
 
-    function __construct(&$modx, &$config = array())
-    {
+    function __construct(&$modx, &$config = array()) {
         $this->modx =& $modx;
         $this->props =& $config;
     }
-
 
 }

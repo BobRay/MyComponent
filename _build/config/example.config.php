@@ -387,7 +387,6 @@ $components = array(
      */
     'hasAssets' => true,
 
-    /* minify any JS files */
     'assetsDirs' => array(
         /* If true, a default (empty) CSS file will be created */
         'css' => true,
@@ -400,19 +399,21 @@ $components = array(
         'video' => true,
         'themes' => true,
     ),
+    /* minify any JS files */
     'minifyJS' => true,
+    /* Create a single JS file from all JS files */
+    'createJSMinAll' => false,
+    /* if this is false, regular jsmin will be used.
+       JSMinPlus is slower but more reliable */
     'useJSMinPlus' => true,
-    'createJSMinAll' => true,
 
     /* These will automatically go under assets/components/yourcomponent/js/
        Format: directory:filename
        (no trailing slash on directory)
+       if 'createCmpFiles is true, these will be ignored.
     */
     $jsFiles = array(
-        'sections:home.js',
-        'widgets:getlist.js',
-        'widgets:home.js',
-        'widgets:snippet.grid.js',
+        'example.js',
     ),
 
 
@@ -502,19 +503,27 @@ $components = array(
      *  Set any of these to an empty array if you don't need them.
      *  **********************************/
 
+    /* If this is false, the rest of this section will be ignored */
+    'createCmpFiles' => true,
+
+    /* IMPORTANT: The array values in the rest of
+       this section should be all lowercase */
+
     /* This is the main action file for your component.
        It will automatically go in core/component/yourcomponent/
     */
-    'createCmpFiles' => true,
-
     'actionFile' => 'index.php',
 
-    /* These will automatically go to core/components/youcomponent/processors/
+    /* These will automatically go to core/components/yourcomponent/processors/
        format directory:filename */
     'processors' => array(
         'mgr/snippet:getlist.php',
+        'mgr/snippet:changecategory.php',
         'mgr/snippet:delete.php',
-        'mgr/snippet:rename.php',
+
+        'mgr/chunk:getlist.php',
+        'mgr/chunk:changecategory.php',
+        'mgr/chunk:delete.php',
     ),
 
     /* These will automatically go to core/components/yourcomponent/controllers[/directory]/filename
@@ -524,14 +533,22 @@ $components = array(
         ':index.php',
         'mgr:header.php',
         'mgr:home.php',
-
-
     ),
 
     /* These will automatically go in assets/components/yourcomponent/ */
     'connectors' => array(
         'connector.php'
 
+    ),
+    /* These will automatically go to assets/components/yourcomponent/js[/directory]/filename
+       Format: directory:filename */
+
+    'cmpJsFiles' => array(
+        ':example.js',
+        'sections:home.js',
+        'widgets:home.panel.js',
+        'widgets:snippet.grid.js',
+        'widgets:chunk.grid.js',
     ),
 
 

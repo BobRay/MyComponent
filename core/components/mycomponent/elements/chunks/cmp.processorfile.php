@@ -12,3 +12,7 @@
  */
 
 /* @var $modx modX */
+
+/* Processor code goes here */
+
+return $modx->error->success();
