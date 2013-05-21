@@ -1072,21 +1072,54 @@ class MyComponentProject {
         if (empty($createCmpFiles)) {
             return;
         }
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->modx->lexicon('mc_writing_cmp_files'));
 
         /* Get the files to create from the project config file */
         $actionFile = $this->helpers->getProp('actionFile', array());
+        $cssFile = $this->helpers->getProp('cssFile', array());
         $processors = $this->helpers->getProp('processors', array());
         $controllers = $this->helpers->getProp('controllers', array());
         $connectors = $this->helpers->getProp('connectors', array());
         $jsFiles = $this->helpers->getProp('cmpJsFiles', array());
 
-        if ((!empty($actionFile)) || (!empty($processors)) ||
-            (!empty($controllers)) || (!empty($connectors))) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
-                $this->modx->lexicon('mc_writing_cmp_files'));
+        /* Create CMP class file */
+        $this->createCmpClassFile();
+
+        /* Create CMP CSS file */
+        if (!empty($cssFile)) {
+            $this->createCmpCssFile($cssFile);
         }
 
-        /* Create CMP class file */
+        /* Create controllerrequest file */
+        $this->createControllerRequestFile();
+
+        /* Create main action file (index.php) */
+        if (!empty($actionFile)) {
+            $this->createActionFile($actionFile);
+        }
+        /* Create processor files */
+        if (!empty($processors)) {
+            $this->createProcessorFiles($processors);
+
+        }
+        /* Create controller files */
+        if (!empty($controllers)) {
+            $this->createControllerFiles($controllers);
+        }
+
+        /* Create connector files */
+        if (!empty($connectors)) {
+            $this->createConnectorFiles($connectors);
+        }
+
+        /* Create CMP JS Files */
+        if (!empty($jsFiles)) {
+            $this->createCmpJsFiles($jsFiles);
+        }
+    }
+
+    public function createCmpClassFile() {
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
             $this->modx->lexicon('mc_creating_cmp_class_file'));
         $dir = $this->myPaths['targetCore'] . 'model/' . $this->packageNameLower;
@@ -1100,12 +1133,13 @@ class MyComponentProject {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $fileName . ' ' .
                 $this->modx->lexicon('mc_already_exists'));
         }
+    }
 
-        /* Create CMP class file */
+    public function createCmpCssFile($cssFile) {
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
             $this->modx->lexicon('mc_creating_cmp_css_file'));
         $dir = $this->myPaths['targetAssets'] . 'css';
-        $fileName = 'mgr.css';
+        $fileName = $cssFile;
 
         if (!file_exists($dir . '/' . $fileName)) {
             $tpl = $this->helpers->getTpl('cmp.mgr.css');
@@ -1115,7 +1149,9 @@ class MyComponentProject {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $fileName . ' ' .
                 $this->modx->lexicon('mc_already_exists'));
         }
-        /* Create controllerrequest file */
+    }
+
+    public function createControllerRequestFile() {
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
             $this->modx->lexicon('mc_creating_controller_request_file'));
         $dir = $this->myPaths['targetCore'] . 'model/' . $this->packageNameLower . '/request';
@@ -1129,132 +1165,181 @@ class MyComponentProject {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $fileName . ' ' .
                 $this->modx->lexicon('mc_already_exists'));
         }
+    }
 
-        /* Create main action file (index.php) */
-        if (!empty($actionFile)) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    '
-                . $this->modx->lexicon('mc_creating_cmp_index_file'));
-            $dir = $this->myPaths['targetCore'];
-            $file = $actionFile;
-            $tpl = $this->helpers->getTpl('cmp.actionfile.php');
-            $tpl = $this->helpers->replaceTags($tpl);
-            if (! file_exists($dir . $file)) {
+    public function createActionFile($actionFile) {
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    '
+            . $this->modx->lexicon('mc_creating_cmp_index_file'));
+        $dir = $this->myPaths['targetCore'];
+        $file = $actionFile;
+        $tpl = $this->helpers->getTpl('cmp.actionfile.php');
+        $tpl = $this->helpers->replaceTags($tpl);
+        if (!file_exists($dir . $file)) {
+            $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
+        } else {
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
+                $this->modx->lexicon('mc_already_exists'));
+        }
+    }
+
+    public function createProcessorFiles($processors) {
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    '
+            . $this->modx->lexicon('mc_creating_cmp_processors'));
+        $processorDir = $this->myPaths['targetProcessors'];
+        foreach ($processors as $processor) {
+            $tpl = '';
+            $couple = explode(':', $processor);
+            $dir = $processorDir . $couple[0];
+            $file = $couple[1];
+            if (!file_exists(rtrim($dir, '/') . '/' . $file)) {
+                $tpl = $this->getProcessorTpl($dir, $file);
                 $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
             } else {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
                     $this->modx->lexicon('mc_already_exists'));
             }
         }
-        /* Create processor files */
-        if (!empty($processors)) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    '
-                . $this->modx->lexicon('mc_creating_cmp_processors'));
-            $processorDir = $this->myPaths['targetProcessors'];
-            foreach($processors as $processor) {
-                $tpl = '';
-                $couple = explode(':', $processor);
-                $dir = $processorDir . $couple[0];
-                $file = $couple[1];
-                if (! file_exists(rtrim($dir,'/') . '/' . $file)) {
-                    if (strpos($file, 'getlist') !== false) {
-                        $tpl = $this->getGetlistTpl($dir);
-                    } elseif (strpos($file, 'changecategory') !== false) {
-                        $tpl = $this->getChangeCategoryTpl($dir);
-                    }else {
-                        $tpl = $this->helpers->getTpl('processorFile.php');
-                    }
-                    $tpl = $this->helpers->replaceTags($tpl);
-                    $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
-                } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
-                        $this->modx->lexicon('mc_already_exists'));
-                }
+    }
 
+    public function getProcessorTpl($dir, $file) {
+        /* set up arrays of possible processors and elements */
+        $tpl = '';
+        $useClass = false;
+        $processorName = '';
+        $matches = array();
+        $processorClass = '';
+        $elementName = '';
+
+        if (strpos($file, 'class') !== false) {
+            $useClass = true;
+            $tpl = $this->helpers->getTpl('cmp.processor.class.php');
+        } else {
+            $tpl = $this->helpers->getTpl('cmp.processorfile.php');
+        }
+        /* extract the actual processor name from the filename */
+        $pattern = '/^([a-z]+)/';
+
+        preg_match($pattern, $file, $matches);
+        if (isset($matches[1])) {
+            $processorName = $matches[1];
+        }
+
+
+        $processors = array('GetList','Create','Update','Duplicate','Remove','Import','Export');
+        $elements = array('resource', 'chunk', 'snippet', 'plugin', 'template', 'tv', 'templateVar');
+
+        /* look for them */
+
+        foreach($processors as $processor) {
+            if (stripos($processorName, $processor) !== false) {
+                $processorClass = 'modObject' . $processor . 'Processor';
+                break;
             }
         }
-        /* Create controller files */
-        if (!empty($controllers)) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
-                $this->modx->lexicon('mc_creating_cmp_controllers'));
-            $controllerDir = $this->myPaths['targetControllers'];
-            foreach($controllers as $controller){
-                $tpl = '';
-                $couple = explode(':', $controller);
-                $dir = $controllerDir . $couple[0];
-                $file = $couple[1];
-                if (!file_exists(rtrim($dir, '/') . '/' . $file)) {
-                    if (strstr($file, 'index')) {
-                        $tpl = $this->helpers->getTpl('cmp.controllerindex');
-                    } elseif(strstr($file, 'header')) {
-                        $tpl = $this->helpers->getTpl('cmp.controllerheader');
-                    } elseif(strstr($file, 'home')) {
-                        $tpl = $this->helpers->getTpl('cmp.controllerhome');
-                    }
-                    $tpl = $this->helpers->replaceTags($tpl);
-                    $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
-                } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
-                        $this->modx->lexicon('mc_already_exists'));
-                }
-
+        foreach ($elements as $element) {
+            if (stripos($dir, $element) !== false) {
+                $elementName = $element;
+                break;
             }
         }
 
-        /* Create connector files */
-        if (!empty($connectors)) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
-                $this->modx->lexicon('mc_creating_cmp_connectors'));
-            $dir = $this->myPaths['targetConnectors'];
-            $tpl = $this->helpers->getTpl('cmp.connectorfile');
-            $tpl = $this->helpers->replaceTags($tpl);
-            foreach($connectors as $connector) {
-                $file = $connector;
-                if (! file_exists($dir . $file)) {
-                    $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
-                } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
-                        $this->modx->lexicon('mc_already_exists'));
+
+
+        /*if (strpos($file, 'getlist') !== false) {
+            $tpl = $this->getGetlistTpl($dir);
+        } elseif (strpos($file, 'changecategory') !== false) {
+            $tpl = $this->getChangeCategoryTpl($dir);
+        } else {
+            $tpl = $this->helpers->getTpl('processorFile.php');
+        }*/
+
+        $tpl = $this->helpers->replaceTags($tpl);
+        if ($useClass) {
+            $tpl = str_replace('[[+Element]]', ucfirst($elementName), $tpl);
+            $tpl = str_replace('[[+element]]', $elementName, $tpl);
+            $tpl = str_replace('Mc_ProcessorType', ucFirst($this->packageNameLower . ucfirst($processorName)), $tpl);
+            if (!empty($processorClass))
+            $tpl = str_replace('modProcessor', $processorClass, $tpl);
+        }
+
+        return $tpl;
+    }
+
+    public function createControllerFiles($controllers) {
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
+            $this->modx->lexicon('mc_creating_cmp_controllers'));
+        $controllerDir = $this->myPaths['targetControllers'];
+        foreach ($controllers as $controller) {
+            $tpl = '';
+            $couple = explode(':', $controller);
+            $dir = $controllerDir . $couple[0];
+            $file = $couple[1];
+            if (!file_exists(rtrim($dir, '/') . '/' . $file)) {
+                if (strstr($file, 'index')) {
+                    $tpl = $this->helpers->getTpl('cmp.controllerindex');
+                } elseif (strstr($file, 'header')) {
+                    $tpl = $this->helpers->getTpl('cmp.controllerheader');
+                } elseif (strstr($file, 'home')) {
+                    $tpl = $this->helpers->getTpl('cmp.controllerhome');
                 }
+                $tpl = $this->helpers->replaceTags($tpl);
+                $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
+            } else {
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
+                    $this->modx->lexicon('mc_already_exists'));
             }
 
         }
-
-        /* Create CMP JS Files */
-        if (!empty($jsFiles)) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
-                $this->modx->lexicon('mc_creating_cmp_js_files'));
-            $tpl = $this->helpers->getTpl('js');
-            $jsDir = $this->myPaths['targetJs'];
-            foreach ($jsFiles as $jsFile) {
-                $couple = explode(':', $jsFile);
-                $dir = $jsDir . $couple[0];
-                $file = $couple[1];
-                if (!file_exists($dir . '/' . $file)) {
-                    if ($file == $this->packageNameLower . '.js') {
-                        /* Main JS file */
-                        $tpl = $this->helpers->getTpl('cmp.defaultjs');
-                    } elseif (strpos($file, 'grid') !== false) {
-                        $tpl = $this->getGridTpl($file);
-
-                    } else {
-                        /* Look for a tpl chunk with the name filename.tpl */
-                        $tpl = $this->helpers->getTpl('cmp.' . $file);
-                    }
-                    if (empty($tpl)) {
-                        /* default -- use generic JS tpl */
-                        $tpl = $this->helpers->getTpl('js');
-                    }
-                    $tpl = $this->helpers->replaceTags($tpl);
-                    $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
-                } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
-                        $this->modx->lexicon('mc_already_exists'));
-                }
-
+    }
+    public function createConnectorFiles($connectors) {
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
+            $this->modx->lexicon('mc_creating_cmp_connectors'));
+        $dir = $this->myPaths['targetConnectors'];
+        $tpl = $this->helpers->getTpl('cmp.connectorfile');
+        $tpl = $this->helpers->replaceTags($tpl);
+        foreach ($connectors as $connector) {
+            $file = $connector;
+            if (!file_exists($dir . $file)) {
+                $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
+            } else {
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
+                    $this->modx->lexicon('mc_already_exists'));
             }
         }
     }
+    public function createCmpJsFiles($jsFiles) {
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
+            $this->modx->lexicon('mc_creating_cmp_js_files'));
+        $tpl = $this->helpers->getTpl('js');
+        $jsDir = $this->myPaths['targetJs'];
+        foreach ($jsFiles as $jsFile) {
+            $couple = explode(':', $jsFile);
+            $dir = $jsDir . $couple[0];
+            $file = $couple[1];
+            if (!file_exists($dir . '/' . $file)) {
+                if ($file == $this->packageNameLower . '.js') {
+                    /* Main JS file */
+                    $tpl = $this->helpers->getTpl('cmp.defaultjs');
+                } elseif (strpos($file, 'grid') !== false) {
+                    $tpl = $this->getGridTpl($file);
 
+                } else {
+                    /* Look for a tpl chunk with the name filename.tpl */
+                    $tpl = $this->helpers->getTpl('cmp.' . $file);
+                }
+                if (empty($tpl)) {
+                    /* default -- use generic JS tpl */
+                    $tpl = $this->helpers->getTpl('js');
+                }
+                $tpl = $this->helpers->replaceTags($tpl);
+                $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
+            } else {
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
+                    $this->modx->lexicon('mc_already_exists'));
+            }
+
+        }
+    }
     function getGridTpl($file) {
         $tpl = $this->helpers->getTpl('cmp.grid');
         $elements = array('snippet', 'chunk', 'plugin', 'template', 'tv', 'templatevar');
