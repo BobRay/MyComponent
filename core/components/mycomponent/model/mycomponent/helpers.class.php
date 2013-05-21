@@ -628,12 +628,13 @@ class Helpers
         return $this->output;
     }
 
+   /* For possible future use */
    public function serialize_array(&$array, $root = '$root', $depth = 0) {
         $items = array();
 
         foreach ($array as $key => &$value) {
             if (is_array($value)) {
-                serialize_array($value, $root . '[\'' . $key . '\']', $depth + 1);
+                $this->serialize_array($value, $root . '[\'' . $key . '\']', $depth + 1);
             }
             else {
                 $items[$key] = $value;
