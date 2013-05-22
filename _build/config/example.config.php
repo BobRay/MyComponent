@@ -604,7 +604,6 @@ $components = array(
     'exportResources' => array(
         'Resource1',
         'Resource2',
-        'MyWeblink'
     ),
     /* Array of resource parent IDs to get children of. */
     'parents' => array(),
