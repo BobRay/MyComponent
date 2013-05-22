@@ -13,6 +13,7 @@ class MyComponentProject {
     public $modx;
     public $myPaths = array();
     public $packageNameLower = '';
+    public $packageName = '';
     public $targetRoot = '';
     public $mcRoot = '';
     public $mcCore = '';
@@ -92,7 +93,8 @@ class MyComponentProject {
 
         /* Properties sent in method call will override those in Project Config file */
         $properties = array_merge($properties, $scriptProperties);
-        $this->packageNameLower = $properties['packageNameLower'];
+        $this->packageNameLower = $this->modx->getOption('packageNameLower', $properties, '');
+        $this->packageName = $this->modx->getOption('packageName', $properties, '');
 
         $this->mcRoot = isset($properties['mycomponentRoot'])
             ? $properties['mycomponentRoot']
@@ -370,7 +372,7 @@ class MyComponentProject {
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
             $this->modx->lexicon('mc_processing_categories'));
         if (empty($categories)) {
-            $packageName = $this->modx->GetOption('packageName', $this->props, '');
+            $packageName = $this->packageName;
             if (empty($packageName)) {
                 session_write_close();
                 die('PackageName nor categories found in project config');
@@ -1126,7 +1128,7 @@ class MyComponentProject {
         $fileName = $this->packageNameLower . '.class.php';
 
         if (!file_exists($dir . '/' . $fileName)) {
-            $tpl = $this->helpers->getTpl('cmp.classfile');
+            $tpl = $this->helpers->getTpl('cmp.classfile.php');
             $tpl = $this->helpers->replaceTags($tpl);
             $this->helpers->writeFile($dir, $fileName, $tpl);
         } else {
@@ -1158,7 +1160,7 @@ class MyComponentProject {
         $fileName = $this->packageNameLower . 'controllerrequest.class.php';
 
         if (!file_exists($dir . '/' . $fileName)) {
-            $tpl = $this->helpers->getTpl('cmp.controllerrequest.class');
+            $tpl = $this->helpers->getTpl('cmp.controllerrequest.class.php');
             $tpl = $this->helpers->replaceTags($tpl);
             $this->helpers->writeFile($dir, $fileName, $tpl);
         } else {
@@ -1186,11 +1188,11 @@ class MyComponentProject {
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    '
             . $this->modx->lexicon('mc_creating_cmp_processors'));
         $processorDir = $this->myPaths['targetProcessors'];
+
         foreach ($processors as $processor) {
-            $tpl = '';
             $couple = explode(':', $processor);
             $dir = $processorDir . $couple[0];
-            $file = $couple[1];
+            $file = $couple[1] . '.class.php';
             if (!file_exists(rtrim($dir, '/') . '/' . $file)) {
                 $tpl = $this->getProcessorTpl($dir, $file);
                 $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
@@ -1202,20 +1204,19 @@ class MyComponentProject {
     }
 
     public function getProcessorTpl($dir, $file) {
-        /* set up arrays of possible processors and elements */
-        $tpl = '';
-        $useClass = false;
+
         $processorName = '';
         $matches = array();
         $processorClass = '';
         $elementName = '';
 
-        if (strpos($file, 'class') !== false) {
-            $useClass = true;
-            $tpl = $this->helpers->getTpl('cmp.processor.class.php');
+
+        if (file_exists($this->myPaths['mcTpl'] . 'cmp.' . $file)) {
+            $tpl = $this->helpers->getTpl('cmp.' . $file);
         } else {
-            $tpl = $this->helpers->getTpl('cmp.processorfile.php');
+            $tpl = $this->helpers->getTpl('cmp.processor.class.php');
         }
+
         /* extract the actual processor name from the filename */
         $pattern = '/^([a-z]+)/';
 
@@ -1224,9 +1225,9 @@ class MyComponentProject {
             $processorName = $matches[1];
         }
 
-
+        /* set up arrays of possible processors and elements */
         $processors = array('GetList','Create','Update','Duplicate','Remove','Import','Export');
-        $elements = array('resource', 'chunk', 'snippet', 'plugin', 'template', 'tv', 'templateVar');
+        $elements = array('resource', 'chunk', 'snippet', 'plugin', 'template', 'tv', 'article', 'templateVar');
 
         /* look for them */
 
@@ -1237,31 +1238,41 @@ class MyComponentProject {
             }
         }
         foreach ($elements as $element) {
+            if ($element == 'tv') {
+                $element = 'templateVar';
+            }
             if (stripos($dir, $element) !== false) {
                 $elementName = $element;
                 break;
             }
         }
-
-
-
-        /*if (strpos($file, 'getlist') !== false) {
-            $tpl = $this->getGetlistTpl($dir);
-        } elseif (strpos($file, 'changecategory') !== false) {
-            $tpl = $this->getChangeCategoryTpl($dir);
-        } else {
-            $tpl = $this->helpers->getTpl('processorFile.php');
-        }*/
-
+        $replaceFields = array(
+            'mc_element' => $elementName,
+            'mc_Element' => ucfirst($elementName),
+            'mc_ProcessorType' => $this->packageName . ucfirst($elementName)
+                . ucfirst($processorName),
+        );
+        $tpl = $this->helpers->replaceTags($tpl, $replaceFields);
         $tpl = $this->helpers->replaceTags($tpl);
-        if ($useClass) {
-            $tpl = str_replace('[[+Element]]', ucfirst($elementName), $tpl);
-            $tpl = str_replace('[[+element]]', $elementName, $tpl);
-            $tpl = str_replace('Mc_ProcessorType', ucFirst($this->packageNameLower . ucfirst($processorName)), $tpl);
-            if (!empty($processorClass))
+
+        if (!empty($processorClass)) {
             $tpl = str_replace('modProcessor', $processorClass, $tpl);
         }
 
+        /* adjust for 'name' field of templates, categories, articles, and resources */
+        if (stripos($elementName, 'template') !== false) {
+            $tpl = str_replace("'name'", "'templatename'", $tpl);
+        }
+        if (stripos($elementName, 'category') !== false) {
+            $tpl = str_replace("'name'", "'category'", $tpl);
+        }
+        if (stripos($elementName, 'resource') !== false) {
+            $tpl = str_replace("'name'", "'pagetitle'", $tpl);
+        }
+        if (stripos($elementName, 'article') !== false) {
+            $tpl = str_replace("'name'", "'pagetitle'", $tpl);
+            $tpl = str_replace("'modArticle'", "'Article'", $tpl);
+        }
         return $tpl;
     }
 
