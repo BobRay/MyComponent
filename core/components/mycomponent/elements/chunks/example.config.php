@@ -504,6 +504,7 @@ $components = array(
      *  **********************************/
 
     /* If this is false, the rest of this section will be ignored */
+
     'createCmpFiles' => true,
 
     /* IMPORTANT: The array values in the rest of
@@ -512,18 +513,28 @@ $components = array(
     /* This is the main action file for your component.
        It will automatically go in core/component/yourcomponent/
     */
+
     'actionFile' => 'index.php',
 
-    /* These will automatically go to core/components/yourcomponent/processors/
-       format directory:filename */
-    'processors' => array(
-        'mgr/snippet:getlist.php',
-        'mgr/snippet:changecategory.php',
-        'mgr/snippet:delete.php',
+    /* CSS file for CMP */
 
-        'mgr/chunk:getlist.php',
-        'mgr/chunk:changecategory.php',
-        'mgr/chunk:delete.php',
+    'cssFile' => 'mgr.css',
+
+    /* These will automatically go to core/components/yourcomponent/processors/
+       format directory:filename
+       '.class.php' will be appended to the filename
+
+       Built-in processor classes include getlist, create, update, duplicate,
+       import, and export. */
+
+    'processors' => array(
+        'mgr/snippet:getlist',
+        'mgr/snippet:changecategory',
+        'mgr/snippet:remove',
+
+        'mgr/chunk:getlist',
+        'mgr/chunk:changecategory',
+        'mgr/chunk:remove',
     ),
 
     /* These will automatically go to core/components/yourcomponent/controllers[/directory]/filename
@@ -536,6 +547,7 @@ $components = array(
     ),
 
     /* These will automatically go in assets/components/yourcomponent/ */
+
     'connectors' => array(
         'connector.php'
 
