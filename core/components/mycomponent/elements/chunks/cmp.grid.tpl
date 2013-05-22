@@ -149,7 +149,7 @@ Ext.extend([[+packageName]].grid.[[+Element]]s, MODx.grid.Grid, {
         var cs = this.getSelectedAsList();
         if (cs === false) return false;
 
-        var r = {[[+element]]s: cs};
+        var r = {ids: cs};
         if (!this.changeCategoryWindow) {
             this.changeCategoryWindow = MODx.load({
                   xtype: '[[+packageNameLower]]-[[+element]]-window-change-category'
@@ -176,7 +176,7 @@ Ext.extend([[+packageName]].grid.[[+Element]]s, MODx.grid.Grid, {
         this.changeCategoryWindow.show(e.target);
         return true;
     }
-    , [[+element]]Delete: function () {
+    , [[+element]]Remove: function () {
         var cs = this.getSelectedAsList();
         if (cs === false) return false;
         MODx.msg.confirm({
@@ -184,8 +184,8 @@ Ext.extend([[+packageName]].grid.[[+Element]]s, MODx.grid.Grid, {
              , text: _('[[+packageNameLower]].confirm_delete')
              , url: this.config.url
              , params: {
-                action: 'mgr/[[+element]]/delete'
-                , [[+element]]s: cs
+                action: 'mgr/[[+element]]/remove'
+                , ids: cs
             }
             , listeners: {
                 'success': {fn: function (r) {
@@ -211,7 +211,6 @@ Ext.extend([[+packageName]].grid.[[+Element]]s, MODx.grid.Grid, {
         return true;
     }
 
-
     , getBatchMenu: function () {
         var bm = [];
         bm.push(
@@ -223,7 +222,7 @@ Ext.extend([[+packageName]].grid.[[+Element]]s, MODx.grid.Grid, {
             , '-'
             , {
                 text: _('remove_[[+element]]')+'(s)'
-                ,handler: this.[[+element]]Delete
+                ,handler: this.[[+element]]Remove
                 , scope: this
             });
         return bm;

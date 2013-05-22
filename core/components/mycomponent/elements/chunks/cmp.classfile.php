@@ -11,7 +11,7 @@
  */
 
 
- class [[+packageName]] {
+ class mc_packageName {
     /** @var $modx modX */
     public $modx;
     /** @var $props array */
@@ -19,10 +19,10 @@
 
     function __construct(modX &$modx,array $config = array()) {
         $this->modx =& $modx;
-        $corePath = $modx->getOption('[[+packageNameLower]].core_path',null,
-            $modx->getOption('core_path').'components/[[+packageNameLower]]/');
-        $assetsUrl = $modx->getOption('[[+packageNameLower]].assets_url',null,
-            $modx->getOption('assets_url').'components/[[+packageNameLower]]/');
+        $corePath = $modx->getOption('mc_packageNameLower.core_path',null,
+            $modx->getOption('core_path').'components/mc_packageNameLower/');
+        $assetsUrl = $modx->getOption('mc_packageNameLower.assets_url',null,
+            $modx->getOption('assets_url').'components/mc_packageNameLower/');
 
         $this->config = array_merge(array(
             'corePath' => $corePath,
@@ -36,14 +36,14 @@
             'jsUrl' => $assetsUrl.'js/',
         ),$config);
 
-        $this->modx->addPackage('[[+packageNameLower]]',$this->config['modelPath']);
+        $this->modx->addPackage('mc_packageNameLower',$this->config['modelPath']);
         if ($this->modx->lexicon) {
-            $this->modx->lexicon->load('[[+packageNameLower]]:default');
+            $this->modx->lexicon->load('mc_packageNameLower:default');
         }
     }
 
     /**
-     * Initializes [[+packageName]] based on a specific context.
+     * Initializes mc_packageName based on a specific context.
      *
      * @access public
      * @param string $ctx The context to initialize in.
@@ -53,11 +53,11 @@
         $output = '';
         switch ($ctx) {
             case 'mgr':
-                if (!$this->modx->loadClass('[[+packageNameLower]].request.[[+packageName]]ControllerRequest',
+                if (!$this->modx->loadClass('mc_packageNameLower.request.mc_packageNameControllerRequest',
                     $this->config['modelPath'],true,true)) {
                         return 'Could not load controller request handler.';
                 }
-                $this->request = new [[+packageName]]ControllerRequest($this);
+                $this->request = new mc_packageNameControllerRequest($this);
                 $output = $this->request->handleRequest();
                 break;
         }
