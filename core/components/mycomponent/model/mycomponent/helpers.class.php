@@ -68,8 +68,10 @@ class Helpers
         $this->filePermission = $this->getProp('filePermission');
 
         $this->replaceFields = array(
-            '[[+packageName]]' => $this->getProp('packageName'),
             '[[+packageNameLower]]' => $this->getProp('packageNameLower'),
+            'mc_packageNameLower' => $this->getProp('packageNameLower'),
+            '[[+packageName]]' => $this->getProp('packageName'),
+            'mc_packageName' => $this->getProp('packageName'),
             '[[+packageDescription]]' => $this->getProp('packageDescription'),
             '[[+author]]' => $this->getProp('author'),
             '[[+email]]' => $this->getProp('email'),
@@ -80,7 +82,6 @@ class Helpers
             '[[+packageUrl]]' => $this->getProp('packageDocumentationUrl'),
             '[[+gitHubUsername]]' => $this->getProp('gitHubUsername'),
             '[[+gitHubRepository]]' => $this->getProp('gitHubRepository'),
-
         );
         $license = $this->getTpl('license');
         if (!empty($license)) {
