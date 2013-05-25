@@ -7,37 +7,97 @@ if (false === function_exists('lcfirst')):
 endif;
 
 
-abstract class ObjectAdapter
-{
-    protected $dbClass = ''; /* modResource, modChunk, etc. */
-    protected $dbClassIDKey = 'id'; /* default; it's not ID for a few objects (e.g. System Event) */
-    protected $dbClassNameKey = ''; /* pagetitle, templatename, name, etc. */
-    protected $dbClassParentKey = ''; /* parent, category, etc. */
+abstract class ObjectAdapter {
+    /**
+     * @var string - modResource, modChunk, etc.
+     */
+    protected $dbClass = '';
+    /**
+     * @var $dbClassIDKeu string - Primary key field name
+     */
+    protected $dbClassIDKey = 'id';
 
-    /* @var $helpers Helpers */
+    /**
+     * @var $dbClassNameKey string - pagetitle, templatename, name, etc.
+     */
+    protected $dbClassNameKey = '';
+
+    /**
+     * @var $dbClassParentKey string - name of parent field (parent, category, etc)
+     */
+    protected $dbClassParentKey = '';
+
+    /* @var $helpers Helpers - helpers class */
     public $helpers;
+
     /* @var $modx modX */
     public $modx;
+
+    /**
+     * @var $name string - object name
+     */
     protected $name = '';
+
+    /**
+     * @var $createProcessor string - path of object's create processor
+     */
     protected $createProcessor = '';
+
+    /**
+     * @var $updateProcessor string - path of object's update processor
+     */
     protected $updateProcessor = '';
+
+    /**
+     * @var $myId integer - Primary key value for current object
+     */
     protected $myId;
+
+    /**
+     * @var $myFields array - associative array of field names/values for current object
+     */
     protected $myFields;
+
+    /**
+     * @var $myObjects static array - Master array of all objects being processed
+     * by MyComponent
+     */
     public static $myObjects = array();
 
-    public function __construct(&$modx, &$helpers) {/* Set the component */
+
+    /**
+     * @param $modx modX
+     * @param $helpers Helpers
+     */
+    public function __construct(&$modx, &$helpers) {
         $this->modx =& $modx;
         $this->helpers =& $helpers;
     }
 
+    /**
+     * Return master array of all objects being processed by MyComponent
+     *
+     * @return array|static
+     */
     public static function getObjects() {
         return self::$myObjects;
     }
 
+    /**
+     * Get Name of current object (e.g., value of name, pagetitle, category, etc.
+     *
+     * @return string
+     */
     public function getName() {
         return ($this->name);
     }
 
+    /**
+     * Return path to update or create processor
+     *
+     * @param $mode
+     * @return string
+     */
     public function getProcessor($mode) {
         return $mode == 'create'
             ? $this->createProcessor
@@ -46,21 +106,18 @@ abstract class ObjectAdapter
     }
 
     /**
-     * Convenience Method for getting the name of the 'name' field for the object.
-     * We use this instead of a switch/case, because its faster and more easily
-     * maintained. If a change occurs, we don't have to add a new case.
+     * Convenience Method for getting the name of the 'name' field for an object.
      *
      * @return string - The name of the 'name' field.
      */
-    public function getNameField() 
-    {//Simple Getter Function
+    public function getNameField() {
         return $this->dbClassNameKey;
     }
 
 
     /**
      * Convenience Method for getting the File System Safe Name of the current
-     * object. This serves the purpose of accessing the $name variable.
+     * object.
      *
      * @return string - modified lowercase Name with no spaces.
      */
@@ -72,12 +129,10 @@ abstract class ObjectAdapter
     
     /**
      * Convenience Method for getting the xPDO Class of the current object.
-     * This serves the purpose of accessing the $class variable.
-     * 
+     *
      * @return String - The proper 'mod' prefixed class for MODx.
      */
-    public function getClass()
-    {//Simple Getter Function
+    public function getClass() {
         return $this->dbClass;
     }
     
@@ -89,8 +144,7 @@ abstract class ObjectAdapter
      *
      * @return string - The lowercase class without the 'mod' prefix.
      */
-    public function getSafeClass()
-    {//Simple Getter Function
+    public function getSafeClass() {
         $class = substr(strtolower($this->dbClass), 3);
         if ($class == 'templatevar')
             return 'tv';
@@ -124,6 +178,9 @@ abstract class ObjectAdapter
     }
 
 
+    /**
+     * @return string
+     */
     public function getCodeFileName() {//For Quick Access
         $type = $this->getClass();
         $name = $this->getSafeName();
@@ -144,15 +201,26 @@ abstract class ObjectAdapter
             case 'modPlugin':
                 $output = $name .'.'. $suffix . '.' . $extension;
                 break;
-            default:  /* all other elements get no code file */
+            default:  /* all other elements need no code file */
                 $output = '';
                 break;
         }
         return $output;
     }
+
+    /**
+     * Get the name of the transport file for the current object
+     * @return string
+     */
     public function getTransportFileName() {
         return 'transport.' . $this->getSafeClass() . '.' . $this->getSafeName() . '.php';
     }
+
+    /**
+     * Get the name of the properties file for the current object
+     *
+     * @return string
+     */
     public function getPropertiesFileName() {
         return 'properties.' . $this->getSafeName() . '.' . $this->getSafeClass() . '.php';
     }
@@ -172,19 +240,19 @@ abstract class ObjectAdapter
         /* @var $modx modX */
         $modx =& $this->modx;
         $objClass = $this->getClass();
-    // Class ID Key, Name Key => Name Value Pair
+        /* Class ID Key, Name Key => Name Value Pair */
         $idKey = $this->dbClassIDKey;
         $name = $this->getName();
         $nameKey = $this->getNameField();
         $id = null;
 
 
-    // See if the object exists        
+       /* See if the object exists */
         $obj = $modx->getObject($objClass, array($nameKey => $name));
         if ($obj) {
             $id = $obj->get($idKey);
         }
-    /* Object exists/Cannot Overwrite */
+        /* Object exists/Cannot Overwrite */
         if ($obj && !$overwrite) {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $objClass . ' ' .
                 $this->modx->lexicon('mc_already_exists')
@@ -206,7 +274,7 @@ abstract class ObjectAdapter
                     }
                 }
             }
-    /* Object exists/Can Overwrite */
+        /* Object exists/Can Overwrite */
         } elseif ($obj && $overwrite) {
             unset($this->myFields[$idKey]);
             if ($idKey != $nameKey) {
@@ -233,7 +301,7 @@ abstract class ObjectAdapter
                         . ' ' . $objClass . ': ' . $name);
             }
 
-    /* Object does not exist - create it */
+        /* Object does not exist - create it */
         } elseif (!$obj) {
             if ($idKey != $nameKey) {
                 unset($this->myFields[$idKey]);
@@ -244,7 +312,7 @@ abstract class ObjectAdapter
             }
             /* sets appropriate content field for elements and resources */
             //if (!isset($this->myFields['static']) || empty($this->myFields['static'])) {
-                $this->setContentField($name, $this->dbClass);
+            $this->setContentField($name, $this->dbClass);
             //}
             if (isset($this->myFields['filename'])) {
                 $tempFilename = $this->myFields['filename'];
@@ -300,17 +368,20 @@ abstract class ObjectAdapter
         }
     }
 
+    /**
+     * Remove object from MODX DB
+     */
     public function remove() {
         $modx =& $this->modx;
         $objClass = $this->getClass();
-        // Class ID Key, Name Key => Name Value Pair
+        /* Class ID Key, Name Key => Name Value Pair */
         $idKey = $this->dbClassIDKey;
         $name = $this->getName();
         $nameKey = $this->getNameField();
         $id = null;
 
 
-        // See if the object exists
+        /* See if the object exists */
         $obj = $modx->getObject($objClass, array($nameKey => $name));
         if ($obj) {
             $obj->remove();
@@ -327,9 +398,10 @@ abstract class ObjectAdapter
         }
     }
     /**
-     *
-     *  Sets the content field for resources and elements
-     * on Bootstrap
+     *  Set the content field for resources and elements
+     *  during Bootstrap
+     *  @param $name string - $name of the object
+     *  @param $type string - type (e.g., 'modSnippet');
      * @return string = tpl code
      */
     public function setContentField($name, $type ) {
@@ -356,7 +428,7 @@ abstract class ObjectAdapter
             }
         }
         if (empty($tpl)) {
-        /* no file, use Tpl chunk */
+            /* no file, use Tpl chunk */
             $tplName = strtolower($this->dbClass);
             if ($tplName == 'modplugin' || $tplName == 'modsnippet') {
                 $tplName = 'phpfile.php';
@@ -403,6 +475,15 @@ abstract class ObjectAdapter
         return $tpl;
     }
 
+    /**
+     * Create the code file for the current object. Overwrites on Export,
+     * not on Bootstrap
+     *
+     * @param bool $overwrite - if set, file is overwritten
+     * @param string $content - file content
+     * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT
+     * @param bool $dryRun - If set, file content goes to stdout rathern than file
+     */
     public function createCodeFile($overwrite = false, $content = '', $mode = MODE_BOOTSTRAP, $dryRun = false) {
         if ($mode == MODE_BOOTSTRAP) {
             $tplName = strtolower($this->dbClass);
@@ -459,6 +540,14 @@ abstract class ObjectAdapter
     }
 
 
+    /**
+     * Create a transport file
+     * @param $helpers Helpers - Helpers class
+     * @param $objects array - array of objects to process
+     * @param $category string
+     * @param $type string - modSnippet, modChunk, etc.
+     * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT (overwrites on export)
+     */
     public static function createTransportFile(&$helpers, $objects, $category, $type,  $mode = MODE_BOOTSTRAP) {
         /* @var $helpers Helpers */
         if (empty($objects)) {
@@ -500,6 +589,7 @@ abstract class ObjectAdapter
 
         $tpl .= "\n\$" . $variableName . " = array();\n\n";
         $i = 1;
+
         // append the code (returned from writeObject) for each object to $tpl
         foreach ($objects as $k => $fields) {
             if (isset($fields['filename'])) {
@@ -529,8 +619,10 @@ abstract class ObjectAdapter
      * Creates code for an individual element to be written to transport file
      * and properties file for any objects with properties
      *
-     * @param $elementObj - MODX object (the element)
-     * @param $element - type of object ('plugin', 'snippet', etc.)
+     * @param $helpers Helpers - Helpers class
+     * @param $fields array - Object fields
+     * @param $type - type of object ('plugin', 'snippet', etc.)
+     * @param $fileName string - filename of the object's code file
      * @param $i int - index of element in transport file
      * @return string - code for this object to be inserted in transport file (by $this->process())
      */
@@ -550,10 +642,11 @@ abstract class ObjectAdapter
 
         /* This may not be necessary */
         /* *********** */
+
         $properties = isset($fields['properties'])? $fields['properties'] : array();
         $hasProperties = false;
         if (!empty($properties)) {
-            /* handled below */
+            /* properties file is written by the element and resource adapters */
             $hasProperties = true;
             unset($fields['properties']);
         } else {
@@ -623,39 +716,6 @@ abstract class ObjectAdapter
 
         }
         return $tpl;
-    }
-
-    /**
-     * Writes the properties file for objects with properties
-     * @param $properties array - object properties as PHP array
-     * @param $fileName - Name of properties file
-     * @param $objectName - Name of MODX object
-     */
-    protected function writePropertyFile($helpers, $properties, $fileName, $objectName) {
-        /* @var $helpers Helpers */
-        $dir = $helpers->props['targetRoot'] . 'properties/';
-        //$dir = $this->transportPath . 'properties/';
-        $tpl = $this->helpers->getTpl('propertiesfile.php');
-        $tpl = str_replace('[[+element]]', $objectName, $tpl);
-        $tpl = str_replace('[[+elementType]]', substr(strtolower($this->elementType), 3), $tpl);
-
-        $tpl = $this->helpers->replaceTags($tpl);
-        $tpl .= "\n\n" . $this->render_properties($properties) . "\n\n";
-
-        if ($this->dryRun) {
-            $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
-                $this->modx->lexicon('mc_would_be_creating')
-                    . ': '. $fileName . "\n");
-            $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
-                $this->modx->lexicon('mc_begin_file_content'));
-        }
-        $this->helpers->writeFile($dir, $fileName, $tpl, $this->dryRun);
-        if ($this->dryRun) {
-            $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
-                $this->modx->lexicon('mc_end_file_content')
-                 . "\n");
-        }
-        unset($tpl);
     }
 
 }

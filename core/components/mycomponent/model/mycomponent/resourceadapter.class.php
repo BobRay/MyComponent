@@ -304,9 +304,12 @@ class ResourceAdapter extends ObjectAdapter
 
     /**
      * Writes the properties file for objects with properties
+     * (ToDo: move to objectAdapter class)
+     *
+     * @param $objectName string - name of object for use in filename
      * @param $properties array - object properties as PHP array
-     * @param $fileName - Name of properties file
-     * @param $objectName - Name of MODX object
+     * @param $mode int - MODE_BOOTSTRAP (no overwrite), MODE_EXPORT (overwrite)
+     * @param $dryRun bool - if set, output goes to stdout instead of file
      */
     public function writePropertiesFile($objectName, $properties, $mode = MODE_BOOTSTRAP, $dryRun = false) {
         $dir = $this->helpers->props['targetRoot'] . '_build/data/properties/';

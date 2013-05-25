@@ -9,30 +9,66 @@ if (!defined('MODE_BOOTSTRAP')) {
 
 
 class MyComponentProject {
-    /* @var $modx modX */
+    /** @var $modx modX */
     public $modx;
+
+    /**
+     * @var $myPaths array - paths to the working directories
+     */
     public $myPaths = array();
+
+    /**
+     * @var $packageNameLower string - Lowercase name of the package
+     */
     public $packageNameLower = '';
+
+    /**
+     * @var $packageName string - Mixed-case name of the package
+     */
     public $packageName = '';
+
+    /**
+     * @var $targetRoot string - Root of the project being developed
+     */
     public $targetRoot = '';
+
+    /**
+     * @var $mcRoot string - Root of the MyComponent install
+     */
     public $mcRoot = '';
+
+    /**
+     * @var $mcCore string - MyComponent core path
+     */
     public $mcCore = '';
+
+    /**
+     * @var $props array - $scriptProperties array alias
+     */
     public $props = array();
-    /* @var $helpers Helpers */
+
+    /** @var $helpers Helpers - Helper class */
     public $helpers;
+
+    /**
+     * @var $dirPermission int - Default directory permissions for new folders
+     */
     public $dirPermission;
-    /* Array of object names and fields created for bootstrap */
-    protected $bootstrapObjects;
-    /* Array of object names and fields created for exportObjects */
-    protected $exportObjects;
+
+    /**
+     * @var $configPath string - path to config file
+     */
     protected $configPath;
 
+    /** External: ObjectAdapter::$myObjects array - this is the master array
+     *  containing all objects being processed and their fields.
+     */
+
+    // for LexiconHelper:
     // $modx->lexicon->load('mycomponent:default');
 
 
-    /* *****************************************************************************
-       Property Getter and Setters
-    ***************************************************************************** */
+
     /**
      * Convenience method for determining if MyComponent is installed.
      *
@@ -47,6 +83,7 @@ class MyComponentProject {
     ***************************************************************************** */
     /**
      * MyComponentProject constructor
+     *
      * @param $modx modX
      */
     public function __construct(&$modx) {
@@ -69,7 +106,10 @@ class MyComponentProject {
 
         if (empty($currentProject)) {
             $currentProjectPath = $this->modx->getOption('mc.root', null,
-                $this->modx->getOption('core_path') . 'components/mycomponent/') . '_build/config/current.project.php';
+                $this->modx->getOption('core_path') .
+                'components/mycomponent/') .
+                '_build/config/current.project.php';
+
             if (file_exists($currentProjectPath)) {
                 include $currentProjectPath;
             } else {
@@ -142,8 +182,8 @@ class MyComponentProject {
 
 
     /**
-     * Updates the file with the names and project config paths of each project
-     * for use by the UI
+     * Update the projects.php file with the names and project config
+     * paths of each project; for use by the UI
      *
      * @param $configPath string - path to project config file
      */
@@ -180,7 +220,7 @@ class MyComponentProject {
 
 
     /**
-     * Sets up the Path variables for the Component Project. Called in __construct.
+     * Set up the Path variables for the Project. Called in __construct.
      */
     public function initPaths() {
 
@@ -257,10 +297,10 @@ class MyComponentProject {
         /* Create Intersects for all many-to-many relationships */
         $this->createIntersects();
 
+        /* Create all transport files */
         $this->createTransportFiles($mode);
 
     }
-
 
     /**
      * Create Adapter Objects
@@ -272,7 +312,7 @@ class MyComponentProject {
      * For MODE_EXPORT, finds objects in MODX
      * and creates code files for them.
      *
-     * In both cases the objects fields and resolver
+     * In both cases the object fields and resolver
      * fields are written to ObjectAdapter::myObjects
      *
      * for MODE_REMOVE, object is removed from MODX
@@ -324,8 +364,6 @@ class MyComponentProject {
 
             $this->createContexts($mode);
         }
-
-
     }
 
     /**
@@ -353,9 +391,7 @@ class MyComponentProject {
                     if ($mode == MODE_REMOVE) {
                         $a->remove();
                     }
-
                 }
-
             }
         }
     }
@@ -1016,6 +1052,7 @@ class MyComponentProject {
 
         $hasAssets = $this->modx->getOption('hasAssets', $this->props, false);
         $doJsMin = $this->modx->getOption('minifyJS', $this->props, false);
+
         if ($hasAssets && $doJsMin) {
             /* copy minimizer classes to project _build/utilities directory */
 
@@ -1029,11 +1066,13 @@ class MyComponentProject {
                     $fileContent = file_get_contents($path);
                 }
                 if (!empty($fileContent)) {
-                    if (!file_exists($this->myPaths['targetBuild'] . 'utilities/' . $minimizer)) {
+                    if (!file_exists($this->myPaths['targetBuild'] .
+                        'utilities/' . $minimizer)) {
                         $this->helpers->writeFile($this->myPaths['targetBuild'] .
                             'utilities', $minimizer, $fileContent);
                     } else {
-                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $minimizer . ' ' .
+                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                            $minimizer . ' ' .
                             $this->modx->lexicon('mc_already_exists'));
                     }
                 } else {
@@ -1057,7 +1096,6 @@ class MyComponentProject {
      * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT, MODE_REMOVE
      */
     public function updateProjectConfig($mode = MODE_BOOTSTRAP) {
-        /* transfer {$packageNameLower}.config.php from tpl chunk/file to target _build dir. */
         $fileName = $this->packageNameLower . '.config.php';
         $dir = $this->myPaths['targetBuild'] . 'config/';
 
@@ -1313,7 +1351,6 @@ class MyComponentProject {
         $processorClass = '';
         $elementName = '';
 
-
         if (file_exists($this->myPaths['mcTpl'] . 'cmp.' . $file)) {
             $tpl = $this->helpers->getTpl('cmp.' . $file);
         } else {
@@ -1407,7 +1444,6 @@ class MyComponentProject {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
                     $this->modx->lexicon('mc_already_exists'));
             }
-
         }
     }
 
@@ -1490,39 +1526,6 @@ class MyComponentProject {
         }
         $tpl = str_replace('[[+element]]', $name, $tpl);
         $tpl = str_replace('[[+Element]]', ucfirst($name), $tpl);
-
-
-        return $tpl;
-    }
-
-    /**
-     * Get and customize code for any getlist processors
-     * specified in the project config file
-     *
-     * @param $file
-     * @return mixed
-     */
-    function getGetlistTpl($file) {
-        $tpl = $this->helpers->getTpl('cmp.getlist');
-        $elements = array(
-            'snippet',
-            'chunk',
-            'plugin',
-            'template',
-            'tv',
-            'templatevar'
-        );
-        $name = '';
-        foreach ($elements as $element) {
-            if (strpos($file, $element) !== false) {
-                $name = $element;
-            }
-        }
-        $name = $name == 'tv'? 'templateVar' : $name;
-        $tpl = str_replace('[[+element]]', $name, $tpl);
-        $tpl = str_replace('[[+Element]]', ucfirst($name), $tpl);
-        $name = $name == 'template' ? 'templatename' : 'name';
-        $tpl = str_replace('[[+name]]', $name, $tpl);
 
 
         return $tpl;
