@@ -45,6 +45,10 @@ class MyComponentProject {
     /* *****************************************************************************
        Construction and Support Functions (in MODxObjectAdapter)
     ***************************************************************************** */
+    /**
+     * MyComponentProject constructor
+     * @param $modx modX
+     */
     public function __construct(&$modx) {
 
         if (!defined('MODE_BOOTSTRAP')) {
@@ -55,6 +59,10 @@ class MyComponentProject {
     }
 
 
+    /**
+     * @param array $scriptProperties
+     * @param string $currentProject - Usually read from file, but set for unit tests
+     */
     public function init($scriptProperties = array(), $currentProject = '') {
         require dirname(__FILE__) . '/mcautoload.php';
         spl_autoload_register('mc_auto_load');
@@ -219,6 +227,9 @@ class MyComponentProject {
        Bootstrap and Support Functions
     ***************************************************************************** */
 
+    /**
+     * All bootstrap processes
+     */
     public function bootstrap() {
         /* enable garbage collection() */
         // gc_enable();
@@ -252,7 +263,7 @@ class MyComponentProject {
 
 
     /**
-     * Creates Adapter Objects
+     * Create Adapter Objects
      * Called for both Bootstrap and ExportObjects
      *
      * For MODE_BOOTSTRAP, creates objects in MODX and
@@ -266,7 +277,7 @@ class MyComponentProject {
      *
      * for MODE_REMOVE, object is removed from MODX
      *
-     * @param int $mode
+     * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT, MODE_REMOVE
      */
     public function createObjects($mode = MODE_BOOTSTRAP) {
         if ($mode != MODE_REMOVE) {
@@ -317,6 +328,11 @@ class MyComponentProject {
 
     }
 
+    /**
+     * Create, export, or remove Contexts in MODX if in the project config file
+     *
+     * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT, MODE_REMOVE
+     */
     public function createContexts($mode = MODE_BOOTSTRAP) {
         $contexts = $this->helpers->getProp('contexts', array());
         if (!empty($contexts)) {
@@ -344,6 +360,11 @@ class MyComponentProject {
         }
     }
 
+    /**
+     * Create, export, or remove namespace(s) if listed in project config
+     *
+     * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT, MODE_REMOVE
+     */
     public function createNamespaces($mode = MODE_BOOTSTRAP) {
         $namespaces = $this->helpers->getProp('namespaces', array());
         if (!empty($namespaces)) {
@@ -367,6 +388,13 @@ class MyComponentProject {
         }
     }
 
+    /**
+     * Create, export, or remove categories specified in the project config file
+     * If MODE_EXPORT or MODE_REMOVE, the category object exports or removes
+     * its elements
+     *
+     * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT, MODE_REMOVE
+     */
     public function createCategories($mode = MODE_BOOTSTRAP) {
         $categories = $this->modx->getOption('categories', $this->props, array());
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
@@ -433,6 +461,11 @@ class MyComponentProject {
 
     }
 
+    /**
+     * Create, export, or remove any new System Settings specified in the project config file
+     *
+     * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT, MODE_REMOVE
+     */
     public function createNewSystemSettings($mode = MODE_BOOTSTRAP) {
 
         $newSystemSettings = $this->modx->getOption('newSystemSettings', $this->props, array());
@@ -496,6 +529,12 @@ class MyComponentProject {
         }
     }
 
+    /**
+     * Create, export, or remove any Context Settings specified
+     * in the project config file
+     *
+     * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT, MODE_REMOVE
+     */
     public function createContextSettings($mode = MODE_BOOTSTRAP) {
         $newContextSettings = array();
         if ($mode == MODE_BOOTSTRAP) {
@@ -540,6 +579,11 @@ class MyComponentProject {
     }
 
 
+    /** Create, export, or remove any new System Events specified
+     * in the project config file
+     *
+     * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT, MODE_REMOVE
+     */
     public function createNewSystemEvents($mode = MODE_BOOTSTRAP) {
         $newSystemEvents = $this->modx->getOption('newSystemEvents', $this->props, array());
         if (empty($newSystemEvents)) {
@@ -576,6 +620,12 @@ class MyComponentProject {
 
     }
 
+    /**
+     * Create, export, or remove Elements specified in
+     * the project config file
+     *
+     * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT, MODE_REMOVE
+     */
     public function createElements($mode = MODE_BOOTSTRAP) {
         if ($mode == MODE_BOOTSTRAP || $mode == MODE_REMOVE) {
             /* Create elements from the project config file.
@@ -612,6 +662,11 @@ class MyComponentProject {
         }
     }
 
+    /**
+     * Create, export, or remove Resources specified in the project config file
+     *
+     * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT, MODE_REMOVE
+     */
     public function createResources($mode = MODE_BOOTSTRAP) {
         if ($mode == MODE_BOOTSTRAP) {
             if (isset($this->props['resources']) && !empty($this->props['resources'])) {
@@ -637,6 +692,12 @@ class MyComponentProject {
         }
     }
 
+    /**
+     * Create, export, or remove menus and actions
+     * specified in the project config file
+     *
+     * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT, MODE_REMOVE
+     */
     public function createMenus($mode = MODE_BOOTSTRAP) {
         $menus = $this->helpers->getProp('menus', array());
         if (!empty($menus)) {
@@ -709,7 +770,7 @@ class MyComponentProject {
 
 
     /**
-     * Creates the various resolver files needed to build the extra.
+     * Create the various resolver files needed to build the extra.
      * Calls the static method of the appropriate adapter object.
      * @param int $mode constant - if $mode is Export, existing
      * resolver files will be updated.
@@ -811,6 +872,11 @@ class MyComponentProject {
     }
 
 
+    /**
+     * Create all transport files necessary for the build
+     *
+     * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT, MODE_REMOVE
+     */
     public function createTransportFiles($mode = MODE_BOOTSTRAP) {
         ElementAdapter::createTransportFiles($this->helpers, $mode);
         ResourceAdapter::createTransportFiles($this->helpers, $mode);
@@ -822,8 +888,8 @@ class MyComponentProject {
 
     }
 
-    /** Creates main build.transport.php, build.config.php and
-     * starter project config files, (optionally) lexicon files, doc file,
+    /** Create main build.transport.php, build.config.php and
+     *  starter project config files, (optionally) lexicon files, doc file,
      *  readme.md -- files only, creates no objects in the DB */
     public function createBasics() {
 
@@ -984,6 +1050,12 @@ class MyComponentProject {
 
         return true;
     }
+
+    /**
+     * Update the local project config file from the one in the MyComponent directory
+     *
+     * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT, MODE_REMOVE
+     */
     public function updateProjectConfig($mode = MODE_BOOTSTRAP) {
         /* transfer {$packageNameLower}.config.php from tpl chunk/file to target _build dir. */
         $fileName = $this->packageNameLower . '.config.php';
@@ -1011,8 +1083,9 @@ class MyComponentProject {
 
     }
 
-    /** Creates assets directories and (optionally) empty css and js files
-     * if set in project config file */
+    /** Create assets directories and (optionally) empty css file, and js files
+     * if set in project config file. JS files are skipped if we're doing a CMP */
+
     public function createAssetsDirs() {
         $hasAssets = $this->modx->getOption('hasAssets', $this->props, false);
         if (! $hasAssets) {
@@ -1067,7 +1140,8 @@ class MyComponentProject {
         }
     }
 
-    /** Create PHP and JS CMP files specified in project config file. */
+    /** Create PHP and JS CMP files specified in project config file.
+     */
     public function createCMPFiles() {
         /* Return if 'createCmpFiles' is false */
         $createCmpFiles = $this->helpers->getProp('createCmpFiles');
@@ -1121,6 +1195,9 @@ class MyComponentProject {
         }
     }
 
+    /**
+     * Create the main CMP class file
+     */
     public function createCmpClassFile() {
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
             $this->modx->lexicon('mc_creating_cmp_class_file'));
@@ -1137,6 +1214,11 @@ class MyComponentProject {
         }
     }
 
+    /**
+     * Create the main CMP .CSS file
+     *
+     * @param $cssFile
+     */
     public function createCmpCssFile($cssFile) {
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
             $this->modx->lexicon('mc_creating_cmp_css_file'));
@@ -1153,6 +1235,10 @@ class MyComponentProject {
         }
     }
 
+    /**
+     * Create the main CMP controllerrequest file
+     *
+     */
     public function createControllerRequestFile() {
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
             $this->modx->lexicon('mc_creating_controller_request_file'));
@@ -1169,6 +1255,11 @@ class MyComponentProject {
         }
     }
 
+    /**
+     * Create the main CMP action file
+     *
+     * @param $actionFile
+     */
     public function createActionFile($actionFile) {
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    '
             . $this->modx->lexicon('mc_creating_cmp_index_file'));
@@ -1184,6 +1275,11 @@ class MyComponentProject {
         }
     }
 
+    /**
+     * Create the CMP processor files
+     *
+     * @param $processors
+     */
     public function createProcessorFiles($processors) {
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    '
             . $this->modx->lexicon('mc_creating_cmp_processors'));
@@ -1203,6 +1299,13 @@ class MyComponentProject {
         }
     }
 
+    /**
+     * Get and customize a processor's content
+     *
+     * @param $dir
+     * @param $file
+     * @return mixed|string
+     */
     public function getProcessorTpl($dir, $file) {
 
         $processorName = '';
@@ -1276,6 +1379,11 @@ class MyComponentProject {
         return $tpl;
     }
 
+    /**
+     * Create CMP controllers specified in the project config file
+     *
+     * @param $controllers array
+     */
     public function createControllerFiles($controllers) {
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
             $this->modx->lexicon('mc_creating_cmp_controllers'));
@@ -1302,6 +1410,12 @@ class MyComponentProject {
 
         }
     }
+
+    /**
+     * Create connectors specified in the project config file
+     *
+     * @param $connectors
+     */
     public function createConnectorFiles($connectors) {
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
             $this->modx->lexicon('mc_creating_cmp_connectors'));
@@ -1318,6 +1432,12 @@ class MyComponentProject {
             }
         }
     }
+
+    /**
+     * Create all CMP JS files specified in the project config
+     *
+     * @param $jsFiles
+     */
     public function createCmpJsFiles($jsFiles) {
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
             $this->modx->lexicon('mc_creating_cmp_js_files'));
@@ -1351,6 +1471,14 @@ class MyComponentProject {
 
         }
     }
+
+    /**
+     * Get and customize the content of any grid JS files specified
+     * in the project config file
+     *
+     * @param $file
+     * @return mixed
+     */
     function getGridTpl($file) {
         $tpl = $this->helpers->getTpl('cmp.grid');
         $elements = array('snippet', 'chunk', 'plugin', 'template', 'tv', 'templatevar');
@@ -1367,6 +1495,13 @@ class MyComponentProject {
         return $tpl;
     }
 
+    /**
+     * Get and customize code for any getlist processors
+     * specified in the project config file
+     *
+     * @param $file
+     * @return mixed
+     */
     function getGetlistTpl($file) {
         $tpl = $this->helpers->getTpl('cmp.getlist');
         $elements = array(
@@ -1393,6 +1528,13 @@ class MyComponentProject {
         return $tpl;
     }
 
+    /**
+     * Get and customize any example changeCategory processors if
+     * specified in the project config file
+     *
+     * @param $file
+     * @return mixed
+     */
     function getChangeCategoryTpl($file) {
         $tpl = $this->helpers->getTpl('cmp.changecategory');
         $elements = array(
@@ -1417,7 +1559,14 @@ class MyComponentProject {
         return $tpl;
     }
 
-    /** Creates example file for user input during install if set in project config file */
+    /********************************
+     * End of CMP Section
+     ********************************/
+
+
+    /** Create example file for user input during install
+     * if set in project config file */
+
     public function createInstallOptions() {
         $iScript = $this->modx->getOption('install.options', $this->props, '');
         if (!empty($iScript)) {
@@ -1437,7 +1586,8 @@ class MyComponentProject {
         }
     }
 
-    /** Creates validators if set in project config file */
+    /** Create validators if set in project config file
+     * */
     public function createValidators() {
         $validators = $this->modx->getOption('validators', $this->props, '');
         if (!empty($validators)) {
@@ -1464,7 +1614,9 @@ class MyComponentProject {
     }
 
 
-    /** Creates "starter" class files specified in project config file */
+    /** Create "starter" class files specified in project config
+     *  file unless we're doing a CMP */
+
     public function createClassFiles() {
         /* @var $element modElement */
         $classes = $this->modx->getOption('classes', $this->props, array());
@@ -1507,12 +1659,17 @@ class MyComponentProject {
     }
 
     /* *****************************************************************************
-       Export Objects and Support Functions
+       Export Objects
     ***************************************************************************** */
 
     /**
-     * This function does the real work of getting the package objects from the
-     * MODx database.
+     * Export all MODX objects in the package to the appropriate
+     * code files. Most objects are selected by namespace or category,
+     * with the exception of resources, which are specified in the project
+     * config file.
+     *
+     * Only object types in the 'process' member of the config file are
+     * processed.
      */
     public function exportComponent() {
         /* This should respect $scriptProperties['dryRun'] */
@@ -1563,16 +1720,18 @@ class MyComponentProject {
     }
 
     /* *****************************************************************************
-        Import Objects and Support Functions
+        Import Objects
      ***************************************************************************** */
 
 
     /**
-     * Creates and overwrites MODX Objects based on the elements
+     * Create and overwrites MODX Objects based on the elements
      * in the 'elements' member of the Project config
      *
      * Will not process static elements
      *
+     * @param array $toProcess - array of object to import
+     * @param string $directory - directory to place objects in
      * @param bool $dryRun -- if set, will just report what it would have done
      */
     public function importObjects($toProcess, $directory = '', $dryRun = true) {
@@ -1664,7 +1823,9 @@ class MyComponentProject {
         Development Utilities
      ***************************************************************************** */
     /**
-     * Utility function to remove objects from MODX during development
+     * Utility function to remove all objects from MODX during development
+     *
+     * @param bool $removeFiles - if set, files will be removed too
      */
     public function removeObjects($removeFiles = false) {
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
@@ -1698,7 +1859,8 @@ class MyComponentProject {
         $cm->refresh();
     }
 
-    /** recursive remove dir function */
+    /** recursive remove dir function.
+     *  Removes a directory and all its children */
     public function rrmdir($dir) {
         if (is_dir($dir)) {
             $objects = scandir($dir);
