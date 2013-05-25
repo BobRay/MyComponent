@@ -577,6 +577,74 @@ class Helpers
         return $this->files;
     }
 
+    /**
+     * @param $minimizerFile string - Which minimizer: JSMinPlus or JSMin
+     * @param $dir string - dir to search (no trailing slash)
+     * @param bool $createJsAll - If true, create packageNameLower . '-all-min.js'
+     */
+    public function minify($minimizerFile, $dir, $createJsAll = false) {
+        $dir = rtrim($dir, '/');
+        $this->resetFiles();
+        $all = '';
+        $this->dirWalk($dir, '.js', true);
+        $usePlus = stripos($minimizerFile, 'plus') !== false;
+        $minClass = $usePlus
+            ? 'JSMinPlus'
+            : 'JSMin';
+        $files = $this->getFiles();
+        $utilitiesDir = $this->modx->getOption('targetRoot' . '_build/utilities/');
+        require $utilitiesDir . $minimizerFile;
+
+        foreach ($files as $fileName => $path) {
+            /* don't minify minimized files */
+            if (strpos($fileName, 'min.js') !== false) {
+                continue;
+            }
+            $code = file_get_contents($path . '/' . $fileName);
+            $code = $usePlus
+                ? $minClass::minify($code, $fileName)
+                : $minClass::minify($code);
+            if ($createJsAll) {
+                /* JSMin writes its own "\n" */
+                $jend = $usePlus
+                    ? "\n"
+                    : '';
+                /* Add filename in comment for debugging */
+                $all .= "\n/* " . $fileName . '*/' . $jend . $code;
+            }
+
+            $outFile = $path . '/' . str_ireplace('.js', '-min.js', $fileName);
+            $fp = fopen($outFile, 'w');
+            if ($fp) {
+                fwrite($fp, $code);
+                fclose($fp);
+                $this->sendLog(modX::LOG_LEVEL_INFO, '    '
+                    . $this->modx->lexicon('mc_created')
+                    . ': ' . $outFile);
+            } else {
+                $this->sendLog(modX::LOG_LEVEL_ERROR, '    ' .
+                    $this->modx->lexicon('mc_could_not_open')
+                    . ': ' . $outFile);
+            }
+        }
+        if ($createJsAll) {
+            $pnl = $this->modx->getOption('packageNameLower', $this->props, 'jsfile');
+            $allFile = $pnl . '-all-min.js';
+            $outFile = $dir . '/' . $allFile;
+            $fp = fopen($outFile, 'w');
+            if ($fp) {
+                fwrite($fp, $all);
+                fclose($fp);
+                $this->sendLog(modX::LOG_LEVEL_INFO, '    '
+                    . $this->modx->lexicon('mc_created')
+                    . ': ' . $outFile);
+            } else {
+                $this->sendLog(modX::LOG_LEVEL_ERROR, '    ' .
+                    $this->modx->lexicon('mc_could_not_open')
+                    . ': ' . $outFile);
+            }
+        }
+    }
     public function strip_comments($source) {
         $tokens = token_get_all($source);
         $ret = "";
