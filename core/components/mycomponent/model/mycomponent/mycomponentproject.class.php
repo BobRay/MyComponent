@@ -924,6 +924,23 @@ class MyComponentProject {
 
     }
 
+    public function minifyJs() {
+        $minify = $this->modx->getOption('minifyJS', $this->props, false);
+        if (!$minify) {
+            return;
+        }
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
+            $this->modx->lexicon('mc_creating_js_min_files'));
+
+        $createAll = $this->modx->getOption('createJSMinAll', $this->props, false);
+        $usePlus = $this->modx->getOption('useJSMinPlus', $this->props, false);
+        $minimizer = $usePlus
+            ? 'JSMinPlus.class.php'
+            : 'JSMin.class.php';
+        $dir = $this->myPaths['targetAssets'] . 'js';
+        $this->helpers->minify($minimizer, $dir, $createAll);
+    }
+
     /** Create main build.transport.php, build.config.php and
      *  starter project config files, (optionally) lexicon files, doc file,
      *  readme.md -- files only, creates no objects in the DB */
@@ -1712,15 +1729,17 @@ class MyComponentProject {
             $this->createResources($mode);
         }
 
-
         $this->createResolvers($mode);
 
         $this->createTransportFiles($mode);
+
+        $this->minifyJs();
 
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
         $this->modx->lexicon('mc_updating_project_config'));
         $this->updateProjectConfig(MODE_EXPORT);
     }
+
 
     /* *****************************************************************************
         Import Objects
