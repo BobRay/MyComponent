@@ -402,7 +402,7 @@ $components = array(
     /* minify any JS files */
     'minifyJS' => true,
     /* Create a single JS file from all JS files */
-    'createJSMinAll' => false,
+    'createJSMinAll' => true,
     /* if this is false, regular jsmin will be used.
        JSMinPlus is slower but more reliable */
     'useJSMinPlus' => true,

@@ -44,20 +44,31 @@
 /* config file must be retrieved in a class */
 if (! class_exists('BuildHelper')) {
     class BuildHelper {
+        /** @var $modx modX */
+        protected $modx;
+
+        /** @var $files array - array of files; created by dir_walk */
+        protected $files = array();
+
+        /** @var $props array - properties array */
+        protected $props = array();
 
         public function __construct(&$modx) {
+            /* @var $modx modX */
             $this->modx =& $modx;
-
         }
+
         public function getProps($configPath) {
             $properties = @include $configPath;
+            $this->props = $properties;
             return $properties;
         }
 
         public function sendLog($level, $message) {
             $msg = '';
             if ($level == MODX::LOG_LEVEL_ERROR) {
-                $msg .= 'ERROR -- ';
+                $msg .= $this->modx->lexicon('mc_error')
+                    . ' -- ';
             }
             $msg .= $message;
             $msg .= "\n";
@@ -65,6 +76,123 @@ if (! class_exists('BuildHelper')) {
                 $msg = nl2br($msg);
             }
             echo $msg;
+        }
+
+        /**
+         * Recursively search directories for certain file types
+         * Adapted from boen dot robot at gmail dot com's code on the scandir man page
+         * @param $dir - dir to search (no trailing slash)
+         * @param mixed $types - null for all files, or a comma-separated list of strings
+         *                       the filename must include (e.g., '.php,.class')
+         * @param bool $recursive - if false, only searches $dir, not it's descendants
+         * @param string $baseDir - used internally -- do not send
+         */
+        public function dirWalk($dir, $types = null, $recursive = false, $baseDir = '') {
+
+            if ($dh = opendir($dir)) {
+                while (($file = readdir($dh)) !== false) {
+                    if ($file === '.' || $file === '..') {
+                        continue;
+                    }
+                    // $this->output .= "\n" , $dir;
+                    //$this->output .= "\n", $file;
+                    if (is_file($dir . '/' . $file)) {
+                        if ($types !== null) {
+                            $found = false;
+                            $typeArray = explode(',', $types);
+                            foreach ($typeArray as $type) {
+                                if (strstr($file, $type)) {
+                                    $found = true;
+                                }
+                            }
+                            if (!$found) continue;
+                        }
+                        // $this->{$callback}($dir, $file);
+                        $this->addFile($dir, $file);
+                    } elseif ($recursive && is_dir($dir . '/' . $file)) {
+                        $this->dirWalk($dir . '/' . $file, $types, $recursive, $baseDir . '/' . $file);
+                    }
+                }
+                closedir($dh);
+            }
+        }
+
+        /**
+         * Used by dirWalk() to add files to $this->files
+         * @param $dir string - directory of file (no trailing slash)
+         * @param $file string - filename of file
+         */
+        public function addFile($dir, $file) {
+            $this->files[$file] = $dir;
+        }
+
+        /**
+         * Empties $this->files prior to dirWalk
+         */
+        public function resetFiles() {
+            $this->files = array();
+        }
+
+        /**
+         * Get files found by dirWalk
+         *
+         * @return array
+         */
+        public function getFiles() {
+            return $this->files;
+        }
+
+        /**
+         * @param $minimizerFile string - Which minimizer: JSMinPlus or JSMin
+         * @param $dir string - dir to search (no trailing slash)
+         * @param bool $createJsAll - If true, create packageNameLower . '-all-min.js'
+         */
+        public function minify($minimizerFile, $dir, $createJsAll = false) {
+            $dir = rtrim($dir, '/');
+            $this->resetFiles();
+            $all = '';
+            $this->dirWalk($dir , '.js', true);
+            $usePlus = stripos($minimizerFile, 'plus') !== false;
+            $minClass = $usePlus? 'JSMinPlus' : 'JSMin';
+            $files = $this->getFiles();
+            require dirname(__FILE__) . '/utilities/' . $minimizerFile;
+
+            foreach ($files as $fileName => $path) {
+                /* don't minify minimized files */
+                if (strpos($fileName, 'min.js') !== false) {
+                    continue;
+                }
+                $code = file_get_contents($path . '/' . $fileName);
+                $code = $usePlus
+                    ? $minClass::minify($code, $fileName)
+                    : $minClass::minify($code);
+                if ($createJsAll) {
+                    /* JSMin writes its own "\n" */
+                    $jend = $usePlus? "\n" : '';
+                    /* Add filename in comment for debugging */
+                    $all .= "\n/* " . $fileName . '*/' . $jend . $code;
+                }
+
+                $outFile = $path . '/' . str_ireplace('.js', '-min.js', $fileName);
+                $fp = fopen($outFile, 'w');
+                if ($fp) {
+                    fwrite($fp, $code);
+                    fclose($fp);
+                    $this->sendLog(modX::LOG_LEVEL_INFO, $this->modx->lexicon('mc_created')
+                        . ': ' . $outFile);
+                } else {
+                    $this->sendLog(modX::LOG_LEVEL_ERROR,
+                        $this->modx->lexicon('mc_could_not_open')
+                        . ': ' . $outFile);
+                }
+            }
+            if ($createJsAll) {
+                $pnl = $this->modx->getOption('packageNameLower', $this->props, 'jsfile');
+                $allFile = $pnl . '-all-min.js';
+                $fp = fopen($dir . '/' . $allFile, 'w');
+                fwrite($fp, $all);
+                fclose($fp);
+            }
         }
     }
 }
@@ -97,7 +225,7 @@ $modx->setLogTarget(XPDO_CLI_MODE
 if (!defined('MODX_CORE_PATH')) {
     session_write_close();
     die('build.config.php is not correct');
- }
+}
 
 /* Non standard setting for mycomponent */
 
@@ -110,11 +238,14 @@ if (! $currentProject) {
 }
 
 $helper = new BuildHelper($modx);
+
+$modx->lexicon->load('mycomponent:default');
+
 $props = $helper->getProps(dirname(__FILE__) . '/config/' . $currentProject . '.config.php');
 
 if (! is_array($props)) {
     session_write_close();
-    die('Could not get project config file');
+    die($modx->lexicon('mc_no_config_file'));
 }
 
 $criticalSettings = array('packageNameLower', 'packageName', 'version', 'release');
@@ -122,14 +253,15 @@ $criticalSettings = array('packageNameLower', 'packageName', 'version', 'release
 foreach ($criticalSettings as $setting) {
    if (!isset($setting)) {
        session_write_close();
-       die('Critical setting is not set in Project Config: ' . $setting);
+        die($modx->lexicon('mc_critical_setting_not_set')
+            . ': ' . $setting);
    }
 }
 
 
 if (strpos($props['packageNameLower'], '-') || strpos($props['packageNameLower'], ' ') ) {
     session_write_close();
-    die ("\$packageNameLower cannot contain spaces or hyphens");
+    die ($modx->lexicon("mc_space_hyphen_warning"));
 }
 /* Set package info. These are initially set from the the the project config
  * but feel free to hard-code them for future versions */
@@ -142,7 +274,7 @@ define('PKG_RELEASE', $props['release']);
 
 /* define sources */
 $root = dirname(dirname(__FILE__)) . '/';
-$sources= array (
+$sources = array(
     'root' => $root,
     'build' => $root . '_build/',
     'config' => $root . '_build/config/',
@@ -230,7 +362,9 @@ if ($hasResources) {
             $vehicle = $builder->createVehicle($resource, $attributes);
             $builder->putVehicle($vehicle);
         }
-        $helper->sendLog(modX::LOG_LEVEL_INFO, 'Packaged ' . count($resources) . ' resources.');
+        $helper->sendLog(modX::LOG_LEVEL_INFO, $modx->lexicon('mc_packaged')
+            . ' ' . count($resources) . ' ' . $modx->lexicon('mc_resources')
+            . '.');
     }
     unset($resources, $resource, $attributes);
 }
@@ -239,7 +373,8 @@ if ($hasResources) {
 if ($hasSettings) {
     $settings = include $sources['data'] . 'transport.settings.php';
     if (!is_array($settings)) {
-        $helper->sendLog(modX::LOG_LEVEL_ERROR, 'Settings not an array.');
+        $helper->sendLog(modX::LOG_LEVEL_ERROR, $modx->lexicon('mc_settings_not_an_array')
+            . '.');
     } else {
         $attributes = array(
             xPDOTransport::UNIQUE_KEY => 'key',
@@ -250,7 +385,10 @@ if ($hasSettings) {
             $vehicle = $builder->createVehicle($setting, $attributes);
             $builder->putVehicle($vehicle);
         }
-        $helper->sendLog(modX::LOG_LEVEL_INFO, 'Packaged ' . count($settings) . ' new System Settings.');
+        $helper->sendLog(modX::LOG_LEVEL_INFO, $modx->lexicon('mc_packaged')
+            . ' ' . count($settings) .
+            ' ' . $modx->lexicon('mc_new_system_settings')
+            . '.');
         unset($settings, $setting, $attributes);
     }
 }
@@ -259,7 +397,8 @@ if ($hasSettings) {
 if ($hasContextSettings) {
     $settings = include $sources['data'] . 'transport.contextsettings.php';
     if (!is_array($settings)) {
-        $helper->sendLog(modX::LOG_LEVEL_ERROR, 'Settings not an array.');
+        $helper->sendLog(modX::LOG_LEVEL_ERROR, $modx->lexicon('mc_context_settings_not_an_array')
+            . '.');
     } else {
         $attributes = array(
             xPDOTransport::UNIQUE_KEY => 'key',
@@ -270,7 +409,10 @@ if ($hasContextSettings) {
             $vehicle = $builder->createVehicle($setting, $attributes);
             $builder->putVehicle($vehicle);
         }
-        $helper->sendLog(modX::LOG_LEVEL_INFO, 'Packaged ' . count($settings) . ' Context Settings.');
+        $helper->sendLog(modX::LOG_LEVEL_INFO, $modx->lexicon('mc_packaged')
+            . ' ' . count($settings) .
+            ' ' . $modx->lexicon('mc_context_settings')
+            . '.');
         unset($settings, $setting, $attributes);
     }
 }
@@ -279,36 +421,12 @@ if ($hasContextSettings) {
 
 if ($minifyJS) {
     $helper->sendLog(modX::LOG_LEVEL_INFO, 'Creating js-min file(s)');
-    // require $sources['build'] . 'utilities/jsmin.class.php';
-    require $sources['utilities'] . 'jsmin.class.php';
 
-    $jsDir = $sources['source_assets'] . '/js';
-
-    if (is_dir($jsDir)) {
-        $files = scandir($jsDir);
-        foreach ($files as $file) {
-            /* skip non-js and already minified files */
-            if ( (!stristr($file, '.js') || strstr($file,'min'))) {
-                continue;
-            }
-
-            $jsmin = JSMin::minify(file_get_contents($sources['source_assets'] . '/js/' . $file));
-            if (!empty($jsmin)) {
-                $outFile = $jsDir . '/' . str_ireplace('.js', '-min.js', $file);
-                $fp = fopen($outFile, 'w');
-                if ($fp) {
-                    fwrite($fp, $jsmin);
-                    fclose($fp);
-                    $helper->sendLog(modX::LOG_LEVEL_INFO, 'Created: ' . $outFile);
-                } else {
-                    $helper->sendLog(modX::LOG_LEVEL_ERROR, 'Could not open min.js outfile: ' . $outFile);
-                }
-            }
-        }
-
-    } else {
-        $helper->sendLog(modX::LOG_LEVEL_ERROR, 'Could not open JS directory.');
-    }
+    $usePlus = $modx->getOption('useJSMinPlus', $props, false);
+    $minimizer = $usePlus? 'jsminplus.class.php' : 'jsmin.class.php';
+    $dir = $sources['source_assets'] . '/js';
+    $jsAll = $modx->getOption('createJSMinAll', $props, false);
+    $helper->minify($minimizer, $dir, $jsAll);
 }
 
 /* Create each Category and its Elements */
@@ -329,10 +447,10 @@ foreach($categories as $k => $categoryName) {
     $hasPropertySets = file_exists($sources['data'] . $categoryNameLower . '/transport.propertysets.php');
 
     /* @var $category modCategory */
-    $category= $modx->newObject('modCategory');
+    $category = $modx->newObject('modCategory');
     $i++;  /* will be 1 for the first category */
-    $category->set('id',$i);
-    $category->set('category',$categoryName);
+    $category->set('id', $i);
+    $category->set('category', $categoryName);
     $helper->sendLog(MODX::LOG_LEVEL_INFO,
         $modx->lexicon('mc_creating_category')
             . ': ' . $categoryName);
@@ -554,7 +672,7 @@ foreach($categories as $k => $categoryName) {
         $validators = empty($props['validators'])
             ? array()
             : $props['validators'];
-        if (! empty($validators)) {
+        if (!empty($validators)) {
             foreach ($validators as $validator) {
                 if ($validator == 'default') {
                     $validator = PKG_NAME_LOWER;
@@ -692,6 +810,11 @@ if ($hasMenu) {
                 $modx->lexicon('mc_menu_items')
                 . '.');
     }
+    $helper->sendLog(modX::LOG_LEVEL_INFO,
+        $modx->lexicon('mc_packaged')
+            . ' ' . count($menus) . ' ' .
+            $modx->lexicon('mc_menu_items')
+            . '.');
 }
 
 /* Next-to-last step - pack in the license file, readme.txt, changelog,
@@ -716,12 +839,12 @@ $builder->setPackageAttributes($attr);
 $builder->pack();
 
 /* report how long it took */
-$mtime= microtime();
-$mtime= explode(" ", $mtime);
-$mtime= $mtime[1] + $mtime[0];
-$tend= $mtime;
-$totalTime= ($tend - $tstart);
-$totalTime= sprintf("%2.4f s", $totalTime);
+$mtime = microtime();
+$mtime = explode(" ", $mtime);
+$mtime = $mtime[1] + $mtime[0];
+$tend = $mtime;
+$totalTime = ($tend - $tstart);
+$totalTime = sprintf("%2.4f s", $totalTime);
 
 $helper->sendLog(xPDO::LOG_LEVEL_INFO, $modx->lexicon('mc_package_built')
     . '.');

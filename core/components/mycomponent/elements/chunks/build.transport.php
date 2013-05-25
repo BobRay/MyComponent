@@ -44,6 +44,14 @@
 /* config file must be retrieved in a class */
 if (!class_exists('BuildHelper')) {
     class BuildHelper {
+        /** @var $modx modX */
+        protected $modx;
+
+        /** @var $files array - array of files; created by dir_walk */
+        protected $files = array();
+
+        /** @var $props array - properties array */
+        protected $props = array();
 
         public function __construct(&$modx) {
             /* @var $modx modX */
@@ -52,11 +60,11 @@ if (!class_exists('BuildHelper')) {
 
         public function getProps($configPath) {
             $properties = @include $configPath;
+            $this->props = $properties;
             return $properties;
         }
 
         public function sendLog($level, $message) {
-
             $msg = '';
             if ($level == MODX::LOG_LEVEL_ERROR) {
                 $msg .= $this->modx->lexicon('mc_error')
@@ -68,6 +76,132 @@ if (!class_exists('BuildHelper')) {
                 $msg = nl2br($msg);
             }
             echo $msg;
+        }
+
+        /**
+         * Recursively search directories for certain file types
+         * Adapted from boen dot robot at gmail dot com's code on the scandir man page
+         * @param $dir - dir to search (no trailing slash)
+         * @param mixed $types - null for all files, or a comma-separated list of strings
+         *                       the filename must include (e.g., '.php,.class')
+         * @param bool $recursive - if false, only searches $dir, not it's descendants
+         * @param string $baseDir - used internally -- do not send
+         */
+        public function dirWalk($dir, $types = null, $recursive = false, $baseDir = '') {
+
+            if ($dh = opendir($dir)) {
+                while (($file = readdir($dh)) !== false) {
+                    if ($file === '.' || $file === '..') {
+                        continue;
+                    }
+                    // $this->output .= "\n" , $dir;
+                    //$this->output .= "\n", $file;
+                    if (is_file($dir . '/' . $file)) {
+                        if ($types !== null) {
+                            $found = false;
+                            $typeArray = explode(',', $types);
+                            foreach ($typeArray as $type) {
+                                if (strstr($file, $type)) {
+                                    $found = true;
+                                }
+                            }
+                            if (!$found) continue;
+                        }
+                        // $this->{$callback}($dir, $file);
+                        $this->addFile($dir, $file);
+                    } elseif ($recursive && is_dir($dir . '/' . $file)) {
+                        $this->dirWalk($dir . '/' . $file, $types, $recursive, $baseDir . '/' . $file);
+                    }
+                }
+                closedir($dh);
+            }
+        }
+
+        /**
+         * Used by dirWalk() to add files to $this->files
+         * @param $dir string - directory of file (no trailing slash)
+         * @param $file string - filename of file
+         */
+        public function addFile($dir, $file) {
+            $this->files[$file] = $dir;
+        }
+
+        /**
+         * Empties $this->files prior to dirWalk
+         */
+        public function resetFiles() {
+            $this->files = array();
+        }
+
+        /**
+         * Get files found by dirWalk
+         *
+         * @return array
+         */
+        public function getFiles() {
+            return $this->files;
+        }
+
+        /**
+         * @param $minimizerFile string - Which minimizer: JSMinPlus or JSMin
+         * @param $dir string - dir to search (no trailing slash)
+         * @param bool $createJsAll - If true, create packageNameLower . '-all-min.js'
+         */
+        public function minify($minimizerFile, $dir, $createJsAll = false) {
+            $dir = rtrim($dir, '/');
+            $this->resetFiles();
+            $all = '';
+            $this->dirWalk($dir , '.js', true);
+            $usePlus = stripos($minimizerFile, 'plus') !== false;
+            $minClass = $usePlus? 'JSMinPlus' : 'JSMin';
+            $files = $this->getFiles();
+            require dirname(__FILE__) . '/utilities/' . $minimizerFile;
+
+            foreach ($files as $fileName => $path) {
+                /* don't minify minimized files */
+                if (strpos($fileName, 'min.js') !== false) {
+                    continue;
+                }
+                $code = file_get_contents($path . '/' . $fileName);
+                $code = $usePlus
+                    ? $minClass::minify($code, $fileName)
+                    : $minClass::minify($code);
+                if ($createJsAll) {
+                    /* JSMin writes its own "\n" */
+                    $jend = $usePlus? "\n" : '';
+                    /* Add filename in comment for debugging */
+                    $all .= "\n/* " . $fileName . '*/' . $jend . $code;
+                }
+
+                $outFile = $path . '/' . str_ireplace('.js', '-min.js', $fileName);
+                $fp = fopen($outFile, 'w');
+                if ($fp) {
+                    fwrite($fp, $code);
+                    fclose($fp);
+                    $this->sendLog(modX::LOG_LEVEL_INFO, $this->modx->lexicon('mc_created')
+                        . ': ' . $outFile);
+                } else {
+                    $this->sendLog(modX::LOG_LEVEL_ERROR,
+                        $this->modx->lexicon('mc_could_not_open')
+                        . ': ' . $outFile);
+                }
+            }
+            if ($createJsAll) {
+                $pnl = $this->modx->getOption('packageNameLower', $this->props, 'jsfile');
+                $allFile = $pnl . '-all-min.js';
+                $outFile = $dir . '/' . $allFile;
+                $fp = fopen($outFile, 'w');
+                if ($fp) {
+                    fwrite($fp, $all);
+                    $this->sendLog(modX::LOG_LEVEL_INFO, $this->modx->lexicon('mc_created')
+                        . ': ' . $outFile);
+                    fclose($fp);
+                } else {
+                    $this->sendLog(modX::LOG_LEVEL_ERROR,
+                        $this->modx->lexicon('mc_could_not_open')
+                        . ': ' . $outFile);
+                }
+            }
         }
     }
 }
@@ -137,6 +271,7 @@ foreach ($criticalSettings as $setting) {
 
 
 if (strpos($props['packageNameLower'], '-') || strpos($props['packageNameLower'], ' ')) {
+    session_write_close();
     die ($modx->lexicon("mc_space_hyphen_warning"));
 }
 /* Set package info. These are initially set from the the the project config
@@ -163,8 +298,7 @@ $sources = array(
     'data' => $root . '_build/data/',
     'docs' => $root . 'core/components/' . PKG_NAME_LOWER . '/docs/',
     'install_options' => $root . '_build/install.options/',
-    'packages' => $root . 'core/packages',
-    /* no trailing slash */
+    'packages' => $root . 'core/packages',  /* no trailing slash */
 
 );
 unset($root);
@@ -173,6 +307,7 @@ unset($root);
 $categories = require_once $sources['build'] . 'config/categories.php';
 
 if (empty ($categories)) {
+    session_write_close();
     die ($modx->lexicon('no_categories'));
 }
 
@@ -323,40 +458,15 @@ if ($hasContextSettings) {
 /* minify JS */
 
 if ($minifyJS) {
-    $helper->sendLog(modX::LOG_LEVEL_INFO, 'Creating js-min file(s)');
-    // require $sources['build'] . 'utilities/jsmin.class.php';
-    require $sources['utilities'] . 'jsmin.class.php';
+    $helper->sendLog(modX::LOG_LEVEL_INFO,
+        $modx->lexicon('mc_creating_js_min_files'));
 
-    $jsDir = $sources['source_assets'] . '/js';
+    $usePlus = $modx->getOption('useJSMinPlus', $props, false);
 
-    if (is_dir($jsDir)) {
-        $files = scandir($jsDir);
-        foreach ($files as $file) {
-            /* skip non-js and already minified files */
-            if ((!stristr($file, '.js') || strstr($file, 'min'))) {
-                continue;
-            }
-
-            $jsmin = JSMin::minify(file_get_contents($sources['source_assets'] . '/js/' . $file));
-            if (!empty($jsmin)) {
-                $outFile = $jsDir . '/' . str_ireplace('.js', '-min.js', $file);
-                $fp = fopen($outFile, 'w');
-                if ($fp) {
-                    fwrite($fp, $jsmin);
-                    fclose($fp);
-                    $helper->sendLog(modX::LOG_LEVEL_INFO, $modx->lexicon('mc_created')
-                        . ': ' . $outFile);
-                } else {
-                    $helper->sendLog(modX::LOG_LEVEL_ERROR, $modx->lexicon('mc_could_not_open')
-                        . ': ' . $outFile);
-                }
-            }
-        }
-
-    } else {
-        $helper->sendLog(modX::LOG_LEVEL_ERROR, $modx->lexicon('mc_could_not_open_js_directory')
-            . '.');
-    }
+    $minimizer = $usePlus? 'jsminplus.class.php' : 'jsmin.class.php';
+    $dir = $sources['source_assets'] . '/js';
+    $jsAll = $modx->getOption('createJSMinAll', $props, false);
+    $helper->minify($minimizer, $dir, $jsAll);
 }
 
 /* Create each Category and its Elements */

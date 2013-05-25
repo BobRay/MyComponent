@@ -282,3 +282,4 @@ $_lang['mc_could_not_package_menu'] = 'Could not package menu';
 $_lang['mc_menu_items'] = 'menu items';
 $_lang['mc_package_built'] = 'Package Built';
 $_lang['mc_execution_time'] = 'Execution time';
+$_lang['mc_creating_js_min_files'] = 'Creating js-min file(s)';
