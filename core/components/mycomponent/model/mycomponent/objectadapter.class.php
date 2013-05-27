@@ -630,7 +630,7 @@ abstract class ObjectAdapter {
         $variableName = lcfirst(substr($type, 3) . 's');
         /* write generic stuff */
         $tpl = '$' . $variableName . '[' . $i . '] = $modx->newObject(' . "'" . $type . "');" . "\n";
-        $tpl .= '$' . $variableName . '[' . $i . ']->fromArray(array(' . "\n";
+        $tpl .= '$' . $variableName . '[' . $i . ']->fromArray(';
         // $tpl .= "    'id' => " . $i . ",\n";
 
         /* Set id field to $i, but only for objects with an ID */
@@ -679,23 +679,10 @@ abstract class ObjectAdapter {
             $fields['menu']
         );
 
-        /* might be able to use var_export and beautify here */
-        foreach ($fields as $field => $value) {
-            /* @var $helpers Helpers */
-            if (is_array($value)) {
-                $value = empty($value) ? 'array()' : $helpers->beautify($value);
-                $tpl .= "    '" . $field . "'" . " => " . $value . ",\n";
-
-            } elseif ($field == 'value'  && in_array('combo-boolean', array_values($fields))) {
-                $value = $value? 'true' : 'false';
-                $tpl .= "    '" . $field . "'" . " => " . $value . ",\n";
-            }  else {
-                $tpl .= "    '" . $field . "'" . " => '" . $value . "',\n";
-            }
-        }
+        $tpl .= var_export($fields, true);
 
         /* finish up */
-        $tpl .= "), '', true, true);\n";
+        $tpl .= ", '', true, true);\n";
 
         if ($type == 'modResource') {
             $tpl .= "\$resources[" . $i . "]->setContent(file_get_contents(\$sources['data']." . "'resources/" . $fileName . "'));\n\n";
