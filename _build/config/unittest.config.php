@@ -282,18 +282,36 @@ $components = array(
      * Empty js and/or css files will be created.
      */
     'hasAssets' => true,
-    'minifyJS' => true,
-    /* minify any JS files */
+
     'assetsDirs' => array(
-        'css' => true,
         /* If true, a default (empty) CSS file will be created */
-        'js' => true,
+        'css' => true,
+
         /* If true, a default (empty) JS file will be created */
+        'js' => true,
+
         'images' => true,
         'audio' => true,
         'video' => true,
         'themes' => true,
     ),
+    /* minify any JS files */
+    'minifyJS' => true,
+    /* Create a single JS file from all JS files */
+    'createJSMinAll' => true,
+    /* if this is false, regular jsmin will be used.
+       JSMinPlus is slower but more reliable */
+    'useJSMinPlus' => true,
+
+    /* These will automatically go under assets/components/yourcomponent/js/
+       Format: directory:filename
+       (no trailing slash on directory)
+       if 'createCmpFiles is true, these will be ignored.
+    */
+    $jsFiles = array(
+        'example.js',
+    ),
+
 
     /* ********************************************* */
     /* Define basic directories and files to be created in project*/
