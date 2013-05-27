@@ -26,9 +26,7 @@
  * Methods used by helpers class in MyComponent Extra
  */
 
-class Helpers
-
-{
+class Helpers {
     /* @var $modx modX - $modx object */
     public $modx;
     /* @var $props array - $scriptProperties array */
@@ -204,7 +202,6 @@ class Helpers
                 default:  /* all other elements get no code file */
                     $output = '';
                     break;
-
             }
 
         } elseif ($fileType == 'transport') {
@@ -212,8 +209,12 @@ class Helpers
         } elseif ($fileType = 'properties') {
             $output = 'properties.' . $name . '.' . $suffix . '.php';
         }
-        /* replace any spaces with underscore */
-        $output = str_replace(' ', '_', $output);
+
+        /* replace anything that shouldn't belong in a file name
+           with an underscore - allows alphanumeric, dot, slash
+           backslash, hyphen, and underscore  */
+        $output = preg_replace('#[^A-Za-z0-9\._\-\\/]#', '_', $output);
+
         return $output;
     }
 
@@ -328,8 +329,7 @@ class Helpers
      * @param $subject string - text to do replacement in
      * @return string - altered text
      */
-    public function strReplaceAssoc(array $replace, $subject)
-    {
+    public function strReplaceAssoc(array $replace, $subject) {
         return str_replace(array_keys($replace), array_values($replace), $subject);
     }
 
@@ -341,8 +341,7 @@ class Helpers
      * @return bool - used only to control recursion
      */
 
-    public function copyDir($source, $destination)
-    {
+    public function copyDir($source, $destination) {
         //echo "SOURCE: " . $source . "\nDESTINATION: " . $destination . "\n";
         if (is_dir($source)) {
             if (!is_dir($destination)) {
@@ -726,6 +725,5 @@ class Helpers
         $ary = preg_replace("/\n[ ]+array/", " array", var_export($ary, true));
         $ary =  str_replace("\n  ", "\n                ", $ary);
         return str_replace("\n)", "\n            )", $ary);
-
     }
 }
