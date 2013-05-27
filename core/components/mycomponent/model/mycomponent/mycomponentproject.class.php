@@ -924,23 +924,6 @@ class MyComponentProject {
 
     }
 
-    public function minifyJs() {
-        $minify = $this->modx->getOption('minifyJS', $this->props, false);
-        if (!$minify) {
-            return;
-        }
-        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
-            $this->modx->lexicon('mc_creating_js_min_files'));
-
-        $createAll = $this->modx->getOption('createJSMinAll', $this->props, false);
-        $usePlus = $this->modx->getOption('useJSMinPlus', $this->props, false);
-        $minimizer = $usePlus
-            ? 'JSMinPlus.class.php'
-            : 'JSMin.class.php';
-        $dir = $this->myPaths['targetAssets'] . 'js';
-        $this->helpers->minify($minimizer, $dir, $createAll);
-    }
-
     /** Create main build.transport.php, build.config.php and
      *  starter project config files, (optionally) lexicon files, doc file,
      *  readme.md -- files only, creates no objects in the DB */
@@ -1069,9 +1052,14 @@ class MyComponentProject {
 
         $hasAssets = $this->modx->getOption('hasAssets', $this->props, false);
         $doJsMin = $this->modx->getOption('minifyJS', $this->props, false);
+        $this->createAssetsDirs();
+        $this->createInstallOptions();
+        $this->createCMPFiles();
+        $this->createClassFiles();
 
         if ($hasAssets && $doJsMin) {
-            /* copy minimizer classes to project _build/utilities directory */
+            /* copy minimizer classes to project _build/utilities directory
+               and create/update js-min files if required */
 
             $minimizers = array('jsminplus.class.php','jsmin.class.php');
 
@@ -1097,12 +1085,8 @@ class MyComponentProject {
                         $this->modx->lexicon('mc_jsmin_nf') . $minimizer);
                 }
             }
+            $this->helpers->minifyJs();
         }
-
-        $this->createInstallOptions();
-        $this->createAssetsDirs();
-        $this->createCMPFiles();
-        $this->createClassFiles();
 
         return true;
     }
@@ -1733,7 +1717,9 @@ class MyComponentProject {
 
         $this->createTransportFiles($mode);
 
-        $this->minifyJs();
+        if ($this->modx->getOption('minifyJS', $this->props, false)) {
+            $this->helpers->minifyJs();
+        }
 
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
         $this->modx->lexicon('mc_updating_project_config'));

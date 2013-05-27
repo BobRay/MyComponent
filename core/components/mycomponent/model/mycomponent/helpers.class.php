@@ -286,7 +286,7 @@ class Helpers {
         /* write to stdout if dryRun is true */
         $file = $dryRun? 'php://output' : $outFile;
 
-        $action = ($file == $outFile) && file_exists($outFile)? $this->modx->lexicon('mc_Updated') :
+        $action = ($file == $outFile) && file_exists($outFile)? $this->modx->lexicon('mc_updated') :
             $this->modx->lexicon('mc_Creating');
 
         $fp = fopen($file, 'w');
@@ -577,21 +577,29 @@ class Helpers {
     }
 
     /**
-     * @param $minimizerFile string - Which minimizer: JSMinPlus or JSMin
-     * @param $dir string - dir to search (no trailing slash)
-     * @param bool $createJsAll - If true, create packageNameLower . '-all-min.js'
+     * Minify JS Files
      */
-    public function minify($minimizerFile, $dir, $createJsAll = false) {
-        $dir = rtrim($dir, '/');
+    public function minifyJs() {
+        $packageNameLower = $this->getProp('packageNameLower');
+        $usePlus = $this->modx->getOption('useJSMinPlus', $this->props, false);
+        $minClass = $usePlus ? 'JSMinPlus' : 'JSMin';
+        $minimizerFile = $usePlus ? 'jsminplus.class.php' : 'jsmin.class.php';
+        $createJsAll = $this->modx->getOption('createJSMinAll', $this->props, false);
+
+        $this->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->modx->lexicon('mc_creating_js_min_files ('
+                . $this->modx->lexicon('mc_using')
+                . ' ' . $minClass . ')'));
+        $dir = $this->getProp('targetRoot') . 'assets/components/' . $packageNameLower
+            . '/js';
+
         $this->resetFiles();
         $all = '';
         $this->dirWalk($dir, '.js', true);
-        $usePlus = stripos($minimizerFile, 'plus') !== false;
-        $minClass = $usePlus
-            ? 'JSMinPlus'
-            : 'JSMin';
+
+
         $files = $this->getFiles();
-        $utilitiesDir = $this->modx->getOption('targetRoot' . '_build/utilities/');
+        $utilitiesDir = $this->modx->getOption('mycomponentRoot', $this->props, '') . '_build/utilities/';
         require $utilitiesDir . $minimizerFile;
 
         foreach ($files as $fileName => $path) {
@@ -613,13 +621,15 @@ class Helpers {
             }
 
             $outFile = $path . '/' . str_ireplace('.js', '-min.js', $fileName);
+            $msg = file_exists($outFile)
+                ? $this->modx->lexicon('mc_updated')
+                : $this->modx->lexicon('mc_creating');
             $fp = fopen($outFile, 'w');
             if ($fp) {
                 fwrite($fp, $code);
                 fclose($fp);
                 $this->sendLog(modX::LOG_LEVEL_INFO, '    '
-                    . $this->modx->lexicon('mc_created')
-                    . ': ' . $outFile);
+                    . $msg . ': ' . $outFile);
             } else {
                 $this->sendLog(modX::LOG_LEVEL_ERROR, '    ' .
                     $this->modx->lexicon('mc_could_not_open')
@@ -627,16 +637,17 @@ class Helpers {
             }
         }
         if ($createJsAll) {
-            $pnl = $this->modx->getOption('packageNameLower', $this->props, 'jsfile');
-            $allFile = $pnl . '-all-min.js';
+            $allFile = $packageNameLower . '-all-min.js';
             $outFile = $dir . '/' . $allFile;
+            $msg = file_exists($outFile)
+                ? $this->modx->lexicon('mc_updated')
+                : $this->modx->lexicon('mc_creating');
             $fp = fopen($outFile, 'w');
             if ($fp) {
                 fwrite($fp, $all);
                 fclose($fp);
                 $this->sendLog(modX::LOG_LEVEL_INFO, '    '
-                    . $this->modx->lexicon('mc_created')
-                    . ': ' . $outFile);
+                    . $msg . ': ' . $outFile);
             } else {
                 $this->sendLog(modX::LOG_LEVEL_ERROR, '    ' .
                     $this->modx->lexicon('mc_could_not_open')
