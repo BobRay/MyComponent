@@ -171,683 +171,685 @@ define('KEYWORD_WHILE', 'while');
 define('KEYWORD_WITH', 'with');
 
 
-class JSMinPlus {
-    private $parser;
-    private $reserved = array(
-        'break',
-        'case',
-        'catch',
-        'continue',
-        'default',
-        'delete',
-        'do',
-        'else',
-        'finally',
-        'for',
-        'function',
-        'if',
-        'in',
-        'instanceof',
-        'new',
-        'return',
-        'switch',
-        'this',
-        'throw',
-        'try',
-        'typeof',
-        'var',
-        'void',
-        'while',
-        'with',
-        // Words reserved for future use
-        'abstract',
-        'boolean',
-        'byte',
-        'char',
-        'class',
-        'const',
-        'debugger',
-        'double',
-        'enum',
-        'export',
-        'extends',
-        'final',
-        'float',
-        'goto',
-        'implements',
-        'import',
-        'int',
-        'interface',
-        'long',
-        'native',
-        'package',
-        'private',
-        'protected',
-        'public',
-        'short',
-        'static',
-        'super',
-        'synchronized',
-        'throws',
-        'transient',
-        'volatile',
-        // These are not reserved, but should be taken into account
-        // in isValidIdentifier (See jslint source code)
-        'arguments',
-        'eval',
-        'true',
-        'false',
-        'Infinity',
-        'NaN',
-        'null',
-        'undefined'
-    );
+if (! class_exists('JSMinPlus')) {
+    class JSMinPlus {
+        private $parser;
+        private $reserved = array(
+            'break',
+            'case',
+            'catch',
+            'continue',
+            'default',
+            'delete',
+            'do',
+            'else',
+            'finally',
+            'for',
+            'function',
+            'if',
+            'in',
+            'instanceof',
+            'new',
+            'return',
+            'switch',
+            'this',
+            'throw',
+            'try',
+            'typeof',
+            'var',
+            'void',
+            'while',
+            'with',
+            // Words reserved for future use
+            'abstract',
+            'boolean',
+            'byte',
+            'char',
+            'class',
+            'const',
+            'debugger',
+            'double',
+            'enum',
+            'export',
+            'extends',
+            'final',
+            'float',
+            'goto',
+            'implements',
+            'import',
+            'int',
+            'interface',
+            'long',
+            'native',
+            'package',
+            'private',
+            'protected',
+            'public',
+            'short',
+            'static',
+            'super',
+            'synchronized',
+            'throws',
+            'transient',
+            'volatile',
+            // These are not reserved, but should be taken into account
+            // in isValidIdentifier (See jslint source code)
+            'arguments',
+            'eval',
+            'true',
+            'false',
+            'Infinity',
+            'NaN',
+            'null',
+            'undefined'
+        );
 
-    private function __construct() {
-        $this->parser = new JSParser($this);
-    }
-
-    public static function minify($js, $filename = '') {
-        static $instance;
-
-        // this is a singleton
-        if (!$instance)
-            $instance = new JSMinPlus();
-
-        return $instance->min($js, $filename);
-    }
-
-    private function min($js, $filename) {
-        try {
-            $n = $this->parser->parse($js, $filename, 1);
-            return $this->parseTree($n);
-        } catch (Exception $e) {
-            echo $e->getMessage() . "\n";
+        private function __construct() {
+            $this->parser = new JSParser($this);
         }
 
-        return false;
-    }
+        public static function minify($js, $filename = '') {
+            static $instance;
 
-    public function parseTree($n, $noBlockGrouping = false) {
-        $s = '';
+            // this is a singleton
+            if (!$instance)
+                $instance = new JSMinPlus();
 
-        switch ($n->type) {
-            case JS_MINIFIED:
-                $s = $n->value;
-                break;
+            return $instance->min($js, $filename);
+        }
 
-            case JS_SCRIPT:
-                // we do nothing yet with funDecls or varDecls
-                $noBlockGrouping = true;
-            // FALL THROUGH
+        private function min($js, $filename) {
+            try {
+                $n = $this->parser->parse($js, $filename, 1);
+                return $this->parseTree($n);
+            } catch (Exception $e) {
+                echo $e->getMessage() . "\n";
+            }
 
-            case JS_BLOCK:
-                $childs = $n->treeNodes;
-                $lastType = 0;
-                for ($c = 0, $i = 0, $j = count($childs); $i < $j; $i++) {
-                    $type = $childs[$i]->type;
-                    $t = $this->parseTree($childs[$i]);
-                    if (strlen($t)) {
-                        if ($c) {
-                            $s = rtrim($s, ';');
+            return false;
+        }
 
-                            if ($type == KEYWORD_FUNCTION && $childs[$i]->functionForm == DECLARED_FORM) {
-                                // put declared functions on a new line
-                                $s .= "\n";
-                            } elseif ($type == KEYWORD_VAR && $type == $lastType) {
-                                // mutiple var-statements can go into one
-                                $t = ',' . substr($t, 4);
-                            } else {
-                                // add terminator
-                                $s .= ';';
+        public function parseTree($n, $noBlockGrouping = false) {
+            $s = '';
+
+            switch ($n->type) {
+                case JS_MINIFIED:
+                    $s = $n->value;
+                    break;
+
+                case JS_SCRIPT:
+                    // we do nothing yet with funDecls or varDecls
+                    $noBlockGrouping = true;
+                // FALL THROUGH
+
+                case JS_BLOCK:
+                    $childs = $n->treeNodes;
+                    $lastType = 0;
+                    for ($c = 0, $i = 0, $j = count($childs); $i < $j; $i++) {
+                        $type = $childs[$i]->type;
+                        $t = $this->parseTree($childs[$i]);
+                        if (strlen($t)) {
+                            if ($c) {
+                                $s = rtrim($s, ';');
+
+                                if ($type == KEYWORD_FUNCTION && $childs[$i]->functionForm == DECLARED_FORM) {
+                                    // put declared functions on a new line
+                                    $s .= "\n";
+                                } elseif ($type == KEYWORD_VAR && $type == $lastType) {
+                                    // mutiple var-statements can go into one
+                                    $t = ',' . substr($t, 4);
+                                } else {
+                                    // add terminator
+                                    $s .= ';';
+                                }
                             }
+
+                            $s .= $t;
+
+                            $c++;
+                            $lastType = $type;
                         }
-
-                        $s .= $t;
-
-                        $c++;
-                        $lastType = $type;
                     }
-                }
 
-                if ($c > 1 && !$noBlockGrouping) {
-                    $s = '{' . $s . '}';
-                }
-                break;
-
-            case KEYWORD_FUNCTION:
-                $s .= 'function' . ($n->name
-                    ? ' ' . $n->name
-                    : '') . '(';
-                $params = $n->params;
-                for ($i = 0, $j = count($params); $i < $j; $i++)
-                    $s .= ($i
-                        ? ','
-                        : '') . $params[$i];
-                $s .= '){' . $this->parseTree($n->body, true) . '}';
-                break;
-
-            case KEYWORD_IF:
-                $s = 'if(' . $this->parseTree($n->condition) . ')';
-                $thenPart = $this->parseTree($n->thenPart);
-                $elsePart = $n->elsePart
-                    ? $this->parseTree($n->elsePart)
-                    : null;
-
-                // empty if-statement
-                if ($thenPart == '')
-                    $thenPart = ';';
-
-                if ($elsePart) {
-                    // be carefull and always make a block out of the thenPart; could be more optimized but is a lot of trouble
-                    if ($thenPart != ';' && $thenPart[0] != '{')
-                        $thenPart = '{' . $thenPart . '}';
-
-                    $s .= $thenPart . 'else';
-
-                    // we could check for more, but that hardly ever applies so go for performance
-                    if ($elsePart[0] != '{')
-                        $s .= ' ';
-
-                    $s .= $elsePart;
-                } else {
-                    $s .= $thenPart;
-                }
-                break;
-
-            case KEYWORD_SWITCH:
-                $s = 'switch(' . $this->parseTree($n->discriminant) . '){';
-                $cases = $n->cases;
-                for ($i = 0, $j = count($cases); $i < $j; $i++) {
-                    $case = $cases[$i];
-                    if ($case->type == KEYWORD_CASE)
-                        $s .= 'case' . ($case->caseLabel->type != TOKEN_STRING
-                            ? ' '
-                            : '') . $this->parseTree($case->caseLabel) . ':';
-                    else
-                        $s .= 'default:';
-
-                    $statement = $this->parseTree($case->statements, true);
-                    if ($statement) {
-                        $s .= $statement;
-                        // no terminator for last statement
-                        if ($i + 1 < $j)
-                            $s .= ';';
+                    if ($c > 1 && !$noBlockGrouping) {
+                        $s = '{' . $s . '}';
                     }
-                }
-                $s .= '}';
-                break;
+                    break;
 
-            case KEYWORD_FOR:
-                $s = 'for(' . ($n->setup
-                    ? $this->parseTree($n->setup)
-                    : '')
-                    . ';' . ($n->condition
-                    ? $this->parseTree($n->condition)
-                    : '')
-                    . ';' . ($n->update
-                    ? $this->parseTree($n->update)
-                    : '') . ')';
+                case KEYWORD_FUNCTION:
+                    $s .= 'function' . ($n->name
+                        ? ' ' . $n->name
+                        : '') . '(';
+                    $params = $n->params;
+                    for ($i = 0, $j = count($params); $i < $j; $i++)
+                        $s .= ($i
+                            ? ','
+                            : '') . $params[$i];
+                    $s .= '){' . $this->parseTree($n->body, true) . '}';
+                    break;
 
-                $body = $this->parseTree($n->body);
-                if ($body == '')
-                    $body = ';';
+                case KEYWORD_IF:
+                    $s = 'if(' . $this->parseTree($n->condition) . ')';
+                    $thenPart = $this->parseTree($n->thenPart);
+                    $elsePart = $n->elsePart
+                        ? $this->parseTree($n->elsePart)
+                        : null;
 
-                $s .= $body;
-                break;
+                    // empty if-statement
+                    if ($thenPart == '')
+                        $thenPart = ';';
 
-            case KEYWORD_WHILE:
-                $s = 'while(' . $this->parseTree($n->condition) . ')';
+                    if ($elsePart) {
+                        // be carefull and always make a block out of the thenPart; could be more optimized but is a lot of trouble
+                        if ($thenPart != ';' && $thenPart[0] != '{')
+                            $thenPart = '{' . $thenPart . '}';
 
-                $body = $this->parseTree($n->body);
-                if ($body == '')
-                    $body = ';';
+                        $s .= $thenPart . 'else';
 
-                $s .= $body;
-                break;
-
-            case JS_FOR_IN:
-                $s = 'for(' . ($n->varDecl
-                    ? $this->parseTree($n->varDecl)
-                    : $this->parseTree($n->iterator)) . ' in ' . $this->parseTree($n->object) . ')';
-
-                $body = $this->parseTree($n->body);
-                if ($body == '')
-                    $body = ';';
-
-                $s .= $body;
-                break;
-
-            case KEYWORD_DO:
-                $s = 'do{' . $this->parseTree($n->body, true) . '}while(' . $this->parseTree($n->condition) . ')';
-                break;
-
-            case KEYWORD_BREAK:
-            case KEYWORD_CONTINUE:
-                $s = $n->value . ($n->label
-                    ? ' ' . $n->label
-                    : '');
-                break;
-
-            case KEYWORD_TRY:
-                $s = 'try{' . $this->parseTree($n->tryBlock, true) . '}';
-                $catchClauses = $n->catchClauses;
-                for ($i = 0, $j = count($catchClauses); $i < $j; $i++) {
-                    $t = $catchClauses[$i];
-                    $s .= 'catch(' . $t->varName . ($t->guard
-                        ? ' if ' . $this->parseTree($t->guard)
-                        : '') . '){' . $this->parseTree($t->block, true) . '}';
-                }
-                if ($n->finallyBlock)
-                    $s .= 'finally{' . $this->parseTree($n->finallyBlock, true) . '}';
-                break;
-
-            case KEYWORD_THROW:
-            case KEYWORD_RETURN:
-                $s = $n->type;
-                if ($n->value) {
-                    $t = $this->parseTree($n->value);
-                    if (strlen($t)) {
-                        if ($this->isWordChar($t[0]) || $t[0] == '\\')
+                        // we could check for more, but that hardly ever applies so go for performance
+                        if ($elsePart[0] != '{')
                             $s .= ' ';
 
-                        $s .= $t;
-                    }
-                }
-                break;
-
-            case KEYWORD_WITH:
-                $s = 'with(' . $this->parseTree($n->object) . ')' . $this->parseTree($n->body);
-                break;
-
-            case KEYWORD_VAR:
-            case KEYWORD_CONST:
-                $s = $n->value . ' ';
-                $childs = $n->treeNodes;
-                for ($i = 0, $j = count($childs); $i < $j; $i++) {
-                    $t = $childs[$i];
-                    $s .= ($i
-                        ? ','
-                        : '') . $t->name;
-                    $u = $t->initializer;
-                    if ($u)
-                        $s .= '=' . $this->parseTree($u);
-                }
-                break;
-
-            case KEYWORD_IN:
-            case KEYWORD_INSTANCEOF:
-                $left = $this->parseTree($n->treeNodes[0]);
-                $right = $this->parseTree($n->treeNodes[1]);
-
-                $s = $left;
-
-                if ($this->isWordChar(substr($left, -1)))
-                    $s .= ' ';
-
-                $s .= $n->type;
-
-                if ($this->isWordChar($right[0]) || $right[0] == '\\')
-                    $s .= ' ';
-
-                $s .= $right;
-                break;
-
-            case KEYWORD_DELETE:
-            case KEYWORD_TYPEOF:
-                $right = $this->parseTree($n->treeNodes[0]);
-
-                $s = $n->type;
-
-                if ($this->isWordChar($right[0]) || $right[0] == '\\')
-                    $s .= ' ';
-
-                $s .= $right;
-                break;
-
-            case KEYWORD_VOID:
-                $s = 'void(' . $this->parseTree($n->treeNodes[0]) . ')';
-                break;
-
-            case KEYWORD_DEBUGGER:
-                throw new Exception('NOT IMPLEMENTED: DEBUGGER');
-                break;
-
-            case TOKEN_CONDCOMMENT_START:
-            case TOKEN_CONDCOMMENT_END:
-                $s = $n->value . ($n->type == TOKEN_CONDCOMMENT_START
-                    ? ' '
-                    : '');
-                $childs = $n->treeNodes;
-                for ($i = 0, $j = count($childs); $i < $j; $i++)
-                    $s .= $this->parseTree($childs[$i]);
-                break;
-
-            case OP_SEMICOLON:
-                if ($expression = $n->expression)
-                    $s = $this->parseTree($expression);
-                break;
-
-            case JS_LABEL:
-                $s = $n->label . ':' . $this->parseTree($n->statement);
-                break;
-
-            case OP_COMMA:
-                $childs = $n->treeNodes;
-                for ($i = 0, $j = count($childs); $i < $j; $i++)
-                    $s .= ($i
-                        ? ','
-                        : '') . $this->parseTree($childs[$i]);
-                break;
-
-            case OP_ASSIGN:
-                $s = $this->parseTree($n->treeNodes[0]) . $n->value . $this->parseTree($n->treeNodes[1]);
-                break;
-
-            case OP_HOOK:
-                $s = $this->parseTree($n->treeNodes[0]) . '?' . $this->parseTree($n->treeNodes[1]) . ':' . $this->parseTree($n->treeNodes[2]);
-                break;
-
-            case OP_OR:
-            case OP_AND:
-            case OP_BITWISE_OR:
-            case OP_BITWISE_XOR:
-            case OP_BITWISE_AND:
-            case OP_EQ:
-            case OP_NE:
-            case OP_STRICT_EQ:
-            case OP_STRICT_NE:
-            case OP_LT:
-            case OP_LE:
-            case OP_GE:
-            case OP_GT:
-            case OP_LSH:
-            case OP_RSH:
-            case OP_URSH:
-            case OP_MUL:
-            case OP_DIV:
-            case OP_MOD:
-                $s = $this->parseTree($n->treeNodes[0]) . $n->type . $this->parseTree($n->treeNodes[1]);
-                break;
-
-            case OP_PLUS:
-            case OP_MINUS:
-                $left = $this->parseTree($n->treeNodes[0]);
-                $right = $this->parseTree($n->treeNodes[1]);
-
-                switch ($n->treeNodes[1]->type) {
-                    case OP_PLUS:
-                    case OP_MINUS:
-                    case OP_INCREMENT:
-                    case OP_DECREMENT:
-                    case OP_UNARY_PLUS:
-                    case OP_UNARY_MINUS:
-                        $s = $left . $n->type . ' ' . $right;
-                        break;
-
-                    case TOKEN_STRING:
-                        //combine concatted strings with same quotestyle
-                        if ($n->type == OP_PLUS && substr($left, -1) == $right[0]) {
-                            $s = substr($left, 0, -1) . substr($right, 1);
-                            break;
-                        }
-                    // FALL THROUGH
-
-                    default:
-                        $s = $left . $n->type . $right;
-                }
-                break;
-
-            case OP_NOT:
-            case OP_BITWISE_NOT:
-            case OP_UNARY_PLUS:
-            case OP_UNARY_MINUS:
-                $s = $n->value . $this->parseTree($n->treeNodes[0]);
-                break;
-
-            case OP_INCREMENT:
-            case OP_DECREMENT:
-                if ($n->postfix)
-                    $s = $this->parseTree($n->treeNodes[0]) . $n->value;
-                else
-                    $s = $n->value . $this->parseTree($n->treeNodes[0]);
-                break;
-
-            case OP_DOT:
-                $s = $this->parseTree($n->treeNodes[0]) . '.' . $this->parseTree($n->treeNodes[1]);
-                break;
-
-            case JS_INDEX:
-                $s = $this->parseTree($n->treeNodes[0]);
-                // See if we can replace named index with a dot saving 3 bytes
-                if ($n->treeNodes[0]->type == TOKEN_IDENTIFIER &&
-                    $n->treeNodes[1]->type == TOKEN_STRING &&
-                    $this->isValidIdentifier(substr($n->treeNodes[1]->value, 1, -1))
-                )
-                    $s .= '.' . substr($n->treeNodes[1]->value, 1, -1);
-                else
-                    $s .= '[' . $this->parseTree($n->treeNodes[1]) . ']';
-                break;
-
-            case JS_LIST:
-                $childs = $n->treeNodes;
-                for ($i = 0, $j = count($childs); $i < $j; $i++)
-                    $s .= ($i
-                        ? ','
-                        : '') . $this->parseTree($childs[$i]);
-                break;
-
-            case JS_CALL:
-                $s = $this->parseTree($n->treeNodes[0]) . '(' . $this->parseTree($n->treeNodes[1]) . ')';
-                break;
-
-            case KEYWORD_NEW:
-            case JS_NEW_WITH_ARGS:
-                $s = 'new ' . $this->parseTree($n->treeNodes[0]) . '(' . ($n->type == JS_NEW_WITH_ARGS
-                    ? $this->parseTree($n->treeNodes[1])
-                    : '') . ')';
-                break;
-
-            case JS_ARRAY_INIT:
-                $s = '[';
-                $childs = $n->treeNodes;
-                for ($i = 0, $j = count($childs); $i < $j; $i++) {
-                    $s .= ($i
-                        ? ','
-                        : '') . $this->parseTree($childs[$i]);
-                }
-                $s .= ']';
-                break;
-
-            case JS_OBJECT_INIT:
-                $s = '{';
-                $childs = $n->treeNodes;
-                for ($i = 0, $j = count($childs); $i < $j; $i++) {
-                    $t = $childs[$i];
-                    if ($i)
-                        $s .= ',';
-                    if ($t->type == JS_PROPERTY_INIT) {
-                        // Ditch the quotes when the index is a valid identifier
-                        if ($t->treeNodes[0]->type == TOKEN_STRING &&
-                            $this->isValidIdentifier(substr($t->treeNodes[0]->value, 1, -1))
-                        )
-                            $s .= substr($t->treeNodes[0]->value, 1, -1);
-                        else
-                            $s .= $t->treeNodes[0]->value;
-
-                        $s .= ':' . $this->parseTree($t->treeNodes[1]);
+                        $s .= $elsePart;
                     } else {
-                        $s .= $t->type == JS_GETTER
-                            ? 'get'
-                            : 'set';
-                        $s .= ' ' . $t->name . '(';
-                        $params = $t->params;
-                        for ($i = 0, $j = count($params); $i < $j; $i++)
-                            $s .= ($i
-                                ? ','
-                                : '') . $params[$i];
-                        $s .= '){' . $this->parseTree($t->body, true) . '}';
+                        $s .= $thenPart;
                     }
-                }
-                $s .= '}';
-                break;
+                    break;
 
-            case TOKEN_NUMBER:
-                $s = $n->value;
-                if (preg_match('/^([1-9]+)(0{3,})$/', $s, $m))
-                    $s = $m[1] . 'e' . strlen($m[2]);
-                break;
+                case KEYWORD_SWITCH:
+                    $s = 'switch(' . $this->parseTree($n->discriminant) . '){';
+                    $cases = $n->cases;
+                    for ($i = 0, $j = count($cases); $i < $j; $i++) {
+                        $case = $cases[$i];
+                        if ($case->type == KEYWORD_CASE)
+                            $s .= 'case' . ($case->caseLabel->type != TOKEN_STRING
+                                ? ' '
+                                : '') . $this->parseTree($case->caseLabel) . ':';
+                        else
+                            $s .= 'default:';
 
-            case KEYWORD_NULL:
-            case KEYWORD_THIS:
-            case KEYWORD_TRUE:
-            case KEYWORD_FALSE:
-            case TOKEN_IDENTIFIER:
-            case TOKEN_STRING:
-            case TOKEN_REGEXP:
-                $s = $n->value;
-                break;
+                        $statement = $this->parseTree($case->statements, true);
+                        if ($statement) {
+                            $s .= $statement;
+                            // no terminator for last statement
+                            if ($i + 1 < $j)
+                                $s .= ';';
+                        }
+                    }
+                    $s .= '}';
+                    break;
 
-            case JS_GROUP:
-                if (in_array(
-                    $n->treeNodes[0]->type,
-                    array(
-                         JS_ARRAY_INIT,
-                         JS_OBJECT_INIT,
-                         JS_GROUP,
-                         TOKEN_NUMBER,
-                         TOKEN_STRING,
-                         TOKEN_REGEXP,
-                         TOKEN_IDENTIFIER,
-                         KEYWORD_NULL,
-                         KEYWORD_THIS,
-                         KEYWORD_TRUE,
-                         KEYWORD_FALSE
-                    )
-                )
-                ) {
+                case KEYWORD_FOR:
+                    $s = 'for(' . ($n->setup
+                        ? $this->parseTree($n->setup)
+                        : '')
+                        . ';' . ($n->condition
+                        ? $this->parseTree($n->condition)
+                        : '')
+                        . ';' . ($n->update
+                        ? $this->parseTree($n->update)
+                        : '') . ')';
+
+                    $body = $this->parseTree($n->body);
+                    if ($body == '')
+                        $body = ';';
+
+                    $s .= $body;
+                    break;
+
+                case KEYWORD_WHILE:
+                    $s = 'while(' . $this->parseTree($n->condition) . ')';
+
+                    $body = $this->parseTree($n->body);
+                    if ($body == '')
+                        $body = ';';
+
+                    $s .= $body;
+                    break;
+
+                case JS_FOR_IN:
+                    $s = 'for(' . ($n->varDecl
+                        ? $this->parseTree($n->varDecl)
+                        : $this->parseTree($n->iterator)) . ' in ' . $this->parseTree($n->object) . ')';
+
+                    $body = $this->parseTree($n->body);
+                    if ($body == '')
+                        $body = ';';
+
+                    $s .= $body;
+                    break;
+
+                case KEYWORD_DO:
+                    $s = 'do{' . $this->parseTree($n->body, true) . '}while(' . $this->parseTree($n->condition) . ')';
+                    break;
+
+                case KEYWORD_BREAK:
+                case KEYWORD_CONTINUE:
+                    $s = $n->value . ($n->label
+                        ? ' ' . $n->label
+                        : '');
+                    break;
+
+                case KEYWORD_TRY:
+                    $s = 'try{' . $this->parseTree($n->tryBlock, true) . '}';
+                    $catchClauses = $n->catchClauses;
+                    for ($i = 0, $j = count($catchClauses); $i < $j; $i++) {
+                        $t = $catchClauses[$i];
+                        $s .= 'catch(' . $t->varName . ($t->guard
+                            ? ' if ' . $this->parseTree($t->guard)
+                            : '') . '){' . $this->parseTree($t->block, true) . '}';
+                    }
+                    if ($n->finallyBlock)
+                        $s .= 'finally{' . $this->parseTree($n->finallyBlock, true) . '}';
+                    break;
+
+                case KEYWORD_THROW:
+                case KEYWORD_RETURN:
+                    $s = $n->type;
+                    if ($n->value) {
+                        $t = $this->parseTree($n->value);
+                        if (strlen($t)) {
+                            if ($this->isWordChar($t[0]) || $t[0] == '\\')
+                                $s .= ' ';
+
+                            $s .= $t;
+                        }
+                    }
+                    break;
+
+                case KEYWORD_WITH:
+                    $s = 'with(' . $this->parseTree($n->object) . ')' . $this->parseTree($n->body);
+                    break;
+
+                case KEYWORD_VAR:
+                case KEYWORD_CONST:
+                    $s = $n->value . ' ';
+                    $childs = $n->treeNodes;
+                    for ($i = 0, $j = count($childs); $i < $j; $i++) {
+                        $t = $childs[$i];
+                        $s .= ($i
+                            ? ','
+                            : '') . $t->name;
+                        $u = $t->initializer;
+                        if ($u)
+                            $s .= '=' . $this->parseTree($u);
+                    }
+                    break;
+
+                case KEYWORD_IN:
+                case KEYWORD_INSTANCEOF:
+                    $left = $this->parseTree($n->treeNodes[0]);
+                    $right = $this->parseTree($n->treeNodes[1]);
+
+                    $s = $left;
+
+                    if ($this->isWordChar(substr($left, -1)))
+                        $s .= ' ';
+
+                    $s .= $n->type;
+
+                    if ($this->isWordChar($right[0]) || $right[0] == '\\')
+                        $s .= ' ';
+
+                    $s .= $right;
+                    break;
+
+                case KEYWORD_DELETE:
+                case KEYWORD_TYPEOF:
+                    $right = $this->parseTree($n->treeNodes[0]);
+
+                    $s = $n->type;
+
+                    if ($this->isWordChar($right[0]) || $right[0] == '\\')
+                        $s .= ' ';
+
+                    $s .= $right;
+                    break;
+
+                case KEYWORD_VOID:
+                    $s = 'void(' . $this->parseTree($n->treeNodes[0]) . ')';
+                    break;
+
+                case KEYWORD_DEBUGGER:
+                    throw new Exception('NOT IMPLEMENTED: DEBUGGER');
+                    break;
+
+                case TOKEN_CONDCOMMENT_START:
+                case TOKEN_CONDCOMMENT_END:
+                    $s = $n->value . ($n->type == TOKEN_CONDCOMMENT_START
+                        ? ' '
+                        : '');
+                    $childs = $n->treeNodes;
+                    for ($i = 0, $j = count($childs); $i < $j; $i++)
+                        $s .= $this->parseTree($childs[$i]);
+                    break;
+
+                case OP_SEMICOLON:
+                    if ($expression = $n->expression)
+                        $s = $this->parseTree($expression);
+                    break;
+
+                case JS_LABEL:
+                    $s = $n->label . ':' . $this->parseTree($n->statement);
+                    break;
+
+                case OP_COMMA:
+                    $childs = $n->treeNodes;
+                    for ($i = 0, $j = count($childs); $i < $j; $i++)
+                        $s .= ($i
+                            ? ','
+                            : '') . $this->parseTree($childs[$i]);
+                    break;
+
+                case OP_ASSIGN:
+                    $s = $this->parseTree($n->treeNodes[0]) . $n->value . $this->parseTree($n->treeNodes[1]);
+                    break;
+
+                case OP_HOOK:
+                    $s = $this->parseTree($n->treeNodes[0]) . '?' . $this->parseTree($n->treeNodes[1]) . ':' . $this->parseTree($n->treeNodes[2]);
+                    break;
+
+                case OP_OR:
+                case OP_AND:
+                case OP_BITWISE_OR:
+                case OP_BITWISE_XOR:
+                case OP_BITWISE_AND:
+                case OP_EQ:
+                case OP_NE:
+                case OP_STRICT_EQ:
+                case OP_STRICT_NE:
+                case OP_LT:
+                case OP_LE:
+                case OP_GE:
+                case OP_GT:
+                case OP_LSH:
+                case OP_RSH:
+                case OP_URSH:
+                case OP_MUL:
+                case OP_DIV:
+                case OP_MOD:
+                    $s = $this->parseTree($n->treeNodes[0]) . $n->type . $this->parseTree($n->treeNodes[1]);
+                    break;
+
+                case OP_PLUS:
+                case OP_MINUS:
+                    $left = $this->parseTree($n->treeNodes[0]);
+                    $right = $this->parseTree($n->treeNodes[1]);
+
+                    switch ($n->treeNodes[1]->type) {
+                        case OP_PLUS:
+                        case OP_MINUS:
+                        case OP_INCREMENT:
+                        case OP_DECREMENT:
+                        case OP_UNARY_PLUS:
+                        case OP_UNARY_MINUS:
+                            $s = $left . $n->type . ' ' . $right;
+                            break;
+
+                        case TOKEN_STRING:
+                            //combine concatted strings with same quotestyle
+                            if ($n->type == OP_PLUS && substr($left, -1) == $right[0]) {
+                                $s = substr($left, 0, -1) . substr($right, 1);
+                                break;
+                            }
+                        // FALL THROUGH
+
+                        default:
+                            $s = $left . $n->type . $right;
+                    }
+                    break;
+
+                case OP_NOT:
+                case OP_BITWISE_NOT:
+                case OP_UNARY_PLUS:
+                case OP_UNARY_MINUS:
+                    $s = $n->value . $this->parseTree($n->treeNodes[0]);
+                    break;
+
+                case OP_INCREMENT:
+                case OP_DECREMENT:
+                    if ($n->postfix)
+                        $s = $this->parseTree($n->treeNodes[0]) . $n->value;
+                    else
+                        $s = $n->value . $this->parseTree($n->treeNodes[0]);
+                    break;
+
+                case OP_DOT:
+                    $s = $this->parseTree($n->treeNodes[0]) . '.' . $this->parseTree($n->treeNodes[1]);
+                    break;
+
+                case JS_INDEX:
                     $s = $this->parseTree($n->treeNodes[0]);
-                } else {
-                    $s = '(' . $this->parseTree($n->treeNodes[0]) . ')';
-                }
-                break;
+                    // See if we can replace named index with a dot saving 3 bytes
+                    if ($n->treeNodes[0]->type == TOKEN_IDENTIFIER &&
+                        $n->treeNodes[1]->type == TOKEN_STRING &&
+                        $this->isValidIdentifier(substr($n->treeNodes[1]->value, 1, -1))
+                    )
+                        $s .= '.' . substr($n->treeNodes[1]->value, 1, -1);
+                    else
+                        $s .= '[' . $this->parseTree($n->treeNodes[1]) . ']';
+                    break;
 
-            default:
-                throw new Exception('UNKNOWN TOKEN TYPE: ' . $n->type);
+                case JS_LIST:
+                    $childs = $n->treeNodes;
+                    for ($i = 0, $j = count($childs); $i < $j; $i++)
+                        $s .= ($i
+                            ? ','
+                            : '') . $this->parseTree($childs[$i]);
+                    break;
+
+                case JS_CALL:
+                    $s = $this->parseTree($n->treeNodes[0]) . '(' . $this->parseTree($n->treeNodes[1]) . ')';
+                    break;
+
+                case KEYWORD_NEW:
+                case JS_NEW_WITH_ARGS:
+                    $s = 'new ' . $this->parseTree($n->treeNodes[0]) . '(' . ($n->type == JS_NEW_WITH_ARGS
+                        ? $this->parseTree($n->treeNodes[1])
+                        : '') . ')';
+                    break;
+
+                case JS_ARRAY_INIT:
+                    $s = '[';
+                    $childs = $n->treeNodes;
+                    for ($i = 0, $j = count($childs); $i < $j; $i++) {
+                        $s .= ($i
+                            ? ','
+                            : '') . $this->parseTree($childs[$i]);
+                    }
+                    $s .= ']';
+                    break;
+
+                case JS_OBJECT_INIT:
+                    $s = '{';
+                    $childs = $n->treeNodes;
+                    for ($i = 0, $j = count($childs); $i < $j; $i++) {
+                        $t = $childs[$i];
+                        if ($i)
+                            $s .= ',';
+                        if ($t->type == JS_PROPERTY_INIT) {
+                            // Ditch the quotes when the index is a valid identifier
+                            if ($t->treeNodes[0]->type == TOKEN_STRING &&
+                                $this->isValidIdentifier(substr($t->treeNodes[0]->value, 1, -1))
+                            )
+                                $s .= substr($t->treeNodes[0]->value, 1, -1);
+                            else
+                                $s .= $t->treeNodes[0]->value;
+
+                            $s .= ':' . $this->parseTree($t->treeNodes[1]);
+                        } else {
+                            $s .= $t->type == JS_GETTER
+                                ? 'get'
+                                : 'set';
+                            $s .= ' ' . $t->name . '(';
+                            $params = $t->params;
+                            for ($i = 0, $j = count($params); $i < $j; $i++)
+                                $s .= ($i
+                                    ? ','
+                                    : '') . $params[$i];
+                            $s .= '){' . $this->parseTree($t->body, true) . '}';
+                        }
+                    }
+                    $s .= '}';
+                    break;
+
+                case TOKEN_NUMBER:
+                    $s = $n->value;
+                    if (preg_match('/^([1-9]+)(0{3,})$/', $s, $m))
+                        $s = $m[1] . 'e' . strlen($m[2]);
+                    break;
+
+                case KEYWORD_NULL:
+                case KEYWORD_THIS:
+                case KEYWORD_TRUE:
+                case KEYWORD_FALSE:
+                case TOKEN_IDENTIFIER:
+                case TOKEN_STRING:
+                case TOKEN_REGEXP:
+                    $s = $n->value;
+                    break;
+
+                case JS_GROUP:
+                    if (in_array(
+                        $n->treeNodes[0]->type,
+                        array(
+                             JS_ARRAY_INIT,
+                             JS_OBJECT_INIT,
+                             JS_GROUP,
+                             TOKEN_NUMBER,
+                             TOKEN_STRING,
+                             TOKEN_REGEXP,
+                             TOKEN_IDENTIFIER,
+                             KEYWORD_NULL,
+                             KEYWORD_THIS,
+                             KEYWORD_TRUE,
+                             KEYWORD_FALSE
+                        )
+                    )
+                    ) {
+                        $s = $this->parseTree($n->treeNodes[0]);
+                    } else {
+                        $s = '(' . $this->parseTree($n->treeNodes[0]) . ')';
+                    }
+                    break;
+
+                default:
+                    throw new Exception('UNKNOWN TOKEN TYPE: ' . $n->type);
+            }
+
+            return $s;
         }
 
-        return $s;
-    }
+        private function isValidIdentifier($string) {
+            return preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $string) && !in_array($string, $this->reserved);
+        }
 
-    private function isValidIdentifier($string) {
-        return preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $string) && !in_array($string, $this->reserved);
-    }
-
-    private function isWordChar($char) {
-        return $char == '_' || $char == '$' || ctype_alnum($char);
+        private function isWordChar($char) {
+            return $char == '_' || $char == '$' || ctype_alnum($char);
+        }
     }
 }
+if (! class_exists('JSParser')) {
+    class JSParser {
+        private $t;
+        private $minifier;
 
-class JSParser {
-    private $t;
-    private $minifier;
+        private $opPrecedence = array(
+            ';' => 0,
+            ',' => 1,
+            '=' => 2,
+            '?' => 2,
+            ':' => 2,
+            // The above all have to have the same precedence, see bug 330975
+            '||' => 4,
+            '&&' => 5,
+            '|' => 6,
+            '^' => 7,
+            '&' => 8,
+            '==' => 9,
+            '!=' => 9,
+            '===' => 9,
+            '!==' => 9,
+            '<' => 10,
+            '<=' => 10,
+            '>=' => 10,
+            '>' => 10,
+            'in' => 10,
+            'instanceof' => 10,
+            '<<' => 11,
+            '>>' => 11,
+            '>>>' => 11,
+            '+' => 12,
+            '-' => 12,
+            '*' => 13,
+            '/' => 13,
+            '%' => 13,
+            'delete' => 14,
+            'void' => 14,
+            'typeof' => 14,
+            '!' => 14,
+            '~' => 14,
+            'U+' => 14,
+            'U-' => 14,
+            '++' => 15,
+            '--' => 15,
+            'new' => 16,
+            '.' => 17,
+            JS_NEW_WITH_ARGS => 0,
+            JS_INDEX => 0,
+            JS_CALL => 0,
+            JS_ARRAY_INIT => 0,
+            JS_OBJECT_INIT => 0,
+            JS_GROUP => 0
+        );
 
-    private $opPrecedence = array(
-        ';' => 0,
-        ',' => 1,
-        '=' => 2,
-        '?' => 2,
-        ':' => 2,
-        // The above all have to have the same precedence, see bug 330975
-        '||' => 4,
-        '&&' => 5,
-        '|' => 6,
-        '^' => 7,
-        '&' => 8,
-        '==' => 9,
-        '!=' => 9,
-        '===' => 9,
-        '!==' => 9,
-        '<' => 10,
-        '<=' => 10,
-        '>=' => 10,
-        '>' => 10,
-        'in' => 10,
-        'instanceof' => 10,
-        '<<' => 11,
-        '>>' => 11,
-        '>>>' => 11,
-        '+' => 12,
-        '-' => 12,
-        '*' => 13,
-        '/' => 13,
-        '%' => 13,
-        'delete' => 14,
-        'void' => 14,
-        'typeof' => 14,
-        '!' => 14,
-        '~' => 14,
-        'U+' => 14,
-        'U-' => 14,
-        '++' => 15,
-        '--' => 15,
-        'new' => 16,
-        '.' => 17,
-        JS_NEW_WITH_ARGS => 0,
-        JS_INDEX => 0,
-        JS_CALL => 0,
-        JS_ARRAY_INIT => 0,
-        JS_OBJECT_INIT => 0,
-        JS_GROUP => 0
-    );
-
-    private $opArity = array(
-        ',' => -2,
-        '=' => 2,
-        '?' => 3,
-        '||' => 2,
-        '&&' => 2,
-        '|' => 2,
-        '^' => 2,
-        '&' => 2,
-        '==' => 2,
-        '!=' => 2,
-        '===' => 2,
-        '!==' => 2,
-        '<' => 2,
-        '<=' => 2,
-        '>=' => 2,
-        '>' => 2,
-        'in' => 2,
-        'instanceof' => 2,
-        '<<' => 2,
-        '>>' => 2,
-        '>>>' => 2,
-        '+' => 2,
-        '-' => 2,
-        '*' => 2,
-        '/' => 2,
-        '%' => 2,
-        'delete' => 1,
-        'void' => 1,
-        'typeof' => 1,
-        '!' => 1,
-        '~' => 1,
-        'U+' => 1,
-        'U-' => 1,
-        '++' => 1,
-        '--' => 1,
-        'new' => 1,
-        '.' => 2,
-        JS_NEW_WITH_ARGS => 2,
-        JS_INDEX => 2,
-        JS_CALL => 2,
-        JS_ARRAY_INIT => 1,
-        JS_OBJECT_INIT => 1,
-        JS_GROUP => 1,
-        TOKEN_CONDCOMMENT_START => 1,
-        TOKEN_CONDCOMMENT_END => 1
-    );
+        private $opArity = array(
+            ',' => -2,
+            '=' => 2,
+            '?' => 3,
+            '||' => 2,
+            '&&' => 2,
+            '|' => 2,
+            '^' => 2,
+            '&' => 2,
+            '==' => 2,
+            '!=' => 2,
+            '===' => 2,
+            '!==' => 2,
+            '<' => 2,
+            '<=' => 2,
+            '>=' => 2,
+            '>' => 2,
+            'in' => 2,
+            'instanceof' => 2,
+            '<<' => 2,
+            '>>' => 2,
+            '>>>' => 2,
+            '+' => 2,
+            '-' => 2,
+            '*' => 2,
+            '/' => 2,
+            '%' => 2,
+            'delete' => 1,
+            'void' => 1,
+            'typeof' => 1,
+            '!' => 1,
+            '~' => 1,
+            'U+' => 1,
+            'U-' => 1,
+            '++' => 1,
+            '--' => 1,
+            'new' => 1,
+            '.' => 2,
+            JS_NEW_WITH_ARGS => 2,
+            JS_INDEX => 2,
+            JS_CALL => 2,
+            JS_ARRAY_INIT => 1,
+            JS_OBJECT_INIT => 1,
+            JS_GROUP => 1,
+            TOKEN_CONDCOMMENT_START => 1,
+            TOKEN_CONDCOMMENT_END => 1
+        );
 
     public function __construct($minifier = null) {
         $this->minifier = $minifier;
@@ -1699,485 +1701,494 @@ class JSParser {
         return $n;
     }
 }
+}
 
-class JSCompilerContext {
-    public $inFunction = false;
-    public $inForLoopInit = false;
-    public $ecmaStrictMode = false;
-    public $bracketLevel = 0;
-    public $curlyLevel = 0;
-    public $parenLevel = 0;
-    public $hookLevel = 0;
+if (! class_exists("JSCompilerContext")) {
+    class JSCompilerContext {
+        public $inFunction = false;
+        public $inForLoopInit = false;
+        public $ecmaStrictMode = false;
+        public $bracketLevel = 0;
+        public $curlyLevel = 0;
+        public $parenLevel = 0;
+        public $hookLevel = 0;
 
-    public $stmtStack = array();
-    public $funDecls = array();
-    public $varDecls = array();
+        public $stmtStack = array();
+        public $funDecls = array();
+        public $varDecls = array();
 
-    public function __construct($inFunction) {
-        $this->inFunction = $inFunction;
+        public function __construct($inFunction) {
+            $this->inFunction = $inFunction;
+        }
     }
 }
 
-class JSNode {
-    private $type;
-    private $value;
-    private $lineno;
-    private $start;
-    private $end;
+if (! class_exists("JSNode")) {
+    class JSNode {
+        private $type;
+        private $value;
+        private $lineno;
+        private $start;
+        private $end;
 
-    public $treeNodes = array();
-    public $funDecls = array();
-    public $varDecls = array();
+        public $treeNodes = array();
+        public $funDecls = array();
+        public $varDecls = array();
 
-    public function __construct($t, $type = 0) {
-        if ($token = $t->currentToken()) {
-            $this->type = $type
-                ? $type
-                : $token->type;
-            $this->value = $token->value;
-            $this->lineno = $token->lineno;
-            $this->start = $token->start;
-            $this->end = $token->end;
-        } else {
-            $this->type = $type;
-            $this->lineno = $t->lineno;
-        }
-
-        if (($numargs = func_num_args()) > 2) {
-            $args = func_get_args();
-            for ($i = 2; $i < $numargs; $i++)
-                $this->addNode($args[$i]);
-        }
-    }
-
-    // we don't want to bloat our object with all kind of specific properties, so we use overloading
-    public function __set($name, $value) {
-        $this->$name = $value;
-    }
-
-    public function __get($name) {
-        if (isset($this->$name))
-            return $this->$name;
-
-        return null;
-    }
-
-    public function addNode($node) {
-        if ($node !== null) {
-            if ($node->start < $this->start)
-                $this->start = $node->start;
-            if ($this->end < $node->end)
-                $this->end = $node->end;
-        }
-
-        $this->treeNodes[] = $node;
-    }
-}
-
-class JSTokenizer {
-    private $cursor = 0;
-    private $source;
-
-    public $tokens = array();
-    public $tokenIndex = 0;
-    public $lookahead = 0;
-    public $scanNewlines = false;
-    public $scanOperand = true;
-
-    public $filename;
-    public $lineno;
-
-    private $keywords = array(
-        'break',
-        'case',
-        'catch',
-        'const',
-        'continue',
-        'debugger',
-        'default',
-        'delete',
-        'do',
-        'else',
-        'enum',
-        'false',
-        'finally',
-        'for',
-        'function',
-        'if',
-        'in',
-        'instanceof',
-        'new',
-        'null',
-        'return',
-        'switch',
-        'this',
-        'throw',
-        'true',
-        'try',
-        'typeof',
-        'var',
-        'void',
-        'while',
-        'with'
-    );
-
-    private $opTypeNames = array(
-        ';',
-        ',',
-        '?',
-        ':',
-        '||',
-        '&&',
-        '|',
-        '^',
-        '&',
-        '===',
-        '==',
-        '=',
-        '!==',
-        '!=',
-        '<<',
-        '<=',
-        '<',
-        '>>>',
-        '>>',
-        '>=',
-        '>',
-        '++',
-        '--',
-        '+',
-        '-',
-        '*',
-        '/',
-        '%',
-        '!',
-        '~',
-        '.',
-        '[',
-        ']',
-        '{',
-        '}',
-        '(',
-        ')',
-        '@*/'
-    );
-
-    private $assignOps = array(
-        '|',
-        '^',
-        '&',
-        '<<',
-        '>>',
-        '>>>',
-        '+',
-        '-',
-        '*',
-        '/',
-        '%'
-    );
-    private $opRegExp;
-
-    public function __construct() {
-        $this->opRegExp = '#^(' . implode('|', array_map('preg_quote', $this->opTypeNames)) . ')#';
-    }
-
-    public function init($source, $filename = '', $lineno = 1) {
-        $this->source = $source;
-        $this->filename = $filename
-            ? $filename
-            : '[inline]';
-        $this->lineno = $lineno;
-
-        $this->cursor = 0;
-        $this->tokens = array();
-        $this->tokenIndex = 0;
-        $this->lookahead = 0;
-        $this->scanNewlines = false;
-        $this->scanOperand = true;
-    }
-
-    public function getInput($chunksize) {
-        if ($chunksize)
-            return substr($this->source, $this->cursor, $chunksize);
-
-        return substr($this->source, $this->cursor);
-    }
-
-    public function isDone() {
-        return $this->peek() == TOKEN_END;
-    }
-
-    public function match($tt) {
-        return $this->get() == $tt || $this->unget();
-    }
-
-    public function mustMatch($tt) {
-        if (!$this->match($tt))
-            throw $this->newSyntaxError('Unexpected token; token ' . $tt . ' expected');
-
-        return $this->currentToken();
-    }
-
-    public function peek() {
-        if ($this->lookahead) {
-            $next = $this->tokens[($this->tokenIndex + $this->lookahead) & 3];
-            if ($this->scanNewlines && $next->lineno != $this->lineno)
-                $tt = TOKEN_NEWLINE;
-            else
-                $tt = $next->type;
-        } else {
-            $tt = $this->get();
-            $this->unget();
-        }
-
-        return $tt;
-    }
-
-    public function peekOnSameLine() {
-        $this->scanNewlines = true;
-        $tt = $this->peek();
-        $this->scanNewlines = false;
-
-        return $tt;
-    }
-
-    public function currentToken() {
-        if (!empty($this->tokens))
-            return $this->tokens[$this->tokenIndex];
-    }
-
-    public function get($chunksize = 1000) {
-        while ($this->lookahead) {
-            $this->lookahead--;
-            $this->tokenIndex = ($this->tokenIndex + 1) & 3;
-            $token = $this->tokens[$this->tokenIndex];
-            if ($token->type != TOKEN_NEWLINE || $this->scanNewlines)
-                return $token->type;
-        }
-
-        $conditional_comment = false;
-
-        // strip whitespace and comments
-        while (true) {
-            $input = $this->getInput($chunksize);
-
-            // whitespace handling; gobble up \r as well (effectively we don't have support for MAC newlines!)
-            $re = $this->scanNewlines
-                ? '/^[ \r\t]+/'
-                : '/^\s+/';
-            if (preg_match($re, $input, $match)) {
-                $spaces = $match[0];
-                $spacelen = strlen($spaces);
-                $this->cursor += $spacelen;
-                if (!$this->scanNewlines)
-                    $this->lineno += substr_count($spaces, "\n");
-
-                if ($spacelen == $chunksize)
-                    continue; // complete chunk contained whitespace
-
-                $input = $this->getInput($chunksize);
-                if ($input == '' || $input[0] != '/')
-                    break;
-            }
-
-            // Comments
-            if (!preg_match('/^\/(?:\*(@(?:cc_on|if|elif|else|end))?.*?\*\/|\/[^\n]*)/s', $input, $match)) {
-                if (!$chunksize)
-                    break;
-
-                // retry with a full chunk fetch; this also prevents breakage of long regular expressions (which will never match a comment)
-                $chunksize = null;
-                continue;
-            }
-
-            // check if this is a conditional (JScript) comment
-            if (!empty($match[1])) {
-                $match[0] = '/*' . $match[1];
-                $conditional_comment = true;
-                break;
+        public function __construct($t, $type = 0) {
+            if ($token = $t->currentToken()) {
+                $this->type = $type
+                    ? $type
+                    : $token->type;
+                $this->value = $token->value;
+                $this->lineno = $token->lineno;
+                $this->start = $token->start;
+                $this->end = $token->end;
             } else {
-                $this->cursor += strlen($match[0]);
-                $this->lineno += substr_count($match[0], "\n");
+                $this->type = $type;
+                $this->lineno = $t->lineno;
+            }
+
+            if (($numargs = func_num_args()) > 2) {
+                $args = func_get_args();
+                for ($i = 2; $i < $numargs; $i++)
+                    $this->addNode($args[$i]);
             }
         }
 
-        if ($input == '') {
-            $tt = TOKEN_END;
-            $match = array('');
-        } elseif ($conditional_comment) {
-            $tt = TOKEN_CONDCOMMENT_START;
-        } else {
-            switch ($input[0]) {
-                case '0':
-                    // hexadecimal
-                    if (($input[1] == 'x' || $input[1] == 'X') && preg_match('/^0x[0-9a-f]+/i', $input, $match)) {
-                        $tt = TOKEN_NUMBER;
-                        break;
-                    }
-                // FALL THROUGH
-
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                case '8':
-                case '9':
-                    // should always match
-                    preg_match('/^\d+(?:\.\d*)?(?:[eE][-+]?\d+)?/', $input, $match);
-                    $tt = TOKEN_NUMBER;
-                    break;
-
-                case "'":
-                    if (preg_match('/^\'(?:[^\\\\\'\r\n]++|\\\\(?:.|\r?\n))*\'/', $input, $match)) {
-                        $tt = TOKEN_STRING;
-                    } else {
-                        if ($chunksize)
-                            return $this->get(null); // retry with a full chunk fetch
-
-                        throw $this->newSyntaxError('Unterminated string literal');
-                    }
-                    break;
-
-                case '"':
-                    if (preg_match('/^"(?:[^\\\\"\r\n]++|\\\\(?:.|\r?\n))*"/', $input, $match)) {
-                        $tt = TOKEN_STRING;
-                    } else {
-                        if ($chunksize)
-                            return $this->get(null); // retry with a full chunk fetch
-
-                        throw $this->newSyntaxError('Unterminated string literal');
-                    }
-                    break;
-
-                case '/':
-                    if ($this->scanOperand && preg_match('/^\/((?:\\\\.|\[(?:\\\\.|[^\]])*\]|[^\/])+)\/([gimy]*)/', $input, $match)) {
-                        $tt = TOKEN_REGEXP;
-                        break;
-                    }
-                // FALL THROUGH
-
-                case '|':
-                case '^':
-                case '&':
-                case '<':
-                case '>':
-                case '+':
-                case '-':
-                case '*':
-                case '%':
-                case '=':
-                case '!':
-                    // should always match
-                    preg_match($this->opRegExp, $input, $match);
-                    $op = $match[0];
-                    if (in_array($op, $this->assignOps) && $input[strlen($op)] == '=') {
-                        $tt = OP_ASSIGN;
-                        $match[0] .= '=';
-                    } else {
-                        $tt = $op;
-                        if ($this->scanOperand) {
-                            if ($op == OP_PLUS)
-                                $tt = OP_UNARY_PLUS;
-                            elseif ($op == OP_MINUS)
-                                $tt = OP_UNARY_MINUS;
-                        }
-                        $op = null;
-                    }
-                    break;
-
-                case '.':
-                    if (preg_match('/^\.\d+(?:[eE][-+]?\d+)?/', $input, $match)) {
-                        $tt = TOKEN_NUMBER;
-                        break;
-                    }
-                // FALL THROUGH
-
-                case ';':
-                case ',':
-                case '?':
-                case ':':
-                case '~':
-                case '[':
-                case ']':
-                case '{':
-                case '}':
-                case '(':
-                case ')':
-                    // these are all single
-                    $match = array($input[0]);
-                    $tt = $input[0];
-                    break;
-
-                case '@':
-                    // check end of conditional comment
-                    if (substr($input, 0, 3) == '@*/') {
-                        $match = array('@*/');
-                        $tt = TOKEN_CONDCOMMENT_END;
-                    } else
-                        throw $this->newSyntaxError('Illegal token');
-                    break;
-
-                case "\n":
-                    if ($this->scanNewlines) {
-                        $match = array("\n");
-                        $tt = TOKEN_NEWLINE;
-                    } else
-                        throw $this->newSyntaxError('Illegal token');
-                    break;
-
-                default:
-                    // FIXME: add support for unicode and unicode escape sequence \uHHHH
-                    if (preg_match('/^[$\w]+/', $input, $match)) {
-                        $tt = in_array($match[0], $this->keywords)
-                            ? $match[0]
-                            : TOKEN_IDENTIFIER;
-                    } else
-                        throw $this->newSyntaxError('Illegal token');
-            }
+        // we don't want to bloat our object with all kind of specific properties, so we use overloading
+        public function __set($name, $value) {
+            $this->$name = $value;
         }
 
-        $this->tokenIndex = ($this->tokenIndex + 1) & 3;
+        public function __get($name) {
+            if (isset($this->$name))
+                return $this->$name;
 
-        if (!isset($this->tokens[$this->tokenIndex]))
-            $this->tokens[$this->tokenIndex] = new JSToken();
+            return null;
+        }
 
-        $token = $this->tokens[$this->tokenIndex];
-        $token->type = $tt;
+        public function addNode($node) {
+            if ($node !== null) {
+                if ($node->start < $this->start)
+                    $this->start = $node->start;
+                if ($this->end < $node->end)
+                    $this->end = $node->end;
+            }
 
-        if ($tt == OP_ASSIGN)
-            $token->assignOp = $op;
-
-        $token->start = $this->cursor;
-
-        $token->value = $match[0];
-        $this->cursor += strlen($match[0]);
-
-        $token->end = $this->cursor;
-        $token->lineno = $this->lineno;
-
-        return $tt;
-    }
-
-    public function unget() {
-        if (++$this->lookahead == 4)
-            throw $this->newSyntaxError('PANIC: too much lookahead!');
-
-        $this->tokenIndex = ($this->tokenIndex - 1) & 3;
-    }
-
-    public function newSyntaxError($m) {
-        return new Exception('Parse error: ' . $m . ' in file \'' . $this->filename . '\' on line ' . $this->lineno);
+            $this->treeNodes[] = $node;
+        }
     }
 }
 
-class JSToken {
-    public $type;
-    public $value;
-    public $start;
-    public $end;
-    public $lineno;
-    public $assignOp;
+if (! class_exists("JSTokenizer")) {
+    class JSTokenizer {
+        private $cursor = 0;
+        private $source;
+
+        public $tokens = array();
+        public $tokenIndex = 0;
+        public $lookahead = 0;
+        public $scanNewlines = false;
+        public $scanOperand = true;
+
+        public $filename;
+        public $lineno;
+
+        private $keywords = array(
+            'break',
+            'case',
+            'catch',
+            'const',
+            'continue',
+            'debugger',
+            'default',
+            'delete',
+            'do',
+            'else',
+            'enum',
+            'false',
+            'finally',
+            'for',
+            'function',
+            'if',
+            'in',
+            'instanceof',
+            'new',
+            'null',
+            'return',
+            'switch',
+            'this',
+            'throw',
+            'true',
+            'try',
+            'typeof',
+            'var',
+            'void',
+            'while',
+            'with'
+        );
+
+        private $opTypeNames = array(
+            ';',
+            ',',
+            '?',
+            ':',
+            '||',
+            '&&',
+            '|',
+            '^',
+            '&',
+            '===',
+            '==',
+            '=',
+            '!==',
+            '!=',
+            '<<',
+            '<=',
+            '<',
+            '>>>',
+            '>>',
+            '>=',
+            '>',
+            '++',
+            '--',
+            '+',
+            '-',
+            '*',
+            '/',
+            '%',
+            '!',
+            '~',
+            '.',
+            '[',
+            ']',
+            '{',
+            '}',
+            '(',
+            ')',
+            '@*/'
+        );
+
+        private $assignOps = array(
+            '|',
+            '^',
+            '&',
+            '<<',
+            '>>',
+            '>>>',
+            '+',
+            '-',
+            '*',
+            '/',
+            '%'
+        );
+        private $opRegExp;
+
+        public function __construct() {
+            $this->opRegExp = '#^(' . implode('|', array_map('preg_quote', $this->opTypeNames)) . ')#';
+        }
+
+        public function init($source, $filename = '', $lineno = 1) {
+            $this->source = $source;
+            $this->filename = $filename
+                ? $filename
+                : '[inline]';
+            $this->lineno = $lineno;
+
+            $this->cursor = 0;
+            $this->tokens = array();
+            $this->tokenIndex = 0;
+            $this->lookahead = 0;
+            $this->scanNewlines = false;
+            $this->scanOperand = true;
+        }
+
+        public function getInput($chunksize) {
+            if ($chunksize)
+                return substr($this->source, $this->cursor, $chunksize);
+
+            return substr($this->source, $this->cursor);
+        }
+
+        public function isDone() {
+            return $this->peek() == TOKEN_END;
+        }
+
+        public function match($tt) {
+            return $this->get() == $tt || $this->unget();
+        }
+
+        public function mustMatch($tt) {
+            if (!$this->match($tt))
+                throw $this->newSyntaxError('Unexpected token; token ' . $tt . ' expected');
+
+            return $this->currentToken();
+        }
+
+        public function peek() {
+            if ($this->lookahead) {
+                $next = $this->tokens[($this->tokenIndex + $this->lookahead) & 3];
+                if ($this->scanNewlines && $next->lineno != $this->lineno)
+                    $tt = TOKEN_NEWLINE;
+                else
+                    $tt = $next->type;
+            } else {
+                $tt = $this->get();
+                $this->unget();
+            }
+
+            return $tt;
+        }
+
+        public function peekOnSameLine() {
+            $this->scanNewlines = true;
+            $tt = $this->peek();
+            $this->scanNewlines = false;
+
+            return $tt;
+        }
+
+        public function currentToken() {
+            if (!empty($this->tokens))
+                return $this->tokens[$this->tokenIndex];
+        }
+
+        public function get($chunksize = 1000) {
+            while ($this->lookahead) {
+                $this->lookahead--;
+                $this->tokenIndex = ($this->tokenIndex + 1) & 3;
+                $token = $this->tokens[$this->tokenIndex];
+                if ($token->type != TOKEN_NEWLINE || $this->scanNewlines)
+                    return $token->type;
+            }
+
+            $conditional_comment = false;
+
+            // strip whitespace and comments
+            while (true) {
+                $input = $this->getInput($chunksize);
+
+                // whitespace handling; gobble up \r as well (effectively we don't have support for MAC newlines!)
+                $re = $this->scanNewlines
+                    ? '/^[ \r\t]+/'
+                    : '/^\s+/';
+                if (preg_match($re, $input, $match)) {
+                    $spaces = $match[0];
+                    $spacelen = strlen($spaces);
+                    $this->cursor += $spacelen;
+                    if (!$this->scanNewlines)
+                        $this->lineno += substr_count($spaces, "\n");
+
+                    if ($spacelen == $chunksize)
+                        continue; // complete chunk contained whitespace
+
+                    $input = $this->getInput($chunksize);
+                    if ($input == '' || $input[0] != '/')
+                        break;
+                }
+
+                // Comments
+                if (!preg_match('/^\/(?:\*(@(?:cc_on|if|elif|else|end))?.*?\*\/|\/[^\n]*)/s', $input, $match)) {
+                    if (!$chunksize)
+                        break;
+
+                    // retry with a full chunk fetch; this also prevents breakage of long regular expressions (which will never match a comment)
+                    $chunksize = null;
+                    continue;
+                }
+
+                // check if this is a conditional (JScript) comment
+                if (!empty($match[1])) {
+                    $match[0] = '/*' . $match[1];
+                    $conditional_comment = true;
+                    break;
+                } else {
+                    $this->cursor += strlen($match[0]);
+                    $this->lineno += substr_count($match[0], "\n");
+                }
+            }
+
+            if ($input == '') {
+                $tt = TOKEN_END;
+                $match = array('');
+            } elseif ($conditional_comment) {
+                $tt = TOKEN_CONDCOMMENT_START;
+            } else {
+                switch ($input[0]) {
+                    case '0':
+                        // hexadecimal
+                        if (($input[1] == 'x' || $input[1] == 'X') && preg_match('/^0x[0-9a-f]+/i', $input, $match)) {
+                            $tt = TOKEN_NUMBER;
+                            break;
+                        }
+                    // FALL THROUGH
+
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                    case '8':
+                    case '9':
+                        // should always match
+                        preg_match('/^\d+(?:\.\d*)?(?:[eE][-+]?\d+)?/', $input, $match);
+                        $tt = TOKEN_NUMBER;
+                        break;
+
+                    case "'":
+                        if (preg_match('/^\'(?:[^\\\\\'\r\n]++|\\\\(?:.|\r?\n))*\'/', $input, $match)) {
+                            $tt = TOKEN_STRING;
+                        } else {
+                            if ($chunksize)
+                                return $this->get(null); // retry with a full chunk fetch
+
+                            throw $this->newSyntaxError('Unterminated string literal');
+                        }
+                        break;
+
+                    case '"':
+                        if (preg_match('/^"(?:[^\\\\"\r\n]++|\\\\(?:.|\r?\n))*"/', $input, $match)) {
+                            $tt = TOKEN_STRING;
+                        } else {
+                            if ($chunksize)
+                                return $this->get(null); // retry with a full chunk fetch
+
+                            throw $this->newSyntaxError('Unterminated string literal');
+                        }
+                        break;
+
+                    case '/':
+                        if ($this->scanOperand && preg_match('/^\/((?:\\\\.|\[(?:\\\\.|[^\]])*\]|[^\/])+)\/([gimy]*)/', $input, $match)) {
+                            $tt = TOKEN_REGEXP;
+                            break;
+                        }
+                    // FALL THROUGH
+
+                    case '|':
+                    case '^':
+                    case '&':
+                    case '<':
+                    case '>':
+                    case '+':
+                    case '-':
+                    case '*':
+                    case '%':
+                    case '=':
+                    case '!':
+                        // should always match
+                        preg_match($this->opRegExp, $input, $match);
+                        $op = $match[0];
+                        if (in_array($op, $this->assignOps) && $input[strlen($op)] == '=') {
+                            $tt = OP_ASSIGN;
+                            $match[0] .= '=';
+                        } else {
+                            $tt = $op;
+                            if ($this->scanOperand) {
+                                if ($op == OP_PLUS)
+                                    $tt = OP_UNARY_PLUS;
+                                elseif ($op == OP_MINUS)
+                                    $tt = OP_UNARY_MINUS;
+                            }
+                            $op = null;
+                        }
+                        break;
+
+                    case '.':
+                        if (preg_match('/^\.\d+(?:[eE][-+]?\d+)?/', $input, $match)) {
+                            $tt = TOKEN_NUMBER;
+                            break;
+                        }
+                    // FALL THROUGH
+
+                    case ';':
+                    case ',':
+                    case '?':
+                    case ':':
+                    case '~':
+                    case '[':
+                    case ']':
+                    case '{':
+                    case '}':
+                    case '(':
+                    case ')':
+                        // these are all single
+                        $match = array($input[0]);
+                        $tt = $input[0];
+                        break;
+
+                    case '@':
+                        // check end of conditional comment
+                        if (substr($input, 0, 3) == '@*/') {
+                            $match = array('@*/');
+                            $tt = TOKEN_CONDCOMMENT_END;
+                        } else
+                            throw $this->newSyntaxError('Illegal token');
+                        break;
+
+                    case "\n":
+                        if ($this->scanNewlines) {
+                            $match = array("\n");
+                            $tt = TOKEN_NEWLINE;
+                        } else
+                            throw $this->newSyntaxError('Illegal token');
+                        break;
+
+                    default:
+                        // FIXME: add support for unicode and unicode escape sequence \uHHHH
+                        if (preg_match('/^[$\w]+/', $input, $match)) {
+                            $tt = in_array($match[0], $this->keywords)
+                                ? $match[0]
+                                : TOKEN_IDENTIFIER;
+                        } else
+                            throw $this->newSyntaxError('Illegal token');
+                }
+            }
+
+            $this->tokenIndex = ($this->tokenIndex + 1) & 3;
+
+            if (!isset($this->tokens[$this->tokenIndex]))
+                $this->tokens[$this->tokenIndex] = new JSToken();
+
+            $token = $this->tokens[$this->tokenIndex];
+            $token->type = $tt;
+
+            if ($tt == OP_ASSIGN)
+                $token->assignOp = $op;
+
+            $token->start = $this->cursor;
+
+            $token->value = $match[0];
+            $this->cursor += strlen($match[0]);
+
+            $token->end = $this->cursor;
+            $token->lineno = $this->lineno;
+
+            return $tt;
+        }
+
+        public function unget() {
+            if (++$this->lookahead == 4)
+                throw $this->newSyntaxError('PANIC: too much lookahead!');
+
+            $this->tokenIndex = ($this->tokenIndex - 1) & 3;
+        }
+
+        public function newSyntaxError($m) {
+            return new Exception('Parse error: ' . $m . ' in file \'' . $this->filename . '\' on line ' . $this->lineno);
+        }
+    }
+}
+
+if (! class_exists("JSToken")) {
+    class JSToken {
+        public $type;
+        public $value;
+        public $start;
+        public $end;
+        public $lineno;
+        public $assignOp;
+    }
 }
