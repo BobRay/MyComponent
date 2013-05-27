@@ -384,11 +384,7 @@ $components = array(
     /* This only affects ExportObjects */
     'dryRun' => '0',
 
-    /* These settings control both Bootstrap and Export Objects */
-    'createTransportFiles' => true,  // remove??
-    'createObjectFiles' => true,    // remove??
-
-    /* Array of elements to export. All elements set above will be handled.
+    /* Array of elements to export. All elements set below will be handled.
      *
      * To export resources, be sure to list pagetitles and/or IDs of parents
      * of desired resources
@@ -404,7 +400,14 @@ $components = array(
         'systemSettings',
         'menus'
     ),
-    /*  Array  of pagetitles of resources to process. */
+    /*  Array  of resources to process. You can specify specific resources
+        or parent (container) resources, or both.
+
+        They can be specified by pagetitle or ID, but you must use the same method
+        for all settings and specify it here. Important: use IDs if you have
+        duplicate pagetitles */
+    'getResourcesById' => false,
+
     'exportResources' => array(
         'utResource1',
         'utResource2'

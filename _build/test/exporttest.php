@@ -4,7 +4,6 @@
  */
 include_once 'c:\xampp\htdocs\addons\assets\mycomponents\mycomponent\core\components\mycomponent\model\mycomponent\mycomponentproject.class.php';
 
-
 class ExportTest extends PHPUnit_Framework_TestCase
 {
     /**
@@ -83,13 +82,14 @@ class ExportTest extends PHPUnit_Framework_TestCase
         $this->mc = new MyComponentProject($modx);
         $this->mc->init(array(), 'unittest');
         $this->mc->createCategories();
+        $this->mc->createBasics();
         $this->modx =& $this->mc->modx;
 
         if ($this->mc->props['categories']['UnitTest']['category'] != 'UnitTest') {
             die('wrong config');
         }
         if (strstr($this->mc->targetRoot, 'unittest') ){
-            $this->utHelpers->rrmdir($this->mc->targetRoot);
+           // $this->utHelpers->rrmdir($this->mc->targetRoot);
 
         } else {
             die('Wrong Target Root!');
@@ -111,7 +111,7 @@ class ExportTest extends PHPUnit_Framework_TestCase
         $this->utHelpers->removeCategories($this->modx, $this->mc);
 
         if (strstr($this->mc->targetRoot, 'unittest')) {
-            $this->utHelpers->rrmdir($this->mc->targetRoot);
+           // $this->utHelpers->rrmdir($this->mc->targetRoot);
         } else {
             die('Not our Target Root!');
         }
@@ -146,19 +146,22 @@ class ExportTest extends PHPUnit_Framework_TestCase
 
     public function testProcessResources() {
 
-
-
+        $modx =& $this->modx;
         $this->mc->createResources();
         $this->mc->exportComponent();
-        $resources = $this->mc->props['exportResources'];
-        $this->assertNotEmpty($resources);
+        $res = $this->mc->props['exportResources'];
+        $this->assertNotEmpty($res);
         $fileName = $this->mc->targetRoot . '_build/data/transport.resources.php';
         $this->assertFileExists($fileName);
         $this->assertNotEmpty(file_get_contents($fileName));
-        $this->assertNotEmpty($resources);
-        foreach($resources as $k => $resource) {
+        $docs = include $this->mc->targetRoot . '_build/data/transport.resources.php';
+        $this->assertNotEmpty($docs);
+        $this->assertEquals(2, count($docs));
+        foreach($res as $k => $resource) {
             $this->assertNotEmpty($resource);
-            $fileName = $this->mc->targetRoot . '_build/data/resources/' . strtolower($resource) . '.content.html';
+            $fileName = $this->mc->helpers->getFileName($resource, 'modResource');
+            $this->assertNotEmpty($fileName);
+            $fileName = $this->mc->targetRoot . '_build/data/resources/' . $fileName;
             $this->assertFileExists($fileName);
             $content = file_get_contents($fileName);
             $this->assertNotEmpty($content);
@@ -189,9 +192,9 @@ class ExportTest extends PHPUnit_Framework_TestCase
 
         foreach ($elements as $elementName => $fields) {
             $this->assertNotEmpty($elementName);
-            $baseDir = $this->mc->targetRoot . '_build/';
-            $transportDir = $baseDir . 'data/' . strtolower($fields['category']) . '/';
-            $propertiesDir = $baseDir . 'data/properties/';
+            $baseDir = $this->mc->targetRoot . '_build/data/';
+            $transportDir = $baseDir . strtolower($fields['category']) . '/';
+            $propertiesDir = $baseDir . 'properties/';
 
             /* @var $elementObj modElement */
             $alias = $this->utHelpers->getNameAlias($class);
@@ -199,6 +202,7 @@ class ExportTest extends PHPUnit_Framework_TestCase
             $this->assertInstanceOf($class, $elementObj);
             $properties = $elementObj->getProperties();
             $this->assertNotEmpty($properties);
+            $this->assertEquals(4, count($properties));
             $fileName = $toProcess == 'templateVars'? 'tvs.php' : strtolower($toProcess) . '.php';
             $transportFileName = $transportDir . 'transport.' . $fileName;
             $this->assertFileExists($transportFileName);
