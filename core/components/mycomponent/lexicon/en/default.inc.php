@@ -38,6 +38,7 @@
 /* used in MyComponent or its included classes  */
 $_lang['mc_you_must_specify_a_project_name'] = 'You must specify a project name';
 $_lang['mc_project_already_exists'] = 'Project already exists';
+$_lang['mc_using'] = 'Using';
 
 /* used in Bootstrap or its included classes  */
 $_lang['mc_creating_cmp_class_file'] = 'Creating CMP class file';
@@ -57,7 +58,6 @@ $_lang['mc_cannot_find_self'] = 'Cannot find self';
 $_lang['mc_pluginresolver_empty'] = 'Plugin resolver is empty';
 $_lang['mc_propertysetresolvertpl_empty'] = 'PropertySet resolver is empty';
 $_lang['mc_tvresolvertpl_empty'] = 'TV resolver is empty';
-$_lang['mc_Updated'] = 'Updated';
 $_lang['mc_Creating'] = 'Creating';
 $_lang['mc_begin_file_content'] = '******** Begin File Content ********';
 $_lang['mc_end_file_content'] = '******** End File Content ********';
@@ -282,4 +282,4 @@ $_lang['mc_could_not_package_menu'] = 'Could not package menu';
 $_lang['mc_menu_items'] = 'menu items';
 $_lang['mc_package_built'] = 'Package Built';
 $_lang['mc_execution_time'] = 'Execution time';
-$_lang['mc_creating_js_min_files'] = 'Creating js-min file(s)';
+$_lang['mc_creating_js_min_files'] = 'Creating/updating js-min file(s)';
