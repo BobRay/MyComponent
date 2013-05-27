@@ -157,6 +157,11 @@ if (!class_exists('BuildHelper')) {
             $files = $this->getFiles();
             require dirname(__FILE__) . '/utilities/' . $minimizerFile;
 
+            $this->sendLog(MODX::LOG_LEVEL_INFO,
+                $this->modx->lexicon('mc_creating_js_min_files') .
+                ' (' . $this->modx->lexicon('mc_using') .
+                ' ' . $minClass . ')');
+
             foreach ($files as $fileName => $path) {
                 /* don't minify minimized files */
                 if (strpos($fileName, 'min.js') !== false) {
@@ -178,7 +183,8 @@ if (!class_exists('BuildHelper')) {
                 if ($fp) {
                     fwrite($fp, $code);
                     fclose($fp);
-                    $this->sendLog(modX::LOG_LEVEL_INFO, $this->modx->lexicon('mc_created')
+                    $this->sendLog(modX::LOG_LEVEL_INFO,
+                        $this->modx->lexicon('mc_updated')
                         . ': ' . $outFile);
                 } else {
                     $this->sendLog(modX::LOG_LEVEL_ERROR,
@@ -193,7 +199,8 @@ if (!class_exists('BuildHelper')) {
                 $fp = fopen($outFile, 'w');
                 if ($fp) {
                     fwrite($fp, $all);
-                    $this->sendLog(modX::LOG_LEVEL_INFO, $this->modx->lexicon('mc_created')
+                    $this->sendLog(modX::LOG_LEVEL_INFO,
+                        $this->modx->lexicon('mc_updated')
                         . ': ' . $outFile);
                     fclose($fp);
                 } else {
@@ -458,11 +465,7 @@ if ($hasContextSettings) {
 /* minify JS */
 
 if ($minifyJS) {
-    $helper->sendLog(modX::LOG_LEVEL_INFO,
-        $modx->lexicon('mc_creating_js_min_files'));
-
     $usePlus = $modx->getOption('useJSMinPlus', $props, false);
-
     $minimizer = $usePlus? 'jsminplus.class.php' : 'jsmin.class.php';
     $dir = $sources['source_assets'] . '/js';
     $jsAll = $modx->getOption('createJSMinAll', $props, false);
