@@ -7,7 +7,7 @@ include_once 'c:\xampp\htdocs\addons\assets\mycomponents\mycomponent\core\compon
 class ExportTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @outputBuffering disabled
+     * @outputBuffering enabled
      * @var $export Export
 
      */
@@ -277,4 +277,36 @@ class ExportTest extends PHPUnit_Framework_TestCase
         $this->utHelpers->removeSystemSettings($this->modx, $this->mc);
     }
 
+    public function testBuild() {
+        $this->mc->bootstrap();
+        $this->mc->exportComponent();
+        $path = $this->mc->myPaths['targetBuild'] . 'build.transport.php';
+        $this->assertFileExists($path);
+        $this->assertContains('unittest', $path);
+        $this->assertNotEmpty(MODX_CORE_PATH);
+        $packagePath = MODX_CORE_PATH . 'packages/unittest-1.0.0-beta1.transport.zip';
+        unlink ($packagePath);
+        include $path;
+        $this->assertFileExists($packagePath);
+        unlink($packagePath);
+        $packagePath=str_replace('.transport.zip', '', $packagePath);
+        $this->utHelpers->rrmdir($packagePath);
+    }
+
 }
+/*
+
+
+
+
+
+
+
+
+
+
+
+
+
+ssss
+*/
