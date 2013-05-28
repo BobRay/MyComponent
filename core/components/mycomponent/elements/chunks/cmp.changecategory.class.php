@@ -15,7 +15,7 @@
 
 // comment out the next line to make processor functional
 class mc_ElementChangeCategoryProcessor extends modProcessor {
-    public $classKey = 'mod[[+Element]]';
+    public $classKey = 'modmc_Element';
     public $languageTopics = array('[[+packageNameLower]]:default');
     
     public function process() {
@@ -34,13 +34,13 @@ return $this->modx->error->success();
         if (!empty($scriptProperties['category'])) {
             $category = $this->modx->getObject('modCategory',$scriptProperties['category']);
             if (empty($category)) {
-                return $this->failure($this->modx->lexicon('[[+element]].category_err_nf'));
+                return $this->failure($this->modx->lexicon('mc_element.category_err_nf'));
             }
         }
 
         /* iterate over mc_elements */
         /** @var $mc_element modElement */
-        $mc_elementIds = explode(',',$scriptProperties['[[+element]]s']);
+        $mc_elementIds = explode(',',$scriptProperties['mc_elements']);
         foreach ($mc_elementIds as $mc_elementId) {
             $mc_element = $this->modx->getObject($this->classKey,$mc_elementId);
             if ($mc_element == null) continue;
