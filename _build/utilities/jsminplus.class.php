@@ -63,113 +63,113 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+if (! defined('KEYWORD_WITH')) {
+    define('TOKEN_END', 1);
+    define('TOKEN_NUMBER', 2);
+    define('TOKEN_IDENTIFIER', 3);
+    define('TOKEN_STRING', 4);
+    define('TOKEN_REGEXP', 5);
+    define('TOKEN_NEWLINE', 6);
+    define('TOKEN_CONDCOMMENT_START', 7);
+    define('TOKEN_CONDCOMMENT_END', 8);
 
-define('TOKEN_END', 1);
-define('TOKEN_NUMBER', 2);
-define('TOKEN_IDENTIFIER', 3);
-define('TOKEN_STRING', 4);
-define('TOKEN_REGEXP', 5);
-define('TOKEN_NEWLINE', 6);
-define('TOKEN_CONDCOMMENT_START', 7);
-define('TOKEN_CONDCOMMENT_END', 8);
+    define('JS_SCRIPT', 100);
+    define('JS_BLOCK', 101);
+    define('JS_LABEL', 102);
+    define('JS_FOR_IN', 103);
+    define('JS_CALL', 104);
+    define('JS_NEW_WITH_ARGS', 105);
+    define('JS_INDEX', 106);
+    define('JS_ARRAY_INIT', 107);
+    define('JS_OBJECT_INIT', 108);
+    define('JS_PROPERTY_INIT', 109);
+    define('JS_GETTER', 110);
+    define('JS_SETTER', 111);
+    define('JS_GROUP', 112);
+    define('JS_LIST', 113);
 
-define('JS_SCRIPT', 100);
-define('JS_BLOCK', 101);
-define('JS_LABEL', 102);
-define('JS_FOR_IN', 103);
-define('JS_CALL', 104);
-define('JS_NEW_WITH_ARGS', 105);
-define('JS_INDEX', 106);
-define('JS_ARRAY_INIT', 107);
-define('JS_OBJECT_INIT', 108);
-define('JS_PROPERTY_INIT', 109);
-define('JS_GETTER', 110);
-define('JS_SETTER', 111);
-define('JS_GROUP', 112);
-define('JS_LIST', 113);
+    define('JS_MINIFIED', 999);
 
-define('JS_MINIFIED', 999);
+    define('DECLARED_FORM', 0);
+    define('EXPRESSED_FORM', 1);
+    define('STATEMENT_FORM', 2);
 
-define('DECLARED_FORM', 0);
-define('EXPRESSED_FORM', 1);
-define('STATEMENT_FORM', 2);
+    /* Operators */
+    define('OP_SEMICOLON', ';');
+    define('OP_COMMA', ',');
+    define('OP_HOOK', '?');
+    define('OP_COLON', ':');
+    define('OP_OR', '||');
+    define('OP_AND', '&&');
+    define('OP_BITWISE_OR', '|');
+    define('OP_BITWISE_XOR', '^');
+    define('OP_BITWISE_AND', '&');
+    define('OP_STRICT_EQ', '===');
+    define('OP_EQ', '==');
+    define('OP_ASSIGN', '=');
+    define('OP_STRICT_NE', '!==');
+    define('OP_NE', '!=');
+    define('OP_LSH', '<<');
+    define('OP_LE', '<=');
+    define('OP_LT', '<');
+    define('OP_URSH', '>>>');
+    define('OP_RSH', '>>');
+    define('OP_GE', '>=');
+    define('OP_GT', '>');
+    define('OP_INCREMENT', '++');
+    define('OP_DECREMENT', '--');
+    define('OP_PLUS', '+');
+    define('OP_MINUS', '-');
+    define('OP_MUL', '*');
+    define('OP_DIV', '/');
+    define('OP_MOD', '%');
+    define('OP_NOT', '!');
+    define('OP_BITWISE_NOT', '~');
+    define('OP_DOT', '.');
+    define('OP_LEFT_BRACKET', '[');
+    define('OP_RIGHT_BRACKET', ']');
+    define('OP_LEFT_CURLY', '{');
+    define('OP_RIGHT_CURLY', '}');
+    define('OP_LEFT_PAREN', '(');
+    define('OP_RIGHT_PAREN', ')');
+    define('OP_CONDCOMMENT_END', '@*/');
 
-/* Operators */
-define('OP_SEMICOLON', ';');
-define('OP_COMMA', ',');
-define('OP_HOOK', '?');
-define('OP_COLON', ':');
-define('OP_OR', '||');
-define('OP_AND', '&&');
-define('OP_BITWISE_OR', '|');
-define('OP_BITWISE_XOR', '^');
-define('OP_BITWISE_AND', '&');
-define('OP_STRICT_EQ', '===');
-define('OP_EQ', '==');
-define('OP_ASSIGN', '=');
-define('OP_STRICT_NE', '!==');
-define('OP_NE', '!=');
-define('OP_LSH', '<<');
-define('OP_LE', '<=');
-define('OP_LT', '<');
-define('OP_URSH', '>>>');
-define('OP_RSH', '>>');
-define('OP_GE', '>=');
-define('OP_GT', '>');
-define('OP_INCREMENT', '++');
-define('OP_DECREMENT', '--');
-define('OP_PLUS', '+');
-define('OP_MINUS', '-');
-define('OP_MUL', '*');
-define('OP_DIV', '/');
-define('OP_MOD', '%');
-define('OP_NOT', '!');
-define('OP_BITWISE_NOT', '~');
-define('OP_DOT', '.');
-define('OP_LEFT_BRACKET', '[');
-define('OP_RIGHT_BRACKET', ']');
-define('OP_LEFT_CURLY', '{');
-define('OP_RIGHT_CURLY', '}');
-define('OP_LEFT_PAREN', '(');
-define('OP_RIGHT_PAREN', ')');
-define('OP_CONDCOMMENT_END', '@*/');
+    define('OP_UNARY_PLUS', 'U+');
+    define('OP_UNARY_MINUS', 'U-');
 
-define('OP_UNARY_PLUS', 'U+');
-define('OP_UNARY_MINUS', 'U-');
-
-/* Keywords */
-define('KEYWORD_BREAK', 'break');
-define('KEYWORD_CASE', 'case');
-define('KEYWORD_CATCH', 'catch');
-define('KEYWORD_CONST', 'const');
-define('KEYWORD_CONTINUE', 'continue');
-define('KEYWORD_DEBUGGER', 'debugger');
-define('KEYWORD_DEFAULT', 'default');
-define('KEYWORD_DELETE', 'delete');
-define('KEYWORD_DO', 'do');
-define('KEYWORD_ELSE', 'else');
-define('KEYWORD_ENUM', 'enum');
-define('KEYWORD_FALSE', 'false');
-define('KEYWORD_FINALLY', 'finally');
-define('KEYWORD_FOR', 'for');
-define('KEYWORD_FUNCTION', 'function');
-define('KEYWORD_IF', 'if');
-define('KEYWORD_IN', 'in');
-define('KEYWORD_INSTANCEOF', 'instanceof');
-define('KEYWORD_NEW', 'new');
-define('KEYWORD_NULL', 'null');
-define('KEYWORD_RETURN', 'return');
-define('KEYWORD_SWITCH', 'switch');
-define('KEYWORD_THIS', 'this');
-define('KEYWORD_THROW', 'throw');
-define('KEYWORD_TRUE', 'true');
-define('KEYWORD_TRY', 'try');
-define('KEYWORD_TYPEOF', 'typeof');
-define('KEYWORD_VAR', 'var');
-define('KEYWORD_VOID', 'void');
-define('KEYWORD_WHILE', 'while');
-define('KEYWORD_WITH', 'with');
-
+    /* Keywords */
+    define('KEYWORD_BREAK', 'break');
+    define('KEYWORD_CASE', 'case');
+    define('KEYWORD_CATCH', 'catch');
+    define('KEYWORD_CONST', 'const');
+    define('KEYWORD_CONTINUE', 'continue');
+    define('KEYWORD_DEBUGGER', 'debugger');
+    define('KEYWORD_DEFAULT', 'default');
+    define('KEYWORD_DELETE', 'delete');
+    define('KEYWORD_DO', 'do');
+    define('KEYWORD_ELSE', 'else');
+    define('KEYWORD_ENUM', 'enum');
+    define('KEYWORD_FALSE', 'false');
+    define('KEYWORD_FINALLY', 'finally');
+    define('KEYWORD_FOR', 'for');
+    define('KEYWORD_FUNCTION', 'function');
+    define('KEYWORD_IF', 'if');
+    define('KEYWORD_IN', 'in');
+    define('KEYWORD_INSTANCEOF', 'instanceof');
+    define('KEYWORD_NEW', 'new');
+    define('KEYWORD_NULL', 'null');
+    define('KEYWORD_RETURN', 'return');
+    define('KEYWORD_SWITCH', 'switch');
+    define('KEYWORD_THIS', 'this');
+    define('KEYWORD_THROW', 'throw');
+    define('KEYWORD_TRUE', 'true');
+    define('KEYWORD_TRY', 'try');
+    define('KEYWORD_TYPEOF', 'typeof');
+    define('KEYWORD_VAR', 'var');
+    define('KEYWORD_VOID', 'void');
+    define('KEYWORD_WHILE', 'while');
+    define('KEYWORD_WITH', 'with');
+}
 
 if (! class_exists('JSMinPlus')) {
     class JSMinPlus {
