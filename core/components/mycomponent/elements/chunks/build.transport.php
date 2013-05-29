@@ -147,7 +147,7 @@ if (!class_exists('BuildHelper')) {
          * @param $dir string - dir to search (no trailing slash)
          * @param bool $createJsAll - If true, create packageNameLower . '-all-min.js'
          */
-        public function minify($minimizerFile, $dir, $createJsAll = false) {
+        public function mc_minify($minimizerFile, $dir, $createJsAll = false) {
             $dir = rtrim($dir, '/');
             $this->resetFiles();
             $all = '';
@@ -469,7 +469,7 @@ if ($minifyJS) {
     $minimizer = $usePlus? 'jsminplus.class.php' : 'jsmin.class.php';
     $dir = $sources['source_assets'] . '/js';
     $jsAll = $modx->getOption('createJSMinAll', $props, false);
-    $helper->minify($minimizer, $dir, $jsAll);
+    $helper->mc_minify($minimizer, $dir, $jsAll);
 }
 
 /* Create each Category and its Elements */
@@ -857,11 +857,6 @@ if ($hasMenu) {
             $builder->putVehicle($vehicle);
             unset($vehicle, $menu);
         }
-        $helper->sendLog(modX::LOG_LEVEL_INFO,
-            $modx->lexicon('mc_packaged')
-                . ' ' . count($menus) . ' ' .
-                $modx->lexicon('mc_menu_items')
-                . '.');
     }
     $helper->sendLog(modX::LOG_LEVEL_INFO,
         $modx->lexicon('mc_packaged')

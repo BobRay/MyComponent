@@ -8,8 +8,8 @@ set_time_limit(0);
 $mem_usage = memory_get_usage();
 
 /* @var $modx modX */
-if (! class_exists('BuildHelper')) {
-    class BuildHelper {
+if (! class_exists('PropHelper')) {
+    class PropHelper {
 
         public function __construct(&$modx) {
             $this->modx =& $modx;
@@ -101,7 +101,7 @@ if (! file_exists($configPath)) {
     session_write_close();
     die('Could not find project config file at: ' . $configPath);
 } else {
-    $helper = new BuildHelper($modx);
+    $helper = new PropHelper($modx);
     $props = $helper->getProps($configPath);
 }
 
@@ -116,5 +116,5 @@ if (! file_exists($transportPath)) {
     session_write_close();
     die('Could not find build.transport.php at: ' . $transportPath);
 }
-
+unset ($props);
 return include $transportPath;
