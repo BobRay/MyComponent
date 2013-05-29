@@ -587,9 +587,9 @@ class Helpers {
         $createJsAll = $this->modx->getOption('createJSMinAll', $this->props, false);
 
         $this->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
-            $this->modx->lexicon('mc_creating_js_min_files ('
+            $this->modx->lexicon('mc_creating_js_min_files') . '('
                 . $this->modx->lexicon('mc_using')
-                . ' ' . $minClass . ')'));
+                . ' ' . $minClass . ')');
         $dir = $this->getProp('targetRoot') . 'assets/components/' . $packageNameLower
             . '/js';
 
