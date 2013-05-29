@@ -2,17 +2,41 @@
 
 abstract class ElementAdapter extends ObjectAdapter {
 
+    /**
+     * @var
+     */
     protected $categoryId;
     // Database fields for the XPDO Object
+    /**
+     * @var $myFields array - Object's fields
+     */
     protected $myFields;
-    /* @var $modx modX */
+
+    /** @var $modx modX - $modx object */
     public $modx;
-    /* @var $helpers Helpers */
+
+    /** @var $helpers Helpers - $helpers object */
     public $helpers;
+
+    /**
+     * @var $categoryName string - Category Name
+     */
     public $categoryName;
-    public $content = null;  /* Content field contents */
+
+    /**
+     * @var $content string - contents of object's content field
+     */
+    public $content = null;
 
 
+    /**
+     * Class constructor
+     *
+     * @param modX $modx - $modx object referrence
+     * @param Helpers $helpers - $helpers object
+     * @param $fields array - Object fields
+     * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT
+     */
     public function __construct(&$modx, $helpers, $fields, $mode = MODE_BOOTSTRAP) {
 
         $this->modx =& $modx;
@@ -47,6 +71,10 @@ abstract class ElementAdapter extends ObjectAdapter {
         ObjectAdapter::$myObjects['ElementCategories'][$this->categoryName]['elements'][$this->dbClass][] = $fields;
     }
 
+    /**
+     * @param $fields array - Object fields
+     * @param $mode int - MODE_BOOTSTRAP, MODE_EXPORT
+     */
     public function setPropertySetResolver($fields, $mode) {
         if ($mode == MODE_BOOTSTRAP) {
             if (! isset($fields['propertySets'])) {
@@ -131,6 +159,11 @@ abstract class ElementAdapter extends ObjectAdapter {
         }
     }
 
+    /**
+     * Set thing up for ObjectAdapter to create transport files
+     * @param $helpers
+     * @param int $mode
+     */
     public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
         /* @var $helpers Helpers */
 
@@ -163,38 +196,20 @@ abstract class ElementAdapter extends ObjectAdapter {
         }
 
     }
+
+
     /**
-     * Gets the directory containing the code files for the element.
+     * Handle static elements before ObjectAdapter
+     * adds to MODX
      *
-     * @return string - full path for element code file (without filename or
-     *         trailing slash)
+     * @param bool $overwrite
+     * @return bool|int
      */
-
-    /*public function getCodeDir()
-    {//Get the path...
-        $path = $this->myComponent->myPaths['targetCore'] . 'elements/';
-    // Get the sub-directory according to type...
-        $type = $this->getClass();
-        $type = $type == 'modTemplateVar' ? 'modTv' : $type;
-        $type = strtolower(substr($type, 3) . 's');
-    // Append slash and return
-        return $path . $type . '/';
-    }*/
-
-
-/* *****************************************************************************
-   Bootstrap and Support Functions (in MODxObjectAdapter)
-***************************************************************************** */
-
-
-/* *****************************************************************************
-   Import Objects and Support Functions (in MODxObjectAdapter) 
-***************************************************************************** */
-
     public function addToMODx($overwrite = false) {
         unset($this->myFields['propertySets']);
         $fields = $this->myFields;
 
+        /* Handle static elements */
         if (isset($fields['static']) && !empty($fields['static'])) {
             $projectDir = str_replace(MODX_ASSETS_PATH . 'mycomponents/',
                 '',$this->helpers->props['targetRoot']);
@@ -214,108 +229,6 @@ abstract class ElementAdapter extends ObjectAdapter {
                 $this->modx->lexicon('mc_set_static_path_to')
                 . ' ' . $path);
         }
-        parent::addToMODx($overwrite);
-    }
-
-
-    /**
-     * Creates the code file for an element or resource - skips static elements
-     *
-     * @param $elementObj modElement - element MODX object
-     * @param $element - string name of element type ('plugin', 'snippet' etc.) used in dir name.
-     */
-
-
-    /**
-     * Writes the properties file for objects with properties
-     * (ToDo: move to objectAdapter class)
-     *
-     * @param $objectName string - name of object for use in filename
-     * @param $properties array - object properties as PHP array
-     * @param $mode int - MODE_BOOTSTRAP (no overwrite), MODE_EXPORT (overwrite)
-     * @param $dryRun bool - if set, output goes to stdout instead of file
-     */
-    public function writePropertiesFile($objectName, $properties, $mode = MODE_BOOTSTRAP, $dryRun = false) {
-        $dir = $this->helpers->props['targetRoot'] . '_build/data/properties/';
-        $fileName = $this->helpers->getFileName($this->getName(),
-            $this->dbClass, 'properties');
-        if (file_exists($dir . $fileName) && $mode != MODE_EXPORT) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
-                $this->modx->lexicon('mc_file_already_exists')
-                . ': ' . $fileName);
-        } else {
-            $tpl = $this->helpers->getTpl('propertiesfile.php');
-            $tpl = str_replace('[[+element]]',$objectName,$tpl);
-            $tpl = str_replace('[[+elementType]]', substr(strtolower($this->dbClass), 3), $tpl);
-
-            $tpl = $this->helpers->replaceTags($tpl);
-            $hastags = strpos($tpl, '<'.'?'.'php');
-            if ($hastags === false)
-                $tpl = '<'.'?'.'php'.$tpl;
-            $tpl .=  "\n\n" . $this->render_properties($properties) . "\n\n";
-
-            if ($dryRun) {
-                $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
-                    $this->modx->lexicon('mc_would_be_creating')
-                    . ': ' . $fileName . "\n");
-                $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
-                    $this->modx->lexicon('mc_begin_file_content'));
-            }
-            $this->helpers->writeFile($dir, $fileName, $tpl, $dryRun);
-            if ($dryRun) {
-                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, $this->modx->lexicon('mc_end_file_content')
-                . "\n");
-            }
-            unset($tpl);
-        }
-    }
-
-    /**
-     * Recursive function to write the code for the build properties file.
-     *
-     * @param $arr - array of properties
-     * @param $depth int - controls recursion
-     * @param int $tabWidth - tab width for code (uses spaces)
-     * @return string - code for the elements properties
-     */
-    private function render_properties( $arr, $depth=-1, $tabWidth=4) {
-
-        if ($depth == -1) {
-            /* this will only happen once */
-            $output = "\$properties = array( \n";
-            $depth++;
-        } else {
-            $output = "array( \n";
-        }
-        $indent = str_repeat( " ", $depth + $tabWidth );
-
-        foreach( $arr as $key => $val ) {
-            if ($key=='desc_trans' || $key == 'area_trans') {
-                continue;
-            }
-            /* No key for each property array */
-            $output .= $depth == 0? $indent : $indent . "'$key' => ";
-
-            if( is_array( $val ) && !empty($val) ) {
-                $output .= $this->render_properties( $val, $depth + $tabWidth );
-            } else {
-                $val = empty($val)? '': $val;
-                /* see if there are any single quotes */
-                $qc = "'";
-                if (strpos($val,$qc) !== false) {
-                    /* yes - change outer quote char to "
-                       and escape all " chars in string */
-                    $qc = '"';
-                    $val = str_replace($qc,'\"',$val);
-                }
-
-                $output .= $qc . $val . $qc . ",\n";
-            }
-        }
-        $output .= $depth?
-            $indent . "),\n"
-            : "\n);\n\nreturn \$properties;";
-
-        return $output;
+        return parent::addToMODx($overwrite);
     }
 }

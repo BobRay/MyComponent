@@ -2,24 +2,69 @@
 // Include the Base Class (only once)
 require_once('objectadapter.class.php');
 
-class ResourceAdapter extends ObjectAdapter
-{//These will never change.
+class ResourceAdapter extends ObjectAdapter {
+//These will never change.
 
+    /**
+     * @var $dbClass string - database class name
+     */
     protected $dbClass = 'modResource';
+
+    /**
+     * @var $dbClassIDKey string - name of primary key field
+     */
     protected $dbClassIDKey = 'id';
+
+    /**
+     * @var $dbClassNameKey string - name of "name" field
+     */
     protected $dbClassNameKey = 'pagetitle';
+
+    /**
+     * @var $dbClassParentKey string - name of parent field
+     */
     protected $dbClassParentKey = 'parent';
+
+    /**
+     * @var $createProcessor string - create processor path
+     */
     protected $createProcessor = 'resource/create';
+
+    /**
+     * @var $updateProcessor string - update processor path
+     */
     protected $updateProcessor = 'resource/update';
+
+    /**
+     * @var $defaults array - array of default settings
+     */
     protected $defaults = array();
+
+    /**
+     * @var $name string - object name
+     */
     protected $name;
-    /* @var $helpers Helpers */
+
+    /** @var $helpers Helpers */
     public $helpers;
-    /* @var $modx modX */
+
+    /** @var $modx modX */
     public $modx;
-// Database Columns for the XPDO Object
+
+    /**
+     * @var $myFields array - object fields
+     */
     protected $myFields;
 
+
+    /**
+     * Class constructor
+     *
+     * @param modX $modx - $modx object referrence
+     * @param Helpers $helpers - $helpers object
+     * @param $fields array - Object fields
+     * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT
+     */
 
     function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP) {
         /* @var $modx modX */
@@ -56,6 +101,12 @@ class ResourceAdapter extends ObjectAdapter
         ObjectAdapter::$myObjects['resources'][] = $fields;
     }
 
+    /**
+     * Prepare object for ObjectAdapter to write Resource resolver
+     *
+     * @param $fields
+     * @param $mode
+     */
     public function setResourceResolver($fields, $mode) {
         $resolverFields = array();
         $resolverFields['pagetitle'] = $fields['pagetitle'];
@@ -107,6 +158,7 @@ class ResourceAdapter extends ObjectAdapter
      * Converts object fields containing IDs to the names of the objects
      * represented by the IDs -- only executes on export.
      * @param $fields array
+     * @param $mode int
      */
     public function fieldsToNames(&$fields, $mode = MODE_BOOTSTRAP) {
         if (!empty($fields['parent'])) {
@@ -163,32 +215,34 @@ class ResourceAdapter extends ObjectAdapter
         }
     }
 
+    /**
+     * Create alias if empty before ObjectAdapter adds to MODX
+     * @param bool $overwrite
+     * @return bool|int
+     */
+    final public function addToMODx($overwrite = false) {
 
-/* *****************************************************************************
-   Import Objects and Support Functions
-***************************************************************************** */
-
-    final public function addToMODx($overwrite = false)
-    {//Perform default export implementation
         /* @var $modx modX */
         $fields =& $this->myFields;
 
         $this->fieldsToIds($fields);
 
-        /*if (isset($fields['tvValues'])) {
-            $tvValues = $fields['tvValues'];
-            unset($fields['tvValues']);
-        }*/
         if (!isset($fields['alias']) || empty($fields['alias'])) {
             $fields['alias'] = str_replace(' ', '-', strtolower($fields['pagetitle']));
         }
         $this->myFields = &$fields;
-        parent::addToMODx($overwrite);
-
-
-
+        return parent::addToMODx($overwrite);
     }
 
+    /**
+     * Create resource resolver from intersect objects
+     *
+     * @param $dir string - path to resolver dir
+     * @param $intersects array - array of intersect objects
+     * @param $helpers Helpers - $helpers object
+     * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT
+     * @return bool - success or failure
+     */
     public static function createResolver($dir, $intersects, $helpers, $mode = MODE_BOOTSTRAP) {
 
         /* Create resource.resolver.php resolver */
@@ -219,6 +273,13 @@ class ResourceAdapter extends ObjectAdapter
         return true;
     }
 
+    /**
+     * Get array of resources for ObjectAdapter to use in creating
+     * transport file
+     *
+     * @param $helpers
+     * @param int $mode
+     */
     public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
         /* @var $helpers Helpers */
         $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
@@ -228,6 +289,15 @@ class ResourceAdapter extends ObjectAdapter
     }
 
 
+    /**
+     * Exports Resources from MODX to build files
+     * Removes objects if $mode == MODE_REMOVE
+     *
+     * @param $modx modX - $modx->object
+     * @param $helpers Helpers - $helpers object
+     * @param $props array - $scriptProperties array
+     * @param int $mode - MODX_BOOTSTRAP, MODE_EXPORT, MODE_REMOVE
+     */
     static function exportResources(&$modx, &$helpers, $props, $mode = MODE_EXPORT) {
         /* @var $modx modX */
         /* @var $helpers Helpers */
@@ -300,103 +370,5 @@ class ResourceAdapter extends ObjectAdapter
             $helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[ResourceAdapter] ' .
                 $helpers->modx->lexicon('mc_no_resources_found'));
         }
-    }
-
-    /**
-     * Writes the properties file for objects with properties
-     * (ToDo: move to objectAdapter class)
-     *
-     * @param $objectName string - name of object for use in filename
-     * @param $properties array - object properties as PHP array
-     * @param $mode int - MODE_BOOTSTRAP (no overwrite), MODE_EXPORT (overwrite)
-     * @param $dryRun bool - if set, output goes to stdout instead of file
-     */
-    public function writePropertiesFile($objectName, $properties, $mode = MODE_BOOTSTRAP, $dryRun = false) {
-        $dir = $this->helpers->props['targetRoot'] . '_build/data/properties/';
-        $fileName = $this->helpers->getFileName($this->getName(),
-            $this->dbClass, 'properties');
-        if (file_exists($dir . $fileName) && $mode != MODE_EXPORT) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
-                $this->modx->lexicon('mc_file_already_exists')
-                . ': ' . $fileName);
-        } else {
-            $tpl = $this->helpers->getTpl('propertiesfile.php');
-            $tpl = str_replace('[[+element]]', $objectName, $tpl);
-            $tpl = str_replace('[[+elementType]]', substr(strtolower($this->dbClass), 3), $tpl);
-
-            $tpl = $this->helpers->replaceTags($tpl);
-            $hastags = strpos($tpl, '<' . '?' . 'php');
-            if ($hastags === false)
-                $tpl = '<' . '?' . 'php' . $tpl;
-            $tpl .= "\n\n" . $this->render_properties($properties) . "\n\n";
-
-            if ($dryRun) {
-                $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
-                    $this->modx->lexicon('mc_would_be_creating')
-                        . ': ' . $fileName . "\n");
-                $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
-                    $this->modx->lexicon('mc_begin_file_content'));
-            }
-            $this->helpers->writeFile($dir, $fileName, $tpl, $dryRun);
-            if ($dryRun) {
-                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, $this->modx->lexicon('mc_end_file_content')
-                    . "\n");
-            }
-            unset($tpl);
-        }
-    }
-
-    /**
-     * Recursive function to write the code for the build properties file.
-     *
-     * @param $arr - array of properties
-     * @param $depth int - controls recursion
-     * @param int $tabWidth - tab width for code (uses spaces)
-     * @return string - code for the elements properties
-     */
-    private function render_properties($arr, $depth = -1, $tabWidth = 4) {
-
-        if ($depth == -1) {
-            /* this will only happen once */
-            $output = "\$properties = array( \n";
-            $depth++;
-        } else {
-            $output = "array( \n";
-        }
-        $indent = str_repeat(" ", $depth + $tabWidth);
-
-        foreach ($arr as $key => $val) {
-            if ($key == 'desc_trans' || $key == 'area_trans') {
-                continue;
-            }
-            /* No key for each property array */
-            $output .= $depth == 0
-                ? $indent
-                : $indent . "'$key' => ";
-
-            if (is_array($val) && !empty($val)) {
-                $output .= $this->render_properties($val, $depth + $tabWidth);
-            } else {
-                $val = empty($val)
-                    ? ''
-                    : $val;
-                /* see if there are any single quotes */
-                $qc = "'";
-                if (strpos($val, $qc) !== false) {
-                    /* yes - change outer quote char to "
-                       and escape all " chars in string */
-                    $qc = '"';
-                    $val = str_replace($qc, '\"', $val);
-                }
-
-                $output .= $qc . $val . $qc . ",\n";
-            }
-        }
-        $output .= $depth
-            ?
-            $indent . "),\n"
-            : "\n);\n\nreturn \$properties;";
-
-        return $output;
     }
 }

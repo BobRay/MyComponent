@@ -225,10 +225,6 @@ abstract class ObjectAdapter {
         return 'properties.' . $this->getSafeName() . '.' . $this->getSafeClass() . '.php';
     }
 
-/* *****************************************************************************
-   Bootstrap and Support Functions 
-***************************************************************************** */
-
 
     /**
      * Add a new object to MODX
@@ -311,9 +307,9 @@ abstract class ObjectAdapter {
                 unset($this->myFields['tvValues']);
             }
             /* sets appropriate content field for elements and resources */
-            //if (!isset($this->myFields['static']) || empty($this->myFields['static'])) {
+
             $this->setContentField($name, $this->dbClass);
-            //}
+
             if (isset($this->myFields['filename'])) {
                 $tempFilename = $this->myFields['filename'];
                 unset($this->myFields['filename']);
@@ -368,6 +364,7 @@ abstract class ObjectAdapter {
         }
     }
 
+
     /**
      * Remove object from MODX DB
      */
@@ -397,6 +394,7 @@ abstract class ObjectAdapter {
                         . ' ' . $objClass . ': ' . $name);
         }
     }
+
     /**
      *  Set the content field for resources and elements
      *  during Bootstrap
@@ -703,6 +701,95 @@ abstract class ObjectAdapter {
 
         }
         return $tpl;
+    }
+
+    public function writePropertiesFile($objectName, $properties, $mode = MODE_BOOTSTRAP, $dryRun = false) {
+        $dir = $this->helpers->props['targetRoot'] . '_build/data/properties/';
+        $fileName = $this->helpers->getFileName($this->getName(),
+            $this->dbClass, 'properties');
+        if (file_exists($dir . $fileName) && $mode != MODE_EXPORT) {
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                $this->modx->lexicon('mc_file_already_exists')
+                . ': ' . $fileName);
+        } else {
+            $tpl = $this->helpers->getTpl('propertiesfile.php');
+            $tpl = str_replace('[[+element]]', $objectName, $tpl);
+            $tpl = str_replace('[[+elementType]]', substr(strtolower($this->dbClass), 3), $tpl);
+
+            $tpl = $this->helpers->replaceTags($tpl);
+            $hastags = strpos($tpl, '<' . '?' . 'php');
+            if ($hastags === false)
+                $tpl = '<' . '?' . 'php' . $tpl;
+            $tpl .= "\n\n" . $this->render_properties($properties) . "\n\n";
+
+            if ($dryRun) {
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
+                    $this->modx->lexicon('mc_would_be_creating')
+                    . ': ' . $fileName . "\n");
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
+                    $this->modx->lexicon('mc_begin_file_content'));
+            }
+            $this->helpers->writeFile($dir, $fileName, $tpl, $dryRun);
+            if ($dryRun) {
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, $this->modx->lexicon('mc_end_file_content')
+                    . "\n");
+            }
+            unset($tpl);
+        }
+    }
+
+    /**
+     * Recursive function to write the code for the build properties file.
+     *
+     * @param $arr - array of properties
+     * @param $depth int - controls recursion
+     * @param int $tabWidth - tab width for code (uses spaces)
+     * @return string - code for the elements properties
+     */
+    private function render_properties($arr, $depth = -1, $tabWidth = 4) {
+
+        if ($depth == -1) {
+            /* this will only happen once */
+            $output = "\$properties = array( \n";
+            $depth++;
+        } else {
+            $output = "array( \n";
+        }
+        $indent = str_repeat(" ", $depth + $tabWidth);
+
+        foreach ($arr as $key => $val) {
+            if ($key == 'desc_trans' || $key == 'area_trans') {
+                continue;
+            }
+            /* No key for each property array */
+            $output .= $depth == 0
+                ? $indent
+                : $indent . "'$key' => ";
+
+            if (is_array($val) && !empty($val)) {
+                $output .= $this->render_properties($val, $depth + $tabWidth);
+            } else {
+                $val = empty($val)
+                    ? ''
+                    : $val;
+                /* see if there are any single quotes */
+                $qc = "'";
+                if (strpos($val, $qc) !== false) {
+                    /* yes - change outer quote char to "
+                       and escape all " chars in string */
+                    $qc = '"';
+                    $val = str_replace($qc, '\"', $val);
+                }
+
+                $output .= $qc . $val . $qc . ",\n";
+            }
+        }
+        $output .= $depth
+            ?
+            $indent . "),\n"
+            : "\n);\n\nreturn \$properties;";
+
+        return $output;
     }
 
 }
