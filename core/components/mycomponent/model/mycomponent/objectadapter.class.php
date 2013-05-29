@@ -717,6 +717,9 @@ abstract class ObjectAdapter {
             $tpl = str_replace('[[+elementType]]', substr(strtolower($this->dbClass), 3), $tpl);
 
             $tpl = $this->helpers->replaceTags($tpl);
+            /* Add php tag if not there. Some servers balk
+               if they see an intact php tag.
+            */
             $hastags = strpos($tpl, '<' . '?' . 'php');
             if ($hastags === false)
                 $tpl = '<' . '?' . 'php' . $tpl;
@@ -739,55 +742,14 @@ abstract class ObjectAdapter {
     }
 
     /**
-     * Recursive function to write the code for the build properties file.
-     *
-     * @param $arr - array of properties
-     * @param $depth int - controls recursion
-     * @param int $tabWidth - tab width for code (uses spaces)
+     * Function to write the code for the build properties file.
+     * @param $arr array - array of properties
      * @return string - code for the elements properties
      */
-    private function render_properties($arr, $depth = -1, $tabWidth = 4) {
-
-        if ($depth == -1) {
-            /* this will only happen once */
-            $output = "\$properties = array( \n";
-            $depth++;
-        } else {
-            $output = "array( \n";
-        }
-        $indent = str_repeat(" ", $depth + $tabWidth);
-
-        foreach ($arr as $key => $val) {
-            if ($key == 'desc_trans' || $key == 'area_trans') {
-                continue;
-            }
-            /* No key for each property array */
-            $output .= $depth == 0
-                ? $indent
-                : $indent . "'$key' => ";
-
-            if (is_array($val) && !empty($val)) {
-                $output .= $this->render_properties($val, $depth + $tabWidth);
-            } else {
-                $val = empty($val)
-                    ? ''
-                    : $val;
-                /* see if there are any single quotes */
-                $qc = "'";
-                if (strpos($val, $qc) !== false) {
-                    /* yes - change outer quote char to "
-                       and escape all " chars in string */
-                    $qc = '"';
-                    $val = str_replace($qc, '\"', $val);
-                }
-
-                $output .= $qc . $val . $qc . ",\n";
-            }
-        }
-        $output .= $depth
-            ?
-            $indent . "),\n"
-            : "\n);\n\nreturn \$properties;";
+    private function render_properties($arr) {
+        $output =  '$properties = ';
+        $output .= var_export($arr, true);
+        $output .= ";\n\nreturn \$properties;";
 
         return $output;
     }
