@@ -69,13 +69,15 @@
  *
  * or This form:
  *
- *#      $modx->lexicon('language_string_key');
- *#      $modx->lexicon("language_string_key");
+ *#      $modx->lexicon('language_string_key~~value to use');
+ *#      $modx->lexicon("language_string_key~~value to use");
  *
  * Use no spaces in the key (the left side).
  *
  *
- * With the first version, LexiconHelper will create a lexicon entry with a blank value.
+ * With the first version, LexiconHelper will create a lexicon
+ * entry with a blank value.
+ *
  * With the second version, LexiconHelper will fill in the value as well.
  *
  * You have the option to rewrite the language file to append the new strings.
