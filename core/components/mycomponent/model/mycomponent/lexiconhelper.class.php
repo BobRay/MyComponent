@@ -96,7 +96,7 @@ class LexiconHelper {
             die('Could not find Project Config file at: ' . $projectConfigPath);
         }
 
-        /* Make sure that we get usable values */
+        /* Make sure that we have usable values */
         if (!is_array($properties) or empty($properties)) {
             session_write_close();
             die('Config File was not set up correctly: ' . $projectConfigPath);
@@ -139,10 +139,12 @@ class LexiconHelper {
     }
 
     public function run() {
+        $elements = array();
+
+        /* get all plugins and snippets from config file */
         $snippets = $this->modx->getOption('snippets',
             $this->helpers->getProp('elements', array()), array());
-        $elements = array();
-        /* get all plugins and snippets from config file */
+
         foreach ($snippets as $snippet => $fields) {
             if (isset($fields['name'])) {
                 $snippet = $fields['name'];
@@ -161,7 +163,7 @@ class LexiconHelper {
             $this->helpers->getProp('elements', array()), array());
         foreach ($chunks as $chunk => $fields) {
             if (isset($fields['name'])) {
-                $plugin = $fields['name'];
+                $chunk = $fields['name'];
             }
             $elements[trim($chunk)] = 'modChunk';
         }
@@ -193,6 +195,9 @@ class LexiconHelper {
             $this->helpers->dirWalk($dir, 'js', true);
             $jsFiles = $this->helpers->getFiles();
             foreach($jsFiles as $fileName => $directory) {
+                if (strstr($fileName, '-min')) {
+                    continue;
+                }
                 $elements[$directory . '/' . $fileName] = 'jsFile';
             }
         }
@@ -261,7 +266,7 @@ class LexiconHelper {
         $lexPropStrings = $this->getLexiconPropertyStrings();
         $this->checkPropertyDescriptions($lexPropStrings);
 
-        /* remove ~~lexString from files is set in project config */
+        /* remove ~~lexString from files if set in project config */
 
         $rewriteFiles = $this->modx->getOption('rewriteCodeFiles', $this->props, false);
         if ($rewriteFiles) {
@@ -288,12 +293,6 @@ class LexiconHelper {
             $fileName = strtolower($fileName);
             $fullPath = $this->targetCore . 'elements/snippets/' . $fileName;
             $this->rewriteFile($fullPath, 'modScript');
-            /*$propsFileName = $this->helpers->getFileName($name, 'modSnippet', 'properties');
-            $propsFilePath = $this->targetBase . '_build/data/properties/' . $propsFileName;
-            if (file_exists($propsFilePath)) {
-                $this->rewriteFile($propsFilePath);
-            }*/
-
         }
         $plugins = $this->modx->getOption('plugins',
             $this->helpers->getProp('elements', array()), array());
@@ -304,11 +303,6 @@ class LexiconHelper {
             $fileName = strtolower($fileName);
             $fullPath = $this->targetCore . 'elements/plugins/' . $fileName;
             $this->rewriteFile($fullPath, 'modScript');
-            /*$propsFileName = $this->helpers->getFileName($name, 'modPlugin', 'properties');
-            $propsFilePath = $this->targetBase . '_build/data/properties/' . $propsFileName;
-            if (file_exists($propsFilePath)) {
-                $this->rewriteFile($propsFilePath);
-            }*/
         }
 
         foreach ($templates as $template => $fields) {
@@ -322,12 +316,6 @@ class LexiconHelper {
             $fileName = strtolower($fileName);
             $fullPath = $this->targetCore . 'elements/templates/' . $fileName;
             $this->rewriteFile($fullPath, 'modTemplate');
-            /*$propsFileName = $this->helpers->getFileName($name, 'modtemplate', 'properties');
-            $propsFilePath = $this->targetBase . '_build/data/properties/' . $propsFileName;
-            if (file_exists($propsFilePath)) {
-                $this->rewriteFile($propsFilePath);
-            }*/
-
         }
 
         foreach ($chunks as $chunk => $fields) {
@@ -341,14 +329,7 @@ class LexiconHelper {
             $fileName = strtolower($fileName);
             $fullPath = $this->targetCore . 'elements/chunks/' . $fileName;
             $this->rewriteFile($fullPath, 'modChunk');
-            /*$propsFileName = $this->helpers->getFileName($name, 'modChunk', 'properties');
-            $propsFilePath = $this->targetBase . '_build/data/properties/' . $propsFileName;
-            if (file_exists($propsFilePath)) {
-                $this->rewriteFile($propsFilePath);
-            }*/
         }
-
-
 
         foreach($this->classFiles as $name => $path) {
             $this->rewriteFile($path . '/' . $name, 'modScript');
