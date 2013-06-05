@@ -61,6 +61,10 @@ class LexiconCodeFile {
     /** @var array $toUpdate - lex entries that have been updated */
     public $toUpdate = array();
 
+    /** @var int $squigglesFound - count of squiggles tokens (~~) found */
+    public $squigglesFound = 0;
+
+
 
     /**
      * @param $modx modX - $modx object
@@ -74,7 +78,6 @@ class LexiconCodeFile {
         $this->helpers = $helpers;
         $this->path = rtrim($path, '/\\');
         $this->fileName = $fileName;
-        // $this->addCodeFile($path, $fileName);
         $this->setLanguage();
         $this->lexDir = rtrim($lexDir, '/\\');
         $this->lexDir = strtolower(str_replace('\\','/', $this->lexDir));
@@ -121,6 +124,10 @@ class LexiconCodeFile {
 
     public function getToUpdate() {
         return $this->toUpdate;
+    }
+
+    public function getSquiggleCount() {
+        return $this->squigglesFound;
     }
 
     /* Setters */
@@ -196,44 +203,46 @@ class LexiconCodeFile {
             $this->used = array();
             if (strpos($this->fileName, '.php') !== false) {
                 $type = 'php';
-                $pattern = '#modx->lexicon\s*\s*\(\s*[\'\"]([^\)]*)[\'\"]#';
+                $pattern = '#modx->lexicon\s*\(\s*(\'|\")(.*)\1\)#';
             } elseif (strpos($this->fileName, '.js') !== false) {
                 $type = 'js';
-                $pattern = '#_\(\s*[\'\"](.*)[\'\"]\)#';
+                $pattern = '#_\(\s*(\'|\")(.*)\1\)#';
             } else {
                 $type = 'text';
-                $pattern = '#\[\[!*%([^\?&\]]*)#';
+                $pattern = '#(\[\[)!*%([^\?&\]]*)#';
             }
 
-            /* Iterate over lines to rind lexicon strings
+            /* Iterate over lines to find lexicon strings
                in code file */
 
             $lines = $this->content;
             foreach ($lines as $line) {
-                if (($type == 'php') && (!strpos($line, 'modx->lexicon'))) {
+                if (($type == 'php') && (strpos($line, 'modx->lexicon') === false)) {
                     continue;
                 }
-                if (($type == 'js') && (!strpos($line, '_('))) {
+                if (($type == 'js') && (strpos($line, '_(') === false)) {
                     continue;
                 }
-                if ($type == 'text') {
-                    if (($type == 'js') && (!strpos($line, '[['))) {
-                        continue;
-                    }
+                if (($type == 'text') && (strpos($line, '[[%') === false) && (strpos($line, '[[!%') === false)) {
+                    continue;
                 }
+
+
                 $matches = array();
                 preg_match($pattern, $line, $matches);
-                if (isset($matches[1]) && !empty($matches[1])) {
-                    if (strstr($matches[1], '~~')) {
-                        $s = explode('~~', $matches[1]);
+                if (isset($matches[2]) && !empty($matches[2])) {
+                    // $matches[1] = trim($matches[1], '\"\'');
+                    if (strstr($matches[2], '~~')) {
+                        $this->squigglesFound++;
+                        $s = explode('~~', $matches[2]);
                         $lexString = $s[0];
                         $value = $s[1];
                     } else {
-                        $lexString = $matches[1];
+                        $lexString = $matches[2];
                         $value = '';
                     }
 
-                    $this->used[$lexString] = $value;
+                   $this->used[$lexString] = $value;
                 }
             }
         }
@@ -264,16 +273,6 @@ class LexiconCodeFile {
     public function hasError() {
         return !empty($this->errors);
     }
-
-    /*public function addCodeFile($path, $fileName) {
-        $path = rtrim($path, '/\\');
-        $path .= '/' . $fileName;
-        if (!array_key_exists($path, $this->codeFiles)) {
-            $this->codeFiles[$path] = $fileName;
-        }
-
-    }*/
-
 
     public function addLexFile($fqn) {
         $fqn = $this->getLexFqn($fqn);
@@ -337,7 +336,11 @@ class LexiconCodeFile {
         if (!empty($this->missing)) {
             $code = '';
             foreach($this->missing as $key => $value) {
-                $code .= "\n\$_lang['" . $key . "'] = " . var_export($value, true) . ';';
+                $key = var_export($key, true);
+                $value = var_export($value, true);
+                $value = str_replace("\\\\\\", '\\', $value);
+                $value = str_replace("\\\\", '', $value);
+                $code .= "\n\$_lang[$key] = " . $value . ';';
             }
 
             $comment = $comment = '/* used in ' . $this->fileName . ' */';
@@ -366,17 +369,21 @@ class LexiconCodeFile {
 
         /* Update Changed strings */
 
-        /* This may have changed */
 
         if (!empty($this->toUpdate)) {
+            /* This may have changed */
             $content = file_get_contents($path);
 
             foreach($this->toUpdate as $key => $value) {
-                $pattern = '#\$_lang\[["\']' .
-                    $key . '[^=]+=\s([\'"][^\'"]*[\'"])#';
+
+                $pattern = '#\$_lang\[[\"\']' . $key . '[^=]+=\s*([^;]+);#';
                 preg_match($pattern, $content, $matches);
+
                 if (isset($matches[1])) {
-                    $replace = str_replace($matches[1], var_export($value,true),
+                    $value = var_export($value, true);
+                    $value = str_replace('\\\\\\', '\\', $value);
+                    $value = str_replace("\\\\", '', $value);
+                    $replace = str_replace($matches[1], $value,
                         $matches[0]);
                     $content = str_replace($matches[0], $replace, $content);
                 }
@@ -390,7 +397,42 @@ class LexiconCodeFile {
     }
 
     public function updateCodeFile() {
+        if (empty($this->squigglesFound)) {
+            return 0;
+        }
+        $fileName = $this->fileName;
+        $fullPath = $this->path . '/' .  $fileName;
+        $content = file_get_contents($fullPath);
 
+         $type = (strpos($fileName, '.php') !== false) || (strpos($fileName, '.js') !== false)
+             ? 'modScript'
+             : 'text';
+
+        /* Need to handle trailing quote in scripts.
+           Files with tags have no trailing quote */
+        if (strpos($content, '~~') !== false) {
+            /* .php and .js files */
+            if ($type == 'modScript') {
+                $pattern = '/~~.*([\'\"][\),])/';
+                $replace = '$1';
+            } else {
+                /* text files */
+                $pattern = '/~~[^\]\?&]+/';
+                $replace = '';
+            }
+
+            $content = preg_replace($pattern, $replace, $content);
+
+            if (!empty($content)) {
+                $fp = fopen($fullPath, 'w');
+                if ($fp) {
+                    fwrite($fp, $content);
+                    fclose($fp);
+                }
+
+            }
+        }
+
+        return $this->squigglesFound;
     }
-
 }

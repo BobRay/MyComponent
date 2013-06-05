@@ -139,7 +139,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
     }
 
     protected function tearDown() {
-        $this->utHelpers->rrmdir($this->rootDir);
+        // $this->utHelpers->rrmdir($this->rootDir);
     }
 
     public function testSetup() {
@@ -194,6 +194,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
         );
         foreach ($files as $dir => $fileName) {
             $lcf = null;
+            $this->assertFileExists($dir . '/' . $fileName);
             $lcf = new LexiconCodeFile($this->modx, $this->mc->helpers,
                 $dir, $fileName, $this->lexDir, $this->languages);
             $lexStrings = $lcf->getUsed();
@@ -202,9 +203,8 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
             $this->assertTrue(array_key_exists('string1', $lexStrings));
             $this->assertTrue(array_key_exists('string2', $lexStrings));
             $this->assertTrue(array_key_exists('string3', $lexStrings));
-            $this->AssertTrue($lexStrings['string1'] == 'Hello');
-            $this->AssertTrue($lexStrings['string2'] == 'Goodbye');
-            // $this->AssertTrue($lexStrings['string3'] == 'Updated Empty String');
+            $this->assertEquals($lexStrings['string1'], 'Hello \'columbus\'', $fileName);
+            $this->assertEquals($lexStrings['string2'], 'Hello "columbus"');
         }
     }
 
@@ -216,6 +216,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
         );
         foreach ($files as $dir => $fileName) {
             $lcf = null;
+            $this->assertFileExists($dir . '/' . $fileName);
             $lcf = new LexiconCodeFile($this->modx, $this->mc->helpers,
                 $dir, $fileName, $this->lexDir, $this->languages);
             $lexStrings = $lcf->getUsed();
@@ -223,7 +224,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
             $toUpdate = $lcf->getToUpdate();
 
             $this->assertTrue(is_array($lexStrings));
-            $this->assertNotEmpty($lexStrings);
+            $this->assertNotEmpty($lexStrings, $fileName);
             $this->assertTrue(is_array($missing));
             $this->assertNotEmpty($missing);
             $this->assertTrue(is_array($toUpdate));
@@ -232,12 +233,11 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
 
             $this->assertTrue(array_key_exists('string1', $missing));
             $this->assertTrue(array_key_exists('string3', $missing));
-            $this->AssertTrue($lexStrings['string1'] == 'Hello');
-            $this->AssertTrue($lexStrings['string2'] == 'Goodbye');
-            // $this->AssertTrue($lexStrings['string3'] == '');
+            $this->assertEquals('Hello \'columbus\'', $lexStrings['string1']);
+            $this->assertEquals('Hello "columbus"', $lexStrings['string2']);
 
             $expected = array(
-                'string2' => 'Goodbye',
+                'string2' => 'Hello "columbus"',
                 'string4' => 'Updated String',
             );
             if ($fileName == 'chunk1.chunk.html') {
@@ -266,6 +266,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
         );
         foreach ($files as $dir => $fileName) {
             $lcf = null;
+            $this->assertFileExists($dir . '/' . $fileName);
             $lcf = new LexiconCodeFile($this->modx, $this->mc->helpers,
                 $dir, $fileName, $this->lexDir, $this->languages);
             $lcf->updateLexiconFile();
@@ -274,22 +275,59 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
             $this->assertNotEmpty($_lang);
             switch ($fileName) {
                 case 'example.class.php':
-                    $this->assertEquals($_lang['string2'], 'Goodbye');
-                    $this->assertEquals($_lang['string4'], 'String4 in Lexicon file');
-                    $this->assertEquals($_lang['unused'], 'Unused Lexicon String');
-                    $this->assertEquals($_lang['empty_string'], '');
-                    $this->assertEquals($_lang['string1'], 'Hello');
-                    $this->assertEquals($_lang['string3'], '');
+                    $this->assertEquals('Hello "columbus"', $_lang['string2']);
+                    $this->assertEquals('Hello \'columbus\'', $_lang['string4']);
+                    $this->assertEquals('Unused Lexicon String', $_lang['unused']);
+                    $this->assertEquals('', $_lang['empty_string']);
+                    $this->assertEquals('Hello \'columbus\'', $_lang['string1']);
+                    $this->assertEquals('', $_lang['string3']);
                     break;
                 case 'example.js':
                     break;
                 case 'chunk1.chunk.html':
-                    $this->assertEquals($_lang['string4'], 'Updated String');
-                    $this->assertEquals($_lang['string3'], 'Updated Empty string');
+                    $this->assertEquals('Updated String', $_lang['string4']);
+                    $this->assertEquals('Updated Empty string', $_lang['string3']);
                     break;
                 default:
                     assertTrue(false);
             }
         }
     }
+
+    public function testUpdateCodeFile() {
+        $files = array(
+            $this->modelDir => 'example.class.php',
+            $this->jsDir => 'example.js',
+            $this->chunkDir => 'chunk1.chunk.html',
+        );
+        foreach ($files as $dir => $fileName) {
+            $lcf = null;
+            $this->assertFileExists($dir . '/' . $fileName);
+            $lcf = new LexiconCodeFile($this->modx, $this->mc->helpers,
+                $dir, $fileName, $this->lexDir, $this->languages);
+            $updated = $lcf->updateCodeFile();
+
+            $content = file_get_contents($dir .'/' . $fileName);
+            $this->assertNotEmpty($content, 'File content is empty');
+
+            if ($fileName == 'example.class.php') {
+                $this->assertTrue(strpos($content, '~~') === false, '~~ found', $fileName);
+                $this->assertContains('$x = $this->modx->lexicon("string1")', $content);
+                $this->assertContains('$y = $this->modx->lexicon(\'string2\')', $content);
+                $this->assertContains('$z = $this->modx->lexicon(\'string3\')', $content);
+            }
+            if ($fileName == 'chunk1.chunk.html') {
+                $this->assertTrue(strpos($content, '~~') === false, '~~ found', $fileName);
+                $this->assertContains('[[%string1]]', $content);
+                $this->assertContains('[[%string2]]', $content);
+                $this->assertContains('[[%string3]]', $content);
+            }
+            if ($fileName == 'example.js') {
+                $this->assertContains('x = _("string1")', $content);
+                $this->assertContains('y = _(\'string2\')', $content);
+                $this->assertContains('z = _(\'string3\')', $content);
+            }
+        }
+    }
+
 }

@@ -36,9 +36,16 @@ include 'c:\xampp\htdocs\addons\assets\mycomponents\example\core\components\exam
     {
         $this->modx =& $modx;
         $this->props =& $config;
-        $x = $this->modx->lexicon('string1~~Hello');
-        $y = $this->modx->lexicon('string2~~Goodbye');
+        $x = $this->modx->lexicon("string1~~Hello 'columbus'");
+        $y = $this->modx->lexicon('string2~~Hello "columbus"');
         $z = $this->modx->lexicon('string3');
+        $xx = $this->modx->lexicon('string4~~Hello \'columbus\'');
+        $yy = $this->modx->lexicon('string5~~Hello (\'columbus\') my friend');
+        $zz = $this->modx->lexicon('string6~~Hello ("columbus") my friend');
+        $oo = $this->modx->lexicon("string7~~Hello (\"columbus\") my friend");
+        $oo = $this->modx->lexicon("string8~~Hello ('\"\"') my friend");
+        $oo = $this->modx->lexicon('string9~~Hello ("") my friend');
+        $oo = $this->modx->lexicon('string10~~Hello (\'\') my friend');
 
     }
 

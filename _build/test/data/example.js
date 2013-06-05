@@ -19,6 +19,8 @@
  * @package example
  */
 
-x = _('string1~~Hello');
-y = _('string2~~Goodbye');
+x = _("string1~~Hello 'columbus'");
+y = _('string2~~Hello "columbus"');
 z = _('string3');
+a = _('string11~~Hello columbus');
+b = _('string12~~Hello columbus');
