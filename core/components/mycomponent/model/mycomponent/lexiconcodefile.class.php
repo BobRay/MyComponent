@@ -161,39 +161,67 @@ class LexiconCodeFile {
     }
 
     public function setLexfiles($fileName = '') {
+        $default = $fileName;
+        $isPropertiesFile = strpos($this->fileName, 'properties.') !== false;
         if (empty($fileName)) {
             /* find lexicon->load lines in file */
             $lines = $this->content;
+            if ($isPropertiesFile) {
+                $pattern = '#^\s*[\"\']lexicon[\'\"]\s*=>\s*[\"\'](.*)[\'\"]#';
+                $default = 'properties';
+            } else {
+                $pattern = '#lexicon->load\s*\s*\(\s*\'(.*)\'#';
+                $default = 'default';
+            }
+            $subPattern = $isPropertiesFile? 'lexicon' : 'lexicon->load';
             foreach($lines as $line) {
-                if (strstr($line, 'lexicon->load')) {
+                if (strstr($line, $subPattern)) {
                     $matches = array();
-                    preg_match('#lexicon->load\s*\s*\(\s*\'(.*)\'#', $line, $matches);
+
+                    preg_match($pattern, $line, $matches);
                     if (isset($matches[1]) && !empty($matches[1])) {
                         /* skip dynamic lex loads */
-                        if (strpos($matches[1], '$')) {
+                        if (strpos($matches[1], '$') !== false) {
                             continue;
                         }
                         // $fqn = $this->getLexFqn($matches[1]);
+
+                        if ($isPropertiesFile) {
+                            if ($matches[1] == $this->helpers->props['packageNameLower']) {
+                                /* Correct if just the package name */
+                                $matches[1] = $matches[1] . ':properties';
+                            }
+                            $this->addLexFile($matches[1]);
+                            /* bail out if we have one non-empty lexicon specification */
+                            break;
+
+                        }
                         $this->addLexFile($matches[1]);
                     }
+
                 }
             }
         } else {
             $this->lexFileName = $fileName;
-            $this->addLexfile($this->getLexFqn($fileName));
+            $this->addLexfile($fileName);
         }
         /* assume default.inc.php if no lex files specified */
         if (empty($this->lexFiles)) {
-            $this->addLexFile('default');
+            $this->addLexFile($default);
         }
     }
 
     public function setContent($content = '') {
         if (empty($content)) {
             $fullPath = $this->path . '/' . $this->fileName;
+            if (file_exists($fullPath)) {
             $content = file_get_contents($fullPath);
+            } else {
+                $this->setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
+            }
         }
         $this->content = explode("\n", $content);
+
     }
 
     public function setUsed($used = array()) {
@@ -201,13 +229,16 @@ class LexiconCodeFile {
             $this->used = $used;
         } else {
             $this->used = array();
-            if (strpos($this->fileName, '.php') !== false) {
+            if (strpos($this->fileName, 'properties.') !== false) {
+                $type = 'properties';
+                $pattern = '#[\'\"]desc[\'\"]\s*=>\s*(\'|\")(.*)\1#';
+            } elseif (strpos($this->fileName, '.php') !== false) {
                 $type = 'php';
                 $pattern = '#modx->lexicon\s*\(\s*(\'|\")(.*)\1\)#';
             } elseif (strpos($this->fileName, '.js') !== false) {
                 $type = 'js';
                 $pattern = '#_\(\s*(\'|\")(.*)\1\)#';
-            } else {
+            }  else {
                 $type = 'text';
                 $pattern = '#(\[\[)!*%([^\?&\]]*)#';
             }
@@ -226,6 +257,10 @@ class LexiconCodeFile {
                 if (($type == 'text') && (strpos($line, '[[%') === false) && (strpos($line, '[[!%') === false)) {
                     continue;
                 }
+                if (($type == 'properties') && (strpos($line, "desc") === false)) {
+                    continue;
+                }
+
 
 
                 $matches = array();
