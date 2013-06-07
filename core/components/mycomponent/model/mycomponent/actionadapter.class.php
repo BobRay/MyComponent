@@ -8,8 +8,11 @@ class ActionAdapter extends ObjectAdapter
     protected $myFields;
 
     final public function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP) {
-        parent::__construct(&$modx, $helpers);
+        parent::__construct($modx, $helpers);
         if (is_array($fields))
+            if (isset($fields['lang_topics']) && empty($fields['lang_topics'])) {
+                $fields['lang_topics'] = $this->helpers->props['packageNameLower'] . ':default';
+            }
             $this->myFields = $fields;
     }
 }
