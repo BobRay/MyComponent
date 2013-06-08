@@ -476,8 +476,11 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
                 $this->assertContains("'key' => 'string2'", $content);
                 $this->assertContains("'key' => 'string3'", $content);
             }
-
-
         }
+    }
+
+    public function testEverything() {
+
+
     }
 }
