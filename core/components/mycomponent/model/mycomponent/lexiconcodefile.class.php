@@ -34,31 +34,58 @@
 
 
 class LexiconCodeFile {
+    /**
+     * @var $missing array - array of strings used in code
+     * but missing from lex file
+     */
     public $missing = array();
-    public $empty = array();
+    /**
+
+    /**
+     * @var $lexdir string - directory of lexicon topic
+     * file for this code file
+     */
     public $lexDir = '';
+    /**
+     * @var $lexFileName string - name of lexicon topic file
+     */
     public $lexFileName;
+    /**
+     * @var $lexFiles array - array of lex file strings in the form:
+     * fullPath => fileName
+     */
     public $lexFiles = array();
+    /**
+     * @var array
+     */
     public $errors = array();
     /** @var array $content - array of lines from this code file */
     public $content = array();
+
     /** @var int $updateCount - count of strings that have been
      * updated in lexicon file  */
     public $updateCount = 0;
     /** @var $modx modX */
+
     public $modx = null;
     /** @var helpers Helpers */
+
     public $helpers = null;
+    /** @var $language string -  */
     public $language = '';
 
     /** @var string $code - code from file and all included files */
     public $code = '';
-    /** @var array $used - $_lang array from all used lex files */
+
+    /** @var array $used - lex strings used in this file */
     public $used = array();
-    /** @var array $defined - lex strings used in this file */
+
+    /** @var array $defined - $_lang array with all strings defined in
+     *  all specified lexicon topic files */
     public $defined = array();
 
-    /** @var array $toUpdate - lex entries that have been updated */
+    /** @var array $toUpdate - lex entries that don't match those
+     * in the lex file and need to be updated */
     public $toUpdate = array();
 
     /** @var int $squigglesFound - count of squiggles tokens (~~) found */
@@ -82,7 +109,7 @@ class LexiconCodeFile {
         $this->lexDir = rtrim($lexDir, '/\\');
         $this->lexDir = strtolower(str_replace('\\','/', $this->lexDir));
         $this->setContent();
-        $this->setLexfiles();
+        $this->setLexFiles();
         $this->setUsed();
         $this->setDefined();
         $this->setMissing();
@@ -90,47 +117,94 @@ class LexiconCodeFile {
 
     /* Getters */
 
+    /**
+     * Return the full name of this file
+     *
+     * @return string
+     */
     public function  getFileName() {
         return $this->fileName;
 
     }
+
+    /**
+     * Return array of all lexicon strings used in this code file in the form:
+     * key => value
+     *
+     * @return array
+     */
     public function getUsed() {
         return $this->used;
     }
 
+    /**
+     * Return the array of lex keys used in this file that are
+     * missing from any specified lexicon topic files
+     * @return array
+     */
     public function getMissing() {
         return $this->missing;
     }
 
-    public function getEmpty() {
-        return $this->empty;
-    }
 
+    /**
+     * Return the array of lexicon strings found in this file in the form:
+     * key => value
+     *
+     * @return array
+     */
     public function getDefined() {
         return $this->defined;
     }
 
+    /**
+     * Return the array of all lexicon topic files specified for this file in the form:
+     * fullPath => fileName
+     *
+     * This should never be empty
+     *
+     * @return array
+     */
     public function getLexFiles() {
         return $this->lexFiles;
     }
 
+    /**
+     * Return the array of error messages set here
+     *
+     * @return array
+     */
     public function getErrors() {
         return $this->errors;
     }
 
-    public function getUpdateCount() {
-        return $this->updateCount;
-    }
 
+    /**
+     * Return array of lex strings where the value != the
+     * value in the lexicon topic file
+     *
+     * @return array
+     */
     public function getToUpdate() {
         return $this->toUpdate;
     }
 
+    /**
+     * Return the number of ~~ tokens found in the code file
+     *
+     * @return int
+     */
     public function getSquiggleCount() {
         return $this->squigglesFound;
     }
 
     /* Setters */
+    /**
+     * Return the two-letter primary language code extracted
+     * from the languages array in the project config file
+     *
+     * @param string $language
+     */
     public function setLanguage($language = '') {
         if (! empty ($language)) {
             $this->language = $language;
@@ -144,6 +218,12 @@ class LexiconCodeFile {
 
     }
 
+    /**
+     * Create the array of lexicon strings used in this code file in the form:
+     * key => value
+     *
+     * @param array $defined
+     */
     public function setDefined($defined = array()) {
         if (!empty($defined)) {
             $this->$defined = $defined;
@@ -160,57 +240,79 @@ class LexiconCodeFile {
         }
     }
 
-    public function setLexfiles($fileName = '') {
-        $default = $fileName;
+    /**
+     * Set the lexicon topic for the file and add it to the $this->lexFiles array
+     *
+     * @param string $topic - (optional) specific lexicon topic
+     */
+    public function setLexFiles($topic = '') {
+        $default = $topic;
         $isPropertiesFile = strpos($this->fileName, 'properties.') !== false;
-        if (empty($fileName)) {
-            /* find lexicon->load lines in file */
+        $isMenuFile = strpos($this->fileName, '.menus.') !== false;
+        $isSettingsFile = strpos($this->fileName, '.settings.') !== false;
+
+        /* set default $pattern and $subPattern */
+        $subPattern = 'lexicon->load';
+        $pattern = '#lexicon->load\s*\s*\(\s*\'(.*)\'#';
+
+        if (empty($topic)) {
+            $default = 'default';
+            /* find lexicon->load lines in file or other lex file specification */
             $lines = $this->content;
+
+            /* These have lex topic specified in their fields */
             if ($isPropertiesFile) {
                 $pattern = '#^\s*[\"\']lexicon[\'\"]\s*=>\s*[\"\'](.*)[\'\"]#';
+                $subPattern = 'lexicon';
                 $default = 'properties';
-            } else {
-                $pattern = '#lexicon->load\s*\s*\(\s*\'(.*)\'#';
-                $default = 'default';
+            } elseif ($isMenuFile) {
+                $subPattern = 'lang_topics';
+                $pattern = '#^\s*[\"\']lang_topics[\'\"]\s*=>\s*[\"\'](.*)[\'\"]#';
             }
-            $subPattern = $isPropertiesFile? 'lexicon' : 'lexicon->load';
+
+            /* iterate over lines to find lexicon topic specification */
             foreach($lines as $line) {
+                /* skip lines without subPattern */
                 if (strstr($line, $subPattern)) {
                     $matches = array();
-
                     preg_match($pattern, $line, $matches);
                     if (isset($matches[1]) && !empty($matches[1])) {
+
                         /* skip dynamic lex loads */
                         if (strpos($matches[1], '$') !== false) {
                             continue;
                         }
-                        // $fqn = $this->getLexFqn($matches[1]);
 
-                        if ($isPropertiesFile) {
+                        if ($isPropertiesFile || $isMenuFile || $isSettingsFile) {
                             if ($matches[1] == $this->helpers->props['packageNameLower']) {
                                 /* Correct if just the package name */
-                                $matches[1] = $matches[1] . ':properties';
+                                $matches[1] = $matches[1] . ':' . $default;
                             }
                             $this->addLexFile($matches[1]);
-                            /* bail out if we have one non-empty lexicon specification */
+                            /* bail out at the first non-empty lexicon specification */
                             break;
-
                         }
                         $this->addLexFile($matches[1]);
                     }
-
                 }
             }
         } else {
-            $this->lexFileName = $fileName;
-            $this->addLexfile($fileName);
+            /* use explicit topic sent as argument */
+            $this->lexFileName = $topic;
+            $this->addLexfile($topic);
         }
-        /* assume default.inc.php if no lex files specified */
+
+        /* assume 'default' topic if no topic specified */
         if (empty($this->lexFiles)) {
             $this->addLexFile($default);
         }
     }
 
+    /**
+     * Create the array of lines from the code file in $this->content
+     *
+     * @param string $content - (optional) array of content lines
+     */
     public function setContent($content = '') {
         if (empty($content)) {
             $fullPath = $this->path . '/' . $this->fileName;
@@ -224,20 +326,39 @@ class LexiconCodeFile {
 
     }
 
+    /**
+     * Find all lexicon strings and their values (if any) in the code file
+     * and add them to $this->used array.
+     *
+     * @param array $used
+     */
     public function setUsed($used = array()) {
+        $type = 'text';
+        $subPattern = '';
         if (!empty($used)) {
             $this->used = $used;
         } else {
             $this->used = array();
-            if (strpos($this->fileName, 'properties.') !== false) {
+            if (strpos($this->fileName, '.menus.') !== false) {
+                $type = 'menu';
+                $pattern = '#[\'\"]description[\'\"]\s*=>\s*(\'|\")(.*)\1#';
+                $subPattern = 'description';
+            } elseif (strpos($this->fileName, '.settings.') !== false) {
+                $type = 'settings';
+                $pattern = '#[\'\"]key[\'\"]\s*=>\s*(\'|\")(.*)\1#';
+                $subPattern = 'key';
+            } elseif (strpos($this->fileName, 'properties.') !== false) {
                 $type = 'properties';
                 $pattern = '#[\'\"]desc[\'\"]\s*=>\s*(\'|\")(.*)\1#';
+                $subPattern = 'desc';
             } elseif (strpos($this->fileName, '.php') !== false) {
                 $type = 'php';
                 $pattern = '#modx->lexicon\s*\(\s*(\'|\")(.*)\1\)#';
+                $subPattern = 'modx->lexicon';
             } elseif (strpos($this->fileName, '.js') !== false) {
                 $type = 'js';
                 $pattern = '#_\(\s*(\'|\")(.*)\1\)#';
+                $subPattern = '_(';
             }  else {
                 $type = 'text';
                 $pattern = '#(\[\[)!*%([^\?&\]]*)#';
@@ -248,19 +369,24 @@ class LexiconCodeFile {
 
             $lines = $this->content;
             foreach ($lines as $line) {
-                if (($type == 'php') && (strpos($line, 'modx->lexicon') === false)) {
+                if ($type == 'text') {
+                    if ((strpos($line, '[[%') === false) && (strpos($line, '[[!%') === false)) {
+                        continue;
+                    }
+                } elseif (strpos($line, $subPattern) === false) {
+                    continue;
+                }
+
+                /*if (($type == 'php') && (strpos($line, 'modx->lexicon') === false)) {
                     continue;
                 }
                 if (($type == 'js') && (strpos($line, '_(') === false)) {
                     continue;
                 }
-                if (($type == 'text') && (strpos($line, '[[%') === false) && (strpos($line, '[[!%') === false)) {
-                    continue;
-                }
                 if (($type == 'properties') && (strpos($line, "desc") === false)) {
                     continue;
                 }
-
+*/
 
 
                 $matches = array();
@@ -283,6 +409,12 @@ class LexiconCodeFile {
         }
     }
 
+    /**
+     * Find lex strings in code file that are not in the Lexicon file
+     * and add them to $this->missing array.
+     *
+     * @param array $missing - (optional) array of missing strings.
+     */
     public function setMissing($missing = array()) {
         if (empty($missing)) {
             foreach($this->used as $key => $value) {
@@ -295,22 +427,37 @@ class LexiconCodeFile {
                     $this->toUpdate[$key] = $value;
                 }
             }
-
         } else {
             $this->missing = $missing;
         }
     }
 
+    /**
+     * Add an error message to the $this->errors array
+     *
+     * @param $message string - message to add
+     */
     public function setError($message) {
         $this->errors[] = $message;
     }
 
+    /**
+     * Return true if an error is set, false if not
+     *
+     * @return bool
+     */
     public function hasError() {
         return !empty($this->errors);
     }
 
-    public function addLexFile($fqn) {
-        $fqn = $this->getLexFqn($fqn);
+    /**
+     * Add a lexicon topic file to $this->fileNames in the form:
+     * fullPath => fileName
+     *
+     * @param $topic string - can be a topic or a fully qualified lex file spec.
+     */
+    public function addLexFile($topic) {
+        $fqn = $this->getLexFqn($topic);
         $val = explode(':', $fqn);
         $fileName = $val[2] . '.inc.php';
         $fullPath = $this->lexDir . '/' . $val[0] . '/' . $fileName;
@@ -321,9 +468,9 @@ class LexiconCodeFile {
     }
 
     /**
-     * Returns a fully qualified lexicon spec (e.g. 'example:en:default.inc.php')
-     * @param $lexFileSpec (partial or full lexicon spec (e.g., default, en:default)
-     * @return string
+     * Return a fully qualified lexicon spec (e.g. 'example:en:default.inc.php')
+     * @param $lexFileSpec (partial or full lexicon spec. (e.g., default, en:default)
+     * @return string - fully qualified lex spec. (e.g. en:example:default)
      */
     public function getLexFqn($lexFileSpec) {
         $nspos = strpos($lexFileSpec, ':');
@@ -348,6 +495,10 @@ class LexiconCodeFile {
         return $language . ':' . $namespace . ':' . $topic_parsed;
     }
 
+    /**
+     *  Create/Update the strings in the lexicon file topic file
+     *  specified in this file
+     */
     public function updateLexiconFile() {
         if (empty($this->missing) && empty($this->toUpdate)) {
             /* Nothing to do */
@@ -403,8 +554,6 @@ class LexiconCodeFile {
         }
 
         /* Update Changed strings */
-
-
         if (!empty($this->toUpdate)) {
             /* This may have changed */
             $content = file_get_contents($path);
@@ -431,6 +580,10 @@ class LexiconCodeFile {
         }
     }
 
+    /**
+     * Update a code file by removing the ~~* part of the lexicon strings.
+     * @return int number of ~~ strings removed
+     */
     public function updateCodeFile() {
         if (empty($this->squigglesFound)) {
             return 0;
