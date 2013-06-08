@@ -377,18 +377,6 @@ class LexiconCodeFile {
                     continue;
                 }
 
-                /*if (($type == 'php') && (strpos($line, 'modx->lexicon') === false)) {
-                    continue;
-                }
-                if (($type == 'js') && (strpos($line, '_(') === false)) {
-                    continue;
-                }
-                if (($type == 'properties') && (strpos($line, "desc") === false)) {
-                    continue;
-                }
-*/
-
-
                 $matches = array();
                 preg_match($pattern, $line, $matches);
                 if (isset($matches[2]) && !empty($matches[2])) {
