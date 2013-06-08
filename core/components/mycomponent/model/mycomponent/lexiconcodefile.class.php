@@ -392,7 +392,6 @@ class LexiconCodeFile {
                 $matches = array();
                 preg_match($pattern, $line, $matches);
                 if (isset($matches[2]) && !empty($matches[2])) {
-                    // $matches[1] = trim($matches[1], '\"\'');
                     if (strstr($matches[2], '~~')) {
                         $this->squigglesFound++;
                         $s = explode('~~', $matches[2]);
