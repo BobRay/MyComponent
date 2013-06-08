@@ -265,6 +265,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
             $this->targetPropertiesDir => 'properties.propertyset1.propertyset.php',
             $this->targetPropertiesDir => 'properties.snippet1.snippet.php',
             $this->targetDataDir => 'transport.menus.php',
+            $this->targetDataDir => 'transport.settings.php',
         );
         foreach ($files as $dir => $fileName) {
             $lcf = null;
@@ -291,6 +292,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
             4 => $this->targetPropertiesDir . '#' . 'properties.propertyset1.propertyset.php',
             5 => $this->targetPropertiesDir . '#' . 'properties.snippet1.snippet.php',
             6 => $this->targetDataDir . '#' . 'transport.menus.php',
+            7 => $this->targetDataDir . '#' . 'transport.settings.php',
         );
         foreach ($files as $dir => $fileName) {
             $couple = explode('#', $fileName);
@@ -347,6 +349,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
             4 => $this->targetPropertiesDir . '#' . 'properties.propertyset1.propertyset.php',
             5 => $this->targetPropertiesDir . '#' . 'properties.snippet1.snippet.php',
             6 => $this->targetDataDir . '#' . 'transport.menus.php',
+            7 => $this->targetDataDir . '#' . 'transport.settings.php',
         );
         foreach ($files as $s => $fileName) {
             $couple = explode('#', $fileName);
@@ -399,6 +402,12 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
                     break;
 
                 case 'transport.menus.php':
+                    $this->assertContains('default.inc.php', $path);
+                    $this->assertEquals('Hello \'columbus\'', $_lang['string1'], $fileName);
+                    $this->assertEquals('Hello "columbus"', $_lang['string2'], $fileName);
+                    break;
+
+                case 'transport.settings.php':
                     $this->assertContains('default.inc.php', $path);
                     $this->assertEquals('Hello \'columbus\'', $_lang['string1'], $fileName);
                     $this->assertEquals('Hello "columbus"', $_lang['string2'], $fileName);
@@ -459,6 +468,13 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
                 $this->assertContains("'description' => \"string1\"", $content);
                 $this->assertContains("'description' => 'string2'", $content);
                 $this->assertContains("'description' => 'string3'", $content);
+            }
+
+            if ($fileName == 'transport.settings.php') {
+                $this->assertTrue(strpos($content, '~~') === false, '~~ found', $fileName);
+                $this->assertContains("'key' => \"string1\"", $content);
+                $this->assertContains("'key' => 'string2'", $content);
+                $this->assertContains("'key' => 'string3'", $content);
             }
 
 
