@@ -117,7 +117,7 @@ if (!defined('MODX_CORE_PATH')) {
     }
     if (!defined('MODX_CORE_PATH')) {
         session_write_close();
-        die('[bootstrap.php] Could not find build.config.php');
+        die('[lexiconhelper.php] Could not find build.config.php');
     }
     require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
     $modx = new modX();
@@ -158,7 +158,7 @@ $modx->lexicon->load('mycomponent:default');
 require_once $modx->getOption('mc.core_path', null, $modx->getOption('core_path') . 'components/mycomponent/') . 'model/mycomponent/lexiconhelper.class.php';
 $props = isset($scriptProperties) ? $scriptProperties : array();
 $lexiconHelper = new LexiconHelper($modx, $props);
-    $lexiconHelper->init($modx, $props);
+    $lexiconHelper->init($props);
     $lexiconHelper->run();
 $output = $lexiconHelper->helpers->getOutput();
 
