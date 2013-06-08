@@ -56,6 +56,9 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
     /** @var  $languages array */
     public $languages;
 
+    /** @var  $targetDataDir string */
+    public $targetDataDir;
+
 
 
 
@@ -118,6 +121,14 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
         @mkdir($this->targetModelDir, '0644', true);
         copy($this->dataDir . 'example.class.php',
         $this->targetModelDir . 'example.class.php');
+
+        $this->targetDataDir = $this->targetCore . '_build/data/';
+        $this->targetDataDir = str_replace('\\', '/', $this->targetDataDir);
+        @mkdir($this->targetDataDir, '0644', true);
+        copy($this->dataDir . 'transport.menus.php',
+            $this->targetDataDir . 'transport.menus.php');
+        copy($this->dataDir . 'transport.settings.php',
+            $this->targetDataDir . 'transport.settings.php');
 
         $this->targetJsDir = $this->targetRoot . 'assets/components/unittest/js/';
         $this->targetJsDir = str_replace('\\', '/', $this->targetJsDir);
@@ -220,6 +231,29 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
         );
         $this->assertNotEmpty($lexFiles);
         $this->assertEquals($expected, $lexFiles);
+
+        /* Test with menus */
+        $lcf = null;
+        $lcf = new LexiconCodeFile($this->modx, $this->mc->helpers,
+            $this->targetDataDir, 'transport.menus.php', $this->targetLexDir, $this->languages);
+        $lexFiles = $lcf->getLexFiles();
+        $expected = array(
+            $this->targetLexDir . $language . '/default.inc.php' => 'default.inc.php',
+        );
+        $this->assertNotEmpty($lexFiles);
+        $this->assertEquals($expected, $lexFiles);
+
+        /* Test with settings */
+        $lcf = null;
+        $lcf = new LexiconCodeFile($this->modx, $this->mc->helpers,
+            $this->targetDataDir, 'transport.settings.php', $this->targetLexDir, $this->languages);
+        $lexFiles = $lcf->getLexFiles();
+        $expected = array(
+            $this->targetLexDir . $language . '/default.inc.php' => 'default.inc.php',
+        );
+        $this->assertNotEmpty($lexFiles);
+        $this->assertEquals($expected, $lexFiles);
+
     }
 
     /** Test getting lex strings from php file, js file, and Tpl chunk */
@@ -230,6 +264,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
             $this->targetChunkDir => 'chunk1.chunk.html',
             $this->targetPropertiesDir => 'properties.propertyset1.propertyset.php',
             $this->targetPropertiesDir => 'properties.snippet1.snippet.php',
+            $this->targetDataDir => 'transport.menus.php',
         );
         foreach ($files as $dir => $fileName) {
             $lcf = null;
@@ -239,7 +274,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
             $lexStrings = $lcf->getUsed();
             $this->assertEmpty($lcf->hasError());
             $this->assertTrue(is_array($lexStrings));
-            $this->assertNotEmpty($lexStrings);
+            $this->assertNotEmpty($lexStrings, $fileName);
             $this->assertTrue(array_key_exists('string1', $lexStrings), $fileName);
             $this->assertTrue(array_key_exists('string2', $lexStrings), $fileName);
             $this->assertTrue(array_key_exists('string3', $lexStrings), $fileName);
@@ -255,6 +290,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
             3 => $this->targetChunkDir . '#' . 'chunk1.chunk.html',
             4 => $this->targetPropertiesDir . '#' . 'properties.propertyset1.propertyset.php',
             5 => $this->targetPropertiesDir . '#' . 'properties.snippet1.snippet.php',
+            6 => $this->targetDataDir . '#' . 'transport.menus.php',
         );
         foreach ($files as $dir => $fileName) {
             $couple = explode('#', $fileName);
@@ -310,6 +346,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
             3 => $this->targetChunkDir . '#' . 'chunk1.chunk.html',
             4 => $this->targetPropertiesDir . '#' . 'properties.propertyset1.propertyset.php',
             5 => $this->targetPropertiesDir . '#' . 'properties.snippet1.snippet.php',
+            6 => $this->targetDataDir . '#' . 'transport.menus.php',
         );
         foreach ($files as $s => $fileName) {
             $couple = explode('#', $fileName);
@@ -361,6 +398,12 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
                     $this->assertEquals('', $_lang['Description8']);
                     break;
 
+                case 'transport.menus.php':
+                    $this->assertContains('default.inc.php', $path);
+                    $this->assertEquals('Hello \'columbus\'', $_lang['string1'], $fileName);
+                    $this->assertEquals('Hello "columbus"', $_lang['string2'], $fileName);
+                    break;
+
                 default:
                     $this->assertTrue(false);
             }
@@ -374,6 +417,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
             $this->targetChunkDir => 'chunk1.chunk.html',
             $this->targetPropertiesDir => 'properties.propertyset1.propertyset.php',
             $this->targetPropertiesDir => 'properties.snippet1.snippet.php',
+            $this->targetDataDir => 'transport.menus.php',
         );
         foreach ($files as $dir => $fileName) {
             $lcf = null;
@@ -409,6 +453,15 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
                 $this->assertContains("'desc' => 'string2'", $content);
                 $this->assertContains("'desc' => 'string3'", $content);
             }
+
+            if ($fileName == 'transport.menus.php') {
+                $this->assertTrue(strpos($content, '~~') === false, '~~ found', $fileName);
+                $this->assertContains("'description' => \"string1\"", $content);
+                $this->assertContains("'description' => 'string2'", $content);
+                $this->assertContains("'description' => 'string3'", $content);
+            }
+
+
         }
     }
 }
