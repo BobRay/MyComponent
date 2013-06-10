@@ -248,8 +248,8 @@ class LexiconCodeFile {
     public function setLexFiles($topic = '') {
         $default = $topic;
         $isPropertiesFile = strpos($this->fileName, 'properties.') !== false;
-        $isMenuFile = strpos($this->fileName, '.menus.') !== false;
-        $isSettingsFile = strpos($this->fileName, '.settings.') !== false;
+        $isMenuFile = strpos($this->fileName, 'menus.php') !== false;
+        $isSettingsFile = strpos($this->fileName, 'settings.php') !== false;
 
         /* set default $pattern and $subPattern */
         $subPattern = 'lexicon->load';
