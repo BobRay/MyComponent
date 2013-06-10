@@ -122,7 +122,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
         copy($this->dataDir . 'example.class.php',
         $this->targetModelDir . 'example.class.php');
 
-        $this->targetDataDir = $this->targetCore . '_build/data/';
+        $this->targetDataDir = $this->targetRoot . '_build/data/';
         $this->targetDataDir = str_replace('\\', '/', $this->targetDataDir);
         @mkdir($this->targetDataDir, '0644', true);
         copy($this->dataDir . 'transport.menus.php',
@@ -192,7 +192,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
         $lexFiles = $lcf->getLexFiles();
         $this->assertEmpty($lcf->hasError());
         $expected = array(
-            $this->targetLexDir . $language . '/default.inc.php' => 'default.inc.php'
+            'default.inc.php' => $this->targetLexDir . $language . '/default.inc.php',
         );
 
             $this->assertNotEmpty($lexFiles);
@@ -203,8 +203,8 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
         $lexFiles = $lcf->getLexFiles();
         $this->assertEmpty($lcf->hasError());
         $expected = array(
-            $this->targetLexDir . $language . '/default.inc.php' => 'default.inc.php',
-            $this->targetLexDir . $language . '/properties.inc.php' => 'properties.inc.php'
+            'default.inc.php' => $this->targetLexDir . $language . '/default.inc.php',
+            'properties.inc.php' => $this->targetLexDir . $language . '/properties.inc.php',
         );
         $this->assertNotEmpty($lexFiles);
         $this->assertEquals($expected, $lexFiles);
@@ -216,7 +216,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
         $lexFiles = $lcf->getLexFiles();
         $this->assertEmpty($lcf->hasError());
         $expected = array(
-            $this->targetLexDir . $language . '/chunks.inc.php' => 'chunks.inc.php',
+            'chunks.inc.php' => $this->targetLexDir . $language . '/chunks.inc.php',
         );
         $this->assertNotEmpty($lexFiles);
         $this->assertEquals($expected, $lexFiles);
@@ -227,7 +227,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
             $this->targetPropertiesDir, 'properties.snippet1.snippet.php', $this->targetLexDir, $this->languages);
         $lexFiles = $lcf->getLexFiles();
         $expected = array(
-            $this->targetLexDir . $language . '/properties.inc.php' => 'properties.inc.php',
+            'properties.inc.php' => $this->targetLexDir . $language . '/properties.inc.php',
         );
         $this->assertNotEmpty($lexFiles);
         $this->assertEquals($expected, $lexFiles);
@@ -238,7 +238,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
             $this->targetDataDir, 'transport.menus.php', $this->targetLexDir, $this->languages);
         $lexFiles = $lcf->getLexFiles();
         $expected = array(
-            $this->targetLexDir . $language . '/default.inc.php' => 'default.inc.php',
+            'default.inc.php' => $this->targetLexDir . $language . '/default.inc.php',
         );
         $this->assertNotEmpty($lexFiles);
         $this->assertEquals($expected, $lexFiles);
@@ -249,7 +249,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
             $this->targetDataDir, 'transport.settings.php', $this->targetLexDir, $this->languages);
         $lexFiles = $lcf->getLexFiles();
         $expected = array(
-            $this->targetLexDir . $language . '/default.inc.php' => 'default.inc.php',
+            'default.inc.php' => $this->targetLexDir . $language . '/default.inc.php',
         );
         $this->assertNotEmpty($lexFiles);
         $this->assertEquals($expected, $lexFiles);
@@ -362,7 +362,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
                 $dir, $fileName, $this->targetLexDir, $this->languages);
             $lcf->updateLexiconFile();
             $this->assertEmpty($lcf->hasError(), print_r($lcf->getErrors(), true));
-            $path = key($lcf->getLexFiles());
+            $path = reset($lcf->getLexFiles());
             $_lang = array();
             include $path;
             $this->assertNotEmpty($_lang);
@@ -480,7 +480,14 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testEverything() {
-
+        $lexHelper = new LexiconHelper($this->modx);
+        $lexHelper->init(array(), 'unittest');
+        $lexHelper->run();
+        $this->assertNotEmpty($lexHelper->props, 'LexHelper->props is empty');
+        $this->assertEquals('unittest', $lexHelper->packageNameLower);
+        $this->assertEquals('en', $lexHelper->primaryLanguage);
+        $this->assertEquals($this->targetLexDir, $lexHelper->targetLexDir);
+        $this->assertEquals($this->targetDataDir, $lexHelper->targetData);
 
     }
 }
