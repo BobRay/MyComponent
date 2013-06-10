@@ -193,6 +193,7 @@ $_lang['mc_rewriting_code_file'] = 'rewriting code file';
 $_lang['mc_no_code_file_at'] = 'No Code file at';
 $_lang['mc_no_language_strings_in_file'] = 'No language strings in file';
 $_lang['mc_lexicon_file_nf'] = 'Cannot find lexicon file';
+$_lang['mc_error_writing_lexicon_file'] = 'Error writing lexicon file';
 $_lang['mc_no_missing_strings_in_lex_file'] = 'No missing strings in lexicon file!';
 $_lang['mc_could_not_open_lex_file'] = 'Could not open lexicon file';
 $_lang['mc_updated_lex_file'] = 'Updated Lexicon file';

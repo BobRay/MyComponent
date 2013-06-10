@@ -515,9 +515,9 @@ class LexiconCodeFile {
                 $value = str_replace("\\\\", '', $value);
                 $code .= "\n\$_lang[$key] = " . $value . ';';
             }
-
-            $comment = $comment = '/* used in ' . $this->fileName . ' */';
-            if (strstr($content, $comment)) {
+            $success = false;
+            $comment = $comment = '/* Used in ' . $this->fileName . ' */';
+            if (stristr($content, $comment)) {
                 $content = str_replace($comment, $comment . $code, $content);
                 $fp = fopen($path, 'w');
                 if ($fp) {
@@ -538,6 +538,11 @@ class LexiconCodeFile {
 
                 }
             }
+            if (! $success) {
+                $this->setError($this->modx->lexicon('mc_error_writing_lexicon_file') .
+                    ': ' . $path);
+            }
+
         }
 
         /* Update Changed strings */
