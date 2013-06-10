@@ -52,7 +52,7 @@ class LexiconCodeFile {
     public $lexFileName;
     /**
      * @var $lexFiles array - array of lex file strings in the form:
-     * fullPath => fileName
+     * fileName => fullPath
      */
     public $lexFiles = array();
     /**
@@ -159,7 +159,7 @@ class LexiconCodeFile {
 
     /**
      * Return the array of all lexicon topic files specified for this file in the form:
-     * fullPath => fileName
+     * fileName => fullPath
      *
      * This should never be empty
      *
@@ -228,7 +228,7 @@ class LexiconCodeFile {
         if (!empty($defined)) {
             $this->$defined = $defined;
         } else {
-            foreach ($this->lexFiles as $fullPath => $fileName) {
+            foreach ($this->lexFiles as $fileName => $fullPath) {
                 if (file_exists($fullPath)) {
                     include $fullPath;
                 }
@@ -439,7 +439,7 @@ class LexiconCodeFile {
 
     /**
      * Add a lexicon topic file to $this->fileNames in the form:
-     * fullPath => fileName
+     * fileName => fullPath
      *
      * @param $topic string - can be a topic or a fully qualified lex file spec.
      */
@@ -449,8 +449,8 @@ class LexiconCodeFile {
         $fileName = $val[2] . '.inc.php';
         $fullPath = $this->lexDir . '/' . $val[0] . '/' . $fileName;
 
-        if (! array_key_exists($fullPath, $this->lexFiles)) {
-            $this->lexFiles[$fullPath]  = $fileName;
+        if (! array_key_exists($fileName, $this->lexFiles)) {
+            $this->lexFiles[$fileName]  = $fullPath;
         }
     }
 
@@ -497,8 +497,8 @@ class LexiconCodeFile {
             return;
         }
 
-        reset($this->lexFiles);
-        $path = key($this->lexFiles);
+        $path = reset($this->lexFiles);
+        // $path = key($this->lexFiles);
         if (! file_exists($path))  {
             $this->setError('LexFile not found');
             return;
