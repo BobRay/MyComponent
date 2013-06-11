@@ -226,7 +226,7 @@ class LexiconCodeFile {
      */
     public function setDefined($defined = array()) {
         if (!empty($defined)) {
-            $this->$defined = $defined;
+            $this->$defined = array_merge($this->defined, $defined);
         } else {
             foreach ($this->lexFiles as $fileName => $fullPath) {
                 if (file_exists($fullPath)) {
@@ -235,7 +235,7 @@ class LexiconCodeFile {
             }
             /* @var $_lang array */
             if (isset($_lang)) {
-                $this->defined = $_lang;
+                $this->defined = array_merge($this->defined, $_lang);
             }
         }
     }
@@ -343,14 +343,13 @@ class LexiconCodeFile {
             $this->used = $used;
         } else {
             $this->used = array();
-            if (strpos($this->fileName, '.menus.') !== false) {
+            if (strpos($this->fileName, '.menus.php') !== false) {
                 $type = 'menu';
                 $pattern = '#[\'\"]description[\'\"]\s*=>\s*(\'|\")(.*)\1#';
                 $subPattern = 'description';
-            } elseif (strpos($this->fileName, '.settings.') !== false) {
-                $type = 'settings';
-                $pattern = '#[\'\"]key[\'\"]\s*=>\s*(\'|\")(.*)\1#';
-                $subPattern = 'key';
+            } elseif (strpos($this->fileName, 'settings.php') !== false) {
+                $this->setUsedSettings();
+                return;
             } elseif (strpos($this->fileName, 'properties.') !== false) {
                 $type = 'properties';
                 $pattern = '#[\'\"]desc[\'\"]\s*=>\s*(\'|\")(.*)\1#';
@@ -401,6 +400,34 @@ class LexiconCodeFile {
                 }
             }
         }
+    }
+    public function setUsedSettings() {
+        $fullPath = $this->path . '/' . $this->fileName;
+        if (file_exists($fullPath)) {
+            $modx =& $this->modx;
+            $objects = include $fullPath;
+            $_lang = $this->defined;
+            /** @var $setting modSystemSetting */
+            foreach ($objects as $setting) {
+                $key = $setting->get('key');
+                $name = $setting->get('name');
+                if (empty($name)) {
+                    $name = $key;
+                }
+                $description = $setting->get('description');
+                if (empty($description)) {
+                    $description = '';
+                }
+                $lexNameKey = 'setting_' . $key;
+                $lexDescKey = 'setting_' . $key . '_desc';
+                $this->used[$lexNameKey] = $name;
+                $this->used[$lexDescKey] = $description;
+            }
+        } else {
+            $this->setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
+        }
+
+
     }
 
     /**
