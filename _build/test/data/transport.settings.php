@@ -26,7 +26,9 @@ $systemsettings = array();
 $systemsettings[1] = $modx->newObject('modSystemSetting');
 $systemsettings[1] ->fromArray(array(
     'id' => 1,
-    'key' => "string1~~Hello 'columbus'",
+    'key' => "setting_one",
+    'name' => 'Setting One',
+    'description' => "Hello 'columbus'",
     'value' => 'Test System Setting Value',
     'xtype' => 'textfield',
     'namespace' => 'example',
@@ -37,7 +39,9 @@ $systemsettings[1] ->fromArray(array(
 $systemsettings[2] = $modx->newObject('modSystemSetting');
 $systemsettings[2] ->fromArray(array(
     'id' => 2,
-    'key' => 'string2~~Hello "columbus"',
+    'key' => 'setting_two',
+    'name' => 'Setting Two',
+    'description' => 'Hello "columbus"',
     'value' => 'Test System Setting Value',
     'xtype' => 'textfield',
     'namespace' => 'example',
@@ -48,7 +52,9 @@ $systemsettings[2] ->fromArray(array(
 $systemsettings[3] = $modx->newObject('modSystemSetting');
 $systemsettings[3] ->fromArray(array(
     'id' => 3,
-    'key' => 'string3',
+    'key' => 'setting_three',
+    'name' => 'Setting Three',
+    'description' => 'Hello Columbus',
     'value' => 'Test System Setting Value',
     'xtype' => 'textfield',
     'namespace' => 'example',
