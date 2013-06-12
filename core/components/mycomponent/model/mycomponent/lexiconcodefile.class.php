@@ -333,6 +333,8 @@ class LexiconCodeFile {
      * @param array $used
      */
     public function setUsed($used = array()) {
+        $coreEntries = $this->modx->lexicon->getFileTopic($this->language);
+
         /* skip minified JS files */
         if (strstr($this->fileName, 'min.js')) {
             return;
@@ -392,8 +394,8 @@ class LexiconCodeFile {
                         $lexString = $matches[2];
                         $value = '';
                     }
-                   /* skip entries that are in the MODX lexicon */
-                   if ($this->modx->lexicon($lexString) !== $lexString){
+                   /* skip entries that are in the MODX lexicon and not re-defined */
+                   if (array_key_exists($lexString, $coreEntries) && empty($value)){
                        continue;
                    }
                    $this->used[$lexString] = $value;
