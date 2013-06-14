@@ -219,14 +219,14 @@ class LexiconCodeFile {
     }
 
     /**
-     * Create the array of lexicon strings used in this code file in the form:
+     * Create the array of lexicon strings in lexicon files used by this code file in the form:
      * key => value
      *
      * @param array $defined
      */
     public function setDefined($defined = array()) {
         if (!empty($defined)) {
-            $this->$defined = array_merge($this->defined, $defined);
+            $this->$defined = $this->defined + $defined;
         } else {
             foreach ($this->lexFiles as $fileName => $fullPath) {
                 if (file_exists($fullPath)) {
@@ -235,7 +235,7 @@ class LexiconCodeFile {
             }
             /* @var $_lang array */
             if (isset($_lang)) {
-                $this->defined = array_merge($this->defined, $_lang);
+                $this->defined = $this->defined + $_lang;
             }
         }
     }
@@ -591,7 +591,9 @@ class LexiconCodeFile {
             $content = file_get_contents($path);
 
             foreach($this->toUpdate as $key => $value) {
-
+                if (empty($value)) {
+                    continue;
+                }
                 $pattern = '#\$_lang\[[\"\']' . $key . '[^=]+=\s*([^;]+);#';
                 preg_match($pattern, $content, $matches);
 
