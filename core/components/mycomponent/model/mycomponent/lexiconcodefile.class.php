@@ -398,6 +398,10 @@ class LexiconCodeFile {
                    if (array_key_exists($lexString, $coreEntries) && empty($value)){
                        continue;
                    }
+                   /* Don't update an existing entry with an empty value */
+                   if (array_key_exists($lexString, $this->used) && (empty($value))) {
+                       continue;
+                   }
                    $this->used[$lexString] = $value;
                 }
             }
