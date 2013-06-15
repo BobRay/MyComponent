@@ -38,6 +38,14 @@ class LexiconCodeFileFactory {
     }
 }
 
+/**
+ * @param $modx modX - $modx object
+ * @param $helpers Helpers - $helpers class
+ * @param $path string - path to code file
+ * @param $fileName string - file name of code file
+ * @param $lexDir string - path to lexicon directory (e.g. lexicon/en)
+ */
+
 abstract class AbstractLexiconCodeFile {
     /**
      * @var $missing array - array of strings used in code
@@ -105,29 +113,7 @@ abstract class AbstractLexiconCodeFile {
         $this->setLanguage();
         $this->lexDir = rtrim($lexDir, '/\\');
         $this->lexDir = strtolower(str_replace('\\', '/', $this->lexDir));
-
-
         $this->init();
-        /* $this->setContent();
-        $this->setLexFiles();
-        $this->setUsed();
-        $this->setDefined();
-        $this->setMissing();*/
-
-       /* public  function setLanguage() {}
-        public function setContent(){}
-        public function setLexFiles() {}
-        public function setUsed() {}
-        public function setDefined() {}
-        public function setMissing() {}*/
-
-
-   /* public  function setLanguage() {}
-    public function setContent(){}
-    public function setLexFiles() {}
-    public function setUsed() {}
-    public function setDefined() {}
-    public function setMissing() {}*/
     }
 
     public static function getInstance(&$modx, $helpers, $path, $fileName, $lexDir) {
@@ -135,38 +121,24 @@ abstract class AbstractLexiconCodeFile {
         return $lcf;
     }
 
-    public function setLanguage(){}
-
-    public function init() {}
-
-}
-
-
-class LexiconCodeFile extends AbstractLexiconCodeFile {
-
-
-
     /**
-     * @param $modx modX - $modx object
-     * @param $helpers Helpers - $helpers class
-     * @param $path string - path to code file
-     * @param $fileName string - file name of code file
-     * @param $lexDir string - path to lexicon directory (e.g. lexicon/en)
+     * Return the two-letter primary language code extracted
+     * from the languages array in the project config file
+     *
+     * @param string $language
      */
-    /*function __construct(&$modx, $helpers, $path, $fileName, $lexDir) {
-        $this->modx =& $modx;
-        $this->helpers = $helpers;
-        $this->path = rtrim($path, '/\\');
-        $this->fileName = $fileName;
-        $this->setLanguage();
-        $this->lexDir = rtrim($lexDir, '/\\');
-        $this->lexDir = strtolower(str_replace('\\','/', $this->lexDir));
-        $this->setContent();
-        $this->setLexFiles();
-        $this->setUsed();
-        $this->setDefined();
-        $this->setMissing();
-    }*/
+    public function setLanguage($language = '') {
+        if (!empty ($language)) {
+            $this->language = $language;
+        } else {
+            $languages = $this->modx->getOption('languages', $this->helpers->props, array());
+            $language = key($languages);
+            $this->language = empty($language)
+                ? 'en'
+                : $language;
+        }
+
+    }
 
     public function init() {
         $this->setContent();
@@ -231,6 +203,15 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
     }
 
     /**
+     * Return true if an error is set, false if not
+     *
+     * @return bool
+     */
+    public function hasError() {
+        return !empty($this->errors);
+    }
+
+    /**
      * Return the array of error messages set here
      *
      * @return array
@@ -238,6 +219,8 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
     public function getErrors() {
         return $this->errors;
     }
+
+
 
 
     /**
@@ -259,24 +242,107 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
         return $this->squigglesFound;
     }
 
-    /* Setters */
     /**
-     * Return the two-letter primary language code extracted
-     * from the languages array in the project config file
+     * Create the array of lines from the code file in $this->content
      *
-     * @param string $language
+     * @param string $content - (optional) array of content lines
      */
-    public function setLanguage($language = '') {
-        if (! empty ($language)) {
-            $this->language = $language;
-        } else {
-            $languages = $this->modx->getOption('languages', $this->helpers->props, array());
-            $language = key($languages);
-            $this->language = empty($language)
-                ? 'en'
-                : $language;
+    public function setContent($content = '') {
+        if (empty($content)) {
+            $fullPath = $this->path . '/' . $this->fileName;
+            if (file_exists($fullPath)) {
+                $content = file_get_contents($fullPath);
+            } else {
+                $this->setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
+            }
         }
+        $this->content = explode("\n", $content);
 
+    }
+
+    /**
+     * Add an error message to the $this->errors array
+     *
+     * @param $message string - message to add
+     */
+    public function setError($message) {
+        $this->errors[] = $message;
+    }
+
+    public function setLexFiles() {
+    }
+
+    public function setUsed() {
+    }
+
+
+    /**
+     * Find lex strings in code file that are not in the Lexicon file
+     * and add them to $this->missing array.
+     *
+     * @param array $missing - (optional) array of missing strings.
+     */
+    public function setMissing($missing = array()) {
+        if (empty($missing)) {
+            foreach ($this->used as $key => $value) {
+                if (!array_key_exists($key, $this->defined)) {
+                    /* missing keys */
+                    $this->missing[$key] = $value;
+                } elseif (($this->defined[$key] !== $value)
+                    && (!empty($value))
+                ) {
+                    /* Updated keys */
+                    $this->toUpdate[$key] = $value;
+                }
+            }
+        } else {
+            $this->missing = $missing;
+        }
+    }
+
+    /**
+     * Add a lexicon topic file to $this->lexFiles in the form:
+     * fileName => fullPath
+     *
+     * @param $topic string - can be a topic or a fully qualified lex file spec.
+     */
+    public function addLexFile($topic) {
+        $fqn = $this->getLexFqn($topic);
+        $val = explode(':', $fqn);
+        $fileName = $val[2] . '.inc.php';
+        $fullPath = $this->lexDir . '/' . $val[0] . '/' . $fileName;
+
+        if (!array_key_exists($fileName, $this->lexFiles)) {
+            $this->lexFiles[$fileName] = $fullPath;
+        }
+    }
+
+    /**
+     * Return a fully qualified lexicon spec (e.g. 'example:en:default.inc.php')
+     * @param $lexFileSpec (partial or full lexicon spec. (e.g., default, en:default)
+     * @return string - fully qualified lex spec. (e.g. en:example:default)
+     */
+    public function getLexFqn($lexFileSpec) {
+        $nspos = strpos($lexFileSpec, ':');
+        $language = $this->language;
+
+
+        $namespace = $this->helpers->getProp('packageNameLower');
+        if ($nspos === false) {
+            $topic_parsed = $lexFileSpec;
+
+        } else { /* if namespace, search specified lexicon */
+            $params = explode(':', $lexFileSpec);
+            if (count($params) <= 2) {
+                $namespace = $params[0];
+                $topic_parsed = $params[1];
+            } else {
+                $language = $params[0];
+                $namespace = $params[1];
+                $topic_parsed = $params[2];
+            }
+        }
+        return $language . ':' . $namespace . ':' . $topic_parsed;
     }
 
     /**
@@ -300,6 +366,12 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
             }
         }
     }
+
+
+}
+
+
+class LexiconCodeFile extends AbstractLexiconCodeFile {
 
     /**
      * Set the lexicon topic for the file and add it to the $this->lexFiles array
@@ -369,23 +441,7 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
         }
     }
 
-    /**
-     * Create the array of lines from the code file in $this->content
-     *
-     * @param string $content - (optional) array of content lines
-     */
-    public function setContent($content = '') {
-        if (empty($content)) {
-            $fullPath = $this->path . '/' . $this->fileName;
-            if (file_exists($fullPath)) {
-            $content = file_get_contents($fullPath);
-            } else {
-                $this->setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
-            }
-        }
-        $this->content = explode("\n", $content);
 
-    }
 
     /**
      * Find all lexicon strings and their values (if any) in the code file
@@ -497,91 +553,11 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
 
     }
 
-    /**
-     * Find lex strings in code file that are not in the Lexicon file
-     * and add them to $this->missing array.
-     *
-     * @param array $missing - (optional) array of missing strings.
-     */
-    public function setMissing($missing = array()) {
-        if (empty($missing)) {
-            foreach($this->used as $key => $value) {
-                if (! array_key_exists($key, $this->defined)) {
-                    /* missing keys */
-                    $this->missing[$key] = $value;
-                } elseif (($this->defined[$key] !== $value)
-                    && (!empty($value))) {
-                    /* Updated keys */
-                    $this->toUpdate[$key] = $value;
-                }
-            }
-        } else {
-            $this->missing = $missing;
-        }
-    }
-
-    /**
-     * Add an error message to the $this->errors array
-     *
-     * @param $message string - message to add
-     */
-    public function setError($message) {
-        $this->errors[] = $message;
-    }
-
-    /**
-     * Return true if an error is set, false if not
-     *
-     * @return bool
-     */
-    public function hasError() {
-        return !empty($this->errors);
-    }
-
-    /**
-     * Add a lexicon topic file to $this->fileNames in the form:
-     * fileName => fullPath
-     *
-     * @param $topic string - can be a topic or a fully qualified lex file spec.
-     */
-    public function addLexFile($topic) {
-        $fqn = $this->getLexFqn($topic);
-        $val = explode(':', $fqn);
-        $fileName = $val[2] . '.inc.php';
-        $fullPath = $this->lexDir . '/' . $val[0] . '/' . $fileName;
-
-        if (! array_key_exists($fileName, $this->lexFiles)) {
-            $this->lexFiles[$fileName]  = $fullPath;
-        }
-    }
-
-    /**
-     * Return a fully qualified lexicon spec (e.g. 'example:en:default.inc.php')
-     * @param $lexFileSpec (partial or full lexicon spec. (e.g., default, en:default)
-     * @return string - fully qualified lex spec. (e.g. en:example:default)
-     */
-    public function getLexFqn($lexFileSpec) {
-        $nspos = strpos($lexFileSpec, ':');
-        $language = $this->language;
 
 
-        $namespace = $this->helpers->getProp('packageNameLower');
-        if ($nspos === false) {
-            $topic_parsed = $lexFileSpec;
 
-        } else { /* if namespace, search specified lexicon */
-            $params = explode(':', $lexFileSpec);
-            if (count($params) <= 2) {
-                $namespace = $params[0];
-                $topic_parsed = $params[1];
-            } else {
-                $language = $params[0];
-                $namespace = $params[1];
-                $topic_parsed = $params[2];
-            }
-        }
-        return $language . ':' . $namespace . ':' . $topic_parsed;
-    }
+
+
 
     /**
      *  Create/Update the strings in the lexicon file topic file
