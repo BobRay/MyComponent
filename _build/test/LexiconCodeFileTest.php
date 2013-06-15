@@ -539,7 +539,5 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
         $this->assertContains("\$_lang['string4'] = 'Updated String'", $content);
         $this->assertContains("\$_lang['string14'] = 'String in Chunk'", $content);
         $this->assertContains("\$_lang['string15'] = 'Hello \"Columbus\"'", $content);
-
-
     }
 }

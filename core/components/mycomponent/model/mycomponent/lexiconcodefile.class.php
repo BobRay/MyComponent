@@ -367,7 +367,141 @@ abstract class AbstractLexiconCodeFile {
         }
     }
 
+    /**
+     * Update a code file by removing the ~~* part of the lexicon strings.
+     * @return int number of ~~ strings removed
+     */
+    public function updateCodeFile() {
+        if (empty($this->squigglesFound)) {
+            return 0;
+        }
+        $fileName = $this->fileName;
+        $fullPath = $this->path . '/' . $fileName;
+        $content = file_get_contents($fullPath);
 
+        $type = (strpos($fileName, '.php') !== false) || (strpos($fileName, '.js') !== false)
+            ? 'modScript'
+            : 'text';
+
+        /* Need to handle trailing quote in scripts.
+           Files with tags have no trailing quote */
+        if (strpos($content, '~~') !== false) {
+            /* .php and .js files */
+            if ($type == 'modScript') {
+                $pattern = '/~~.*([\'\"][\),])/';
+                $replace = '$1';
+            } else {
+                /* text files */
+                $pattern = '/~~[^\]\?&]+/';
+                $replace = '';
+            }
+
+            $content = preg_replace($pattern, $replace, $content);
+
+            if (!empty($content)) {
+                $fp = fopen($fullPath, 'w');
+                if ($fp) {
+                    fwrite($fp, $content);
+                    fclose($fp);
+                }
+
+            }
+        }
+
+        return $this->squigglesFound;
+    }
+
+    /**
+     *  Create/Update the strings in the lexicon file topic file
+     *  specified in this file
+     */
+    public function updateLexiconFile() {
+        if (empty($this->missing) && empty($this->toUpdate)) {
+            /* Nothing to do */
+            return;
+        }
+        /* This should never happen */
+        if (count($this->lexFiles) !== 1) {
+            $this->setError('multiple lexfiles');
+            return;
+        }
+
+        $path = reset($this->lexFiles);
+        // $path = key($this->lexFiles);
+        if (!file_exists($path)) {
+            $this->setError('LexFile not found');
+            return;
+        }
+        $content = file_get_contents($path);
+
+        /* Add new strings */
+        if (!empty($this->missing)) {
+            $code = '';
+            foreach ($this->missing as $key => $value) {
+                $key = var_export($key, true);
+                $value = var_export($value, true);
+                $value = str_replace("\\\\\\", '\\', $value);
+                $value = str_replace("\\\\", '', $value);
+                $code .= "\n\$_lang[$key] = " . $value . ';';
+            }
+            $success = false;
+            $comment = $comment = '/* Used in ' . $this->fileName . ' */';
+            if (stristr($content, $comment)) {
+                $content = str_replace($comment, $comment . $code, $content);
+                $fp = fopen($path, 'w');
+                if ($fp) {
+                    fwrite($fp, $content);
+                    fclose($fp);
+                    $success = true;
+                }
+            } else {
+                $fp = fopen($path, 'a');
+                if ($fp) {
+                    fwrite($fp, "\n\n" . $comment . $code);
+                    fclose($fp);
+                    $success = true;
+                } else {
+                    $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
+                        $this->modx->lexicon('mc_could_not_open_lex_file')
+                        . ': ' . $path);
+
+                }
+            }
+            if (!$success) {
+                $this->setError($this->modx->lexicon('mc_error_writing_lexicon_file') .
+                ': ' . $path);
+            }
+
+        }
+
+        /* Update Changed strings */
+        if (!empty($this->toUpdate)) {
+            /* This may have changed */
+            $content = file_get_contents($path);
+
+            foreach ($this->toUpdate as $key => $value) {
+                if (empty($value)) {
+                    continue;
+                }
+                $pattern = '#\$_lang\[[\"\']' . $key . '[^=]+=\s*([^;]+);#';
+                preg_match($pattern, $content, $matches);
+
+                if (isset($matches[1])) {
+                    $value = var_export($value, true);
+                    $value = str_replace('\\\\\\', '\\', $value);
+                    $value = str_replace("\\\\", '', $value);
+                    $replace = str_replace($matches[1], $value,
+                        $matches[0]);
+                    $content = str_replace($matches[0], $replace, $content);
+                }
+            }
+            $fp = fopen($path, 'w');
+            if ($fp) {
+                fwrite($fp, $content);
+                fclose($fp);
+            }
+        }
+    }
 }
 
 
@@ -554,144 +688,4 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
     }
 
 
-
-
-
-
-
-    /**
-     *  Create/Update the strings in the lexicon file topic file
-     *  specified in this file
-     */
-    public function updateLexiconFile() {
-        if (empty($this->missing) && empty($this->toUpdate)) {
-            /* Nothing to do */
-            return;
-        }
-        /* This should never happen */
-        if (count($this->lexFiles) !== 1) {
-            $this->setError('multiple lexfiles');
-            return;
-        }
-
-        $path = reset($this->lexFiles);
-        // $path = key($this->lexFiles);
-        if (! file_exists($path))  {
-            $this->setError('LexFile not found');
-            return;
-        }
-        $content = file_get_contents($path);
-
-        /* Add new strings */
-        if (!empty($this->missing)) {
-            $code = '';
-            foreach($this->missing as $key => $value) {
-                $key = var_export($key, true);
-                $value = var_export($value, true);
-                $value = str_replace("\\\\\\", '\\', $value);
-                $value = str_replace("\\\\", '', $value);
-                $code .= "\n\$_lang[$key] = " . $value . ';';
-            }
-            $success = false;
-            $comment = $comment = '/* Used in ' . $this->fileName . ' */';
-            if (stristr($content, $comment)) {
-                $content = str_replace($comment, $comment . $code, $content);
-                $fp = fopen($path, 'w');
-                if ($fp) {
-                    fwrite($fp, $content);
-                    fclose($fp);
-                    $success = true;
-                }
-            } else {
-                $fp = fopen($path, 'a');
-                if ($fp) {
-                    fwrite($fp, "\n\n" . $comment . $code);
-                    fclose($fp);
-                    $success = true;
-                } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
-                        $this->modx->lexicon('mc_could_not_open_lex_file')
-                        . ': ' . $path);
-
-                }
-            }
-            if (! $success) {
-                $this->setError($this->modx->lexicon('mc_error_writing_lexicon_file') .
-                    ': ' . $path);
-            }
-
-        }
-
-        /* Update Changed strings */
-        if (!empty($this->toUpdate)) {
-            /* This may have changed */
-            $content = file_get_contents($path);
-
-            foreach($this->toUpdate as $key => $value) {
-                if (empty($value)) {
-                    continue;
-                }
-                $pattern = '#\$_lang\[[\"\']' . $key . '[^=]+=\s*([^;]+);#';
-                preg_match($pattern, $content, $matches);
-
-                if (isset($matches[1])) {
-                    $value = var_export($value, true);
-                    $value = str_replace('\\\\\\', '\\', $value);
-                    $value = str_replace("\\\\", '', $value);
-                    $replace = str_replace($matches[1], $value,
-                        $matches[0]);
-                    $content = str_replace($matches[0], $replace, $content);
-                }
-            }
-            $fp = fopen($path, 'w');
-            if ($fp) {
-                fwrite($fp, $content);
-                fclose($fp);
-            }
-        }
-    }
-
-    /**
-     * Update a code file by removing the ~~* part of the lexicon strings.
-     * @return int number of ~~ strings removed
-     */
-    public function updateCodeFile() {
-        if (empty($this->squigglesFound)) {
-            return 0;
-        }
-        $fileName = $this->fileName;
-        $fullPath = $this->path . '/' .  $fileName;
-        $content = file_get_contents($fullPath);
-
-         $type = (strpos($fileName, '.php') !== false) || (strpos($fileName, '.js') !== false)
-             ? 'modScript'
-             : 'text';
-
-        /* Need to handle trailing quote in scripts.
-           Files with tags have no trailing quote */
-        if (strpos($content, '~~') !== false) {
-            /* .php and .js files */
-            if ($type == 'modScript') {
-                $pattern = '/~~.*([\'\"][\),])/';
-                $replace = '$1';
-            } else {
-                /* text files */
-                $pattern = '/~~[^\]\?&]+/';
-                $replace = '';
-            }
-
-            $content = preg_replace($pattern, $replace, $content);
-
-            if (!empty($content)) {
-                $fp = fopen($fullPath, 'w');
-                if ($fp) {
-                    fwrite($fp, $content);
-                    fclose($fp);
-                }
-
-            }
-        }
-
-        return $this->squigglesFound;
-    }
 }
