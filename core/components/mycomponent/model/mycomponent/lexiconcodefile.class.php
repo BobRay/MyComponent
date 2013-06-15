@@ -33,8 +33,27 @@
  **/
 
 class LexiconCodeFileFactory {
+    public static $type;
+    
     public static function getInstance(&$modx, $helpers, $path, $fileName, $lexDir) {
+        if (strpos($fileName, '.menus.php') !== false) {
+            $type = 'Menu';
+        } elseif (strpos($fileName, 'settings.php') !== false) {
+            $type = 'Settings';
+        } elseif (strpos($fileName, 'properties.') !== false) {
+            $type = 'Properties';
+        } elseif (strpos($fileName, '.php') !== false) {
+            $type = 'Php';
+        } elseif (strpos($fileName, '.js') !== false) {
+            $type = 'Js';
+        } else {
+            $type = 'Text';
+        }
+        $className = $type . 'LexiconCodeFile';
+        if ($type == 'Properties') {
+            return new $className($modx, $helpers, $path, $fileName, $lexDir);
 
+        }
             return new LexiconCodeFile($modx, $helpers, $path, $fileName, $lexDir);
     }
 }
@@ -107,7 +126,7 @@ abstract class AbstractLexiconCodeFile {
     public $squigglesFound = 0;
 
     /** @var $type string - type of file being processed */
-    public $type = '';
+    public static $type = '';
 
     /** @var $pattern string - regex pattern for lex strings
      * in file of this type */
@@ -564,11 +583,7 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
             $lines = $this->content;
 
             /* These have lex topic specified in their fields */
-            if ($isPropertiesFile) {
-                $pattern = '#^\s*[\"\']lexicon[\'\"]\s*=>\s*[\"\'](.*)[\'\"]#';
-                $subPattern = 'lexicon';
-                $default = 'properties';
-            } elseif ($isMenuFile) {
+            if ($isMenuFile) {
                 $subPattern = 'lang_topics';
                 $pattern = '#^\s*[\"\']lang_topics[\'\"]\s*=>\s*[\"\'](.*)[\'\"]#';
             }
@@ -586,7 +601,7 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
                             continue;
                         }
 
-                        if ($isPropertiesFile || $isMenuFile || $isSettingsFile) {
+                        if ($isMenuFile || $isSettingsFile) {
                             if ($matches[1] == $this->helpers->props['packageNameLower']) {
                                 /* Correct if just the package name */
                                 $matches[1] = $matches[1] . ':' . $default;
@@ -640,10 +655,6 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
                 $type = 'settings';
                 $this->setUsedSettings();
                 return;
-            } elseif (strpos($this->fileName, 'properties.') !== false) {
-                $type = 'properties';
-                $pattern = '#[\'\"]desc[\'\"]\s*=>\s*(\'|\")(.*)\1#';
-                $subPattern = 'desc';
             } elseif (strpos($this->fileName, '.php') !== false) {
                 $type = 'php';
                 $pattern = '#modx->lexicon\s*\(\s*(\'|\")(.*)\1\)#';
@@ -723,6 +734,71 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
 
 
     }
+}
 
+class PropertiesLexiconCodeFile extends LexiconCodeFile {
+    public function setLexFiles($topic = ''){
+        $fullPath = $this->path . '/' . $this->fileName;
+        if (file_exists($fullPath)) {
+            $objects = include $fullPath;
+            if (!is_array($objects)) {
+                $this->setError('mc_properties_not_an_array~~Properties not an array in' . $this->fileName);
+            } else {
+                foreach($objects as $object) {
+                    if (isset($object['lexicon'])) {
+                        if ($object['lexicon'] == $this->helpers->props['packageNameLower']) {
+                            /* Correct if just the package name */
+                            $object['lexicon'] = $object['lexicon'] . ':' . 'properties';
+                        }
+                        $this->addLexFile($object['lexicon']);
+                        /* bail out at the first non-empty lexicon specification */
+                        break;
 
+                    }
+                }
+            }
+            /* assume 'properties' topic if no topic specified */
+            if (empty($this->lexFiles)) {
+                $this->addLexFile('properties');
+            }
+
+        } else {
+            $this->setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
+        }
+        return;
+
+    }
+
+    public function setUsed(){
+        $fullPath = $this->path . '/' . $this->fileName;
+        if (file_exists($fullPath)) {
+            $modx =& $this->modx;
+            $objects = include $fullPath;
+            if (! is_array($objects)) {
+                $this->setError('Not an array');
+                return;
+            }
+            $_lang = $this->defined;
+            /** @var $setting modSystemSetting */
+            foreach ($objects as $object) {
+                if (isset($object['desc']) && ( ! empty($object['desc']))) {
+                    if (strstr($object['desc'], '~~')) {
+                        $this->squigglesFound++;
+                        $s = explode('~~', $object['desc']);
+                        $lexString = $s[0];
+                        $value = $s[1];
+                    } else {
+                        $lexString = $object['desc'];
+                        $value = '';
+                    }
+                    $this->used[$lexString] = $value;
+                }
+            }
+        } else {
+            $this->setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
+        }
+
+    }
+
+    public function setUsedSettings(){}
 }
