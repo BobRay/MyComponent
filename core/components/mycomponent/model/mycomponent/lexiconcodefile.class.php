@@ -172,30 +172,37 @@ abstract class AbstractLexiconCodeFile {
 
 
     public function init() {
+
+        switch ($this->type) {
+            case 'Menu':
+                $this->pattern = '#[\'\"]description[\'\"]\s*=>\s*(\'|\")(.*)\1#';
+                $this->subPattern = 'description';
+                break;
+            case 'Php':
+                $this->pattern = '#modx->lexicon\s*\(\s*(\'|\")(.*)\1\)#';
+                $this->subPattern = 'modx->lexicon';
+                break;
+            case 'Js':
+                $this->pattern = '#_\(\s*(\'|\")(.*)\1\)#';
+                $this->subPattern = '_(';
+                break;
+            case 'Text':
+                $this->pattern = '#(\[\[)!*%([^\?&\]]*)#';
+                $this->subPattern = '[[';
+                break;
+            case 'Properties':
+                break;
+            case 'Settings':
+                break;
+            default:
+                $this->setError('mc_unknown_file_type~~Unknown file type');
+
+        }
         $this->setContent();
         $this->setLexFiles();
         $this->setUsed();
         $this->setDefined();
         $this->setMissing();
-
-        if (strpos($this->fileName, '.menus.php') !== false) {
-            $this->type = 'menu';
-            $this->pattern = '#[\'\"]description[\'\"]\s*=>\s*(\'|\")(.*)\1#';
-            $this->subPattern = 'description';
-
-        } elseif (strpos($this->fileName, '.php') !== false) {
-            $this->type = 'php';
-            $this->pattern = '#modx->lexicon\s*\(\s*(\'|\")(.*)\1\)#';
-            $this->subPattern = 'modx->lexicon';
-        } elseif (strpos($this->fileName, '.js') !== false) {
-            $this->type = 'js';
-            $this->pattern = '#_\(\s*(\'|\")(.*)\1\)#';
-            $this->subPattern = '_(';
-        } else {
-            $this->type = 'text';
-            $this->pattern = '#(\[\[)!*%([^\?&\]]*)#';
-        }
-
     }
 
     /* Getters */
@@ -662,44 +669,26 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
         if (strstr($this->fileName, 'min.js')) {
             return;
         }
-        $type = 'text';
-        $subPattern = '';
+        // $type = 'text';
+        // $subPattern = '';
         if (!empty($used)) {
             $this->used = $used;
         } else {
             $this->used = array();
-            if (strpos($this->fileName, '.menus.php') !== false) {
-                $type = 'menu';
-                $pattern = '#[\'\"]description[\'\"]\s*=>\s*(\'|\")(.*)\1#';
-                $subPattern = 'description';
-            } elseif (strpos($this->fileName, '.php') !== false) {
-                $type = 'php';
-                $pattern = '#modx->lexicon\s*\(\s*(\'|\")(.*)\1\)#';
-                $subPattern = 'modx->lexicon';
-            } elseif (strpos($this->fileName, '.js') !== false) {
-                $type = 'js';
-                $pattern = '#_\(\s*(\'|\")(.*)\1\)#';
-                $subPattern = '_(';
-            }  else {
-                $type = 'text';
-                $pattern = '#(\[\[)!*%([^\?&\]]*)#';
-            }
-
             /* Iterate over lines to find lexicon strings
                in code file */
-
             $lines = $this->content;
             foreach ($lines as $line) {
-                if ($type == 'text') {
+                if ($this->type == 'Text') {
                     if ((strpos($line, '[[%') === false) && (strpos($line, '[[!%') === false)) {
                         continue;
                     }
-                } elseif (strpos($line, $subPattern) === false) {
+                } elseif (strpos($line, $this->subPattern) === false) {
                     continue;
                 }
 
                 $matches = array();
-                preg_match($pattern, $line, $matches);
+                preg_match($this->pattern, $line, $matches);
                 if (isset($matches[2]) && !empty($matches[2])) {
                     if (strstr($matches[2], '~~')) {
                         $this->squigglesFound++;

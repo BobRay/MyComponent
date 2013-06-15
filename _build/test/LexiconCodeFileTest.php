@@ -282,7 +282,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
             $lcf = LexiconCodeFileFactory::getInstance($this->modx, $this->mc->helpers,
                 $dir, $fileName, $this->targetLexDir, $this->languages);
             $lexStrings = $lcf->getUsed();
-            $this->assertEmpty($lcf->hasError());
+            $this->assertEmpty($lcf->hasError(), $fileName);
             $this->assertTrue(is_array($lexStrings));
             $this->assertNotEmpty($lexStrings, $fileName);
             if ($fileName == 'transport.settings.php') {
