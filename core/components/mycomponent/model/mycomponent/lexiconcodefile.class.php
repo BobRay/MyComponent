@@ -699,6 +699,10 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
 }
 
 class PropertiesLexiconCodeFile extends LexiconCodeFile {
+
+    public function setContent() {
+        return array();
+    }
     public function setLexFiles($topic = ''){
         $fullPath = $this->path . '/' . $this->fileName;
         if (file_exists($fullPath)) {
@@ -723,7 +727,6 @@ class PropertiesLexiconCodeFile extends LexiconCodeFile {
             if (empty($this->lexFiles)) {
                 $this->addLexFile('properties');
             }
-
         } else {
             $this->setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
         }
@@ -764,6 +767,10 @@ class PropertiesLexiconCodeFile extends LexiconCodeFile {
 }
 
 class SettingsLexiconCodeFile extends LexiconCodeFile {
+
+    public function setContent() {
+        return array();
+    }
 
     public function setLexFiles($topic = '') {
         $this->addLexFile('default');
