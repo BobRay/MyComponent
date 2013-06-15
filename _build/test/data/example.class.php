@@ -46,6 +46,8 @@ include 'c:\xampp\htdocs\addons\assets\mycomponents\example\core\components\exam
         $oo = $this->modx->lexicon("string8~~Hello ('\"\"') my friend");
         $oo = $this->modx->lexicon('string9~~Hello ("") my friend');
         $oo = $this->modx->lexicon('string10~~Hello (\'\') my friend');
+        $oo = $this->modx->lexicon('string4');
+
 
     }
 
