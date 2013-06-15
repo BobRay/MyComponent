@@ -32,8 +32,13 @@
  * @package mycomponent
  **/
 
+class LexiconCodeFileFactory {
+    public static function getInstance(&$modx, $helpers, $path, $fileName, $lexDir) {
+            return new LexiconCodeFile($modx, $helpers, $path, $fileName, $lexDir);
+    }
+}
 
-class LexiconCodeFile {
+abstract class AbstractLexiconCodeFile {
     /**
      * @var $missing array - array of strings used in code
      * but missing from lex file
@@ -71,7 +76,7 @@ class LexiconCodeFile {
     /** @var helpers Helpers */
 
     public $helpers = null;
-    /** @var $language string -  */
+    /** @var $language string - */
     public $language = '';
 
     /** @var string $code - code from file and all included files */
@@ -91,6 +96,54 @@ class LexiconCodeFile {
     /** @var int $squigglesFound - count of squiggles tokens (~~) found */
     public $squigglesFound = 0;
 
+    function __construct(&$modx, $helpers, $path, $fileName, $lexDir) {
+
+        $this->modx =& $modx;
+        $this->helpers = $helpers;
+        $this->path = rtrim($path, '/\\');
+        $this->fileName = $fileName;
+        $this->setLanguage();
+        $this->lexDir = rtrim($lexDir, '/\\');
+        $this->lexDir = strtolower(str_replace('\\', '/', $this->lexDir));
+
+
+        $this->init();
+        /* $this->setContent();
+        $this->setLexFiles();
+        $this->setUsed();
+        $this->setDefined();
+        $this->setMissing();*/
+
+       /* public  function setLanguage() {}
+        public function setContent(){}
+        public function setLexFiles() {}
+        public function setUsed() {}
+        public function setDefined() {}
+        public function setMissing() {}*/
+
+
+   /* public  function setLanguage() {}
+    public function setContent(){}
+    public function setLexFiles() {}
+    public function setUsed() {}
+    public function setDefined() {}
+    public function setMissing() {}*/
+    }
+
+    public static function getInstance(&$modx, $helpers, $path, $fileName, $lexDir) {
+        $lcf = new LexiconCodeFile($modx, $helpers, $path, $fileName, $lexDir);
+        return $lcf;
+    }
+
+    public function setLanguage(){}
+
+    public function init() {}
+
+}
+
+
+class LexiconCodeFile extends AbstractLexiconCodeFile {
+
 
 
     /**
@@ -100,7 +153,7 @@ class LexiconCodeFile {
      * @param $fileName string - file name of code file
      * @param $lexDir string - path to lexicon directory (e.g. lexicon/en)
      */
-    function __construct(&$modx, $helpers, $path, $fileName, $lexDir) {
+    /*function __construct(&$modx, $helpers, $path, $fileName, $lexDir) {
         $this->modx =& $modx;
         $this->helpers = $helpers;
         $this->path = rtrim($path, '/\\');
@@ -108,6 +161,14 @@ class LexiconCodeFile {
         $this->setLanguage();
         $this->lexDir = rtrim($lexDir, '/\\');
         $this->lexDir = strtolower(str_replace('\\','/', $this->lexDir));
+        $this->setContent();
+        $this->setLexFiles();
+        $this->setUsed();
+        $this->setDefined();
+        $this->setMissing();
+    }*/
+
+    public function init() {
         $this->setContent();
         $this->setLexFiles();
         $this->setUsed();
