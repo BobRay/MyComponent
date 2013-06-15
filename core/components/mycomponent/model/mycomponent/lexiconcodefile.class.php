@@ -158,7 +158,6 @@ abstract class AbstractLexiconCodeFile {
         $this->setLanguage();
         $this->lexDir = rtrim($lexDir, '/\\');
         $this->lexDir = strtolower(str_replace('\\', '/', $this->lexDir));
-        // $this->init();
     }
 
     public static function getInstance(&$modx, $helpers, $path, $fileName, $lexDir) {
@@ -510,7 +509,6 @@ abstract class AbstractLexiconCodeFile {
         }
 
         $path = reset($this->lexFiles);
-        // $path = key($this->lexFiles);
         if (!file_exists($path)) {
             $this->setError('LexFile not found');
             return;
@@ -663,14 +661,11 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
      * @param array $used
      */
     public function setUsed($used = array()) {
-        $coreEntries = $this->modx->lexicon->getFileTopic($this->language);
-
         /* skip minified JS files */
         if (strstr($this->fileName, 'min.js')) {
             return;
         }
-        // $type = 'text';
-        // $subPattern = '';
+
         if (!empty($used)) {
             $this->used = $used;
         } else {
@@ -690,27 +685,37 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
                 $matches = array();
                 preg_match($this->pattern, $line, $matches);
                 if (isset($matches[2]) && !empty($matches[2])) {
-                    if (strstr($matches[2], '~~')) {
-                        $this->squigglesFound++;
-                        $s = explode('~~', $matches[2]);
-                        $lexString = $s[0];
-                        $value = $s[1];
-                    } else {
-                        $lexString = $matches[2];
-                        $value = '';
-                    }
-                   /* skip entries that are in the MODX lexicon and not re-defined */
-                   if (array_key_exists($lexString, $coreEntries) && empty($value)){
-                       continue;
-                   }
-                   /* Don't update an existing entry with an empty value */
-                   if (array_key_exists($lexString, $this->used) && (empty($value))) {
-                       continue;
-                   }
-                   $this->used[$lexString] = $value;
+                    $this->addLexString($matches[2]);
                 }
             }
         }
+    }
+
+    /**
+     * Add a lexicon string to $this->used array
+     *
+     * @param $string - lexicon string to add (with or without ~~)
+     */
+    public function addLexString($string) {
+        $coreEntries = $this->modx->lexicon->getFileTopic($this->language);
+        if (strstr($string, '~~')) {
+            $this->squigglesFound++;
+            $s = explode('~~', $string);
+            $lexString = $s[0];
+            $value = $s[1];
+        } else {
+            $lexString = $string;
+            $value = '';
+        }
+        /* skip entries that are in the MODX lexicon and not re-defined */
+        if (array_key_exists($lexString, $coreEntries) && empty($value)) {
+            return;
+        }
+        /* Don't update an existing entry with an empty value */
+        if (array_key_exists($lexString, $this->used) && (empty($value))) {
+            return;
+        }
+        $this->used[$lexString] = $value;
     }
 
 }
@@ -764,16 +769,7 @@ class PropertiesLexiconCodeFile extends LexiconCodeFile {
             /** @var $setting modSystemSetting */
             foreach ($objects as $object) {
                 if (isset($object['desc']) && ( ! empty($object['desc']))) {
-                    if (strstr($object['desc'], '~~')) {
-                        $this->squigglesFound++;
-                        $s = explode('~~', $object['desc']);
-                        $lexString = $s[0];
-                        $value = $s[1];
-                    } else {
-                        $lexString = $object['desc'];
-                        $value = '';
-                    }
-                    $this->used[$lexString] = $value;
+                    $this->addLexString($object['desc']);
                 }
             }
         } else {
@@ -810,10 +806,8 @@ class SettingsLexiconCodeFile extends LexiconCodeFile {
                 if (empty($description)) {
                     $description = '';
                 }
-                $lexNameKey = 'setting_' . $key;
-                $lexDescKey = 'setting_' . $key . '_desc';
-                $this->used[$lexNameKey] = $name;
-                $this->used[$lexDescKey] = $description;
+                $this->addLexString('setting_' . $key . '~~' . $name);
+                $this->addLexString('setting_' . $key . '_desc' . '~~' . $description);
             }
         } else {
             $this->setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
