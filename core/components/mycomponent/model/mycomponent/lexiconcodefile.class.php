@@ -50,7 +50,7 @@ class LexiconCodeFileFactory {
             $type = 'Text';
         }
         $className = $type . 'LexiconCodeFile';
-        if ($type == 'Properties') {
+        if ($type == 'Properties' || $type == 'Settings') {
             return new $className($modx, $helpers, $path, $fileName, $lexDir);
 
         }
@@ -159,7 +159,6 @@ abstract class AbstractLexiconCodeFile {
 
     abstract public function setUsed();
 
-    abstract public function setUsedSettings();
 
     public function init() {
         $this->setContent();
@@ -171,13 +170,7 @@ abstract class AbstractLexiconCodeFile {
             $this->type = 'menu';
             $this->pattern = '#[\'\"]description[\'\"]\s*=>\s*(\'|\")(.*)\1#';
             $this->subPattern = 'description';
-        } elseif (strpos($this->fileName, 'settings.php') !== false) {
-            $this->setUsedSettings();
-            return;
-        } elseif (strpos($this->fileName, 'properties.') !== false) {
-            $this->type = 'properties';
-            $this->pattern = '#[\'\"]desc[\'\"]\s*=>\s*(\'|\")(.*)\1#';
-            $this->subPattern = 'desc';
+
         } elseif (strpos($this->fileName, '.php') !== false) {
             $this->type = 'php';
             $this->pattern = '#modx->lexicon\s*\(\s*(\'|\")(.*)\1\)#';
@@ -571,7 +564,7 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
         $default = $topic;
         $isPropertiesFile = strpos($this->fileName, 'properties.') !== false;
         $isMenuFile = strpos($this->fileName, 'menus.php') !== false;
-        $isSettingsFile = strpos($this->fileName, 'settings.php') !== false;
+
 
         /* set default $pattern and $subPattern */
         $subPattern = 'lexicon->load';
@@ -601,7 +594,7 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
                             continue;
                         }
 
-                        if ($isMenuFile || $isSettingsFile) {
+                        if ($isMenuFile) {
                             if ($matches[1] == $this->helpers->props['packageNameLower']) {
                                 /* Correct if just the package name */
                                 $matches[1] = $matches[1] . ':' . $default;
@@ -651,10 +644,6 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
                 $type = 'menu';
                 $pattern = '#[\'\"]description[\'\"]\s*=>\s*(\'|\")(.*)\1#';
                 $subPattern = 'description';
-            } elseif (strpos($this->fileName, 'settings.php') !== false) {
-                $type = 'settings';
-                $this->setUsedSettings();
-                return;
             } elseif (strpos($this->fileName, '.php') !== false) {
                 $type = 'php';
                 $pattern = '#modx->lexicon\s*\(\s*(\'|\")(.*)\1\)#';
@@ -706,34 +695,7 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
             }
         }
     }
-    public function setUsedSettings() {
-        $fullPath = $this->path . '/' . $this->fileName;
-        if (file_exists($fullPath)) {
-            $modx =& $this->modx;
-            $objects = include $fullPath;
-            $_lang = $this->defined;
-            /** @var $setting modSystemSetting */
-            foreach ($objects as $setting) {
-                $key = $setting->get('key');
-                $name = $setting->get('name');
-                if (empty($name)) {
-                    $name = $key;
-                }
-                $description = $setting->get('description');
-                if (empty($description)) {
-                    $description = '';
-                }
-                $lexNameKey = 'setting_' . $key;
-                $lexDescKey = 'setting_' . $key . '_desc';
-                $this->used[$lexNameKey] = $name;
-                $this->used[$lexDescKey] = $description;
-            }
-        } else {
-            $this->setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
-        }
 
-
-    }
 }
 
 class PropertiesLexiconCodeFile extends LexiconCodeFile {
@@ -799,6 +761,39 @@ class PropertiesLexiconCodeFile extends LexiconCodeFile {
         }
 
     }
+}
 
-    public function setUsedSettings(){}
+class SettingsLexiconCodeFile extends LexiconCodeFile {
+
+    public function setLexFiles($topic = '') {
+        $this->addLexFile('default');
+    }
+
+    public function setUsed() {
+        $fullPath = $this->path . '/' . $this->fileName;
+        if (file_exists($fullPath)) {
+            $modx =& $this->modx;
+            $objects = include $fullPath;
+            $_lang = $this->defined;
+            /** @var $setting modSystemSetting */
+            foreach ($objects as $setting) {
+                $key = $setting->get('key');
+                $name = $setting->get('name');
+                if (empty($name)) {
+                    $name = $key;
+                }
+                $description = $setting->get('description');
+                if (empty($description)) {
+                    $description = '';
+                }
+                $lexNameKey = 'setting_' . $key;
+                $lexDescKey = 'setting_' . $key . '_desc';
+                $this->used[$lexNameKey] = $name;
+                $this->used[$lexDescKey] = $description;
+            }
+        } else {
+            $this->setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
+        }
+    }
+
 }
