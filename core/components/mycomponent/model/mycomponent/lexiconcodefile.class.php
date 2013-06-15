@@ -33,8 +33,13 @@
  **/
 
 class LexiconCodeFileFactory {
-    public static $type;
-    
+
+    /**
+     * prevent this class being instantiated
+     */
+    private function __construct() {
+    }
+
     public static function getInstance(&$modx, $helpers, $path, $fileName, $lexDir) {
         if (strpos($fileName, '.menus.php') !== false) {
             $type = 'Menu';
@@ -51,10 +56,13 @@ class LexiconCodeFileFactory {
         }
         $className = $type . 'LexiconCodeFile';
         if ($type == 'Properties' || $type == 'Settings') {
-            return new $className($modx, $helpers, $path, $fileName, $lexDir);
+            $fileObj =  new $className($modx, $helpers, $path, $fileName, $lexDir);
 
+        } else {
+            $fileObj = new LexiconCodeFile($modx, $helpers, $path, $fileName, $lexDir);
         }
-            return new LexiconCodeFile($modx, $helpers, $path, $fileName, $lexDir);
+        $fileObj->setType($type);
+        return $fileObj;
     }
 }
 
@@ -125,8 +133,9 @@ abstract class AbstractLexiconCodeFile {
      * tokens (~~) found */
     public $squigglesFound = 0;
 
-    /** @var $type string - type of file being processed */
-    public static $type = '';
+    /** @var $type string - type of the code file for this object
+     * (Php, Text, JS, Properties, Menu, Settings) */
+    public $type = '';
 
     /** @var $pattern string - regex pattern for lex strings
      * in file of this type */
@@ -135,6 +144,7 @@ abstract class AbstractLexiconCodeFile {
     /** @var $subPattern string - string identifying lines with lex
      * strings type in files of this type (other lines are skipped) */
     public $subPattern = '';
+
 
 
 
@@ -187,6 +197,16 @@ abstract class AbstractLexiconCodeFile {
     }
 
     /* Getters */
+
+    /**
+     * Return type of the code file for this object
+     * (Php, Text, JS, Properties, Menu, Settings)
+     *
+     * @return string
+     */
+    public function getType() {
+        return $this->type;
+    }
 
     /**
      * Return the full name of this file
@@ -278,6 +298,12 @@ abstract class AbstractLexiconCodeFile {
     }
 
     /* Setters */
+
+    public function setType($type) {
+        $this->type = $type;
+    }
+
+
     /**
      * Return the two-letter primary language code extracted
      * from the languages array in the project config file
