@@ -513,7 +513,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
         }
     }
 
-    public function testEverything() {
+    public function xtestEverything() {
         $this->utHelpers->rrmdir($this->targetLexDir);
         $lexHelper = new LexiconHelper($this->modx);
         $lexHelper->init(array(), 'unittest');

@@ -62,6 +62,7 @@ class LexiconCodeFileFactory {
             $fileObj = new LexiconCodeFile($modx, $helpers, $path, $fileName, $lexDir);
         }
         $fileObj->setType($type);
+        $fileObj->init();
         return $fileObj;
     }
 }
@@ -157,7 +158,7 @@ abstract class AbstractLexiconCodeFile {
         $this->setLanguage();
         $this->lexDir = rtrim($lexDir, '/\\');
         $this->lexDir = strtolower(str_replace('\\', '/', $this->lexDir));
-        $this->init();
+        // $this->init();
     }
 
     public static function getInstance(&$modx, $helpers, $path, $fileName, $lexDir) {
@@ -176,6 +177,7 @@ abstract class AbstractLexiconCodeFile {
         $this->setUsed();
         $this->setDefined();
         $this->setMissing();
+
         if (strpos($this->fileName, '.menus.php') !== false) {
             $this->type = 'menu';
             $this->pattern = '#[\'\"]description[\'\"]\s*=>\s*(\'|\")(.*)\1#';
