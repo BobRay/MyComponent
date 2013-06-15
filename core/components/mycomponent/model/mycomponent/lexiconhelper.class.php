@@ -130,8 +130,6 @@ class LexiconHelper {
             $this->modx->lexicon('mc_lexicon_helper')
             . "\n");
 
-
-
         $this->packageNameLower = $this->helpers->getProp('packageNameLower');
         $this->targetBase = $this->helpers->getProp('targetRoot');
         $this->targetBase = str_replace('\\', '/', $this->targetBase);

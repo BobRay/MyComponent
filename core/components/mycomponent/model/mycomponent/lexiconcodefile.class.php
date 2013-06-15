@@ -34,6 +34,7 @@
 
 class LexiconCodeFileFactory {
     public static function getInstance(&$modx, $helpers, $path, $fileName, $lexDir) {
+
             return new LexiconCodeFile($modx, $helpers, $path, $fileName, $lexDir);
     }
 }
@@ -101,8 +102,22 @@ abstract class AbstractLexiconCodeFile {
      * in the lex file and need to be updated */
     public $toUpdate = array();
 
-    /** @var int $squigglesFound - count of squiggles tokens (~~) found */
+    /** @var int $squigglesFound - count of squiggles
+     * tokens (~~) found */
     public $squigglesFound = 0;
+
+    /** @var $type string - type of file being processed */
+    public $type = '';
+
+    /** @var $pattern string - regex pattern for lex strings
+     * in file of this type */
+    public $pattern = '';
+
+    /** @var $subPattern string - string identifying lines with lex
+     * strings type in files of this type (other lines are skipped) */
+    public $subPattern = '';
+
+
 
     function __construct(&$modx, $helpers, $path, $fileName, $lexDir) {
 
@@ -120,25 +135,12 @@ abstract class AbstractLexiconCodeFile {
         $lcf = new LexiconCodeFile($modx, $helpers, $path, $fileName, $lexDir);
         return $lcf;
     }
+    /* These must be implemented in child classes */
+    abstract public function setLexFiles();
 
-    /**
-     * Return the two-letter primary language code extracted
-     * from the languages array in the project config file
-     *
-     * @param string $language
-     */
-    public function setLanguage($language = '') {
-        if (!empty ($language)) {
-            $this->language = $language;
-        } else {
-            $languages = $this->modx->getOption('languages', $this->helpers->props, array());
-            $language = key($languages);
-            $this->language = empty($language)
-                ? 'en'
-                : $language;
-        }
+    abstract public function setUsed();
 
-    }
+    abstract public function setUsedSettings();
 
     public function init() {
         $this->setContent();
@@ -146,6 +148,30 @@ abstract class AbstractLexiconCodeFile {
         $this->setUsed();
         $this->setDefined();
         $this->setMissing();
+        if (strpos($this->fileName, '.menus.php') !== false) {
+            $this->type = 'menu';
+            $this->pattern = '#[\'\"]description[\'\"]\s*=>\s*(\'|\")(.*)\1#';
+            $this->subPattern = 'description';
+        } elseif (strpos($this->fileName, 'settings.php') !== false) {
+            $this->setUsedSettings();
+            return;
+        } elseif (strpos($this->fileName, 'properties.') !== false) {
+            $this->type = 'properties';
+            $this->pattern = '#[\'\"]desc[\'\"]\s*=>\s*(\'|\")(.*)\1#';
+            $this->subPattern = 'desc';
+        } elseif (strpos($this->fileName, '.php') !== false) {
+            $this->type = 'php';
+            $this->pattern = '#modx->lexicon\s*\(\s*(\'|\")(.*)\1\)#';
+            $this->subPattern = 'modx->lexicon';
+        } elseif (strpos($this->fileName, '.js') !== false) {
+            $this->type = 'js';
+            $this->pattern = '#_\(\s*(\'|\")(.*)\1\)#';
+            $this->subPattern = '_(';
+        } else {
+            $this->type = 'text';
+            $this->pattern = '#(\[\[)!*%([^\?&\]]*)#';
+        }
+
     }
 
     /* Getters */
@@ -220,9 +246,6 @@ abstract class AbstractLexiconCodeFile {
         return $this->errors;
     }
 
-
-
-
     /**
      * Return array of lex strings where the value != the
      * value in the lexicon topic file
@@ -240,6 +263,26 @@ abstract class AbstractLexiconCodeFile {
      */
     public function getSquiggleCount() {
         return $this->squigglesFound;
+    }
+
+    /* Setters */
+    /**
+     * Return the two-letter primary language code extracted
+     * from the languages array in the project config file
+     *
+     * @param string $language
+     */
+    public function setLanguage($language = '') {
+        if (!empty ($language)) {
+            $this->language = $language;
+        } else {
+            $languages = $this->modx->getOption('languages', $this->helpers->props, array());
+            $language = key($languages);
+            $this->language = empty($language)
+                ? 'en'
+                : $language;
+        }
+
     }
 
     /**
@@ -268,13 +311,6 @@ abstract class AbstractLexiconCodeFile {
     public function setError($message) {
         $this->errors[] = $message;
     }
-
-    public function setLexFiles() {
-    }
-
-    public function setUsed() {
-    }
-
 
     /**
      * Find lex strings in code file that are not in the Lexicon file
@@ -601,6 +637,7 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
                 $pattern = '#[\'\"]description[\'\"]\s*=>\s*(\'|\")(.*)\1#';
                 $subPattern = 'description';
             } elseif (strpos($this->fileName, 'settings.php') !== false) {
+                $type = 'settings';
                 $this->setUsedSettings();
                 return;
             } elseif (strpos($this->fileName, 'properties.') !== false) {
