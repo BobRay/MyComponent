@@ -177,15 +177,15 @@ abstract class AbstractLexiconCodeFile {
         $this->helpers = $helpers;
         $this->path = rtrim($path, '/\\');
         $this->fileName = $fileName;
-        $this->setLanguage();
+        $this->_setLanguage();
         $this->lexDir = rtrim($lexDir, '/\\');
         $this->lexDir = strtolower(str_replace('\\', '/', $this->lexDir));
     }
 
     /* These two must be implemented in child classes */
-    abstract public function setLexFiles();
+    abstract public function _setLexFiles();
 
-    abstract public function setUsed();
+    abstract public function _setUsed();
 
 
     /**
@@ -219,14 +219,14 @@ abstract class AbstractLexiconCodeFile {
             case 'Settings':
                 break;
             default:
-                $this->setError('mc_unknown_file_type~~Unknown file type');
+                $this->_setError('mc_unknown_file_type~~Unknown file type');
 
         }
-        $this->setContent();
-        $this->setLexFiles();
-        $this->setUsed();
-        $this->setDefined();
-        $this->setMissing();
+        $this->_setContent();
+        $this->_setLexFiles();
+        $this->_setUsed();
+        $this->_setDefined();
+        $this->_setMissing();
     }
 
     /**
@@ -254,7 +254,7 @@ abstract class AbstractLexiconCodeFile {
      *
      * @param string $language
      */
-    public function setLanguage($language = '') {
+    public function _setLanguage($language = '') {
         if (!empty ($language)) {
             $this->language = $language;
         } else {
@@ -272,13 +272,13 @@ abstract class AbstractLexiconCodeFile {
      *
      * @param string $content - (optional) array of content lines
      */
-    public function setContent($content = '') {
+    public function _setContent($content = '') {
         if (empty($content)) {
             $fullPath = $this->path . '/' . $this->fileName;
             if (file_exists($fullPath)) {
                 $content = file_get_contents($fullPath);
             } else {
-                $this->setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
+                $this->_setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
             }
         }
         $this->content = explode("\n", $content);
@@ -290,7 +290,7 @@ abstract class AbstractLexiconCodeFile {
      *
      * @param $message string - message to add
      */
-    public function setError($message) {
+    public function _setError($message) {
         $this->errors[] = $message;
     }
 
@@ -300,7 +300,7 @@ abstract class AbstractLexiconCodeFile {
      *
      * @param array $missing - (optional) array of missing strings.
      */
-    public function setMissing($missing = array()) {
+    public function _setMissing($missing = array()) {
         if (empty($missing)) {
             foreach ($this->used as $key => $value) {
                 if (!array_key_exists($key, $this->defined)) {
@@ -368,7 +368,7 @@ abstract class AbstractLexiconCodeFile {
      * Create the array of lexicon strings in lexicon files used by this code file in the form:
      * key => value
      */
-    public function setDefined($defined = array()) {
+    public function _setDefined($defined = array()) {
         if (!empty($defined)) {
             $this->$defined = $this->defined + $defined;
         } else {
@@ -439,13 +439,13 @@ abstract class AbstractLexiconCodeFile {
         }
         /* This should never happen */
         if (count($this->lexFiles) !== 1) {
-            $this->setError($this->modx->lexicon('mc_cannot_update_multiple_lex_files'));
+            $this->_setError($this->modx->lexicon('mc_cannot_update_multiple_lex_files'));
             return;
         }
 
         $path = reset($this->lexFiles);
         if (!file_exists($path)) {
-            $this->setError('LexFile not found');
+            $this->_setError('LexFile not found');
             return;
         }
         $content = file_get_contents($path);
@@ -484,7 +484,7 @@ abstract class AbstractLexiconCodeFile {
                 }
             }
             if (!$success) {
-                $this->setError($this->modx->lexicon('mc_error_writing_lexicon_file') .
+                $this->_setError($this->modx->lexicon('mc_error_writing_lexicon_file') .
                 ': ' . $path);
             }
         }
@@ -530,7 +530,7 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
     /**
      * Set the lexicon topic for the file and add it to the $this->lexFiles array
      */
-    public function setLexFiles() {
+    public function _setLexFiles() {
         $isMenuFile = strpos($this->fileName, 'menus.php') !== false;
 
         /* set default $pattern and $subPattern */
@@ -585,7 +585,7 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
      * Find all lexicon strings and their values (if any) in the code file
      * and add them to $this->used array.
      */
-    public function setUsed() {
+    public function _setUsed() {
         /* skip minified JS files */
         if (strstr($this->fileName, 'min.js')) {
             return;
@@ -652,7 +652,7 @@ class PropertiesLexiconCodeFile extends LexiconCodeFile {
      *
      *  @return array
      */
-    public function setContent() {
+    public function _setContent() {
         return array();
     }
 
@@ -660,12 +660,12 @@ class PropertiesLexiconCodeFile extends LexiconCodeFile {
     /**
      * Overrides parent method
      */
-    public function setLexFiles(){
+    public function _setLexFiles(){
         $fullPath = $this->path . '/' . $this->fileName;
         if (file_exists($fullPath)) {
             $objects = include $fullPath;
             if (!is_array($objects)) {
-                $this->setError('mc_properties_not_an_array~~Properties not an array in' .
+                $this->_setError('mc_properties_not_an_array~~Properties not an array in' .
                     $this->fileName);
             } else {
                 foreach($objects as $object) {
@@ -686,7 +686,7 @@ class PropertiesLexiconCodeFile extends LexiconCodeFile {
                 $this->addLexFile('properties');
             }
         } else {
-            $this->setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
+            $this->_setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
         }
         return;
 
@@ -695,13 +695,13 @@ class PropertiesLexiconCodeFile extends LexiconCodeFile {
     /**
      * Overrides parent method
      */
-    public function setUsed(){
+    public function _setUsed(){
         $fullPath = $this->path . '/' . $this->fileName;
         if (file_exists($fullPath)) {
             $modx =& $this->modx;
             $objects = include $fullPath;
             if (! is_array($objects)) {
-                $this->setError('Not an array');
+                $this->_setError('Not an array');
                 return;
             }
             $_lang = $this->defined;
@@ -712,7 +712,7 @@ class PropertiesLexiconCodeFile extends LexiconCodeFile {
                 }
             }
         } else {
-            $this->setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
+            $this->_setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
         }
     }
 }
@@ -730,21 +730,21 @@ class SettingsLexiconCodeFile extends LexiconCodeFile {
      *
      * @return array
      */
-    public function setContent() {
+    public function _setContent() {
         return array();
     }
 
     /**
      * Overrides parent method
      */
-    public function setLexFiles() {
+    public function _setLexFiles() {
         $this->addLexFile('default');
     }
 
     /**
      * Overrides parent method
      */
-    public function setUsed() {
+    public function _setUsed() {
         $fullPath = $this->path . '/' . $this->fileName;
         if (file_exists($fullPath)) {
             $modx =& $this->modx;
@@ -765,7 +765,7 @@ class SettingsLexiconCodeFile extends LexiconCodeFile {
                 $this->addLexString('setting_' . $key . '_desc' . '~~' . $description);
             }
         } else {
-            $this->setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
+            $this->_setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
         }
     }
 }
