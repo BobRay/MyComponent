@@ -73,7 +73,7 @@ class LexiconCodeFileFactory {
         } else {
             $fileObj = new LexiconCodeFile($modx, $helpers, $path, $fileName, $lexDir);
         }
-        $fileObj->setType($type);
+        $fileObj->type = $type;
         $fileObj->init();
         return $fileObj;
     }
@@ -229,69 +229,6 @@ abstract class AbstractLexiconCodeFile {
         $this->setMissing();
     }
 
-    /* Getters */
-
-    /**
-     * Return type of the code file for this object
-     * (Php, Text, JS, Properties, Menu, Settings)
-     *
-     * @return string
-     */
-    public function getType() {
-        return $this->type;
-    }
-
-    /**
-     * Return the full name of this file
-     *
-     * @return string
-     */
-    public function  getFileName() {
-        return $this->fileName;
-    }
-
-    /**
-     * Return array of all lexicon strings used in this code file in the form:
-     * key => value
-     *
-     * @return array
-     */
-    public function getUsed() {
-        return $this->used;
-    }
-
-    /**
-     * Return the array of lex keys used in this file that are
-     * missing from any specified lexicon topic files
-     * @return array
-     */
-    public function getMissing() {
-        return $this->missing;
-    }
-
-
-    /**
-     * Return the array of lexicon strings found in this file in the form:
-     * key => value
-     *
-     * @return array
-     */
-    public function getDefined() {
-        return $this->defined;
-    }
-
-    /**
-     * Return the array of all lexicon topic files specified for this file in the form:
-     * fileName => fullPath
-     *
-     * This should never be empty
-     *
-     * @return array
-     */
-    public function getLexFiles() {
-        return $this->lexFiles;
-    }
-
     /**
      * Return true if an error is set, false if not
      *
@@ -308,36 +245,6 @@ abstract class AbstractLexiconCodeFile {
      */
     public function getErrors() {
         return $this->errors;
-    }
-
-    /**
-     * Return array of lex strings where the value != the
-     * value in the lexicon topic file
-     *
-     * @return array
-     */
-    public function getToUpdate() {
-        return $this->toUpdate;
-    }
-
-    /**
-     * Return the number of ~~ tokens found in the code file
-     *
-     * @return int
-     */
-    public function getSquiggleCount() {
-        return $this->squigglesFound;
-    }
-
-    /* Setters */
-
-    /**
-     * Set type of code file (called in factory getInstance())
-     *
-     * @param $type string - Type of code file (Php, Text, Js, etc.)
-     */
-    public function setType($type) {
-        $this->type = $type;
     }
 
 

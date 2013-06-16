@@ -197,7 +197,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
         $language = $lcf->language;
         $this->assertNotEmpty($language);
 
-        $lexFiles = $lcf->getLexFiles();
+        $lexFiles = $lcf->lexFiles;
         $this->assertEmpty($lcf->hasError());
         $expected = array(
             'default.inc.php' => $this->targetLexDir . $language . '/default.inc.php',
@@ -208,7 +208,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
 
         $lcf->addLexfile('properties');
 
-        $lexFiles = $lcf->getLexFiles();
+        $lexFiles = $lcf->lexFiles;
         $this->assertEmpty($lcf->hasError());
         $expected = array(
             'default.inc.php' => $this->targetLexDir . $language . '/default.inc.php',
@@ -221,7 +221,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
         $lcf = null;
         $lcf = LexiconCodeFileFactory::getInstance($this->modx, $this->mc->helpers,
             $this->targetChunkDir, 'chunk1.chunk.html', $this->targetLexDir, $this->languages);
-        $lexFiles = $lcf->getLexFiles();
+        $lexFiles = $lcf->lexFiles;
         $this->assertEmpty($lcf->hasError());
         $expected = array(
             'chunks.inc.php' => $this->targetLexDir . $language . '/chunks.inc.php',
@@ -233,7 +233,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
         $lcf = null;
         $lcf = LexiconCodeFileFactory::getInstance($this->modx, $this->mc->helpers,
             $this->targetPropertiesDir, 'properties.snippet1.snippet.php', $this->targetLexDir, $this->languages);
-        $lexFiles = $lcf->getLexFiles();
+        $lexFiles = $lcf->lexFiles;
         $expected = array(
             'properties.inc.php' => $this->targetLexDir . $language . '/properties.inc.php',
         );
@@ -244,7 +244,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
         $lcf = null;
         $lcf = LexiconCodeFileFactory::getInstance($this->modx, $this->mc->helpers,
             $this->targetDataDir, 'transport.menus.php', $this->targetLexDir, $this->languages);
-        $lexFiles = $lcf->getLexFiles();
+        $lexFiles = $lcf->lexFiles;
         $expected = array(
             'default.inc.php' => $this->targetLexDir . $language . '/default.inc.php',
         );
@@ -255,7 +255,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
         $lcf = null;
         $lcf = LexiconCodeFileFactory::getInstance($this->modx, $this->mc->helpers,
             $this->targetDataDir, 'transport.settings.php', $this->targetLexDir, $this->languages);
-        $lexFiles = $lcf->getLexFiles();
+        $lexFiles = $lcf->lexFiles;
         $expected = array(
             'default.inc.php' => $this->targetLexDir . $language . '/default.inc.php',
         );
@@ -281,7 +281,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
             $this->assertFileExists($dir . '/' . $fileName);
             $lcf = LexiconCodeFileFactory::getInstance($this->modx, $this->mc->helpers,
                 $dir, $fileName, $this->targetLexDir, $this->languages);
-            $lexStrings = $lcf->getUsed();
+            $lexStrings = $lcf->used;
             $this->assertEmpty($lcf->hasError(), $fileName);
             $this->assertTrue(is_array($lexStrings));
             $this->assertNotEmpty($lexStrings, $fileName);
@@ -325,9 +325,9 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
             $this->assertFileExists($dir . '/' . $fileName);
             $lcf = LexiconCodeFileFactory::getInstance($this->modx, $this->mc->helpers,
                 $dir, $fileName, $this->targetLexDir, $this->languages);
-            $lexStrings = $lcf->getUsed();
-            $missing = $lcf->getMissing();
-            $toUpdate = $lcf->getToUpdate();
+            $lexStrings = $lcf->used;
+            $missing = $lcf->missing;
+            $toUpdate = $lcf->toUpdate;
             $this->assertEmpty($lcf->hasError());
 
             $this->assertTrue(is_array($lexStrings));
@@ -396,7 +396,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
                 $dir, $fileName, $this->targetLexDir, $this->languages);
             $lcf->updateLexiconFile();
             $this->assertEmpty($lcf->hasError(), print_r($lcf->getErrors(), true));
-            $path = reset($lcf->getLexFiles());
+            $path = reset($lcf->lexFiles);
             $_lang = array();
             include $path;
             $this->assertNotEmpty($_lang);
