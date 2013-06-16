@@ -220,16 +220,16 @@ class LexiconHelper {
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, $indent .
             $this->modx->lexicon('mc_processing') .
             ' ' . $fileName);
-        $lcf = new LexiconCodeFile($this->modx, $this->helpers, $fullPath, $fileName, $this->targetLexDir);
-        $lexFiles = $lcf->getLexFiles();
+        $lcf = LexiconCodeFileFactory::getInstance($this->modx, $this->helpers, $fullPath, $fileName, $this->targetLexDir);
+        $lexFiles = $lcf->lexFiles;
 
         foreach ($lexFiles as $file => $path) {
             if ((!empty($path)) && (!file_exists($path))) {
                 $dir = str_replace($file, '', $path);
                 $this->createLexiconFile($dir, $file);
             }
-            $used = $lcf->getUsed();
-            $defined = $lcf->getDefined();
+            $used = $lcf->used;
+            $defined = $lcf->defined;
             if (!empty($used)) {
                 $this->usedSomewhere = array_merge($this->usedSomewhere, $used);
                 $this->definedSomewhere = array_merge($this->definedSomewhere, $defined);

@@ -652,7 +652,7 @@ class PropertiesLexiconCodeFile extends LexiconCodeFile {
      *
      *  @return array
      */
-    public function _setContent() {
+    public function _setContent($content = '') {
         return array();
     }
 
@@ -730,7 +730,7 @@ class SettingsLexiconCodeFile extends LexiconCodeFile {
      *
      * @return array
      */
-    public function _setContent() {
+    public function _setContent($content = '') {
         return array();
     }
 
@@ -783,7 +783,7 @@ class MenuLexiconCodeFile extends LexiconCodeFile {
      *
      * @return array
      */
-    public function _setContent() {
+    public function _setContent($content = '') {
         return array();
     }
 
