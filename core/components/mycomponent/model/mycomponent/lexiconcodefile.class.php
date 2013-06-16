@@ -67,7 +67,7 @@ class LexiconCodeFileFactory {
             $type = 'Text';
         }
         $className = $type . 'LexiconCodeFile';
-        if ($type == 'Properties' || $type == 'Settings') {
+        if ($type == 'Properties' || $type == 'Settings' || $type == 'Menu') {
             $fileObj =  new $className($modx, $helpers, $path, $fileName, $lexDir);
 
         } else {
@@ -769,3 +769,87 @@ class SettingsLexiconCodeFile extends LexiconCodeFile {
         }
     }
 }
+
+/**
+ * Class MenuLexiconCodeFile
+ *
+ * Handles Lexicon strings in Settings transport files
+ */
+class MenuLexiconCodeFile extends LexiconCodeFile {
+
+    /**
+     * Overrides parent method
+     * ($content is not used for these files)
+     *
+     * @return array
+     */
+    public function _setContent() {
+        return array();
+    }
+
+    /**
+     * Overrides parent method
+     */
+    public function _setLexFiles() {
+        $fullPath = $this->path . '/' . $this->fileName;
+        if (file_exists($fullPath)) {
+            $modx = $this->modx;
+            $objects = include $fullPath;
+            if (!is_array($objects)) {
+                $this->_setError('mc_properties_not_an_array~~Properties not an array in' .
+                $this->fileName);
+            } else {
+                /** @var $object modMenu */
+                foreach ($objects as $object) {
+                    $action = $object->getOne('Action');
+                    $topic = $action->get('lang_topics');
+                    if ($topic !== null) {
+                        if ($topic == $this->helpers->props['packageNameLower']) {
+                            /* Correct if just the package name */
+                            $topic = $topic . ':' . 'default';
+                        }
+                        $this->addLexFile($topic);
+                        /* bail out at the first non-empty lexicon specification */
+                        break;
+
+                    }
+                }
+            }
+            /* assume 'default' topic if no topic specified */
+            if (empty($this->lexFiles)) {
+                $this->addLexFile('default');
+            }
+        } else {
+            $this->_setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
+        }
+        return;
+
+    }
+
+    /**
+     * Overrides parent method
+     */
+    public function _setUsed() {
+        $fullPath = $this->path . '/' . $this->fileName;
+        if (file_exists($fullPath)) {
+            $modx =& $this->modx;
+            $objects = include $fullPath;
+            if (!is_array($objects)) {
+                $this->_setError('Not an array');
+                return;
+            }
+            $_lang = $this->defined;
+            /** @var $object modMenu */
+            foreach ($objects as $object) {
+                $string = $object->get('description');
+                if (!empty($string)) {
+                    $this->addLexString($string);
+                }
+            }
+        } else {
+            $this->_setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
+        }
+    }
+
+}
+
