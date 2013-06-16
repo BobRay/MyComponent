@@ -40,6 +40,18 @@ class LexiconCodeFileFactory {
     private function __construct() {
     }
 
+    /**
+     * Returns the appropriate LexiconCodeFile object based on $fileName;
+     * params are passed through to the object class constructor
+     *
+     * @param $modx modX
+     * @param $helpers Helpers
+     * @param $path string - Path to code file
+     * @param $fileName string - File name of code file
+     * @param $lexDir -Base lexicon directory (e.g. /lexicon/
+     *
+     * @return LexiconCodeFile - object created by factory
+     */
     public static function getInstance(&$modx, $helpers, $path, $fileName, $lexDir) {
         if (strpos($fileName, '.menus.php') !== false) {
             $type = 'Menu';
@@ -68,11 +80,14 @@ class LexiconCodeFileFactory {
 }
 
 /**
+ * Base class for LexiconCodeFile objects.
+ * Includes methods shared by all code file objects
+ *
  * @param $modx modX - $modx object
  * @param $helpers Helpers - $helpers class
  * @param $path string - path to code file
  * @param $fileName string - file name of code file
- * @param $lexDir string - path to lexicon directory (e.g. lexicon/en)
+ * @param $lexDir string - path to lexicon directory (e.g. lexicon/)
  */
 
 abstract class AbstractLexiconCodeFile {
@@ -147,8 +162,15 @@ abstract class AbstractLexiconCodeFile {
     public $subPattern = '';
 
 
-
-
+    /**
+     * Children have no constructor so this will always be called
+     *
+     * @param $modx modX
+     * @param $helpers Helpers
+     * @param $path string - full directory of code file
+     * @param $fileName string - file name of code file
+     * @param $lexDir string - full path to base lexicon directory (lexicon/)
+     */
     function __construct(&$modx, $helpers, $path, $fileName, $lexDir) {
 
         $this->modx =& $modx;
@@ -160,18 +182,21 @@ abstract class AbstractLexiconCodeFile {
         $this->lexDir = strtolower(str_replace('\\', '/', $this->lexDir));
     }
 
-    public static function getInstance(&$modx, $helpers, $path, $fileName, $lexDir) {
-        $lcf = new LexiconCodeFile($modx, $helpers, $path, $fileName, $lexDir);
-        return $lcf;
-    }
-    /* These must be implemented in child classes */
+    /* These two must be implemented in child classes */
     abstract public function setLexFiles();
 
     abstract public function setUsed();
 
 
+    /**
+     * Fully initialize Code File object. Does everything
+     * but update lexicon and code files
+     */
     public function init() {
 
+        /* Set pattern and subPattern used to search for lex strings
+         * in code file
+         */
         switch ($this->type) {
             case 'Menu':
                 $this->pattern = '#[\'\"]description[\'\"]\s*=>\s*(\'|\")(.*)\1#';
@@ -223,7 +248,6 @@ abstract class AbstractLexiconCodeFile {
      */
     public function  getFileName() {
         return $this->fileName;
-
     }
 
     /**
@@ -307,6 +331,11 @@ abstract class AbstractLexiconCodeFile {
 
     /* Setters */
 
+    /**
+     * Set type of code file (called in factory getInstance())
+     *
+     * @param $type string - Type of code file (Php, Text, Js, etc.)
+     */
     public function setType($type) {
         $this->type = $type;
     }
@@ -386,7 +415,7 @@ abstract class AbstractLexiconCodeFile {
      * Add a lexicon topic file to $this->lexFiles in the form:
      * fileName => fullPath
      *
-     * @param $topic string - can be a topic or a fully qualified lex file spec.
+     * @param $topic string - can be a topic or a fully or partially qualified lex file spec.
      */
     public function addLexFile($topic) {
         $fqn = $this->getLexFqn($topic);
@@ -401,6 +430,7 @@ abstract class AbstractLexiconCodeFile {
 
     /**
      * Return a fully qualified lexicon spec (e.g. 'example:en:default.inc.php')
+     *
      * @param $lexFileSpec (partial or full lexicon spec. (e.g., default, en:default)
      * @return string - fully qualified lex spec. (e.g. en:example:default)
      */
@@ -430,8 +460,6 @@ abstract class AbstractLexiconCodeFile {
     /**
      * Create the array of lexicon strings in lexicon files used by this code file in the form:
      * key => value
-     *
-     * @param array $defined
      */
     public function setDefined($defined = array()) {
         if (!empty($defined)) {
@@ -451,6 +479,7 @@ abstract class AbstractLexiconCodeFile {
 
     /**
      * Update a code file by removing the ~~* part of the lexicon strings.
+     *
      * @return int number of ~~ strings removed
      */
     public function updateCodeFile() {
@@ -494,8 +523,7 @@ abstract class AbstractLexiconCodeFile {
     }
 
     /**
-     *  Create/Update the strings in the lexicon file topic file
-     *  specified in this file
+     *  Create/Update the strings in the selected lexicon topic file
      */
     public function updateLexiconFile() {
         if (empty($this->missing) && empty($this->toUpdate)) {
@@ -504,7 +532,7 @@ abstract class AbstractLexiconCodeFile {
         }
         /* This should never happen */
         if (count($this->lexFiles) !== 1) {
-            $this->setError('multiple lexfiles');
+            $this->setError($this->modx->lexicon('mc_cannot_update_multiple_lex_files'));
             return;
         }
 
@@ -552,7 +580,6 @@ abstract class AbstractLexiconCodeFile {
                 $this->setError($this->modx->lexicon('mc_error_writing_lexicon_file') .
                 ': ' . $path);
             }
-
         }
 
         /* Update Changed strings */
@@ -586,64 +613,58 @@ abstract class AbstractLexiconCodeFile {
 }
 
 
+/**
+ * Class LexiconCodeFile
+ *
+ * Handles Php, Js, and Text files
+ */
 class LexiconCodeFile extends AbstractLexiconCodeFile {
 
     /**
      * Set the lexicon topic for the file and add it to the $this->lexFiles array
-     *
-     * @param string $topic - (optional) specific lexicon topic
      */
-    public function setLexFiles($topic = '') {
-        $default = $topic;
-        $isPropertiesFile = strpos($this->fileName, 'properties.') !== false;
+    public function setLexFiles() {
         $isMenuFile = strpos($this->fileName, 'menus.php') !== false;
-
 
         /* set default $pattern and $subPattern */
         $subPattern = 'lexicon->load';
         $pattern = '#lexicon->load\s*\s*\(\s*\'(.*)\'#';
 
-        if (empty($topic)) {
-            $default = 'default';
-            /* find lexicon->load lines in file or other lex file specification */
-            $lines = $this->content;
+        $default = 'default';
+        /* find lexicon->load lines in file or other lex file specification */
+        $lines = $this->content;
 
-            /* These have lex topic specified in their fields */
-            if ($isMenuFile) {
-                $subPattern = 'lang_topics';
-                $pattern = '#^\s*[\"\']lang_topics[\'\"]\s*=>\s*[\"\'](.*)[\'\"]#';
-            }
+        /* These have lex topic specified in their fields */
+        if ($isMenuFile) {
+            $subPattern = 'lang_topics';
+            $pattern = '#^\s*[\"\']lang_topics[\'\"]\s*=>\s*[\"\'](.*)[\'\"]#';
+        }
 
-            /* iterate over lines to find lexicon topic specification */
-            foreach($lines as $line) {
-                /* skip lines without subPattern */
-                if (strstr($line, $subPattern)) {
-                    $matches = array();
-                    preg_match($pattern, $line, $matches);
-                    if (isset($matches[1]) && !empty($matches[1])) {
+        /* iterate over lines to find lexicon topic specification */
+        foreach($lines as $line) {
+            /* skip lines without subPattern */
+            if (strstr($line, $subPattern)) {
+                $matches = array();
+                preg_match($pattern, $line, $matches);
+                if (isset($matches[1]) && !empty($matches[1])) {
 
-                        /* skip dynamic lex loads */
-                        if (strpos($matches[1], '$') !== false) {
-                            continue;
-                        }
+                    /* skip dynamic lex loads */
+                    if (strpos($matches[1], '$') !== false) {
+                        continue;
+                    }
 
-                        if ($isMenuFile) {
-                            if ($matches[1] == $this->helpers->props['packageNameLower']) {
-                                /* Correct if just the package name */
-                                $matches[1] = $matches[1] . ':' . $default;
-                            }
-                            $this->addLexFile($matches[1]);
-                            /* bail out at the first non-empty lexicon specification */
-                            break;
+                    if ($isMenuFile) {
+                        if ($matches[1] == $this->helpers->props['packageNameLower']) {
+                            /* Correct if just the package name */
+                            $matches[1] = $matches[1] . ':' . $default;
                         }
                         $this->addLexFile($matches[1]);
+                        /* bail out at the first non-empty lexicon specification */
+                        break;
                     }
+                    $this->addLexFile($matches[1]);
                 }
             }
-        } else {
-            /* use explicit topic sent as argument */
-            $this->lexFileName = $topic;
-            $this->addLexfile($topic);
         }
 
         /* assume 'default' topic if no topic specified */
@@ -653,40 +674,33 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
     }
 
 
-
     /**
      * Find all lexicon strings and their values (if any) in the code file
      * and add them to $this->used array.
-     *
-     * @param array $used
      */
-    public function setUsed($used = array()) {
+    public function setUsed() {
         /* skip minified JS files */
         if (strstr($this->fileName, 'min.js')) {
             return;
         }
 
-        if (!empty($used)) {
-            $this->used = $used;
-        } else {
-            $this->used = array();
-            /* Iterate over lines to find lexicon strings
-               in code file */
-            $lines = $this->content;
-            foreach ($lines as $line) {
-                if ($this->type == 'Text') {
-                    if ((strpos($line, '[[%') === false) && (strpos($line, '[[!%') === false)) {
-                        continue;
-                    }
-                } elseif (strpos($line, $this->subPattern) === false) {
+        $this->used = array();
+        /* Iterate over lines to find lexicon strings
+           in code file */
+        $lines = $this->content;
+        foreach ($lines as $line) {
+            if ($this->type == 'Text') {
+                if ((strpos($line, '[[%') === false) && (strpos($line, '[[!%') === false)) {
                     continue;
                 }
+            } elseif (strpos($line, $this->subPattern) === false) {
+                continue;
+            }
 
-                $matches = array();
-                preg_match($this->pattern, $line, $matches);
-                if (isset($matches[2]) && !empty($matches[2])) {
-                    $this->addLexString($matches[2]);
-                }
+            $matches = array();
+            preg_match($this->pattern, $line, $matches);
+            if (isset($matches[2]) && !empty($matches[2])) {
+                $this->addLexString($matches[2]);
             }
         }
     }
@@ -717,20 +731,35 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
         }
         $this->used[$lexString] = $value;
     }
-
 }
 
+/**
+ * Class PropertiesLexiconCodeFile
+ *
+ * Handles Lexicon strings in Properties transport files
+ */
 class PropertiesLexiconCodeFile extends LexiconCodeFile {
 
+    /** Overrides parent method
+     *  ($content is not used for these files)
+     *
+     *  @return array
+     */
     public function setContent() {
         return array();
     }
-    public function setLexFiles($topic = ''){
+
+
+    /**
+     * Overrides parent method
+     */
+    public function setLexFiles(){
         $fullPath = $this->path . '/' . $this->fileName;
         if (file_exists($fullPath)) {
             $objects = include $fullPath;
             if (!is_array($objects)) {
-                $this->setError('mc_properties_not_an_array~~Properties not an array in' . $this->fileName);
+                $this->setError('mc_properties_not_an_array~~Properties not an array in' .
+                    $this->fileName);
             } else {
                 foreach($objects as $object) {
                     if (isset($object['lexicon'])) {
@@ -756,6 +785,9 @@ class PropertiesLexiconCodeFile extends LexiconCodeFile {
 
     }
 
+    /**
+     * Overrides parent method
+     */
     public function setUsed(){
         $fullPath = $this->path . '/' . $this->fileName;
         if (file_exists($fullPath)) {
@@ -775,20 +807,36 @@ class PropertiesLexiconCodeFile extends LexiconCodeFile {
         } else {
             $this->setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
         }
-
     }
 }
 
+/**
+ * Class SettingsLexiconCodeFile
+ *
+ * Handles Lexicon strings in Settings transport files
+ */
 class SettingsLexiconCodeFile extends LexiconCodeFile {
 
+    /**
+     * Overrides parent method
+     * ($content is not used for these files)
+     *
+     * @return array
+     */
     public function setContent() {
         return array();
     }
 
-    public function setLexFiles($topic = '') {
+    /**
+     * Overrides parent method
+     */
+    public function setLexFiles() {
         $this->addLexFile('default');
     }
 
+    /**
+     * Overrides parent method
+     */
     public function setUsed() {
         $fullPath = $this->path . '/' . $this->fileName;
         if (file_exists($fullPath)) {
@@ -813,5 +861,4 @@ class SettingsLexiconCodeFile extends LexiconCodeFile {
             $this->setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
         }
     }
-
 }
