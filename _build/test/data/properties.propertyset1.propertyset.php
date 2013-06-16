@@ -24,7 +24,7 @@ $properties = array(
         ),
     'Prop2' => array( 
         'name' => 'Prop2',
-        'desc' => 'Hello "columbus"',
+        'desc' => 'string2~~Hello "columbus"',
         'type' => 'textfield',
         'options' => '',
         'value' => 'Value-Two',
@@ -33,7 +33,7 @@ $properties = array(
         ),
     'Prop3' => array(
         'name' => 'Prop3',
-        'desc' => "Hello 'columbus'",
+        'desc' => "string1~~Hello 'columbus'",
         'type' => 'textfield',
         'options' => '',
         'value' => 'Value-Two',
@@ -42,7 +42,7 @@ $properties = array(
     ),
     'Prop4' => array(
         'name' => 'Prop4',
-        'desc' => 'This is description 3',
+        'desc' => 'string3~~This is description 3',
         'type' => 'textfield',
         'options' => '',
         'value' => 'Value-Two',

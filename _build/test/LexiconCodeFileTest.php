@@ -295,7 +295,15 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
                 $this->assertEquals("Hello 'columbus'", $lexStrings['setting_setting_one_desc'], $fileName);
                 $this->assertEquals('Hello "columbus"', $lexStrings['setting_setting_two_desc'], $fileName);
             } elseif (strpos($fileName, 'properties') !== false) {
-
+                $this->assertTrue(array_key_exists('string1', $lexStrings), $fileName);
+                $this->assertTrue(array_key_exists('string2', $lexStrings), $fileName);
+                $this->assertEquals("Hello 'columbus'", $lexStrings['string1'], $fileName);
+                $this->assertEquals('Hello "columbus"', $lexStrings['string2'], $fileName);
+            } elseif (strpos($fileName, 'menus') !== false) {
+                $this->assertTrue(array_key_exists('string1', $lexStrings), $fileName);
+                $this->assertTrue(array_key_exists('string2', $lexStrings), $fileName);
+                $this->assertEquals("Hello 'columbus'", $lexStrings['string1'], $fileName);
+                $this->assertEquals('Hello "columbus"', $lexStrings['string2'], $fileName);
             } else {
                 $this->assertTrue(array_key_exists('string1', $lexStrings), $fileName);
                 $this->assertTrue(array_key_exists('string2', $lexStrings), $fileName);
@@ -329,7 +337,6 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
             $missing = $lcf->missing;
             $toUpdate = $lcf->toUpdate;
             $this->assertEmpty($lcf->hasError());
-
             $this->assertTrue(is_array($lexStrings));
             $this->assertNotEmpty($lexStrings, $fileName);
             $this->assertTrue(is_array($missing));
@@ -341,15 +348,24 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
             }
 
             if ($fileName == 'transport.settings.php') {
-                $this->assertTrue(array_key_exists('setting_setting_one', $lexStrings), $fileName);
-                $this->assertTrue(array_key_exists('setting_setting_one_desc', $lexStrings), $fileName);
-                $this->assertTrue(array_key_exists('setting_setting_two', $lexStrings), $fileName);
-                $this->assertTrue(array_key_exists('setting_setting_two_desc', $lexStrings), $fileName);
-                $this->assertTrue(array_key_exists('setting_setting_three', $lexStrings), $fileName);
-                $this->assertTrue(array_key_exists('setting_setting_three_desc', $lexStrings), $fileName);
-                $this->assertEquals("Hello 'columbus'", $lexStrings['setting_setting_one_desc'], $fileName);
-                $this->assertEquals('Hello "columbus"', $lexStrings['setting_setting_two_desc'], $fileName);
+                $this->assertTrue(array_key_exists('setting_setting_one', $missing), $fileName);
+                $this->assertTrue(array_key_exists('setting_setting_one_desc', $missing), $fileName);
+                $this->assertTrue(array_key_exists('setting_setting_two', $missing), $fileName);
+                $this->assertTrue(array_key_exists('setting_setting_two_desc', $missing), $fileName);
+                $this->assertTrue(array_key_exists('setting_setting_three', $missing), $fileName);
+                $this->assertTrue(array_key_exists('setting_setting_three_desc', $missing), $fileName);
+                $this->assertEquals("Hello 'columbus'", $missing['setting_setting_one_desc'], $fileName);
+                $this->assertEquals('Hello "columbus"', $missing['setting_setting_two_desc'], $fileName);
             } elseif ( strpos($fileName, 'properties') !== false) {
+
+
+            } else if (strpos($fileName, 'menus') !== false) {
+                $this->assertTrue(array_key_exists('string21', $missing), $fileName);
+                $this->assertTrue(array_key_exists('string22', $missing), $fileName);
+                $this->assertTrue(array_key_exists('string23', $missing), $fileName);
+                $this->assertEquals("Hello 'columbus'", $missing['string21'], $fileName);
+                $this->assertEquals('Hello "columbus"', $missing['string22'], $fileName);
+                $this->assertEquals('', $missing['string23'], $fileName);
             } else {
                 $this->assertTrue(array_key_exists('string1', $missing), $fileName);
                 $this->assertTrue(array_key_exists('string3', $missing), $fileName);
@@ -422,17 +438,19 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
                     break;
                 case 'properties.propertyset1.propertyset.php':
                     $this->assertContains('properties.inc.php', $path);
-                   // $this->assertEquals('This is description 3', $_lang['string3']);
+                    $this->assertEquals('Hello \'columbus\'', $_lang['string1']);
+                    $this->assertEquals('Hello "columbus"', $_lang['string2']);
+                    $this->assertEquals('This is description 3', $_lang['string3']);
                     break;
 
                 case 'properties.snippet1.snippet.php':
                     $this->assertContains('properties.inc.php', $path);
-                    // $this->assertEquals('Hello \'columbus\'', $_lang['string1'], $fileName);
-                    // $this->assertEquals('Hello "columbus"', $_lang['string2'], $fileName);
-                    // $this->assertEquals('This is the newest description5', $_lang['Descriptionx']);
-                    // $this->assertEquals('This is the even newer description', $_lang['new_description']);
-                    // $this->assertArrayHasKey('Description8', $_lang);
-                    // $this->assertEquals('', $_lang['Description8']);
+                    $this->assertEquals('Hello \'columbus\'', $_lang['string1'], $fileName);
+                    $this->assertEquals('Hello "columbus"', $_lang['string2'], $fileName);
+                    $this->assertEquals('This is the newest description', $_lang['string41']);
+                    $this->assertEquals('This is the even newer description', $_lang['string42']);
+                    $this->assertArrayHasKey('Description8', $_lang);
+                    $this->assertEquals('', $_lang['Description8']);
                     break;
 
                 case 'transport.menus.php':
@@ -499,9 +517,9 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
 
             if ($fileName == 'transport.menus.php') {
                 $this->assertTrue(strpos($content, '~~') === false, '~~ found', $fileName);
-                $this->assertContains("'description' => \"string1\"", $content);
-                $this->assertContains("'description' => 'string2'", $content);
-                $this->assertContains("'description' => 'string3'", $content);
+                $this->assertContains("'description' => \"string21\"", $content);
+                $this->assertContains("'description' => 'string22'", $content);
+                $this->assertContains("'description' => 'string23'", $content);
             }
 
             if ($fileName == 'transport.settings.php') {

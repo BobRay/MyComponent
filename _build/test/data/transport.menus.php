@@ -36,7 +36,7 @@ $menus[1] = $modx->newObject('modMenu');
 $menus[1]->fromArray( array (
   'text' => 'Example',
   'parent' => 'components',
-  'description' => "string1~~Hello 'columbus'",
+  'description' => "string21~~Hello 'columbus'",
   'icon' => '',
   'menuindex' => 0,
   'params' => '',
@@ -50,7 +50,7 @@ $menus[2] = $modx->newObject('modMenu');
 $menus[2]->fromArray( array (
   'text' => 'Example',
   'parent' => 'components',
-  'description' => 'string2~~Hello "columbus"',
+  'description' => 'string22~~Hello "columbus"',
   'icon' => '',
   'menuindex' => 0,
   'params' => '',
@@ -64,7 +64,7 @@ $menus[3] = $modx->newObject('modMenu');
 $menus[3]->fromArray( array (
   'text' => 'Example',
   'parent' => 'components',
-  'description' => 'string3',
+  'description' => 'string23',
   'icon' => '',
   'menuindex' => 0,
   'params' => '',
