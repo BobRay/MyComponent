@@ -39,7 +39,9 @@ class SystemSettingAdapter extends ObjectAdapter
                 $fields['name'] = $this->modx->lexicon('setting_' . $fields['key'] );
             }
             if (! isset($fields['description'])) {
-                $fields['description'] = $this->modx->lexicon('setting_' . $fields['key'] . '_desc');
+                /* Hide this from LexiconHelper */
+                $d = 'setting_' . $fields['key'] . '_desc';
+                $fields['description'] = $this->modx->lexicon($d);
             }
 
             unset($fields['editedon']);
