@@ -22,21 +22,7 @@ class mc_ProcessorTypeProcessor extends modProcessor {
     public $ids;
 
     function initialize() {
-        // $ids come in as a string, so this will work with a single id or
-        // comma-separated multiple ids for batch processing.
-
-        /*  $ids = $this->getProperty('ids', '');
-        if (empty($ids)) {
-             return $this->failure($this->modx->lexicon('ids_not_specified'));
-        }
-
-        if (! is_array($ids) {
-            $ids = explode(',', $ids);
-        }
-        $this->ids = $ids;
-
-        */
-
+        /* Initialization here */
         return true;
     }
 
@@ -44,22 +30,9 @@ class mc_ProcessorTypeProcessor extends modProcessor {
        this method can be removed */
     public function process() {
 
-        /*
-        foreach ($this->ids as $id) {
-             if (empty($id)) {
-                 return $this->failure($this->modx->lexicon('id_is_empty'));
-             }
-
-             if (! is_numeric($id)) {
-                 return $this->failure($this->modx->lexicon('id_not_a_number'));
-             }
-
-            // perform action here
-
-        }*/
+        /* perform action here */
 
         return $this->success();
-
 
     }
 }
