@@ -55,9 +55,9 @@ class LexiconCodeFileFactory {
     public static function getInstance(&$modx, $helpers, $path, $fileName, $lexDir) {
         if (strpos($fileName, '.menus.php') !== false) {
             $type = 'Menu';
-        } elseif (strpos($fileName, 'settings.php') !== false) {
+        } elseif (strpos($fileName, '.settings.php') !== false) {
             $type = 'Settings';
-        } elseif (strpos($fileName, 'properties.') !== false) {
+        } elseif (strpos($fileName, '.properties.') !== false) {
             $type = 'Properties';
         } elseif (strpos($fileName, '.php') !== false) {
             $type = 'Php';
