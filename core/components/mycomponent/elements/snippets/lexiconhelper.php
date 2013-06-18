@@ -64,13 +64,13 @@
 
 /** Important: All language keys in the code file must be in this form:
  *
- *#      $modx->lexicon('language_string_key');
- *#      $modx->lexicon("language_string_key");
+ *      $modx->lexicon('language_string_key');
+ *      $modx->lexicon("language_string_key");
  *
  * or This form:
  *
- *#      $modx->lexicon('language_string_key~~value to use');
- *#      $modx->lexicon("language_string_key~~value to use");
+ *      $modx->lexicon('language_string_key~~value to use');
+ *      $modx->lexicon("language_string_key~~value to use");
  *
  * Use no spaces in the key (the left side).
  *
