@@ -197,6 +197,8 @@ $_lang['mc_no_empty_lex_strings_in_files'] = 'No Empty Lexicon strings in lexico
 $_lang['mc_empty_lex_strings'] = 'The following lexicon strings are in a lexicon file, but have no value:';
 $_lang['mc_final_audit'] = 'Final Audit';
 $_lang['mc_final_audit_undefined'] = 'The following strings are used in a code file but are not in any lexicon file';
+$_lang['mc_unknown_file_type'] = 'Unknown file type';
+$_lang['mc_properties_not_an_array'] = 'Properties not an array in';
 
 
 /* used in CheckProperties or its included classes  */
@@ -240,6 +242,8 @@ $_lang['mc_adding_template_variables'] = 'Adding Template Variables';
 $_lang['mc_tvs'] = 'TVs';
 $_lang['mc_adding_tvs_failed'] = 'Adding TVs failed';
 $_lang['mc_plugins'] = 'Plugins';
+$_lang['mc_adding_property_sets_failed'] = 'Adding Property Sets failed';
+$_lang['mc_could_not_find_validator_file'] = 'Could not find Validator file';
 $_lang['mc_adding_plugins_failed'] = 'Adding Plugins failed';
 $_lang['mc_processing_validators'] = 'Processing Validators';
 $_lang['mc_packaging'] = 'Packaging';
