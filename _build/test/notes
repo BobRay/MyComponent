@@ -1,4 +1,4 @@
-Insert this at line 1589 of modx.class.php to make unit tests work -- just above this line:
+Insert this at line 1621 of modx.class.php to make unit tests work -- just above this line:
  if (!empty($className)) {
 
 /* *************** inserted for Unit Tests **************** */
