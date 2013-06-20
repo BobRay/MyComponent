@@ -119,6 +119,9 @@ abstract class AbstractLexiconCodeFile {
     /** @var array $content - array of lines from this code file */
     public $content = array();
 
+    /** @var  $content string - raw content of code file */
+    public $rawContent;
+
     /** @var int $updateCount - count of strings that have been
      * updated in lexicon file  */
     public $updateCount = 0;
@@ -160,6 +163,8 @@ abstract class AbstractLexiconCodeFile {
     /** @var $subPattern string - string identifying lines with lex
      * strings type in files of this type (other lines are skipped) */
     public $subPattern = '';
+
+
 
 
     /**
@@ -282,6 +287,7 @@ abstract class AbstractLexiconCodeFile {
                 $this->_setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
             }
         }
+        $this->rawContent = $content;
         $this->content = explode("\n", $content);
 
     }
@@ -547,6 +553,19 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
             $subPattern = 'lang_topics';
             $pattern = '#^\s*[\"\']lang_topics[\'\"]\s*=>\s*[\"\'](.*)[\'\"]#';
         }
+        /* handle controller class files */
+        if (strpos($this->fileName,'class.php') !== false) {
+            $p = '#function getLanguageTopics\(\)\s*\{\s*return\s*array\([\'\"]([^\"\']+)[\"\']\)#';
+            $matches = array();
+            preg_match($p, $this->rawContent, $matches);
+            if (isset($matches['1'])) {
+                $topics = explode(',', $matches[1]);
+                foreach ($topics as $topic) {
+                    $this->addLexFile($topic);
+                }
+            }
+        }
+
 
         /* iterate over lines to find lexicon topic specification */
         foreach($lines as $line) {
