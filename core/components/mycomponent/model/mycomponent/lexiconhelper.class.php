@@ -193,7 +193,7 @@ class LexiconHelper {
                     $this->processFiles($files);
                 } else {
                     $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
-                        "        " . $this->modx->lexicon('mc_no_code_files~~No code files found'));
+                        "        " . $this->modx->lexicon('mc_no_code_files'));
                 }
             }
         }
@@ -225,7 +225,7 @@ class LexiconHelper {
             $fullPath, $fileName, $this->targetLexDir);
         $lexFiles = $lcf->lexFiles;
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $indent .
-            $this->modx->lexicon('mc_lex_files~~Lexicon file(s)') .
+            $this->modx->lexicon('mc_lex_files') .
             ': ' . implode (', ', array_keys($lexFiles)));
         /* Create lexicon files if necessary */
         foreach ($lexFiles as $file => $path) {
@@ -242,7 +242,7 @@ class LexiconHelper {
 
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '            ' .
                 count($used) . ' ' .
-                $this->modx->lexicon('mc_lex_strings_in_code_file~~lexicon strings in code file'));
+                $this->modx->lexicon('mc_lex_strings_in_code_file'));
 
             $missing = $lcf->missing;
             if (!empty($missing)) {
@@ -345,7 +345,7 @@ class LexiconHelper {
                 $this->modx->lexicon('mc_all_lex_strings_defined'));
         } else {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
-                $this->modx->lexicon('mc_final_audit_undefined~~The following strings are used in a code file but are not in any lexicon file'));
+                $this->modx->lexicon('mc_final_audit_undefined'));
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
                 $this->_formatLexStrings($undefined));
         }

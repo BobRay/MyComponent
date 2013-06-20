@@ -224,7 +224,7 @@ abstract class AbstractLexiconCodeFile {
             case 'Settings':
                 break;
             default:
-                $msg = $this->modx->lexicon('mc_unknown_file_type~~Unknown file type');
+                $msg = $this->modx->lexicon('mc_unknown_file_type');
                 $this->_setError($msg);
 
         }
@@ -685,7 +685,7 @@ class PropertiesLexiconCodeFile extends LexiconCodeFile {
         if (file_exists($fullPath)) {
             $objects = include $fullPath;
             if (!is_array($objects)) {
-                $msg = $this->modx->lexicon('mc_properties_not_an_array~~Properties not an array in');
+                $msg = $this->modx->lexicon('mc_properties_not_an_array');
                 $this->_setError($msg . ' ' .
                     $this->fileName);
             } else {
@@ -817,7 +817,7 @@ class MenuLexiconCodeFile extends LexiconCodeFile {
             $modx = $this->modx;
             $objects = include $fullPath;
             if (!is_array($objects)) {
-                $msg = $this->modx->lexicon('mc_properties_not_an_array~~Properties not an array in');
+                $msg = $this->modx->lexicon('mc_properties_not_an_array');
                 $this->_setError($msg .
                 $this->fileName);
             } else {
