@@ -187,6 +187,66 @@ $components = array(
                 'category' => 'MyComponent',
                 'filename' => 'classfile.php',
             ),
+            'cmp.actionfile.php' => array(
+                'category' => 'MyComponent',
+                'filename' => 'cmp.actionfile.php',
+            ),
+            'cmp.changecategory.class.php' => array(
+                'category' => 'MyComponent',
+                'filename' => 'cmp.changecategory.php',
+            ),
+            'cmp.classfile.php' => array(
+                'category' => 'MyComponent',
+                'filename' => 'cmp.classfile.php',
+            ),
+            'cmp.connectorfile.php' => array(
+                'category' => 'MyComponent',
+                'filename' => 'cmp.connectorfile.php',
+            ),
+            'cmp.controllerheader.tpl' => array(
+                'category' => 'MyComponent',
+                'filename' => 'cmp.controllerheader.tpl',
+            ),
+            'cmp.controllerhome.tpl' => array(
+                'category' => 'MyComponent',
+                'filename' => 'cmp.controllerhome.tpl',
+            ),
+            'cmp.controllerindex.tpl' => array(
+                'category' => 'MyComponent',
+                'filename' => 'cmp.controllerindex.tpl',
+            ),
+            'cmp.controllerrequest.class.php' => array(
+                'category' => 'MyComponent',
+                'filename' => 'cmp.controllerrequest.class.php',
+            ),
+            'cmp.defaultjs.tpl' => array(
+                'category' => 'MyComponent',
+                'filename' => 'cmp.defaultjs.tpl',
+            ),
+            'cmp.getlist.class.php' => array(
+                'category' => 'MyComponent',
+                'filename' => 'cmp.getlist.class.php',
+            ),
+            'cmp.grid.tpl' => array(
+                'category' => 'MyComponent',
+                'filename' => 'cmp.grid.tpl',
+            ),
+            'cmp.home.js.tpl' => array(
+                'category' => 'MyComponent',
+                'filename' => 'cmp.home.js.tpl',
+            ),
+            'cmp.home.panel.js.tpl' => array(
+                'category' => 'MyComponent',
+                'filename' => 'cmp.home.panel.js.tpl',
+            ),
+            'cmp.mgr.css.tpl' => array(
+                'category' => 'MyComponent',
+                'filename' => 'cmp.mgr.css.tpl',
+            ),
+            'cmp.processor.class.php' => array(
+                'category' => 'MyComponent',
+                'filename' => 'cmp.processor.class.php',
+            ),
             'css.tpl' => array(
                 'category' => 'MyComponent',
                 'filename' => 'css.tpl',
@@ -226,6 +286,10 @@ $components = array(
             'modtemplate.tpl' => array(
                 'category' => 'MyComponent',
                 'filename' => 'modtemplate.tpl',
+            ),
+            'mycomponentform.tpl' => array(
+                'category' => 'MyComponent',
+                'filename' => 'mycomponentform.tpl',
             ),
             'phpfile.php' => array(
                 'category' => 'MyComponent',
@@ -274,10 +338,6 @@ $components = array(
             'user.input.php' => array(
                 'category' => 'MyComponent',
                 'filename' => 'user.input.php',
-            ),
-            'mycomponentform.tpl' => array (
-                'category' => 'MyComponent',
-                'filename' => 'mycomponentform.tpl',
             ),
         ),
 
