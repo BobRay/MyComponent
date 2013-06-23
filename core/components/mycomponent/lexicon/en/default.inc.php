@@ -94,6 +94,7 @@ $_lang['mc_category_nf'] = 'Could not find category';
 $_lang['mc_no_elements_to_process'] = 'No Elements to process';
 $_lang['mc_processing_transport_files_for_category'] = 'Processing Transport Files for Category';
 $_lang['mc_processing_object'] = 'Processing object';
+$_lang['mc_processing_subpackages'] = 'Processing subpackages';
 $_lang['mc_set_static_path_to'] = 'Set static path to';
 $_lang['mc_file_already_exists'] = 'File already exists';
 $_lang['mc_would_be_creating'] = 'Would be creating';

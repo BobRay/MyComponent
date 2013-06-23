@@ -232,7 +232,7 @@ if ( (! isset($modx)) || (! $modx instanceof modX) ) {
     $modx->initialize('mgr');
     $modx->getService('error', 'error.modError', '', '');
 }
-
+$modx->lexicon->load('mycomponent:default');
 $modx->setLogLevel(xPDO::LOG_LEVEL_INFO);
 $modx->setLogTarget(XPDO_CLI_MODE
     ? 'ECHO'
@@ -424,7 +424,7 @@ if ($hasSettings) {
         $attributes = array(
             xPDOTransport::UNIQUE_KEY => 'key',
             xPDOTransport::PRESERVE_KEYS => true,
-            xPDOTransport::UPDATE_OBJECT => true,
+            xPDOTransport::UPDATE_OBJECT => false,
         );
         foreach ($settings as $setting) {
             $vehicle = $builder->createVehicle($setting, $attributes);
@@ -448,7 +448,7 @@ if ($hasContextSettings) {
         $attributes = array(
             xPDOTransport::UNIQUE_KEY => 'key',
             xPDOTransport::PRESERVE_KEYS => true,
-            xPDOTransport::UPDATE_OBJECT => true,
+            xPDOTransport::UPDATE_OBJECT => false,
         );
         foreach ($settings as $setting) {
             $vehicle = $builder->createVehicle($setting, $attributes);
@@ -465,6 +465,8 @@ if ($hasContextSettings) {
 /* minify JS */
 
 if ($minifyJS) {
+    $helper->sendLog(modX::LOG_LEVEL_INFO, 'Creating js-min file(s)');
+
     $usePlus = $modx->getOption('useJSMinPlus', $props, false);
     $minimizer = $usePlus? 'jsminplus.class.php' : 'jsmin.class.php';
     $dir = $sources['source_assets'] . '/js';
@@ -727,8 +729,8 @@ foreach ($categories as $k => $categoryName) {
                         $validator . ' ' . $modx->lexicon('mc_validator')
                         . '.');
                     $vehicle->validate('php', array(
-                                                   'source' => $file,
-                                              ));
+                        'source' => $file,
+                    ));
                 } else {
                     $helper->sendLog(modX::LOG_LEVEL_ERROR,
                         $modx->lexicon('mc_could_not_find_validator_file')
@@ -768,12 +770,12 @@ foreach ($categories as $k => $categoryName) {
             ? array()
             : $props['resolvers'];
         $resolvers = array_merge(array(
-                                      'category',
-                                      'plugin',
-                                      'tv',
-                                      'resource',
-                                      'propertyset'
-                                 ), $resolvers);
+                  'category',
+                  'plugin',
+                  'tv',
+                  'resource',
+                  'propertyset'
+             ), $resolvers);
         $helper->sendLog(MODX::LOG_LEVEL_INFO,
             $modx->lexicon('mc_processing_resolvers'));
 
@@ -800,22 +802,6 @@ foreach ($categories as $k => $categoryName) {
                     . '.');
             }
         }
-    }
-
-    /* Add subpackages */
-    /* The transport.zip files will be copied to core/packages
-     * but will have to be installed manually with "Add New Package and
-     *  "Search Locally for Packages" in Package Manager
-     */
-
-    if ($hasSubPackages && $i == 1) {
-        $helper->sendLog(modX::LOG_LEVEL_INFO,
-            $modx->lexicon('mc_packaging_subpackages')
-                . '.');
-        $vehicle->resolve('file', array(
-            'source' => $sources['packages'],
-            'target' => "return MODX_CORE_PATH;",
-        ));
     }
 
     /* Put the category vehicle (with all the stuff we added to the
@@ -856,7 +842,7 @@ if ($hasMenu) {
             unset($vehicle, $menu);
         }
     }
-    $helper->sendLog(modX::LOG_LEVEL_INFO,
+    $helper->sendLog(modX::LOG_LEVEL_INFO, '    ' .
         $modx->lexicon('mc_packaged')
             . ' ' . count($menus) . ' ' .
             $modx->lexicon('mc_menu_items')
@@ -880,6 +866,29 @@ if ($hasSetupOptions && !empty($props['install.options'])) {
     $attr['setup-options'] = array();
 }
 $builder->setPackageAttributes($attr);
+
+/* Add subpackages */
+/* The transport.zip files will be copied to core/packages
+ * but will have to be installed manually with "Add New Package and
+ *  "Search Locally for Packages" in Package Manager
+ */
+
+if ($hasSubPackages && $i == 1) {
+    $obj = $modx->newObject('xPDOFileVehicle');
+    $vehicle = $builder->createVehicle($obj, array(
+          xPDOTransport::PRESERVE_KEYS => true,
+          xPDOTransport::UPDATE_OBJECT => true,
+          ));
+    $helper->sendLog(modX::LOG_LEVEL_INFO,
+        $modx->lexicon('mc_packaging_subpackages')
+        . '.');
+    $vehicle->resolve('file', array(
+               'source' => $sources['packages'],
+               'target' => "return MODX_CORE_PATH;",
+          ));
+    $builder->putVehicle($vehicle);
+}
+
 
 /* Last step - zip up the package */
 $builder->pack();

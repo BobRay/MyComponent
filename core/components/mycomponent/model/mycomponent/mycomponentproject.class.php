@@ -922,6 +922,13 @@ class MyComponentProject {
         ContextAdapter::createTransportFiles($this->helpers, $mode);
         ContextSettingAdapter::createTransportFiles($this->helpers, $mode);
 
+        if (is_dir($this->myPaths['targetBuild'] . 'subpackages')) {
+            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n    " .
+                $this->modx->lexicon('mc_processing_subpackages'));
+            $o = new SubpackageAdapter();
+            $o->createSubpackages($this->modx, $this->helpers, $this->myPaths['targetBuild'], $mode);
+        }
+
     }
 
     /** Create main build.transport.php, build.config.php and
@@ -1720,6 +1727,7 @@ class MyComponentProject {
         if ($this->modx->getOption('minifyJS', $this->props, false)) {
             $this->helpers->minifyJs();
         }
+
 
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
         $this->modx->lexicon('mc_updating_project_config'));
