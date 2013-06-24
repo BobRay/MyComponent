@@ -3,76 +3,16 @@ build scripts for various MODX Revolution components and by the structure
 of the MODX Package Manager code.
 </p>
 
+<div class = "box"></div>
+<h3>Version 3.1.0</h3>
+<p>Nothing has changed from versions 3.0.x that should affect existing projects. A number of bugs have been fixed and there are some fun new features.</p>
 
+<p>Most notable, Version 3.0 has support for Custom Manager Pages (CMPs) and subpackages are now installed when your package is installed (see below). In addition, LexiconHelper has been completely refactored and vastly improved. It no longer uses the project config file. Instead, it walks through all of the project directories and analyzes all files that might contain lexicon strings. It's also smarter about detecting which lexicon file to use for which files and about handling properties and settings files.</p>
 
 <div class="box">
-    <h3>MyComponent 3.0</h3>
+    <h3>Upgrading from versions earlier than 3.0</h3>
 
-    <p>
-    MyComponent 3.0 is a much more powerful and convenient version. It installs in a
-    different location and uses very different methods than older versions. The best approach
-    to upgrading is to uninstall and remove all previous versions before installing 3.0 or newer versions.</p>
-
-    <p>
-    The newer versions will require no cut-and-paste operations and no tedious file
-    or directory renaming. The only manual operation required is
-    editing the project config. file.
-    </p>
-
-    <p>Here are just some features of the new version</p>
-
-    <p>Based on the objects described in the project config. file,
-    the new version will: </p>
-    <ul>
-        <li><b>Bootstrap</b>
-
-            <ul>
-                <li>Create all listed objects in MODX</li>
-                <li>Create all connections between listed objects (e.g., resources/templates, plugins/events,etc.)</li>
-                <li>Add license and header information to all PHP and JS files</li>
-                <li>Create the build.transport.php file</li>
-                <li>Create code/content files for all objects, to be used in the build </li>
-                <li>optionally, make elements static and connect them to their files</li>
-                <li>Create core and assets directories and subdirectories</li>
-                <li>Create any listed lexicon files</li>
-                <li>Write all transport files for the build</li>
-                <li>Write all resolver files to connect objects</li>
-                <li>Optionally, write skeleton generic resolvers and validators</li>
-                <li>Create skeleton class files for all classes</li>
-            </ul>
-        </li>
-
-        <li><b>ExportObjects</b>
-
-            <ul>
-                <li>Find all of the component's objects in MODX</li>
-                <li>Create/update code/content files for objects that need one</li>
-                <li>Update all transport files, based on the actual objects</li>
-                <li>Update all resolver files based on existing connections between objects</li>
-            </ul>
-        </li>
-
-        <li><b>LexiconHelper</b>
-
-            <ul>
-                <li>Search for lexicon usages in your PHP code</li>
-                <li>If possible, automatically create or update all lexicon files</li>
-                <li>if not, display lexicon string code for pasting</li>
-                <li>Audit lexicon files and code files for missing or unused lexicon strings</li>
-            </ul>
-        </li>
-
-        <li><b>CheckProperties</b>
-
-            <ul>
-                <li>Search for scriptProperties usages in your PHP code</li>
-                <li>Audit properties files for missing or unused </li>
-                <li>Report missing or unused properties</li>
-                <li>Display code to paste in property file for missing properties</li>
-            </ul>
-        </li>
-
-    </ul>
+<p>Major changes were made in version 3.0. If you are upgrading from an earlier version, the best practice is to uninstall and remove MyComponent and install the newest version, which is infinitely more powerful and easier to use.</p>
 </div>
 
 <h2>A Proper Transport Package</h2>
@@ -109,26 +49,28 @@ assets/mycomponents/mysnippet/ directory.</p>
 
 <h2>General Usage</h2>
 
-    <p>MyComponent can be used in a variety of ways, but the basic process is to create a new project (either in the UI, or by manually creating a new project config. file and editing the current.project.php file). Once the new project exists, you edit the project config. file to meet your needs and run Bootstrap to get things started. After that, you either finish your project in the MODX Manager and run ExportObjects, or finish it by editing the files in your favorite editor and run ImportObjects (or some combination of those two processes). LexiconHelper writes your Lexicon files and CheckProperties makes sure any properties you use are present in your properties file. Finally, you run the Build utility to create the actual transport package.</p>
+    <p>MyComponent can be used in a variety of ways, but the basic process is to create a new project (either in the UI, or by manually creating a new project config file and editing the current.project.php file). Once the new project exists, you edit the project config file to meet your needs and run Bootstrap to get things started. After that, you either finish your project in the MODX Manager and run ExportObjects, or finish it by editing the files in your favorite editor and run ImportObjects (or some combination of those two processes). LexiconHelper writes your Lexicon files and CheckProperties makes sure any properties you use are present in your properties file. Finally, you run the Build utility to create the actual transport package.</p>
 
     <h2>Example Project</h2>
     <p>MyComponent installs with a built-in project called Example that you can play with to get familiar with the various MyComponent utilities. The utilities can be run from the command line, or from inside any good code editor. There is also a User Interface for them that you can see by viewing the &quot;MyComponent&quot; Resource (which executes the MyComponent snippet). The rest of this tutorial will assume that you're using the User Interface, but the principles are the same for the command-line utilities. The command-line utility files are in the <fixedpre>core/components/mycomponent/elements/snippets/</fixedpre> directory</p>
 
     <p>If you view the MyComponent Resource in the front end, you'll see a set of radio buttons, one for each of the MyComponent utilities, and a Submit button for executing them. Note that as a security precaution, you must be logged in to the Manager in order to use any of the utilities. When you run any of the utilities, a log of the results will appear below the form. You may have to scroll down to see it.</p>
 
-    <h3>The Project Config. File</h3>
+    <h3>The Project Config File</h3>
 
-    <p>Every project used with MyComponent must have its own project config. file. The file is always named for the lowercase package name of your Extra (<fixedpre>packageNameLower.config.php</fixedpre>). The files are always stored in the <fixedpre> core/components/mycomponent/_build/config</fixedpre> directory. The file for the Example project is called <fixedpre>example.config.php</fixedpre>. If you look at it now, you'll see all the objects that are part of that package.</p>
+    <p>Every project used with MyComponent must have its own project config file. The file is always named for the lowercase package name of your Extra (<fixedpre>packageNameLower.config.php</fixedpre>). The files are always stored in the <fixedpre> core/components/mycomponent/_build/config</fixedpre> directory. The file for the Example project is called <fixedpre>example.config.php</fixedpre>. If you look at it now, you'll see all the objects that are part of that package.</p>
+
+<p>The Example project config file contains every kind of MODX object that MyComponent can handle. Many of them won't be used in a typical component, but they are there as examples in case you need them. When you create a new project, MyComponent will copy the Example config file to make a new project config file for your extra. Once that's done, you just remove the stuff you don't need and edit the rest to meet your needs.</p>
 
     <h2>MyComponent Utilities</h2>
 
-    <p>The basic utilities in the MyComponent package are Bootstrap, ExportObjects, ImportObjects, LexiconHelper, CheckProperties, and Build. Each one plays a separate role in the creation of a transport package.</p>
+    <p>The basic utilities in the MyComponent package are Bootstrap, ExportObjects, ImportObjects, LexiconHelper, CheckProperties, and Build. Each one plays a separate role in the creation of a transport package. Here's a quick introduction. Be sure to read the more detailed information on them below.</p>
 
-<p>Basically, Bootstrap gets things off the ground by creating the files, directories, and MODX objects needed for your extra. Bootstrap can also be used to add additional objects you discover you need at any point in a project.
+<p>Basically, Bootstrap gets things off the ground by creating the files, directories, and MODX objects needed for your extra. Bootstrap can also be used to add additional objects you discover you need at any point in a project.</p>
 
 <p>ExportObjects creates code files and build files based on the project as it exists in the MODX Manager.</p>
 
-<p>ImportObjects updated the objects in the Manager based on changes in their code files.</p>
+<p>ImportObjects updates elements in the Manager based on changes in their code files.</p>
 
 <p>LexiconHelper writes your Lexicon Files for you and checks to make sure that there are no empty, missing, or unused lexicon strings.</p>
 
@@ -140,56 +82,43 @@ assets/mycomponents/mysnippet/ directory.</p>
 
     <h3>Bootstrap</h3>
 
-    <p>The Bootstrap utility should always be run at the beginning of any new project, but only after editing the project config. file to meet your needs. Bootstrap creates the necessary files and directories for your project and also creates the MODX objects (e.g., snippets, chunks, etc.) specified in the project config. file.</p>
+    <p>The Bootstrap utility should always be run at the beginning of any new project, <i>but only after editing the project config file to meet your needs</i>. Bootstrap creates the necessary files and directories for your project and also creates the MODX objects (e.g., snippets, chunks, etc.) specified in the project config file.</p>
 
-    <p>Bootstrap is completely non-destructive. It will not overwrite any existing MODX objects or their code files (though it will update some specific build files). You can re-run Bootstrap at any time during the development of your extra. The usual reason for doing this is discovering that you need another object (a new snippet, chunk, resource, template, etc.) for your project. Add the new object to the project config. file and run Bootstrap. MyComponent will create the new object and any necessary files for it to be included in the build.</p>
+    <p>Bootstrap is completely non-destructive. It will not overwrite any existing MODX objects or their code files (though it will update some specific build files). You can re-run Bootstrap at any time during the development of your extra. The usual reason for doing this is discovering that you need another object (a new snippet, chunk, resource, template, etc.) for your project. Add the new object to the project config file and run Bootstrap. MyComponent will create the new object and any necessary files for it to be included in the build.</p>
 
-    <p>It's important to keep your project config. file up-to-date with all objects used in your project.</p>
+    <p>It's important to keep your project config file up-to-date with all objects used in your project.</p>
 
-    <p>For a first look, view the MyComponent Resource from the Manager. With the current package set to Example, check the Bootstrap radio
-    button in the UI and click on the Submit button. If you scroll down, you should see a log of all the actions performed by the Bootstrap
-    utility.</p>
+    <p>For a first look, view the MyComponent Resource from the Manager. With the current package set to Example, check the Bootstrap radio button in the UI and click on the Submit button. If you scroll down, you should see a log of all the actions performed by the Bootstrap utility.</p>
 
     <p>Follow up by looking at the directories and files created by Bootstrap. They will be in the
-    <fixedpre>assets/mycomponents/example/</fixedpre>
-    directory. All MyComponent projects will be placed in
-    <fixedpre>assets/mycomponents/</fixedpre>
-    unless you specify a different target directory in the project config. file (not recommended).</p>
+    <fixedpre>assets/mycomponents/example/</fixedpre> directory. All MyComponent projects will be placed in <fixedpre>assets/mycomponents/</fixedpre> unless you specify a different target directory in the project config file (not recommended).</p>
 
-    <p>You may notice that a copy of the project config. file is placed in the project directory. This is a copy used by the build process,
-    but it's not the real project config. file and you should never edit it. It is ignored by all the other MyComponent utilities. The real
-    project config. file (the one used by MyComponent) is always in the
-    <fixedpre>core/components/mycomponent/_build/config/</fixedpre>
-    directory.</p>
+    <p>You may notice that a copy of the project config file is placed in the project directory. This is a copy used by the build process, but it's not the real project config file <i>and you should never edit it</i>. It is ignored by all the other MyComponent utilities except the Build utility, which uses a small part of it. The *real* project config file (the one used by MyComponent) is always in the <fixedpre>core/components/mycomponent/_build/config/</fixedpre> directory.</p>
 
-    <p>Once you've looked at all the files and directories created by Bootstrap, go back the the MODX Manager and look at the objects
-    created. You should see all the objects specified in the Example project config. file. Notice too that the project config. file specifies
-    a number of characteristics of some of the objects (e.g., parent, template, category, etc.). You should see these relationships in the
-    Manager as well.</p>
+    <p>Once you've looked at all the files and directories created by Bootstrap, go back the the MODX Manager and look at the objects created. You should see all the objects specified in the Example project config file. Notice too that the project config file specifies a number of characteristics of some of the objects (e.g., parent, template, category, etc.). You should see these relationships in the Manager as well.</p>
 
 <div class="box">
     <p>There are a lot of things you don't have to worry about with MyComponent. It puts all files in the proper locations and gives them standard names. All relationships between objects are handled automatically. Resources get the proper Templates. TVs are attached to the proper Templates. Plugins are attached to their events. Property Sets are attached to Elements. Elements get put in the proper categories. MyComponent handles this all automatically behind the scenes. Unless you're doing something very exotic, you should never have to directly edit a transport or build file (though you can if you want to).</p>
 </div>
 
     <h3>ExportObjects</h3>
-    <p>This utility creates code and build files for all the objects in your project based on the objects that exist in the MODX Manager. It will only process the objects listed in the <fixedpre>'process'</fixedpre> member of the array in the project config. file. </p>
+    <p>This utility creates code and build files for all the objects in your project based on the objects that exist in the MODX Manager. It will only process the objects listed in the <fixedpre>'process'</fixedpre> member of the array in the project config file. </p>
 
-    <p>ExportObjects will ignore static elements because MODX synchronizes them for you (although imperfectly at this writing). It will also skip snippets or plugins with single-line &quot;include&quot; statement as described above. More specifically, it will skip any snippet or plugin that contains exactly one semicolon and also contains the word
-    &quot;include&quot;.</p>
+    <p>It will skip snippets or plugins with single-line &quot;include&quot; statement as described above. More specifically, it will skip any snippet or plugin that contains exactly one semicolon and also contains the word &quot;include&quot;.</p>
 
-    <p>While Bootstrap uses the project config. file to decide which objects and files to create, ExportObjects (with one exception) uses the categories and namespaces of the actual objects. The exception is Resources. Since there is no way for MyComponent to know which Resources belong to your project, it uses the <fixedpre>'exportResources'</fixedpre> member in the project config. file.</p>
+    <p>While Bootstrap uses the project config file to decide which objects and files to create, ExportObjects (with one exception) uses the categories and namespaces of the actual objects. The exception is Resources. Since there is no way for MyComponent to know which Resources belong to your project, it uses the <fixedpre>'exportResources'</fixedpre> member in the project config file.</p>
 
     <p>If any exported elements have default properties, ExportObjects will automatically create a properties file that will be used in the build to transport the properties.</p>
 
-    <p>Unlike Bootstrap, ExportObjects will overwrite the code files for any objects that are processed unless the <fixedpre>'dryRun'</fixedpre> member of the project config. file is set to <fixedpre>true</fixedpre>. If that's the case, ExportObjects will report what files it would be changing without actually changing them.</p>
+    <p>Unlike Bootstrap, ExportObjects will overwrite the code files for any objects that are processed unless the <fixedpre>'dryRun'</fixedpre> member of the project config file is set to <fixedpre>true</fixedpre>. If that's the case, ExportObjects will report what files it would be changing without actually changing them. Be careful &mdash; if you work on the code of a file that is represented by an object in MODX, be sure to run ImportObjects before running ExportObjects or your work will be overwritten by the content of the MODX object. </p>
 
     <p>The main function of ExportObjects is to let you create or modify MODX objects in the Manager, test them, then export them to files for the build phase of package creation. ExportObjects will not only update the code files for elements and resources, it will also create or update *all* the necessary files for making a transport package for your project.
 
-<p>You should always run Bootstrap at least once after editing the project config. file (and before running ExportObjects for the first time). It's also a good practice to run ExportObjects as a last step before running Build.</p>
+<p>You should always run Bootstrap at least once after editing the project config file (and before running ExportObjects for the first time). It's also a good practice to run ExportObjects as a last step before running Build.</p>
 
 <h3>ImportObjects</h3>
 
-    <p>As you might guess, this is the opposite of ExportObjects, though it's use is more limited. ImportObjects updates any elements in MODX based on the code files on the disk. If you make changes to a snippet's code file, you can use ImportObjects to update the snippet. ImportObjects will only process the elements listed in the <fixedpre>'process'</fixedpre> member of the project config. file and it only processes elements that exist in the <fixedpre>'elements'</fixedpre> member.</p>
+    <p>As you might guess, this is the opposite of ExportObjects, though it's use is more limited. ImportObjects updates any *elements* in MODX that are listed in the project config file based on the code files on the disk. If you make changes to a snippet's code file, you can use ImportObjects to update the snippet. It's important to remember that ImportObjects processes *only* elements, and only the elements listed in the <fixedpre>'process'</fixedpre> member of the project config file *and* it only processes elements that exist in the <fixedpre>'elements'</fixedpre> member.</p>
 
     <p>One common use of ImportObjects is to update elements in MODX after LexiconHelper has modified the language strings in the files.</p>
 
@@ -207,7 +136,7 @@ assets/mycomponents/mysnippet/ directory.</p>
 $message = $modx->lexicon('mc_file_nf~~File Not Found');
 </fixedpre></pre>
 
-        <p>Or you might have this language tag in a resource of chunk:</p>
+        <p>Or you might have this language tag in a resource or chunk:</p>
 
 <pre><fixedpre>
 [[%mc_file_nf~~File Not Found]]
@@ -215,7 +144,7 @@ $message = $modx->lexicon('mc_file_nf~~File Not Found');
 
 <p>LexiconHelper will find all instances where you use the MODX Lexicon. It will create a language string and write it into the appropriate lexicon file for you (and optionally remove the part after the ~~ from the file). The only case where this will fail is if you have a file that uses more than one lexicon topic. If that's the case, LexiconHelper doesn't know which file to write the various language strings to. In that case LexiconHelper outputs the lexicon strings to the screen so you can paste them into the appropriate files.</p>
 
-<p>Whether LexiconHelper modifies the lexicon files and removes the ~~ and it's following string from the code files depend on the following two settings in the project config. file:</p>
+<p>Whether LexiconHelper modifies the lexicon files and removes the ~~ and it's following string from the code files depend on the following two settings in the project config file:</p>
 
 <pre><fixedpre>
 rewriteLexiconFiles
@@ -242,14 +171,21 @@ echo $this->modx->lexicon('mc_file_nf~~File Not Found')
     . ': ' . $filename;
 </fixedpre></pre>
 
-<p>It's fine to have code ahead of and behind the <fixedpre>$modx->lexicon()</fixedpre> call as long as there are no quotation marks following the call.</p>
+<p>It's fine to have code ahead of and behind the <fixedpre>$modx->lexicon()</fixedpre> call as long as there are no quotation marks following the call on the line.</p>
+
+<p>It's a good practice to run LexiconHelper with <fixedpre>$rewriteCodeFiles => false</fixedpre> until you have corrected all the lexicon references in your files. If the references are malformed, you'll see it in the LexiconHelper output. Once they are all correct and all strings have been added to the lexicon files, you can set <fixedpre>$rewriteCodeFiles => true</fixedpre> and run LexiconHelper to remove all the ~~ strings in the lexicon references. Be sure to do this (or remove them manually) before running final Build prior to releasing your package or the ~~ strings will end up in your package.</p>
+
 
 <p>If your project doesn't have any lexicon strings (e.g., a simple utility snippet or plugin), you can skip using LexiconHelper altogether.</p>
 
-<h3>CheckProperties</h3>
-        <p>This utility looks for cases in code where you use a default property. It checks any usages against the properties file(s) in the project's <fixedpre>_build</fixedpre> directory. CheckProperties uses the <fixedpre>'scriptPropertiesAliases'</fixedpre> member near the end of the project config. file to tell it how to find usages. It already knows about most common aliases for the <fixedpre>$scriptProperties</fixedpre> array, but feel free to add ones you use if they're not there already.</p>
+<div class="box">
+<p>LexiconHelper has been completely refactored for MyComponent 3.1.0. It no longer uses the config file to select files, instead, it searches your entire development directory and checks all files that might have lexicon strings in them. It will find lexicon strings in all resources and elements, JavaScript files, controllers, processors, and connectors. In addition, it will process lexicon strings correctly for properties and settings.</p>
+</div>
 
-<p>If none of your elements have default properties, you can skip using this utility.</p>
+<h3>CheckProperties</h3>
+        <p>This utility looks for cases in code where you use a default property. It checks any usages against the properties file(s) in the project's <fixedpre>_build</fixedpre> directory. CheckProperties uses the <fixedpre>'scriptPropertiesAliases'</fixedpre> member near the end of the project config file to tell it how to find usages. It already knows about most common aliases for the <fixedpre>$scriptProperties</fixedpre> array, but feel free to add ones you use if they're not there already.</p>
+
+<p>If none of your resources or elements have default properties, you can skip using this utility.</p>
 
         <h3>Build</h3>
 <p>If your package is going to be distributed to the public, the final step is to submit your
@@ -260,6 +196,7 @@ Transport Package .zip file at <a
         <p>Of course, you'll need a transport.zip file first. That's the job of the Build utility. Build runs the <fixedpre>build.transport.php</fixedpre> file which actually creates the .zip file. The
         <fixedpre>build.transport.php</fixedpre> file is universal (or almost universal). It examines the <fixedpre>_build</fixedpre> directory for your project and creates a package based on the files it finds. At present, it will not handle users or permission-related objects, but will do just about anything else (see the <fixedpre>example.config.php</fixedpre> file for examples of what it *will* handle).</p>
 
+<p>The build script will also create or update any minimized JS file in your project if you have that option set in the project config file, so you can count on them always being up to date in the package. As of MyComponent 3.1.0, you have the option of using either JsMin or JsMinPlus to minimize your files. JsMinPlus uses a source-level JS parser so it is a little slower, but more reliable. You can also choose to create a js-min-all file which will combine all the JS files in your project into a single minimized JS file.</p>
 
 <h2>Customizing MyComponent</h2>
         <p>Any of the Tpl chunks used by MyComponent (as well as the <fixedpre>example.config.php</fixedpre> file) can be customized. Rather than modifying the chunks (or files) directly, you should duplicate them and prefix the name with 'my' so your changes will survive upgrades to MyComponent.</p>
@@ -276,7 +213,7 @@ Transport Package .zip file at <a
 
     <p>Each chunk in the MyComponent category is duplicated as a file in the chunks directory mentioned above. If you prefer to work with the files, simply delete or rename the chunks in the MODX Manager and MyComponent will use the files in the chunks directory.</p>
 
-<div class="box"><p>Be careful, the Tpl files are in the
+<div class="box"><p>Be careful, the Tpl files used by MyComponent are in the
 <fixedpre>core/components/mycomponent/elements/chunks</fixedpre>
 directory, so modify the
 <fixedpre>example.config.php</fixedpre>
@@ -284,7 +221,7 @@ file there, not the one under the _build directory.</p></div>
 
     <p>The first chunk you'll want to modify is the <fixedpre>example.config.php</fixedpre> chunk. Duplicate it and call the chunk <fixedpre>myexample.config.php</fixedpre>. There are two important things to remember when editing the file. First, the file is mainly a large PHP array and it must be valid PHP in order for MyComponent to function. Use a good code editor and edit carefully. Second, do *not* change the word Example anywhere &mdash; it's necessary for the file to work properly as a template for new projects.</p>
 
-    <p>Keep in mind that the <fixedpre>example.config.php</fixedpre> file is a template for all future project config. files. When you create a new project, the <fixedpre>example.config.php</fixedpre> file will be your starting point. You edit it to meet the needs of whatever project you are currently working on *after* you create the new project in the UI. Once you have it the way you want it, you should never need to edit it again.</p>
+    <p>Keep in mind that the <fixedpre>example.config.php</fixedpre> file is a template for all future project config files. When you create a new project, the <fixedpre>example.config.php</fixedpre> file will be your starting point. You edit it to meet the needs of whatever project you are currently working on *after* you create the new project in the UI. Once you have it the way you want it, you should never need to edit it again.</p>
 
     <p>What you mainly want to change is the personal information at the top of the file (e.g., your email address, web site, etc.). You may also want to remove some of the example objects (especially the second category) if you're sure that you will never need them. You'll always have the original <fixedpre>example.config.php</fixedpre> file to refer to. </p>
 
@@ -299,19 +236,47 @@ file there, not the one under the _build directory.</p></div>
     myexample.config.php</fixedpre> Tpl chunk) and places it in the MyComponent <fixedpre>
     _build/config</fixedpre> directory. It renames the file after your new project and replaces all instances of the word &quot;example&quot; with the case-appropriate name of your project.</p>
 
-    <p>Once that has occurred, you can edit the new file (<fixedpre>projectName.config.php</fixedpre>) to meet the needs of your project and then run Bootstrap. Comments in the project config. file will (hopefully) tell you all you need to know about the various members. You can generally delete any object types that you don't need in your project. Note that all config. files are a single large PHP array. They must contain valid PHP code in order for MyComponent to run, so using a good code editor such as PhpStorm can be really helpful.</p>
+    <p>Once that has occurred, you can edit the new file (<fixedpre>projectName.config.php</fixedpre>) to meet the needs of your project and then run Bootstrap. Comments in the project config file will (hopefully) tell you all you need to know about the various members. You can generally delete any object types that you don't need in your project. Note that all config files are a single large PHP array. They must contain valid PHP code in order for MyComponent to run, so using a good code editor such as PhpStorm can be really helpful.</p>
 
     <div class="box">
-        <p>Although there is a copy of your project config. file in your project directory, you should never edit that file. Most of it is ignored by the MyComponent utilities. The &quot;official&quot; project config. file is the one in the <fixedpre>core/components/mycomponent/_build/config</fixedpre> directory and that's always the one you should modify.</p>
+        <p><b>Important!</b> Although there is a copy of your project config file in your project directory, you should never edit that file. Most of it is ignored by the MyComponent utilities. The &quot;official&quot; project config file is the one in the <fixedpre>core/components/mycomponent/_build/config</fixedpre> directory and that's always the one you should modify.</p>
+
+<p>If you make changes to the project config file and they have no effect, you're probably editing the wrong one. Just edit the right one and MyComponent will overwrite the one in the project directory with it when you run ExportObjects. </p>
     </div>
 
-    <p>Once you're finished editing the project config. file, you can run Bootstrap and all your Resources, Elements, and other objects and all necessary files for the project will be created for you. You can work on them in the Manager until you get things working the way you want. Once the component is finished, you can run ExportObjects, LexiconHelper, and Build and your Extra will be ready to release.</p>
+<h3>Removing Stuff You Don't Need</h3>
 
-        <p>Note that any time you discover that your project needs another object, you can add it to the project config. file and re-run Bootstrap. Bootstrap will not modify any existing files or objects, so it's always safe to do this and it's a good practice because it keeps your config. file current.</p>
+<p>Whenever you first edit the project config file, you'll be doing two things: removing the objects you don't need and editing the ones you do need. You shouldn't have to edit any of the stuff at the top, because you did that when you created the myexample.config.php file.</p>
+
+<p>There are three methods for removing unwanted objects from the file and which you use is a matter of personal preferences. One method is to change them to empty arrays. If you don't need any snippets, for example, you can change the snippets section to this:
+
+<pre><fixedpre>$snippets => array(),</fixedpre></pre>
+
+<p>Be sure to use <fixedpre>=></fixedpre> instead of <fixedpre>=</fixedpre> and to end the line with a comma rather than a semicolon.</p>
+
+<p>The safest way to make the change is to locate and put the cursor on the opening parenthesis of the array. Hopefully, you have a code editor that will highlight the matching closing parenthesis (if not, by all means get one). Just highlight and delete everything between the two parentheses, leaving the parentheses themselves and the following comma.</p>
+
+<p>The second method is to remove the member altogether, so the entire section below would be removed:</p>
+
+<pre><fixedpre>
+$snippets => (
+  blah
+  blah
+  blah
+),
+</fixedpre></pre>
+
+<p>The third method is to comment out the stuff you don't want using <fixedpre>/* ... */</fixedpre> comment tags. This is handy if you'll want to add the objects in later, but you have to be careful. You can't have comments inside of comments, so you'll have to either delete any comments in the section or change them to <fixedpre>//</fixedpre> comments.</p>
+
+<p>I tend to use a combination of these methods depending on my future plans for the project.       </p>
+
+    <p>Once you're finished editing the project config file, you can run Bootstrap and all your Resources, Elements, and other objects and all necessary files for the project will be created for you. You can work on them in the Manager until you get things working the way you want. Once the component is finished, you can run ExportObjects, LexiconHelper, and Build and your Extra will be ready to release.</p>
+
+        <p>Note that any time you discover that your project needs another object, you can add it to the project config file and re-run Bootstrap. Bootstrap will not modify any existing files or objects, so it's always safe to do this and it's a good practice because it keeps your config file current.</p>
 
     <h3>Existing Project</h3>
 
-    <p>If your finished component already exists in MODX and the files are in the proper directories, you can edit the project config. file and run Bootstrap, ExportObjects, LexiconHelper, and Build and your extra will be ready to release.</p>
+    <p>If your finished component already exists in MODX and the files are in the proper directories, you can edit the project config file and run Bootstrap, ExportObjects, LexiconHelper, and Build and your extra will be ready to release.</p>
 
     <p>It's important that the files be in the proper locations and named properly so that MyComponent can find them. The easiest way to see where things go is to run Bootstrap on the Example project and look at the <fixedpre>assets/mycomponents/example/</fixedpre> directory.</p>
 
@@ -324,7 +289,7 @@ chunk1.chunk.html
 </fixedpre></pre>
 
     <p>For a new project, Bootstrap will create the files using this standard naming convention.</p>
-    <p>For an existing project, you can rename your files to match the format above, or you can specify the filename as a field for any element in the project config. file (see the examples in example.config.php) if your file names don't match the standard.
+    <p>For an existing project, you can rename your files to match the format above, or you can specify the filename as a field for any element in the project config file (see the examples in example.config.php) if your file names don't match the standard.
     </p>
 
 <h3>Install the Package</h3>
@@ -393,20 +358,52 @@ return include $MODX->getOption('mc.core_path') .
 
 <p>If that's all too confusing, just skip it and remember to uninstall, build, and install your package each time you make a change.</p>
 
+<h3>Including Other Extras in Your Package</h3>
+
+<p>If you would like to include other packages in your transport file, just put the transport.zip files for those extras in this directory:
+
+<pre><fixedpre>assets/components/yourcomponent/_build/subpackages/</fixedpre></pre>
+
+<p>Note that you don't have to do anything with the project config file for this. The MyComponent build.transport.php file will detect the packages and will automatically add them to the package and create resolvers and validators for each one.</p>
+
+<p>The transport files for the other extras will be transferred to the <fixedpre>core/packages/</fixedpre> directory when your extra is installed and will be automatically installed, one-by-one, but only if the included extras are newer versions or not installed already.</p>
+
+<p>If you have played with installing, reinstalling, and uninstalling the Articles extra, which uses the same method to install Quip, Archivist, and some other extras, you my have noticed that things can get a little funky in the process. You may see some disturbing and convoluted error messages in red in the console. This is unavoidable in the current version of Package Manager.</p>
+
+<p>It happens mostly on reinstall of the main package. The validators fail because the subpackages are already installed. The main package will reinstall fine, but the subpackages won't, though as far as I can tell, no harm is done. You can reinstall the subpackages one by one if you need to.</p>
+
+<p>Something similar can happen when you uninstall the main package, especially if you've uninstalled any subpackage first. Again, as far as I can tell, the right things happen in spite of the error messages.</p>
+
+<h3>CMP Support</h3>
+
+<p>One of the challenges of creating a full-featured Custom Manager Page (CMP) in MODX is getting all the necessary files in the right places. As of MyComponent 3.1.0, the Example project config file contains a cmpFiles section. The Example project contains a semi-working CMP, complete with a connector, controllers, processors, a request handler, and all the necessary modExt JS files. If you can run Bootstrap, ExportObjects, and Build and install the Example extra, you'll see the Example CMP on the Components menu (after refreshing the Manager page). MyComponent uses the new class-based files (which I like a lot) for any CMPs.</p>
+
+<div class="box">
+<p>In order for the Example CMP to run, you need to run LexiconHelper and then fill in the blank lexicon strings in the Example project's <fixedpre>default.inc.php</fixedpre> file *before* running <fixedpre>build.transport.php</fixedpre>.</p>
+</div>
+
+<p>The Example CMP is a grid-based utility (kind of like Batcher) that lets you perform bulk actions on elements. The grid will be updated, but the processors are disabled (with a <fixedpre>return</fixedpre> statement at the beginning), so playing with it it won't actually change anything at your site.</p>
+
+<p>To create your own CMP, you can modify the <fixedpre>$cmpFiles</fixedpre> section of the project config file and MyComponent will create all the necessary files and put them in the right places. Some will be skeleton files, some will be usable as is, and some will be usable after you modify them to meet your needs. Depending on the nature of your CMP, you may have to make a lot of modifications, but it beats creating all the files from scratch.</p>
+
 <h3>Submitting Your Package</h3>
+
 <p>As we said earlier, when you run build.transport.php the Transport
 Package .zip file will be created in your site's core/packages directory.
 The final step is to submit that .zip file at <a href="http://modx.com/extras">http://modx.com/extras</a>. You'll need to log in and then click on the &quot;submit a new extra&quot;
 link.</p>
 
-<p>
-Be sure to fill in all the appropriate sections of the submission form and designate the file you attach as a Transport Package. If you have installed the package on your site, there will also be another file with the same name, but without the .zip extension. Be sure to submit the .zip file rather than the other file.
-</p>
+<p>Be sure to fill in all the appropriate sections of the submission form and designate the file you attach as a Transport Package. If you have installed the package on your site, there will also be another file with the same name, but without the .zip extension. Be sure to submit the .zip file rather than the other file.</p>
 
 <h2>Avoiding Trouble</h2>
-<p>MyComponent is a complex and powerful extra. I've tried to make it difficult to shoot yourself in the foot with it, but you can still do it. Here is one common way. You make some changes to the build files (perhaps adding a new System Setting or changing the fields of a Resource). You rung ImportObjects, but System Settings and Resource fields are not updated in that process. If you later run ExportObjects, you will lose your changes.</p>
 
-<p>There are two ways to avoid this kind of trouble. One is to always add new objects to the Project Config File and run Bootstrap. Then, always make your modifications in MODX rather than the files. That way ExportObjects will always reflect your changes. The second way is to stop using MyComponent at some point in the project and rely solely on the files. You can still run LexiconHelper as needed, but stop running ImportObjects and ExportObjects.</p>
+<p>MyComponent is a complex and powerful extra. I've tried to make it difficult to shoot yourself in the foot with it, but you can still do it. Here is one common way. You make some changes to the files in the <fixedpre>_build</fixedpre> directory of your project (perhaps adding a new System Setting or changing the fields of a Resource). You run ImportObjects, but System Settings and Resource fields are not updated in that process. If you later run ExportObjects, you will lose your changes. Remember that ImportObjects only processes element that are defined in the project config file *and* listed in the 'process' member of the array.</p>
+
+<p>There are several ways to avoid this kind of trouble. One is to always add new objects to the Project Config File and run Bootstrap. Then, *always* make your modifications in MODX rather than the files. That way ExportObjects will always reflect your changes (this is generally what I do). The second way is to stop using MyComponent at some point in the project and rely solely on the files. You can still run LexiconHelper as needed, but stop running ImportObjects and ExportObjects.</p>
+
+<p>Another common pitfall is to make changes to the code files for elements and then run ExportObjects, which will overwrite your changes with the content of the elements in MODX. Running ImportObject first will prevent that, but *only* if the elements are listed in the 'process' member *and* in the <fixedpre>$elements</fixedpre> array. Whenever you create a new object, be sure to add it to the project config before running anything.</p>
+
+<p>If you install your extra in another version of MODX for testing, remember that changes you make there will never make it into your package unless you cut-and-paste them into the project files or (better) paste them into MODX and run ExportObjects.</p>
 
 <p>Whatever method you use, it's critical to have a version control system, such as Git, in place. I commit any changes just before running ExportObjects or LexiconHelper, and after running them, do a <fixedpre>git status</fixedpre> and sometimes <fixedpre>git diff</fixedpre> to make sure no unwanted changes have occurred.</p>
 <p>&nbsp;</p>
