@@ -1728,7 +1728,6 @@ class MyComponentProject {
             $this->helpers->minifyJs();
         }
 
-
         $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
         $this->modx->lexicon('mc_updating_project_config'));
         $this->updateProjectConfig(MODE_EXPORT);

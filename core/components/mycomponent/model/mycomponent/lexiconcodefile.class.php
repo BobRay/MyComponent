@@ -165,8 +165,6 @@ abstract class AbstractLexiconCodeFile {
     public $subPattern = '';
 
 
-
-
     /**
      * Children have no constructor so this will always be called
      *
@@ -565,7 +563,6 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
                 }
             }
         }
-
 
         /* iterate over lines to find lexicon topic specification */
         foreach($lines as $line) {
