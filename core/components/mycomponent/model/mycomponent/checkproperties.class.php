@@ -118,11 +118,7 @@ class CheckProperties {
         $this->packageNameLower = $this->helpers->getProp('packageNameLower');
         $this->targetBase = $this->helpers->getProp('targetRoot');
         $this->targetCore = $this->targetBase . 'core/components/' . $this->packageNameLower . '/';
-        //$this->targetAssets = $this->targetBase . 'assets/components/' . $this->packageNameLower . '/';
-        /*$this->primaryLanguage = $this->modx->getOption('primaryLanguage', $this->props, '');
-        if (empty($this->primaryLanguage)) {
-            $this->primaryLanguage = 'en';
-        }*/
+
         clearstatcache(); /*  make sure is_dir() is current */
 
 
@@ -142,17 +138,25 @@ class CheckProperties {
         $elements = array();
         /* get all plugins and snippets from config file */
         foreach ($snippets as $snippet => $fields) {
+            $type = 'modSnippet';
             if (isset($fields['name'])) {
                 $snippet = $fields['name'];
             }
-            $elements[strtolower(trim($snippet))] = 'modSnippet';
+            if (isset($fields['filename'])) {
+                $type .= ':' . $fields['filename'];
+            }
+            $elements[strtolower(trim($snippet))] = $type;
         }
         $plugins = $this->modx->getOption('plugins',$this->helpers->getProp('elements', array()), array());
         foreach ($plugins as $plugin => $fields) {
+            $type = 'modPlugin';
             if (isset($fields['name'])) {
                 $plugin = $fields['name'];
             }
-            $elements[strtolower(trim($plugin))] = 'modPlugin';
+            if (isset($fields['filename'])) {
+                $type .= ':' . $fields['filename'];
+            }
+            $elements[strtolower(trim($plugin))] = $type;
         }
         $this->classFiles = array();
         $dir = $this->targetCore . 'model';
@@ -167,9 +171,11 @@ class CheckProperties {
 
         /* process each element */
         foreach($elements as $element => $type) {
+            $fileName = '';
             $this->included = array();
             $this->scriptCode = '';
             $this->codeMatches = array();
+
             $this->getCode($element, $type);
             if (!empty($this->included)) {
                 $this->output .= "\nFiles analyzed: " . implode(', ', $this->included);
@@ -193,12 +199,23 @@ class CheckProperties {
      * @param $type string - 'modSnippet or modChunk
      */
     public function getCode($element, $type) {
+        $fileName = '';
+        if (strpos($type, ':') !== false) {
+            $couple = explode(':', $type);
+            $type = $couple[0];
+            $fileName = $couple[1];
+        }
         if (empty($element)) {
             $this->output .= 'Error: Element is empty';
             return;
         }
         $typeName = strtolower(substr($type, 3));
-        $file = $this->targetCore . 'elements/' . $typeName . 's/' . $element . '.' . $typeName . '.php';
+        $dir = $this->targetCore . 'elements/' . $typeName . 's/';
+        if (empty($fileName)) {
+            $file = $dir . $element . '.' . $typeName . '.php';
+        } else {
+            $file = $dir . $fileName;
+        }
         $this->output .= "\n\n*********************************************";
         $this->output .= "\n" . 'Processing Element: ' . $element . " -- Type: " . $type;
         $this->scriptCode = file_get_contents($file);
@@ -307,6 +324,10 @@ class CheckProperties {
     }
 
     public function checkProperties($element, $elementType) {
+        if (strpos($elementType,':') !== false) {
+            $couple = explode(':', $elementType);
+            $elementType = $couple[0];
+        }
         $type = strtolower(substr($elementType, 3));
         $type = $type == 'templatevar' ? 'tv' : $type;
         $orphans = array();
@@ -409,6 +430,7 @@ class CheckProperties {
     }
 
     public function report() {
-        echo $this->output;
+        // echo $this->output;
+        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, $this->output);
     }
 }
