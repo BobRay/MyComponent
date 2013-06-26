@@ -749,6 +749,10 @@ foreach ($categories as $k => $categoryName) {
                                    'source' => $sources['root'] . '/_build/config',
                                    'target' => "return MODX_CORE_PATH . 'components/mycomponent/_build/';",
                               ));
+    $vehicle->resolve('file', array(
+                                   'source' => $sources['root'] . '/_build/utilities',
+                                   'target' => "return MODX_CORE_PATH . 'components/mycomponent/_build/';",
+                              ));
 
     if ($hasCore && $i == 1) {
         $helper->sendLog(MODX::LOG_LEVEL_INFO,
