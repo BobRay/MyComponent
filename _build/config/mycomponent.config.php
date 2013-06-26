@@ -380,8 +380,6 @@ $components = array(
     'languages' => array(
         'en' => array(
             'default',
-            'properties',
-
         ),
     ),
     /* ********************************************* */
