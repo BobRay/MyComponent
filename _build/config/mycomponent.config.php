@@ -193,15 +193,15 @@ $components = array(
             ),
             'cmp.changecategory.class.php' => array(
                 'category' => 'MyComponent',
-                'filename' => 'cmp.changecategory.php',
+                'filename' => 'cmp.changecategory.class.php',
             ),
             'cmp.classfile.php' => array(
                 'category' => 'MyComponent',
                 'filename' => 'cmp.classfile.php',
             ),
-            'cmp.connectorfile.php' => array(
+            'cmp.connectorfile.tpl' => array(
                 'category' => 'MyComponent',
-                'filename' => 'cmp.connectorfile.php',
+                'filename' => 'cmp.connectorfile.tpl',
             ),
             'cmp.controllerheader.tpl' => array(
                 'category' => 'MyComponent',
