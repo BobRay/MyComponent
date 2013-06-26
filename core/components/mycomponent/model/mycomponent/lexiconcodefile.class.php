@@ -57,7 +57,7 @@ class LexiconCodeFileFactory {
             $type = 'Menu';
         } elseif (strpos($fileName, '.settings.php') !== false) {
             $type = 'Settings';
-        } elseif (strpos($fileName, 'properties.') !== false) {
+        } elseif (strpos($fileName, 'properties.') === 0) {
             $type = 'Properties';
         } elseif (strpos($fileName, '.php') !== false) {
             $type = 'Php';
