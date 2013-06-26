@@ -204,7 +204,7 @@ class LexiconHelper {
 
     public function processFiles($files) {
         foreach($files as $fileName => $fullPath) {
-            if (strstr($fileName, 'min.js')) {
+            if (strstr($fileName, 'min.js') || strstr($fileName, 'build.transport.php')) {
                 continue;
             }
             $this->processFile($fileName, $fullPath );
