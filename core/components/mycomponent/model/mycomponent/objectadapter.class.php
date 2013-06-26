@@ -483,8 +483,8 @@ abstract class ObjectAdapter {
      * @param bool $dryRun - If set, file content goes to stdout rathern than file
      */
     public function createCodeFile($overwrite = false, $content = '', $mode = MODE_BOOTSTRAP, $dryRun = false) {
+        $tplName = strtolower($this->dbClass);
         if ($mode == MODE_BOOTSTRAP) {
-            $tplName = strtolower($this->dbClass);
             if ($tplName == 'modplugin' || $tplName == 'modsnippet') {
                 $tplName = 'phpfile.php';
             }
@@ -504,6 +504,12 @@ abstract class ObjectAdapter {
             }
         } elseif ($mode == MODE_EXPORT) {
             $tpl = $content;
+            if ($tplName == 'modplugin' || $tplName == 'modsnippet') {
+                $tag = '<' . '?' . 'php';
+                if (strpos($tpl,$tag) === false) {
+                    $tpl = $tag . "\n" . $tpl;
+                }
+            }
         }
 
         if (!empty($tpl)) {
