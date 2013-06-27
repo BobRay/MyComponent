@@ -26,49 +26,6 @@ class ExportTest extends PHPUnit_Framework_TestCase
      * This method is called before a test is executed.
 
      */
-   /* public static function setUpBeforeClass() {
-        require_once dirname(__FILE__) . '/build.config.php';
-        require_once dirname(__FILE__) . '/uthelpers.class.php';
-        require_once MODX_ASSETS_PATH . 'mycomponents/mycomponent/core/components/mycomponent/model/mycomponent/mycomponentproject.class.php';
-        require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
-        $modx = new modX();
-        $modx->initialize(('mgr'));
-        $modx->getService('error', 'error.modError', '', '');
-        $mc = new MyComponentProject($modx);
-        $mc->init(array(), 'unittest');
-        if (empty($mc->props)) {
-            die('No properties');
-        }
-
-        if ($mc->props['categories']['UnitTest']['category'] != 'UnitTest') {
-            session_write_close();
-            die('wrong config - NEVER run unit test on a real project!');
-        }
-        $mc->createCategories();
-        $mc->createElements();
-    }*/
-
-/*    public static function tearDownAfterClass() {
-        require_once dirname(__FILE__) . '/build.config.php';
-        require_once dirname(__FILE__) . '/uthelpers.class.php';
-
-
-        require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
-        $modx = new modX();
-        $mc = new MyComponentProject($modx);
-        $mc->init(array(), 'unittest');
-        $utHelpers = new UtHelpers();
-        $utHelpers->removeElements($modx, $mc);
-        $utHelpers->removeElements($modx, $mc);
-        $utHelpers->removePropertySets($modx, $mc);
-        $utHelpers->removePropertySets($modx, $mc);
-        $utHelpers->removeSystemSettings($modx, $mc);
-        $utHelpers->removeSystemSettings($modx, $mc);
-
-        $mc = null;
-        $modx = null;
-
-    }*/
 
     protected function setUp()
     {
@@ -125,23 +82,14 @@ class ExportTest extends PHPUnit_Framework_TestCase
     public function testInit()
     {
         $this->modx->log(MODX::LOG_LEVEL_INFO, 'Component: ' . $this->mc->props['packageName']);
-        // $this->modx->log(MODX::LOG_LEVEL_INFO, 'Source: ' . $this->mc->props['source']);
         $this->modx->log(MODX::LOG_LEVEL_INFO, 'Target Root: ' . PHPUnit_Framework_Assert::readAttribute($this->mc, 'targetRoot'));
         $this->modx->log(MODx::LOG_LEVEL_INFO, 'TargetCore: ' . $this->mc->myPaths['targetCore']);
-        // $this->modx->log(MODX::LOG_LEVEL_INFO, 'Target Core: ' . PHPUnit_Framework_Assert::readAttribute($this->mc, 'targetCore'));
-        // $this->modx->log(MODX::LOG_LEVEL_INFO, 'Target Assets: ' . PHPUnit_Framework_Assert::readAttribute($this->mc, 'transportPath'));
         $this->assertNotEmpty($this->mc->props);
-//         $this->assertNotEmpty($this->mc->props['source']);
+        $this->assertNotEmpty($this->mc->props['targetRoot']);
         $this->assertTrue(method_exists($this->mc->helpers, 'replaceTags'));
         $this->assertNotEmpty(PHPUnit_Framework_Assert::readAttribute($this->mc, 'packageNameLower'));
         $this->assertNotEmpty(PHPUnit_Framework_Assert::readAttribute($this->mc, 'targetRoot'));
         $this->assertNotEmpty(PHPUnit_Framework_Assert::readAttribute($this->mc, 'dirPermission'));
-
-/*        $this->assertInstanceOf('modCategory', PHPUnit_Framework_Assert::readAttribute($this->mc, 'categoryObj'));*/
-//        $v = PHPUnit_Framework_Assert::readAttribute($this->mc, 'createObjectFiles');
- //       $this->assertTrue($v === true || $v === false || $v === '1' || $v === '0' || $v === 1 || $v === 0);
-//        $v = PHPUnit_Framework_Assert::readAttribute($this->mc, 'createTransportFiles');
-//        $this->assertTrue($v === true || $v === false || $v === '1' || $v === '0' || $v === 1 || $v === 0);
     }
 
     public function testProcessResources() {
@@ -181,8 +129,6 @@ class ExportTest extends PHPUnit_Framework_TestCase
         $this->utHelpers->createProperties($this->modx, $this->mc);
         $data = explode(':', $element);
         $toProcess = $data[0];
-
-        // $name = substr($data[0], 0, -1);
         $name = $data[0];
         $name = $name == 'templateVar'? 'tv' : $name;
         $class = $data[1];
@@ -226,7 +172,7 @@ class ExportTest extends PHPUnit_Framework_TestCase
             foreach ($objects as $object) {
                 /* @var $object modElement */
                 $props = $object->getProperties();
-                // $this->assertEquals(4, count($props),$class);
+                $this->assertEquals(4, count($props),$class);
             }
             $propName = substr($name,0,-1);
             $propName = $propName == 'templateVar'? 'tv' : $propName;
