@@ -1359,9 +1359,9 @@ class MyComponentProject {
         $processorClass = '';
         $elementName = '';
 
-        if (file_exists($this->myPaths['mcTpl'] . 'cmp.' . $file)) {
-            $tpl = $this->helpers->getTpl('cmp.' . $file);
-        } else {
+
+        $tpl = $this->helpers->getTpl('cmp.' . $file);
+        if (empty($tpl)) {
             $tpl = $this->helpers->getTpl('cmp.processor.class.php');
         }
 
