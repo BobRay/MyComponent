@@ -1,26 +1,26 @@
 <?php
 
-$packageNameLower = 'cachemaster'; /* No spaces, no dashes */
+$packageNameLower = 'sitecheck'; /* No spaces, no dashes */
 
 $components = array(
     /* These are used to define the package and set values for placeholders */
-    'packageName' => 'CacheMaster',  /* No spaces, no dashes */
+    'packageName' => 'SiteCheck',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
-    'packageDescription' => 'CacheMaster project for MyComponent extra',
-    'version' => '1.1.1',
-    'release' => 'pl',
+    'packageDescription' => 'SiteCheck project for MyComponent extra',
+    'version' => '1.0.0',
+    'release' => 'beta1',
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
     'authorUrl' => 'http://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
-    'packageDocumentationUrl' => 'http://bobsguides.com/cachemaster-tutorial.html',
+    'packageDocumentationUrl' => 'http://bobsguides.com/sitecheck-tutorial.html',
     'copyright' => '2012-2013',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
 
     'gitHubUsername' => 'BobRay',
-    'gitHubRepository' => 'CacheMaster',
+    'gitHubRepository' => 'SiteCheck',
 
     /* two-letter code of your primary language */
     'primaryLanguage' => 'en',
@@ -46,20 +46,8 @@ $components = array(
      * and export them with exportObjects. If you do that, be sure to set
      * their namespace to the lowercase package name of your extra */
 
-    'newSystemSettings' => array(
+    'newSystemSettings' => array(),
 
-    ),
-
-    /* ************************ NEW SYSTEM EVENTS ************************* */
-
-    /* Array of your new System Events (not default
-     * MODX System Events). Listed here so they can be created during
-     * install and removed during uninstall.
-     *
-     * Warning: Do *not* list regular MODX System Events here !!! */
-
-    'newSystemEvents' => array(
-    ),
 
     /* ************************ NAMESPACE(S) ************************* */
     /* (optional) Typically, there's only one namespace which is set
@@ -67,32 +55,15 @@ $components = array(
     */
 
     'namespaces' => array(
-        'cachemaster' => array(
-            'name' => 'cachemaster',
-            'path' => '{core_path}components/cachemaster/',
-            'assets_path' => '{assets_path}components/cachemaster/',
+        'sitecheck' => array(
+            'name' => 'sitecheck',
+            'path' => '{core_path}components/sitecheck/',
+            'assets_path' => '{assets_path}components/sitecheck/',
         ),
 
     ),
 
-    /* ************************ CONTEXT(S) ************************* */
-    /* (optional) List any contexts other than the 'web' context here
-    */
-
-    'contexts' => array(
-    ),
-
-    /* *********************** CONTEXT SETTINGS ************************ */
-
-    /* If your extra needs Context Settings, set their field values here.
-     * You can also create or edit them in the Manager (Edit Context -> Context Settings),
-     * and export them with exportObjects. If you do that, be sure to set
-     * their namespace to the lowercase package name of your extra.
-     * The context_key should be the name of an actual context.
-     * */
-
-    'contextSettings' => array(
-    ),
+   
 
     /* ************************* CATEGORIES *************************** */
     /* (optional) List of categories. This is only necessary if you
@@ -101,9 +72,14 @@ $components = array(
     */
 
     'categories' => array(
-        'CacheMaster' => array(
-            'category' => 'CacheMaster',
+        'SiteCheck' => array(
+            'category' => 'SiteCheck',
             'parent' => '',  /* top level category */
+        ),
+        'SiteCheckProblemElements' => array(
+            'category' => 'SiteCheckProblemElements',
+            'parent' => 'SiteCheck',
+            /* top level category */
         ),
     ),
 
@@ -116,49 +92,105 @@ $components = array(
      *
      * Every menu should have exactly one action */
 
-    'menus' => array(
-    ),
+    /*'menus' => array(
+        'SiteCheck' => array(
+            'text' => 'SiteCheck',
+            'parent' => 'components',
+            'description' => 'ex_menu_desc',
+            'icon' => '',
+            'menuindex' => 0,
+            'params' => '',
+            'handler' => '',
+            'permissions' => '',
+
+            'action' => array(
+                'id' => '',
+                'namespace' => 'sitecheck',
+                'controller' => 'index',
+                'haslayout' => true,
+                'lang_topics' => 'sitecheck:default',
+                'assets' => '',
+            ),
+        ),
+    ),*/
 
 
     /* ************************* ELEMENTS **************************** */
 
-    /* Array containing elements for your extra. 'category' is required
-       for each element, all other fields are optional.
-       Property Sets (if any) must come first!
-
-       The standard file names are in this form:
-           SnippetName.snippet.php
-           PluginName.plugin.php
-           ChunkName.chunk.html
-           TemplateName.template.html
-
-       If your file names are not standard, add this field:
-          'filename' => 'actualFileName',
-    */
-
 
     'elements' => array(
 
-        'plugins' => array(
-            'CacheMaster' => array( /* minimal cachemaster */
-                'category' => 'CacheMaster',
-                'events' => array(
-                    'OnBeforeDocFormSave' => array(),
-                    'OnBeforeChunkFormSave' => array(),
-                    'OnBeforeSnipFormSave' => array(),
-                    'OnBeforePluginFormSave' => array(),
-                    'OnBeforeTempFormSave' => array(),
-                    'OnBeforeTVFormSave' => array(),
-                    'OnDocFormPrerender' => array(),
-                    'OnDocChunkPrerender' => array(),
-                    'OnSnipFormPrerender' => array(),
-                    'OnPluginFormPrerender' => array(),
-                    'OnTempFormPrerender' => array(),
-                    'OnTVFormPrerender' => array(),
+/*        'propertySets' => array( 
+            'PropertySet1' => array(
+                'name' => 'PropertySet1',
+                'description' => 'Description for PropertySet1',
+                'category' => 'SiteCheck',
+            ),
+            'PropertySet2' => array(
+                'name' => 'PropertySet2',
+                'description' => 'Description for PropertySet2',
+                'category' => 'SiteCheck',
+            ),
+        ),*/
+
+        'snippets' => array(
+            'SiteCheck' => array(
+                'category' => 'SiteCheck',
+                'description' => 'Site integrity check',
+                'static' => false,
+            ),
+
+        ),
+        'chunks' => array(
+            'SiteCheckTpl' => array(
+                'category' => 'SiteCheck',
+                'description' => 'Form for SiteCheck',
+            ),
+
+        ),
+        /*'templates' => array(
+            'Template1' => array(
+                'category' => 'SiteCheck',
+            ),
+            'Template2' => array(
+                'category' => 'SiteCheck',
+                'description' => 'Description for Template two',
+                'static' => false,
+                'propertySets' => array(
+                    'PropertySet2',
+                ),
+            ),
+        ),*/
+        /*'templateVars' => array(
+            'Tv1' => array(
+                'category' => 'SiteCheck',
+                'description' => 'Description for TV one',
+                'caption' => 'TV One',
+                'propertySets' => array(
+                    'PropertySet1',
+                    'PropertySet2',
+                ),
+                'templates' => array(
+                    'default' => 1,
+                    'Template1' => 4,
+                    'Template2' => 4,
+
 
                 ),
             ),
-        ),
+            'Tv2' => array( 
+                'category' => 'SiteCheck',
+                'description' => 'Description for TV two',
+                'caption' => 'TV Two',
+                'static' => false,
+                'default_text' => '@INHERIT',
+                'templates' => array( // second value is display rank
+                    'default' => 3, 
+                    'Template1' => 4,
+                    'Template2' => 1,
+                ),
+            ),
+        ),*/
     ),
     /* (optional) will make all element objects static - 'static' field above will be ignored */
     'allStatic' => false,
@@ -170,7 +202,44 @@ $components = array(
      * ************************************************************** */
     /* Array of Resource pagetitles for your Extra; All other fields optional.
        You can set any resource field here */
-    'resources' => array(),
+    'resources' => array(
+        'Site Check' => array(
+                'pagetitle' => 'Site Check',
+                'isfolder' => true,
+                'alias' => 'site-check',
+                'context_key' => 'web',
+                // 'template' => 'Template2',
+                'richtext' => false,
+                'published' => false,
+                'hidemenu' => true,
+                'content' => '[[!SiteCheck? &attemptFix=`0`]]',
+                'cacheable' => false,
+
+                /*'tvValues' => array(
+                    'Tv1' => 'SomeValue',
+                    'Tv2' => 'SomeOtherValue',
+                ),*/
+            ),
+
+        'Site Check Problem Resources' => array(
+            'pagetitle' => 'Site Check Problem Resources',
+            'alias' => 'site-check-problem-resources',
+            'context_key' => 'web',
+            // 'template' => 'Template2',
+            'richtext' => false,
+            'published' => false,
+            'hidemenu' => true,
+            'parent' => 'Site Check',
+            'content' => '<p>This is a container for problem resources found by SiteCheck (for example, resources with an invalid parent).</p>
+             <p>If &amp;fix=`1`, all problem resources will be placed in this folder</p>',
+
+            
+            /*'tvValues' => array(
+                'Tv1' => 'SomeValue',
+                'Tv2' => 'SomeOtherValue',
+            ),*/
+        )
+    ),
 
 
     /* Array of languages for which you will have language files,
@@ -180,6 +249,7 @@ $components = array(
         'en' => array(
             'default',
             'properties',
+            // 'properties',
         ),
     ),
     /* ********************************************* */
@@ -189,10 +259,18 @@ $components = array(
      * Set to hasAssets = false to skip.
      * Empty js and/or css files will be created.
      */
-    'hasAssets' => false,
+    'hasAssets' => true,
     'minifyJS' => false,
     /* minify any JS files */
     'assetsDirs' => array(
+        'css' => false,
+        /* If true, a default (empty) CSS file will be created */
+        'js' => false,
+        /* If true, a default (empty) JS file will be created */
+        'images' => false,
+        'audio' => false,
+        'video' => false,
+        'themes' => false,
     ),
 
 
@@ -221,6 +299,7 @@ $components = array(
      * (other resolvers may be created above for TVs and plugins).
      * Suffix 'resolver.php' will be added automatically */
     'resolvers' => array(
+        // 'default',
     ),
 
     /* (optional) Validators can abort the install after checking
@@ -229,6 +308,8 @@ $components = array(
      *  named after the package suffix 'validator.php' will be added */
 
     'validators' => array(
+        // 'default',
+        // 'hasGdLib'
     ),
 
     /* (optional) install.options is needed if you will interact
@@ -237,7 +318,7 @@ $components = array(
      * Set this to 'install.options' or ''
      * The file will be created as _build/install.options/user.input.php
      * Don't change the filename or directory name. */
-    // 'install.options' => '',
+    'install.options' => '',
 
 
     /* Suffixes to use for resource and element code files (not implemented)  */
@@ -270,6 +351,8 @@ $components = array(
      *
      * Set to array() if there are no classes. */
     'classes' => array(
+        'SiteCheck' => 'sitecheck:sitecheck',
+        'PathCheck' => 'sitecheck:pathcheck'
     ),
 
     /* *******************************************
@@ -288,9 +371,14 @@ $components = array(
      * of desired resources
     */
     'process' => array(
-
-        'plugins',
-        'templateVars',
+        'snippets',
+        // 'templateVars',
+        // 'templates',
+        'chunks',
+        'resources',
+        // 'propertySets',
+        // 'contextSettings',
+        // 'menus'
     ),
     /*  Array  of resources to process. You can specify specific resources
         or parent (container) resources, or both.
@@ -301,6 +389,8 @@ $components = array(
     'getResourcesById' => false,
 
     'exportResources' => array(
+        'Site Check',
+        'Site Check Problem Resources'
     ),
     /* Array of resource parent IDs to get children of. */
     'parents' => array(),
@@ -311,23 +401,24 @@ $components = array(
 
     /* ******************** LEXICON HELPER SETTINGS ***************** */
     /* These settings are used by LexiconHelper */
-    'rewriteCodeFiles' => true,
+    'rewriteCodeFiles' => false,
     /*# remove ~~descriptions */
-    'rewriteLexiconFiles' => true,
+    'rewriteLexiconFiles' => false,
     /* automatically add missing strings to lexicon files */
     /* ******************************************* */
 
-    /* Array of aliases used in code for the properties array.
-    * Used by the checkproperties utility to check properties in code against
-    * the properties in your properties transport files.
-    * if you use something else, add it here (OK to remove ones you never use.
-    * Search also checks with '$this->' prefix -- no need to add it here. */
+     /* Array of aliases used in code for the properties array.
+     * Used by the checkproperties utility to check properties in code against
+     * the properties in your properties transport files.
+     * if you use something else, add it here (OK to remove ones you never use.
+     * Search also checks with '$this->' prefix -- no need to add it here. */
     'scriptPropertiesAliases' => array(
         'props',
+        'properties',
         'sp',
         'config',
-        'scriptProperties'
-    ),
+'scriptProperties'
+        ),
 );
 
 return $components;

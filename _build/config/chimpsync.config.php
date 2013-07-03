@@ -1,26 +1,26 @@
 <?php
 
-$packageNameLower = 'cachemaster'; /* No spaces, no dashes */
+$packageNameLower = 'chimpsync'; /* No spaces, no dashes */
 
 $components = array(
     /* These are used to define the package and set values for placeholders */
-    'packageName' => 'CacheMaster',  /* No spaces, no dashes */
+    'packageName' => 'ChimpSync',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
-    'packageDescription' => 'CacheMaster project for MyComponent extra',
-    'version' => '1.1.1',
-    'release' => 'pl',
+    'packageDescription' => 'ChimpSync project for MyComponent extra',
+    'version' => '1.0.0',
+    'release' => 'beta1',
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
     'authorUrl' => 'http://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
-    'packageDocumentationUrl' => 'http://bobsguides.com/cachemaster-tutorial.html',
-    'copyright' => '2012-2013',
+    'packageDocumentationUrl' => 'http://bobsguides.com/chimpsync-tutorial.html',
+    'copyright' => '2013',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
 
     'gitHubUsername' => 'BobRay',
-    'gitHubRepository' => 'CacheMaster',
+    'gitHubRepository' => 'ChimpSync',
 
     /* two-letter code of your primary language */
     'primaryLanguage' => 'en',
@@ -47,7 +47,25 @@ $components = array(
      * their namespace to the lowercase package name of your extra */
 
     'newSystemSettings' => array(
-
+        'chimpsync_api_key' => array( // key
+            'key' => 'chimpsync_api_key',
+            'name' => 'ChimpSync MailChimp API key',
+            'description' => 'Get this from your account at MailChimp',
+            'namespace' => 'chimpsync',
+            'xtype' => 'textfield',
+            'value' => '',
+            'area' => 'ChimpSync',
+        ),
+        /*
+        'chimpsync_system_setting2' => array( // key
+            'key' => 'chimpsync_system_setting2',
+            'name' => 'ChimpSync Setting Two',
+            'description' => 'Description for setting two',
+            'namespace' => 'chimpsync',
+            'xtype' => 'combo-boolean',
+            'value' => true,
+            'area' => 'area2',
+        ),*/
     ),
 
     /* ************************ NEW SYSTEM EVENTS ************************* */
@@ -67,10 +85,10 @@ $components = array(
     */
 
     'namespaces' => array(
-        'cachemaster' => array(
-            'name' => 'cachemaster',
-            'path' => '{core_path}components/cachemaster/',
-            'assets_path' => '{assets_path}components/cachemaster/',
+        'chimpsync' => array(
+            'name' => 'chimpsync',
+            'path' => '{core_path}components/chimpsync/',
+            'assets_path' => '{assets_path}components/chimpsync/',
         ),
 
     ),
@@ -101,8 +119,8 @@ $components = array(
     */
 
     'categories' => array(
-        'CacheMaster' => array(
-            'category' => 'CacheMaster',
+        'ChimpSync' => array(
+            'category' => 'ChimpSync',
             'parent' => '',  /* top level category */
         ),
     ),
@@ -117,6 +135,25 @@ $components = array(
      * Every menu should have exactly one action */
 
     'menus' => array(
+        'ChimpSync' => array(
+            'text' => 'ChimpSync',
+            'parent' => 'components',
+            'description' => 'chimpsync_menu_desc',
+            'icon' => '',
+            'menuindex' => 0,
+            'params' => '',
+            'handler' => '',
+            'permissions' => '',
+
+            'action' => array(
+                'id' => '',
+                'namespace' => 'chimpsync',
+                'controller' => 'index',
+                'haslayout' => true,
+                'lang_topics' => 'chimpsync:default',
+                'assets' => '',
+            ),
+        ),
     ),
 
 
@@ -139,25 +176,83 @@ $components = array(
 
     'elements' => array(
 
+        'propertySets' => array( /* all three fields are required */
+          /*  'PropertySet1' => array(
+                'name' => 'PropertySet1',
+                'description' => 'Description for PropertySet1',
+                'category' => 'ChimpSync',
+            ),
+            'PropertySet2' => array(
+                'name' => 'PropertySet2',
+                'description' => 'Description for PropertySet2',
+                'category' => 'ChimpSync',
+            ),*/
+        ),
+
+        'snippets' => array(
+      /*      'ChimpSync' => array(
+                'category' => 'ChimpSync',
+                'description' => 'Description for Snippet one',
+                'static' => true,
+            ),*/
+        ),
         'plugins' => array(
-            'CacheMaster' => array( /* minimal cachemaster */
-                'category' => 'CacheMaster',
-                'events' => array(
-                    'OnBeforeDocFormSave' => array(),
-                    'OnBeforeChunkFormSave' => array(),
-                    'OnBeforeSnipFormSave' => array(),
-                    'OnBeforePluginFormSave' => array(),
-                    'OnBeforeTempFormSave' => array(),
-                    'OnBeforeTVFormSave' => array(),
-                    'OnDocFormPrerender' => array(),
-                    'OnDocChunkPrerender' => array(),
-                    'OnSnipFormPrerender' => array(),
-                    'OnPluginFormPrerender' => array(),
-                    'OnTempFormPrerender' => array(),
-                    'OnTVFormPrerender' => array(),
+        ),
+        'chunks' => array(
+/*            'Chunk1' => array(
+                'category' => 'ChimpSync',
+            ),
+            'Chunk2' => array(
+                'description' => 'Description for Chunk two',
+                'category' => 'ChimpSync',
+                'static' => false,
+                'propertySets' => array(
+                    'PropertySet2',
+                ),
+            ),*/
+        ),
+        'templates' => array(
+/*            'Template1' => array(
+                'category' => 'ChimpSync',
+            ),
+            'Template2' => array(
+                'category' => 'ChimpSync',
+                'description' => 'Description for Template two',
+                'static' => false,
+                'propertySets' => array(
+                    'PropertySet2',
+                ),
+            ),*/
+        ),
+        'templateVars' => array(
+/*            'Tv1' => array(
+                'category' => 'ChimpSync',
+                'description' => 'Description for TV one',
+                'caption' => 'TV One',
+                'propertySets' => array(
+                    'PropertySet1',
+                    'PropertySet2',
+                ),
+                'templates' => array(
+                    'default' => 1,
+                    'Template1' => 4,
+                    'Template2' => 4,
+
 
                 ),
             ),
+            'Tv2' => array(
+                'category' => 'ChimpSync',
+                'description' => 'Description for TV two',
+                'caption' => 'TV Two',
+                'static' => false,
+                'default_text' => '@INHERIT',
+                'templates' => array(
+                    'default' => 3, // second value is rank -- for ordering TVs when editing resource
+                    'Template1' => 4,
+                    'Template2' => 1,
+                ),
+            ),*/
         ),
     ),
     /* (optional) will make all element objects static - 'static' field above will be ignored */
@@ -170,7 +265,8 @@ $components = array(
      * ************************************************************** */
     /* Array of Resource pagetitles for your Extra; All other fields optional.
        You can set any resource field here */
-    'resources' => array(),
+    'resources' => array(
+    ),
 
 
     /* Array of languages for which you will have language files,
@@ -179,7 +275,6 @@ $components = array(
     'languages' => array(
         'en' => array(
             'default',
-            'properties',
         ),
     ),
     /* ********************************************* */
@@ -189,10 +284,18 @@ $components = array(
      * Set to hasAssets = false to skip.
      * Empty js and/or css files will be created.
      */
-    'hasAssets' => false,
-    'minifyJS' => false,
+    'hasAssets' => true,
+    'minifyJS' => true,
     /* minify any JS files */
     'assetsDirs' => array(
+        'css' => true,
+        /* If true, a default (empty) CSS file will be created */
+        'js' => true,
+        /* If true, a default (empty) JS file will be created */
+        'images' => false,
+        'audio' => false,
+        'video' => false,
+        'themes' => false,
     ),
 
 
@@ -221,6 +324,7 @@ $components = array(
      * (other resolvers may be created above for TVs and plugins).
      * Suffix 'resolver.php' will be added automatically */
     'resolvers' => array(
+        'default',
     ),
 
     /* (optional) Validators can abort the install after checking
@@ -229,6 +333,7 @@ $components = array(
      *  named after the package suffix 'validator.php' will be added */
 
     'validators' => array(
+
     ),
 
     /* (optional) install.options is needed if you will interact
@@ -237,7 +342,7 @@ $components = array(
      * Set this to 'install.options' or ''
      * The file will be created as _build/install.options/user.input.php
      * Don't change the filename or directory name. */
-    // 'install.options' => '',
+    'install.options' => 'install.options',
 
 
     /* Suffixes to use for resource and element code files (not implemented)  */
@@ -270,6 +375,9 @@ $components = array(
      *
      * Set to array() if there are no classes. */
     'classes' => array(
+        'ChimpSync' => 'chimpsync:chimpsync',
+        'ChympsyncControllerRequest' => 'request:chimpsynccontrollerrequest',
+        'MCAPI' => 'mailchimp:mailchimp',
     ),
 
     /* *******************************************
@@ -288,9 +396,10 @@ $components = array(
      * of desired resources
     */
     'process' => array(
-
-        'plugins',
-        'templateVars',
+        'snippets',
+        'chunks',
+        'systemSettings',
+        'menus'
     ),
     /*  Array  of resources to process. You can specify specific resources
         or parent (container) resources, or both.
@@ -301,6 +410,7 @@ $components = array(
     'getResourcesById' => false,
 
     'exportResources' => array(
+
     ),
     /* Array of resource parent IDs to get children of. */
     'parents' => array(),
@@ -311,23 +421,23 @@ $components = array(
 
     /* ******************** LEXICON HELPER SETTINGS ***************** */
     /* These settings are used by LexiconHelper */
-    'rewriteCodeFiles' => true,
+    'rewriteCodeFiles' => false,
     /*# remove ~~descriptions */
     'rewriteLexiconFiles' => true,
     /* automatically add missing strings to lexicon files */
     /* ******************************************* */
 
-    /* Array of aliases used in code for the properties array.
-    * Used by the checkproperties utility to check properties in code against
-    * the properties in your properties transport files.
-    * if you use something else, add it here (OK to remove ones you never use.
-    * Search also checks with '$this->' prefix -- no need to add it here. */
+     /* Array of aliases used in code for the properties array.
+     * Used by the checkproperties utility to check properties in code against
+     * the properties in your properties transport files.
+     * if you use something else, add it here (OK to remove ones you never use.
+     * Search also checks with '$this->' prefix -- no need to add it here. */
     'scriptPropertiesAliases' => array(
         'props',
         'sp',
         'config',
-        'scriptProperties'
-    ),
+'scriptProperties'
+        ),
 );
 
 return $components;

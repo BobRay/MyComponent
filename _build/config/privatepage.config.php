@@ -1,26 +1,26 @@
 <?php
 
-$packageNameLower = 'cachemaster'; /* No spaces, no dashes */
+$packageNameLower = 'privatepage'; /* No spaces, no dashes */
 
 $components = array(
     /* These are used to define the package and set values for placeholders */
-    'packageName' => 'CacheMaster',  /* No spaces, no dashes */
+    'packageName' => 'PrivatePage',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
-    'packageDescription' => 'CacheMaster project for MyComponent extra',
-    'version' => '1.1.1',
-    'release' => 'pl',
+    'packageDescription' => 'PrivatePage project for MyComponent extra',
+    'version' => '1.0.0',
+    'release' => 'beta1',
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
     'authorUrl' => 'http://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
-    'packageDocumentationUrl' => 'http://bobsguides.com/cachemaster-tutorial.html',
-    'copyright' => '2012-2013',
+    'packageDocumentationUrl' => 'http://bobsguides.com/privatepage-tutorial.html',
+    'copyright' => '2013',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
 
     'gitHubUsername' => 'BobRay',
-    'gitHubRepository' => 'CacheMaster',
+    'gitHubRepository' => 'PrivatePage',
 
     /* two-letter code of your primary language */
     'primaryLanguage' => 'en',
@@ -59,6 +59,7 @@ $components = array(
      * Warning: Do *not* list regular MODX System Events here !!! */
 
     'newSystemEvents' => array(
+
     ),
 
     /* ************************ NAMESPACE(S) ************************* */
@@ -67,10 +68,10 @@ $components = array(
     */
 
     'namespaces' => array(
-        'cachemaster' => array(
-            'name' => 'cachemaster',
-            'path' => '{core_path}components/cachemaster/',
-            'assets_path' => '{assets_path}components/cachemaster/',
+        'privatepage' => array(
+            'name' => 'privatepage',
+            'path' => '{core_path}components/privatepage/',
+            'assets_path' => '{assets_path}components/privatepage/',
         ),
 
     ),
@@ -101,8 +102,8 @@ $components = array(
     */
 
     'categories' => array(
-        'CacheMaster' => array(
-            'category' => 'CacheMaster',
+        'PrivatePage' => array(
+            'category' => 'PrivatePage',
             'parent' => '',  /* top level category */
         ),
     ),
@@ -139,25 +140,23 @@ $components = array(
 
     'elements' => array(
 
-        'plugins' => array(
-            'CacheMaster' => array( /* minimal cachemaster */
-                'category' => 'CacheMaster',
-                'events' => array(
-                    'OnBeforeDocFormSave' => array(),
-                    'OnBeforeChunkFormSave' => array(),
-                    'OnBeforeSnipFormSave' => array(),
-                    'OnBeforePluginFormSave' => array(),
-                    'OnBeforeTempFormSave' => array(),
-                    'OnBeforeTVFormSave' => array(),
-                    'OnDocFormPrerender' => array(),
-                    'OnDocChunkPrerender' => array(),
-                    'OnSnipFormPrerender' => array(),
-                    'OnPluginFormPrerender' => array(),
-                    'OnTempFormPrerender' => array(),
-                    'OnTVFormPrerender' => array(),
+        'propertySets' => array( /* all three fields are required */
+        ),
 
-                ),
+        'snippets' => array(
+            'PrivatePage' => array(
+                'category' => 'PrivatePage',
+                'description' => 'Protect pages from unauthorized users',
+                'static' => false,
             ),
+        ),
+        'plugins' => array(
+        ),
+        'chunks' => array(
+        ),
+        'templates' => array(
+        ),
+        'templateVars' => array(
         ),
     ),
     /* (optional) will make all element objects static - 'static' field above will be ignored */
@@ -170,17 +169,19 @@ $components = array(
      * ************************************************************** */
     /* Array of Resource pagetitles for your Extra; All other fields optional.
        You can set any resource field here */
-    'resources' => array(),
+    'resources' => array(
+    ),
 
 
     /* Array of languages for which you will have language files,
      *  and comma-separated list of topics
      *  ('.inc.php' will be added as a suffix). */
     'languages' => array(
-        'en' => array(
+/*        'en' => array(
             'default',
             'properties',
-        ),
+            'forms',
+        ),*/
     ),
     /* ********************************************* */
     /* Define optional directories to create under assets.
@@ -237,7 +238,7 @@ $components = array(
      * Set this to 'install.options' or ''
      * The file will be created as _build/install.options/user.input.php
      * Don't change the filename or directory name. */
-    // 'install.options' => '',
+    'install.options' => '',
 
 
     /* Suffixes to use for resource and element code files (not implemented)  */
@@ -288,9 +289,7 @@ $components = array(
      * of desired resources
     */
     'process' => array(
-
-        'plugins',
-        'templateVars',
+        'snippets',
     ),
     /*  Array  of resources to process. You can specify specific resources
         or parent (container) resources, or both.
@@ -311,23 +310,23 @@ $components = array(
 
     /* ******************** LEXICON HELPER SETTINGS ***************** */
     /* These settings are used by LexiconHelper */
-    'rewriteCodeFiles' => true,
+    'rewriteCodeFiles' => false,
     /*# remove ~~descriptions */
     'rewriteLexiconFiles' => true,
     /* automatically add missing strings to lexicon files */
     /* ******************************************* */
 
-    /* Array of aliases used in code for the properties array.
-    * Used by the checkproperties utility to check properties in code against
-    * the properties in your properties transport files.
-    * if you use something else, add it here (OK to remove ones you never use.
-    * Search also checks with '$this->' prefix -- no need to add it here. */
+     /* Array of aliases used in code for the properties array.
+     * Used by the checkproperties utility to check properties in code against
+     * the properties in your properties transport files.
+     * if you use something else, add it here (OK to remove ones you never use.
+     * Search also checks with '$this->' prefix -- no need to add it here. */
     'scriptPropertiesAliases' => array(
         'props',
         'sp',
         'config',
-        'scriptProperties'
-    ),
+'scriptProperties'
+        ),
 );
 
 return $components;

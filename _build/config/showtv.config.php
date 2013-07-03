@@ -1,26 +1,26 @@
 <?php
 
-$packageNameLower = 'cachemaster'; /* No spaces, no dashes */
+$packageNameLower = 'showtv'; /* No spaces, no dashes */
 
 $components = array(
     /* These are used to define the package and set values for placeholders */
-    'packageName' => 'CacheMaster',  /* No spaces, no dashes */
+    'packageName' => 'ShowTv',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
-    'packageDescription' => 'CacheMaster project for MyComponent extra',
-    'version' => '1.1.1',
-    'release' => 'pl',
+    'packageDescription' => 'ShowTv project for MyComponent extra',
+    'version' => '1.0.0',
+    'release' => 'beta1',
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
     'authorUrl' => 'http://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
-    'packageDocumentationUrl' => 'http://bobsguides.com/cachemaster-tutorial.html',
+    'packageDocumentationUrl' => 'http://bobsguides.com/showtv-tutorial.html',
     'copyright' => '2012-2013',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
 
     'gitHubUsername' => 'BobRay',
-    'gitHubRepository' => 'CacheMaster',
+    'gitHubRepository' => 'ShowTv',
 
     /* two-letter code of your primary language */
     'primaryLanguage' => 'en',
@@ -39,60 +39,20 @@ $components = array(
     'targetRoot' => MODX_ASSETS_PATH . 'mycomponents/' . $packageNameLower . '/',
 
 
-    /* *********************** NEW SYSTEM SETTINGS ************************ */
-
-    /* If your extra needs new System Settings, set their field values here.
-     * You can also create or edit them in the Manager (System -> System Settings),
-     * and export them with exportObjects. If you do that, be sure to set
-     * their namespace to the lowercase package name of your extra */
-
-    'newSystemSettings' => array(
-
-    ),
-
-    /* ************************ NEW SYSTEM EVENTS ************************* */
-
-    /* Array of your new System Events (not default
-     * MODX System Events). Listed here so they can be created during
-     * install and removed during uninstall.
-     *
-     * Warning: Do *not* list regular MODX System Events here !!! */
-
-    'newSystemEvents' => array(
-    ),
-
     /* ************************ NAMESPACE(S) ************************* */
     /* (optional) Typically, there's only one namespace which is set
      * to the $packageNameLower value. Paths should end in a slash
     */
 
     'namespaces' => array(
-        'cachemaster' => array(
-            'name' => 'cachemaster',
-            'path' => '{core_path}components/cachemaster/',
-            'assets_path' => '{assets_path}components/cachemaster/',
+        'showtv' => array(
+            'name' => 'showtv',
+            'path' => '{core_path}components/showtv/',
+            'assets_path' => '{assets_path}components/showtv/',
         ),
 
     ),
 
-    /* ************************ CONTEXT(S) ************************* */
-    /* (optional) List any contexts other than the 'web' context here
-    */
-
-    'contexts' => array(
-    ),
-
-    /* *********************** CONTEXT SETTINGS ************************ */
-
-    /* If your extra needs Context Settings, set their field values here.
-     * You can also create or edit them in the Manager (Edit Context -> Context Settings),
-     * and export them with exportObjects. If you do that, be sure to set
-     * their namespace to the lowercase package name of your extra.
-     * The context_key should be the name of an actual context.
-     * */
-
-    'contextSettings' => array(
-    ),
 
     /* ************************* CATEGORIES *************************** */
     /* (optional) List of categories. This is only necessary if you
@@ -101,24 +61,11 @@ $components = array(
     */
 
     'categories' => array(
-        'CacheMaster' => array(
-            'category' => 'CacheMaster',
+        'ShowTv' => array(
+            'category' => 'ShowTv',
             'parent' => '',  /* top level category */
         ),
     ),
-
-    /* *************************** MENUS ****************************** */
-
-    /* If your extra needs Menus, you can create them here
-     * or create them in the Manager, and export them with exportObjects.
-     * Be sure to set their namespace to the lowercase package name
-     * of your extra.
-     *
-     * Every menu should have exactly one action */
-
-    'menus' => array(
-    ),
-
 
     /* ************************* ELEMENTS **************************** */
 
@@ -139,24 +86,12 @@ $components = array(
 
     'elements' => array(
 
-        'plugins' => array(
-            'CacheMaster' => array( /* minimal cachemaster */
-                'category' => 'CacheMaster',
-                'events' => array(
-                    'OnBeforeDocFormSave' => array(),
-                    'OnBeforeChunkFormSave' => array(),
-                    'OnBeforeSnipFormSave' => array(),
-                    'OnBeforePluginFormSave' => array(),
-                    'OnBeforeTempFormSave' => array(),
-                    'OnBeforeTVFormSave' => array(),
-                    'OnDocFormPrerender' => array(),
-                    'OnDocChunkPrerender' => array(),
-                    'OnSnipFormPrerender' => array(),
-                    'OnPluginFormPrerender' => array(),
-                    'OnTempFormPrerender' => array(),
-                    'OnTVFormPrerender' => array(),
 
-                ),
+        'snippets' => array(
+            'ShowTv' => array(
+                'category' => 'ShowTv',
+                'description' => 'Show any TV, anywhere',
+                'static' => false,
             ),
         ),
     ),
@@ -177,10 +112,6 @@ $components = array(
      *  and comma-separated list of topics
      *  ('.inc.php' will be added as a suffix). */
     'languages' => array(
-        'en' => array(
-            'default',
-            'properties',
-        ),
     ),
     /* ********************************************* */
     /* Define optional directories to create under assets.
@@ -231,14 +162,6 @@ $components = array(
     'validators' => array(
     ),
 
-    /* (optional) install.options is needed if you will interact
-     * with user during the install.
-     * See the user.input.php file for more information.
-     * Set this to 'install.options' or ''
-     * The file will be created as _build/install.options/user.input.php
-     * Don't change the filename or directory name. */
-    // 'install.options' => '',
-
 
     /* Suffixes to use for resource and element code files (not implemented)  */
     'suffixes' => array(
@@ -270,6 +193,7 @@ $components = array(
      *
      * Set to array() if there are no classes. */
     'classes' => array(
+
     ),
 
     /* *******************************************
@@ -288,9 +212,7 @@ $components = array(
      * of desired resources
     */
     'process' => array(
-
-        'plugins',
-        'templateVars',
+        'snippets',
     ),
     /*  Array  of resources to process. You can specify specific resources
         or parent (container) resources, or both.
@@ -311,23 +233,23 @@ $components = array(
 
     /* ******************** LEXICON HELPER SETTINGS ***************** */
     /* These settings are used by LexiconHelper */
-    'rewriteCodeFiles' => true,
+    'rewriteCodeFiles' => false,
     /*# remove ~~descriptions */
     'rewriteLexiconFiles' => true,
     /* automatically add missing strings to lexicon files */
     /* ******************************************* */
 
-    /* Array of aliases used in code for the properties array.
-    * Used by the checkproperties utility to check properties in code against
-    * the properties in your properties transport files.
-    * if you use something else, add it here (OK to remove ones you never use.
-    * Search also checks with '$this->' prefix -- no need to add it here. */
+     /* Array of aliases used in code for the properties array.
+     * Used by the checkproperties utility to check properties in code against
+     * the properties in your properties transport files.
+     * if you use something else, add it here (OK to remove ones you never use.
+     * Search also checks with '$this->' prefix -- no need to add it here. */
     'scriptPropertiesAliases' => array(
         'props',
         'sp',
         'config',
-        'scriptProperties'
-    ),
+'scriptProperties'
+        ),
 );
 
 return $components;

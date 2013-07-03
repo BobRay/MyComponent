@@ -1,26 +1,26 @@
 <?php
 
-$packageNameLower = 'cachemaster'; /* No spaces, no dashes */
+$packageNameLower = 'hhc'; /* No spaces, no dashes */
 
 $components = array(
     /* These are used to define the package and set values for placeholders */
-    'packageName' => 'CacheMaster',  /* No spaces, no dashes */
+    'packageName' => 'hhc',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
-    'packageDescription' => 'CacheMaster project for MyComponent extra',
-    'version' => '1.1.1',
-    'release' => 'pl',
-    'author' => 'Bob Ray',
-    'email' => '<http://bobsguides.com>',
-    'authorUrl' => 'http://bobsguides.com',
-    'authorSiteName' => "Bob's Guides",
-    'packageDocumentationUrl' => 'http://bobsguides.com/cachemaster-tutorial.html',
-    'copyright' => '2012-2013',
+    'packageDescription' => 'hhc project for MyComponent extra',
+    'version' => '1.0.0',
+    'release' => 'beta1',
+    'author' => 'J M Maddington',
+    'email' => '',
+    'authorUrl' => '',
+    'authorSiteName' => "",
+    'packageDocumentationUrl' => '',
+    'copyright' => '2013',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
 
-    'gitHubUsername' => 'BobRay',
-    'gitHubRepository' => 'CacheMaster',
+    'gitHubUsername' => '',
+    'gitHubRepository' => '',
 
     /* two-letter code of your primary language */
     'primaryLanguage' => 'en',
@@ -59,6 +59,7 @@ $components = array(
      * Warning: Do *not* list regular MODX System Events here !!! */
 
     'newSystemEvents' => array(
+
     ),
 
     /* ************************ NAMESPACE(S) ************************* */
@@ -67,10 +68,10 @@ $components = array(
     */
 
     'namespaces' => array(
-        'cachemaster' => array(
-            'name' => 'cachemaster',
-            'path' => '{core_path}components/cachemaster/',
-            'assets_path' => '{assets_path}components/cachemaster/',
+        'hhc' => array(
+            'name' => 'hhc',
+            'path' => '{core_path}components/hhc/',
+            'assets_path' => '{assets_path}components/hhc/',
         ),
 
     ),
@@ -101,10 +102,46 @@ $components = array(
     */
 
     'categories' => array(
-        'CacheMaster' => array(
-            'category' => 'CacheMaster',
+        'hhc' => array(
+            'category' => 'hhc',
             'parent' => '',  /* top level category */
         ),
+        /* PMC
+        Properties
+        SQL
+        Transactions
+        Unit Details
+        urlParams */
+        'PMC' => array(
+            'category' => 'PMC',
+            'parent' => 'hhc', /* nested under hhc */
+        ),
+        'Properties' => array(
+            'category' => 'Properties',
+            'parent' => 'hhc',
+            /* nested under hhc */
+        ),
+        'SQL' => array(
+            'category' => 'SQL',
+            'parent' => 'hhc',
+            /* nested under hhc */
+        ),
+        'Transactions' => array(
+            'category' => 'Transactions',
+            'parent' => 'hhc',
+            /* nested under hhc */
+        ),
+        'Unit Details' => array(
+            'category' => 'Unit Details',
+            'parent' => 'hhc',
+            /* nested under hhc */
+        ),
+        'urlParams' => array(
+            'category' => 'urlParams',
+            'parent' => 'hhc',
+            /* nested under hhc */
+        ),
+
     ),
 
     /* *************************** MENUS ****************************** */
@@ -117,6 +154,7 @@ $components = array(
      * Every menu should have exactly one action */
 
     'menus' => array(
+
     ),
 
 
@@ -139,25 +177,18 @@ $components = array(
 
     'elements' => array(
 
-        'plugins' => array(
-            'CacheMaster' => array( /* minimal cachemaster */
-                'category' => 'CacheMaster',
-                'events' => array(
-                    'OnBeforeDocFormSave' => array(),
-                    'OnBeforeChunkFormSave' => array(),
-                    'OnBeforeSnipFormSave' => array(),
-                    'OnBeforePluginFormSave' => array(),
-                    'OnBeforeTempFormSave' => array(),
-                    'OnBeforeTVFormSave' => array(),
-                    'OnDocFormPrerender' => array(),
-                    'OnDocChunkPrerender' => array(),
-                    'OnSnipFormPrerender' => array(),
-                    'OnPluginFormPrerender' => array(),
-                    'OnTempFormPrerender' => array(),
-                    'OnTVFormPrerender' => array(),
+        'propertySets' => array( /* all three fields are required */
+        ),
 
-                ),
-            ),
+        'snippets' => array(
+        ),
+        'plugins' => array(
+        ),
+        'chunks' => array(
+        ),
+        'templates' => array(
+        ),
+        'templateVars' => array(
         ),
     ),
     /* (optional) will make all element objects static - 'static' field above will be ignored */
@@ -170,17 +201,14 @@ $components = array(
      * ************************************************************** */
     /* Array of Resource pagetitles for your Extra; All other fields optional.
        You can set any resource field here */
-    'resources' => array(),
+    'resources' => array(
+    ),
 
 
     /* Array of languages for which you will have language files,
      *  and comma-separated list of topics
      *  ('.inc.php' will be added as a suffix). */
     'languages' => array(
-        'en' => array(
-            'default',
-            'properties',
-        ),
     ),
     /* ********************************************* */
     /* Define optional directories to create under assets.
@@ -189,10 +217,11 @@ $components = array(
      * Set to hasAssets = false to skip.
      * Empty js and/or css files will be created.
      */
-    'hasAssets' => false,
+    'hasAssets' => true,
     'minifyJS' => false,
     /* minify any JS files */
     'assetsDirs' => array(
+
     ),
 
 
@@ -200,14 +229,13 @@ $components = array(
     /* Define basic directories and files to be created in project*/
 
     'docs' => array(
-        'readme.txt',
         'license.txt',
         'changelog.txt',
-        'tutorial.html'
+        'readme.txt'
     ),
 
     /* (optional) Description file for GitHub project home page */
-    'readme.md' => true,
+    'readme.md' => false,
     /* assume every package has a core directory */
     'hasCore' => true,
 
@@ -229,6 +257,7 @@ $components = array(
      *  named after the package suffix 'validator.php' will be added */
 
     'validators' => array(
+
     ),
 
     /* (optional) install.options is needed if you will interact
@@ -237,7 +266,7 @@ $components = array(
      * Set this to 'install.options' or ''
      * The file will be created as _build/install.options/user.input.php
      * Don't change the filename or directory name. */
-    // 'install.options' => '',
+    'install.options' => '',
 
 
     /* Suffixes to use for resource and element code files (not implemented)  */
@@ -270,6 +299,7 @@ $components = array(
      *
      * Set to array() if there are no classes. */
     'classes' => array(
+        // 'hhc' => 'hhc:hhc',
     ),
 
     /* *******************************************
@@ -288,9 +318,10 @@ $components = array(
      * of desired resources
     */
     'process' => array(
-
-        'plugins',
-        'templateVars',
+        'snippets',
+        'templates',
+        'chunks',
+        'systemSettings',
     ),
     /*  Array  of resources to process. You can specify specific resources
         or parent (container) resources, or both.
@@ -311,17 +342,17 @@ $components = array(
 
     /* ******************** LEXICON HELPER SETTINGS ***************** */
     /* These settings are used by LexiconHelper */
-    'rewriteCodeFiles' => true,
+    'rewriteCodeFiles' => false,
     /*# remove ~~descriptions */
     'rewriteLexiconFiles' => true,
     /* automatically add missing strings to lexicon files */
     /* ******************************************* */
 
-    /* Array of aliases used in code for the properties array.
-    * Used by the checkproperties utility to check properties in code against
-    * the properties in your properties transport files.
-    * if you use something else, add it here (OK to remove ones you never use.
-    * Search also checks with '$this->' prefix -- no need to add it here. */
+     /* Array of aliases used in code for the properties array.
+     * Used by the checkproperties utility to check properties in code against
+     * the properties in your properties transport files.
+     * if you use something else, add it here (OK to remove ones you never use.
+     * Search also checks with '$this->' prefix -- no need to add it here. */
     'scriptPropertiesAliases' => array(
         'props',
         'sp',

@@ -1,26 +1,26 @@
 <?php
 
-$packageNameLower = 'cachemaster'; /* No spaces, no dashes */
+$packageNameLower = 'caseinsensitiveurls'; /* No spaces, no dashes */
 
 $components = array(
     /* These are used to define the package and set values for placeholders */
-    'packageName' => 'CacheMaster',  /* No spaces, no dashes */
+    'packageName' => 'CaseInsensitiveURLs',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
-    'packageDescription' => 'CacheMaster project for MyComponent extra',
-    'version' => '1.1.1',
-    'release' => 'pl',
+    'packageDescription' => 'Redirects page requests for mixed-case URLs to lowercase version',
+    'version' => '1.0.1',
+    'release' => 'beta1',
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
     'authorUrl' => 'http://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
-    'packageDocumentationUrl' => 'http://bobsguides.com/cachemaster-tutorial.html',
+    'packageDocumentationUrl' => 'http://bobsguides.com/caseinsensitiveurls-tutorial.html',
     'copyright' => '2012-2013',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
 
     'gitHubUsername' => 'BobRay',
-    'gitHubRepository' => 'CacheMaster',
+    'gitHubRepository' => 'CaseInsensitiveURLs',
 
     /* two-letter code of your primary language */
     'primaryLanguage' => 'en',
@@ -39,60 +39,21 @@ $components = array(
     'targetRoot' => MODX_ASSETS_PATH . 'mycomponents/' . $packageNameLower . '/',
 
 
-    /* *********************** NEW SYSTEM SETTINGS ************************ */
-
-    /* If your extra needs new System Settings, set their field values here.
-     * You can also create or edit them in the Manager (System -> System Settings),
-     * and export them with exportObjects. If you do that, be sure to set
-     * their namespace to the lowercase package name of your extra */
-
-    'newSystemSettings' => array(
-
-    ),
-
-    /* ************************ NEW SYSTEM EVENTS ************************* */
-
-    /* Array of your new System Events (not default
-     * MODX System Events). Listed here so they can be created during
-     * install and removed during uninstall.
-     *
-     * Warning: Do *not* list regular MODX System Events here !!! */
-
-    'newSystemEvents' => array(
-    ),
-
     /* ************************ NAMESPACE(S) ************************* */
     /* (optional) Typically, there's only one namespace which is set
      * to the $packageNameLower value. Paths should end in a slash
     */
 
     'namespaces' => array(
-        'cachemaster' => array(
-            'name' => 'cachemaster',
-            'path' => '{core_path}components/cachemaster/',
-            'assets_path' => '{assets_path}components/cachemaster/',
+        'caseinsensitiveurls' => array(
+            'name' => 'caseinsensitiveurls',
+            'path' => '{core_path}components/caseinsensitiveurls/',
+            'assets_path' => '{assets_path}components/caseinsensitiveurls/',
         ),
 
     ),
 
-    /* ************************ CONTEXT(S) ************************* */
-    /* (optional) List any contexts other than the 'web' context here
-    */
 
-    'contexts' => array(
-    ),
-
-    /* *********************** CONTEXT SETTINGS ************************ */
-
-    /* If your extra needs Context Settings, set their field values here.
-     * You can also create or edit them in the Manager (Edit Context -> Context Settings),
-     * and export them with exportObjects. If you do that, be sure to set
-     * their namespace to the lowercase package name of your extra.
-     * The context_key should be the name of an actual context.
-     * */
-
-    'contextSettings' => array(
-    ),
 
     /* ************************* CATEGORIES *************************** */
     /* (optional) List of categories. This is only necessary if you
@@ -101,23 +62,12 @@ $components = array(
     */
 
     'categories' => array(
-        'CacheMaster' => array(
-            'category' => 'CacheMaster',
+        'CaseInsensitiveURLs' => array(
+            'category' => 'CaseInsensitiveURLs',
             'parent' => '',  /* top level category */
         ),
     ),
 
-    /* *************************** MENUS ****************************** */
-
-    /* If your extra needs Menus, you can create them here
-     * or create them in the Manager, and export them with exportObjects.
-     * Be sure to set their namespace to the lowercase package name
-     * of your extra.
-     *
-     * Every menu should have exactly one action */
-
-    'menus' => array(
-    ),
 
 
     /* ************************* ELEMENTS **************************** */
@@ -140,22 +90,18 @@ $components = array(
     'elements' => array(
 
         'plugins' => array(
-            'CacheMaster' => array( /* minimal cachemaster */
-                'category' => 'CacheMaster',
-                'events' => array(
-                    'OnBeforeDocFormSave' => array(),
-                    'OnBeforeChunkFormSave' => array(),
-                    'OnBeforeSnipFormSave' => array(),
-                    'OnBeforePluginFormSave' => array(),
-                    'OnBeforeTempFormSave' => array(),
-                    'OnBeforeTVFormSave' => array(),
-                    'OnDocFormPrerender' => array(),
-                    'OnDocChunkPrerender' => array(),
-                    'OnSnipFormPrerender' => array(),
-                    'OnPluginFormPrerender' => array(),
-                    'OnTempFormPrerender' => array(),
-                    'OnTVFormPrerender' => array(),
+            'CaseInsensitiveURLs' => array( /* caseinsensitiveurls with static, events, and property sets */
+                'category' => 'CaseInsensitiveURLs',
+                'description' => 'Redirects requests for mixed-case URLs to lowercase version',
+                'static' => false,
 
+                'events' => array(
+                    /* caseinsensitiveurls with fields set */
+                    'OnPageNotFound' => array(
+                        'priority' => '3', /* priority of the event -- 0 is highest priority */
+                        'group' => 'plugins', /* should generally be set to 'plugins' */
+
+                    ),
                 ),
             ),
         ),
@@ -164,23 +110,10 @@ $components = array(
     'allStatic' => false,
 
 
-    /* ************************* RESOURCES ****************************
-     Important: This list only affects Bootstrap. There is another
-     list of resources below that controls ExportObjects.
-     * ************************************************************** */
-    /* Array of Resource pagetitles for your Extra; All other fields optional.
-       You can set any resource field here */
-    'resources' => array(),
-
-
     /* Array of languages for which you will have language files,
      *  and comma-separated list of topics
      *  ('.inc.php' will be added as a suffix). */
     'languages' => array(
-        'en' => array(
-            'default',
-            'properties',
-        ),
     ),
     /* ********************************************* */
     /* Define optional directories to create under assets.
@@ -231,14 +164,6 @@ $components = array(
     'validators' => array(
     ),
 
-    /* (optional) install.options is needed if you will interact
-     * with user during the install.
-     * See the user.input.php file for more information.
-     * Set this to 'install.options' or ''
-     * The file will be created as _build/install.options/user.input.php
-     * Don't change the filename or directory name. */
-    // 'install.options' => '',
-
 
     /* Suffixes to use for resource and element code files (not implemented)  */
     'suffixes' => array(
@@ -269,8 +194,6 @@ $components = array(
      * yourcomponent/core/components/yourcomponent/model/[directory/]{filename}.class.php
      *
      * Set to array() if there are no classes. */
-    'classes' => array(
-    ),
 
     /* *******************************************
      * These settings control exportObjects.php  *
@@ -288,9 +211,7 @@ $components = array(
      * of desired resources
     */
     'process' => array(
-
         'plugins',
-        'templateVars',
     ),
     /*  Array  of resources to process. You can specify specific resources
         or parent (container) resources, or both.
@@ -311,23 +232,23 @@ $components = array(
 
     /* ******************** LEXICON HELPER SETTINGS ***************** */
     /* These settings are used by LexiconHelper */
-    'rewriteCodeFiles' => true,
+    'rewriteCodeFiles' => false,
     /*# remove ~~descriptions */
     'rewriteLexiconFiles' => true,
     /* automatically add missing strings to lexicon files */
     /* ******************************************* */
 
-    /* Array of aliases used in code for the properties array.
-    * Used by the checkproperties utility to check properties in code against
-    * the properties in your properties transport files.
-    * if you use something else, add it here (OK to remove ones you never use.
-    * Search also checks with '$this->' prefix -- no need to add it here. */
+     /* Array of aliases used in code for the properties array.
+     * Used by the checkproperties utility to check properties in code against
+     * the properties in your properties transport files.
+     * if you use something else, add it here (OK to remove ones you never use.
+     * Search also checks with '$this->' prefix -- no need to add it here. */
     'scriptPropertiesAliases' => array(
         'props',
         'sp',
         'config',
-        'scriptProperties'
-    ),
+'scriptProperties'
+        ),
 );
 
 return $components;

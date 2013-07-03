@@ -1,33 +1,36 @@
 <?php
 
-$packageNameLower = 'cachemaster'; /* No spaces, no dashes */
+$packageNameLower = 'foryourapproval'; /* No spaces, no dashes */
 
 $components = array(
     /* These are used to define the package and set values for placeholders */
-    'packageName' => 'CacheMaster',  /* No spaces, no dashes */
+    'packageName' => 'ForYourApproval',
+    /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
-    'packageDescription' => 'CacheMaster project for MyComponent extra',
-    'version' => '1.1.1',
-    'release' => 'pl',
+    'packageDescription' => 'Hold user web site changes for approval',
+    'version' => '1.0.0',
+    'release' => 'beta1',
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
     'authorUrl' => 'http://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
-    'packageDocumentationUrl' => 'http://bobsguides.com/cachemaster-tutorial.html',
+    'packageDocumentationUrl' => 'http://bobsguides.com/foryourapproval-tutorial.html',
     'copyright' => '2012-2013',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
 
     'gitHubUsername' => 'BobRay',
-    'gitHubRepository' => 'CacheMaster',
+    'gitHubRepository' => 'ForYourApproval',
 
     /* two-letter code of your primary language */
     'primaryLanguage' => 'en',
 
     /* Set directory and file permissions for project directories */
-    'dirPermission' => 0755,  /* No quotes!! */
-    'filePermission' => 0644, /* No quotes!! */
+    'dirPermission' => 0755,
+    /* No quotes!! */
+    'filePermission' => 0644,
+    /* No quotes!! */
 
     /* Define source and target directories */
 
@@ -47,18 +50,60 @@ $components = array(
      * their namespace to the lowercase package name of your extra */
 
     'newSystemSettings' => array(
-
-    ),
-
-    /* ************************ NEW SYSTEM EVENTS ************************* */
-
-    /* Array of your new System Events (not default
-     * MODX System Events). Listed here so they can be created during
-     * install and removed during uninstall.
-     *
-     * Warning: Do *not* list regular MODX System Events here !!! */
-
-    'newSystemEvents' => array(
+        'fya_drafts_id' => array(
+            'key' => 'fya_drafts_id',
+            'name' => 'FYA Drafts ID',
+            'description' => 'ID of ForYourApproval Draft container Resource',
+            'namespace' => 'foryourapproval',
+            'xtype' => 'textfield',
+            'value' => '',
+            'area' => 'ForYourApproval',
+        ),
+        'fya_archive_id' => array(
+            'key' => 'fya_archive_id',
+            'name' => 'ForYourApproval Archive ID',
+            'description' => 'ID of ForYourApproval Archive container Resource',
+            'namespace' => 'foryourapproval',
+            'xtype' => 'textfield',
+            'value' => '',
+            'area' => 'ForYourApproval',
+        ),
+        'fya_groups' => array(
+            'key' => 'fya_groups',
+            'name' => 'ForYourApproval Groups',
+            'description' => 'Comma-separated list of User Groups whose work will be subject to approval',
+            'namespace' => 'foryourapproval',
+            'xtype' => 'textfield',
+            'value' => 'FyaContributors',
+            'area' => 'ForYourApproval',
+        ),
+        'fya_archive_original' => array(
+            'key' => 'fya_archive_original',
+            'name' => 'ForYourApproval Archive Original',
+            'description' => 'If set, previous versions of updated Resources will be archived',
+            'namespace' => 'foryourapproval',
+            'xtype' => 'combo-boolean',
+            'value' => false,
+            'area' => 'ForYourApproval',
+        ),
+        'fya_include_tvs' => array(
+            'key' => 'fya_include_tvs',
+            'name' => 'ForYourApproval Include TVs',
+            'description' => 'If set, TV values of the resource will be updated',
+            'namespace' => 'foryourapproval',
+            'xtype' => 'combo-boolean',
+            'value' => false,
+            'area' => 'ForYourApproval',
+        ),
+        'fya_update_publishedon_date' => array(
+            'key' => 'fya_update_publishedon_date',
+            'name' => 'ForYourApproval Update Published On Date',
+            'description' => 'If set, the Published On date of the original resource will be updated to the Stage Date',
+            'namespace' => 'foryourapproval',
+            'xtype' => 'combo-boolean',
+            'value' => false,
+            'area' => 'ForYourApproval',
+        ),
     ),
 
     /* ************************ NAMESPACE(S) ************************* */
@@ -67,32 +112,14 @@ $components = array(
     */
 
     'namespaces' => array(
-        'cachemaster' => array(
-            'name' => 'cachemaster',
-            'path' => '{core_path}components/cachemaster/',
-            'assets_path' => '{assets_path}components/cachemaster/',
+        'foryourapproval' => array(
+            'name' => 'foryourapproval',
+            'path' => '{core_path}components/foryourapproval/',
+            'assets_path' => '{assets_path}components/foryourapproval/',
         ),
 
     ),
 
-    /* ************************ CONTEXT(S) ************************* */
-    /* (optional) List any contexts other than the 'web' context here
-    */
-
-    'contexts' => array(
-    ),
-
-    /* *********************** CONTEXT SETTINGS ************************ */
-
-    /* If your extra needs Context Settings, set their field values here.
-     * You can also create or edit them in the Manager (Edit Context -> Context Settings),
-     * and export them with exportObjects. If you do that, be sure to set
-     * their namespace to the lowercase package name of your extra.
-     * The context_key should be the name of an actual context.
-     * */
-
-    'contextSettings' => array(
-    ),
 
     /* ************************* CATEGORIES *************************** */
     /* (optional) List of categories. This is only necessary if you
@@ -101,22 +128,11 @@ $components = array(
     */
 
     'categories' => array(
-        'CacheMaster' => array(
-            'category' => 'CacheMaster',
-            'parent' => '',  /* top level category */
+        'ForYourApproval' => array(
+            'category' => 'ForYourApproval',
+            'parent' => '',
+            /* top level category */
         ),
-    ),
-
-    /* *************************** MENUS ****************************** */
-
-    /* If your extra needs Menus, you can create them here
-     * or create them in the Manager, and export them with exportObjects.
-     * Be sure to set their namespace to the lowercase package name
-     * of your extra.
-     *
-     * Every menu should have exactly one action */
-
-    'menus' => array(
     ),
 
 
@@ -140,25 +156,58 @@ $components = array(
     'elements' => array(
 
         'plugins' => array(
-            'CacheMaster' => array( /* minimal cachemaster */
-                'category' => 'CacheMaster',
+
+            'ForYourApproval' => array( /* foryourapproval with static, events, and property sets */
+                'category' => 'ForYourApproval',
+                'description' => 'Hold Resource changes until approved',
+                'static' => false,
+
                 'events' => array(
-                    'OnBeforeDocFormSave' => array(),
-                    'OnBeforeChunkFormSave' => array(),
-                    'OnBeforeSnipFormSave' => array(),
-                    'OnBeforePluginFormSave' => array(),
-                    'OnBeforeTempFormSave' => array(),
-                    'OnBeforeTVFormSave' => array(),
-                    'OnDocFormPrerender' => array(),
-                    'OnDocChunkPrerender' => array(),
-                    'OnSnipFormPrerender' => array(),
-                    'OnPluginFormPrerender' => array(),
-                    'OnTempFormPrerender' => array(),
-                    'OnTVFormPrerender' => array(),
+                    /* minimal foryourapproval - no fields */
+
+                    /* foryourapproval with fields set */
+                    'OnDocFormSave' => array(
+                        'priority' => '0',
+                        /* priority of the event -- 0 is highest priority */
+                        'group' => 'plugins',
+                        /* should generally be set to 'plugins' */
+                    ),
+                    'OnLoadWebDocument' => array(
+                        'priority' => '0',
+                        'group' => 'plugins',
+                    ),
 
                 ),
             ),
         ),
+        'templateVars' => array(
+            'Approved' => array(
+                'category' => 'ForYourApproval',
+                'description' => 'Changes are approved for publication',
+                'caption' => 'Approved',
+                'type' => 'checkbox',
+                'default_text' => 'No',
+
+                'templates' => array(
+                    'default' => 1,
+                ),
+            ),
+
+            'DraftId' => array(
+                'category' => 'ForYourApproval',
+                'description' => 'ID of draft Resource (set automatically)',
+                'caption' => 'Draft ID',
+                'type' => 'textfield',
+                'default_text' => '',
+
+                'templates' => array(
+                    'default' => 1,
+                ),
+            ),
+
+        ),
+
+
     ),
     /* (optional) will make all element objects static - 'static' field above will be ignored */
     'allStatic' => false,
@@ -170,7 +219,28 @@ $components = array(
      * ************************************************************** */
     /* Array of Resource pagetitles for your Extra; All other fields optional.
        You can set any resource field here */
-    'resources' => array(),
+    'resources' => array(
+        'FYA Drafts' => array(
+            'pagetitle' => 'FYA Staged Resources',
+            'longtitle' => 'FYA Staged Resources',
+            'description' => 'Container for FYA Drafts',
+            'alias' => 'fya-staged-resources',
+            'richtext' => false,
+            'published' => false,
+            'hidemenu' => true,
+            'content' => '<p>Container for FYA Drafts</p>',
+        ),
+        'FYA Archive' => array(
+            'pagetitle' => 'FYA Archive',
+            'longtitle' => 'FYA Archive',
+            'alias' => 'fya-archive',
+            'richtext' => false,
+            'published' => false,
+            'hidemenu' => true,
+            'content' => '<p>Container for FYA Archived Resources</p>',
+        ),
+
+    ),
 
 
     /* Array of languages for which you will have language files,
@@ -179,7 +249,6 @@ $components = array(
     'languages' => array(
         'en' => array(
             'default',
-            'properties',
         ),
     ),
     /* ********************************************* */
@@ -192,8 +261,7 @@ $components = array(
     'hasAssets' => false,
     'minifyJS' => false,
     /* minify any JS files */
-    'assetsDirs' => array(
-    ),
+    'assetsDirs' => array(),
 
 
     /* ********************************************* */
@@ -221,6 +289,7 @@ $components = array(
      * (other resolvers may be created above for TVs and plugins).
      * Suffix 'resolver.php' will be added automatically */
     'resolvers' => array(
+        'default',
     ),
 
     /* (optional) Validators can abort the install after checking
@@ -228,8 +297,6 @@ $components = array(
      * prefix of suffix) or '' 'default' creates a default resolver
      *  named after the package suffix 'validator.php' will be added */
 
-    'validators' => array(
-    ),
 
     /* (optional) install.options is needed if you will interact
      * with user during the install.
@@ -237,7 +304,6 @@ $components = array(
      * Set this to 'install.options' or ''
      * The file will be created as _build/install.options/user.input.php
      * Don't change the filename or directory name. */
-    // 'install.options' => '',
 
 
     /* Suffixes to use for resource and element code files (not implemented)  */
@@ -247,29 +313,6 @@ $components = array(
         'modChunk' => '.html',
         'modTemplate' => '.html',
         'modResource' => '.html',
-    ),
-
-
-    /* ********************************************* */
-    /* (optional) Only necessary if you will have class files.
-     *
-     * Array of class files to be created.
-     *
-     * Format is:
-     *
-     * 'ClassName' => 'directory:filename',
-     *
-     * or
-     *
-     *  'ClassName' => 'filename',
-     *
-     * ('.class.php' will be appended automatically)
-     *
-     *  Class file will be created as:
-     * yourcomponent/core/components/yourcomponent/model/[directory/]{filename}.class.php
-     *
-     * Set to array() if there are no classes. */
-    'classes' => array(
     ),
 
     /* *******************************************
@@ -288,9 +331,11 @@ $components = array(
      * of desired resources
     */
     'process' => array(
-
         'plugins',
         'templateVars',
+        'templaces',
+        'resources',
+        'systemSettings',
     ),
     /*  Array  of resources to process. You can specify specific resources
         or parent (container) resources, or both.
@@ -301,6 +346,8 @@ $components = array(
     'getResourcesById' => false,
 
     'exportResources' => array(
+        'FYA Drafts',
+        'FYA Archive',
     ),
     /* Array of resource parent IDs to get children of. */
     'parents' => array(),
