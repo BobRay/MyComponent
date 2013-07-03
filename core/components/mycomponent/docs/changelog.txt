@@ -1,5 +1,32 @@
 Changelog for MyComponent
 
+MyComponent 3.1.0
+-----------------
+Handle CMP files
+Create working Example CMP file
+Fix critical bug with Tpl file path
+Refactor LexiconHelper to use actual files rather than config
+Add LexiconCodeFile class for LexiconHelper
+Add More reliable processing in LexiconHelper
+Better handling of embedded quotes in fields and object names
+Direct handling of lexicon strings in menu and properties transport files
+Fix bug with processor Tpls
+Handle custom file names in Check Properties
+Install subpackages when package is installed
+Detect subpackages automatically
+Fix bug in identifying properties build files
+Prefix internal methods with underscore
+Remove naive getters and setters for speed
+Improved reporting and error messages
+Use var_export for more reliable handling of properties
+Add option to use JSMinPlus for minimizing JS file
+Add option to create JS-All combined JS file
+No longer ignore static element files in Export Objects
+E_NOTICE fixes
+Many minor bug fixes
+
+
+
 MyComponent 3.0.7
 -----------------
 Report Version and Release in build
