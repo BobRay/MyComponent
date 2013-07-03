@@ -58,7 +58,7 @@ class Helpers {
     }
     
     public function init() {
-        $this->tplPath = $this->getProp('mycomponentCore') . 'elements/chunks/';
+        $this->tplPath = $this->getProp('mycomponentRoot') . 'elements/chunks/';
         if (substr($this->tplPath, -1) != "/") {
             $this->tplPath .= "/";
         }
