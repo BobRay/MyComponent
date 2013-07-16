@@ -1155,9 +1155,9 @@ class MyComponentProject {
                 }
             }
             $doCmp = $this->helpers->getProp('createCmpFiles');
-            if ($dir == 'css' || $dir == 'js') {
+            if ( $val && ($dir == 'css' || $dir == 'js')) {
                 /* Don't do JS files here unless CreateCmpFiles is false */
-                if ($dir != 'js' || ! $doCmp ) {
+                if ( ($dir != 'js') || (! $doCmp) ) {
                     $path = $this->myPaths['targetAssets'] . $dir;
                     $fileName = $this->packageNameLower . '.' . $dir;
                     if (!file_exists($path . '/' . $fileName)) {
