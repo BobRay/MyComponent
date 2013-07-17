@@ -159,7 +159,7 @@ $props = $properties;
 
 $settingsFile = $targetRoot . '_build/data/transport.settings.php';
 
-$languageFile = $targetRoot . 'core/components/stagecoach/lexicon/en/default.inc.php';
+$languageFile = $targetRoot . 'core/components/' . $packageNameLower . '/lexicon/en/default.inc.php';
 $rewriteCodeFile = $modx->getOption('rewriteCodeFiles', $props, false);
 $codeFile = $settingsFile;
 
