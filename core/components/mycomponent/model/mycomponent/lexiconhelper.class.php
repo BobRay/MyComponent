@@ -274,14 +274,16 @@ class LexiconHelper {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, $code, true);
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
                     $this->modx->lexicon('mc_stars'));
-                if ($rewriteCodeFiles) {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
-                    $this->modx->lexicon('mc_rewriting_code_file'));
-                    $lcf->updateCodeFile();
-                }
+
             } else {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '            ' .
                     'mc_all_lex_strings_defined');
+            }
+
+            if ($rewriteCodeFiles) {
+                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
+                    $this->modx->lexicon('mc_rewriting_code_file'));
+                $lcf->updateCodeFile();
             }
 
 
