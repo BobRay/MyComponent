@@ -348,7 +348,7 @@ abstract class AbstractLexiconCodeFile {
      */
     public function getLexFqn($lexFileSpec) {
         $nspos = strpos($lexFileSpec, ':');
-        $language = $this->language;
+        $language = empty($this->language)? 'en' : $this->language;
 
 
         $namespace = $this->helpers->getProp('packageNameLower');
@@ -366,6 +366,7 @@ abstract class AbstractLexiconCodeFile {
                 $topic_parsed = $params[2];
             }
         }
+        $topic_parsed = empty($topic_parsed)? 'default' : $topic_parsed;
         return $language . ':' . $namespace . ':' . $topic_parsed;
     }
 
