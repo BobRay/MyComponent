@@ -411,10 +411,16 @@ return include $MODX->getOption('mc.core_path') .
 
 <p>If you would like to include other packages in your transport file, just put the transport.zip files for those extras in this directory:
 
-<pre><fixedpre>assets/components/yourcomponent/_build/subpackages/</fixedpre></pre>
+<pre><fixedpre>assets/mycomponents/yourcomponent/_build/subpackages/</fixedpre></pre>
 
 <p>Note that you don't have to do anything with the project config file for this. The MyComponent build.transport.php file will detect the packages and will automatically add them to the package and create resolvers and validators for each one.</p>
 
+<br />
+
+<div class="box">
+<p>If you have existing projects, remember that the <code>build.transport.php</code> file is never overwritten once it exists. When you upgrade MyComponent, you may need the new version of that file for each project. Either copy the file from the <code>core/components/mycomponent/elements/chunks/</code> directory to the <code>assets/components/yourcomponent/_build</code> directory, or (easier) just delete the old <code>build.transport.php</code> file in your project's development directory and run Bootstrap for each project.</p>
+</div>
+<br />
 <p>The transport files for the other extras will be transferred to the <code>core/packages/</code> directory when your extra is installed and will be automatically installed, one-by-one, but only if the included extras are newer versions or not installed already.</p>
 
 <p>If you have played with installing, reinstalling, and uninstalling the Articles extra, which uses the same method to install Quip, Archivist, and some other extras, you my have noticed that things can get a little funky in the process. You may see some disturbing and convoluted error messages in red in the console. This is unavoidable in the current version of Package Manager.</p>
