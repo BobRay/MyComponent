@@ -1,5 +1,15 @@
 Changelog for MyComponent
 
+MyComponent 3.1.1
+--------------------
+Fix bug with subpackages
+Fix bug with createSettingsTable snippet
+Fix bug with LexiconHelper failing to remove ~~ strings when no missing entries
+Fix creation of unwanted JS file
+Fix bug with empty topic in LexiconCodeFile class
+
+
+
 MyComponent 3.1.0
 -----------------
 Handle CMP files
