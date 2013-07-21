@@ -34,7 +34,6 @@ class SubpackageAdapter {
 
 
         $helpers->resetFiles();
-        $resolverDir = $helpers;
 
         $helpers->dirWalk($this->packageDir, '.zip');
         $files = $helpers->getFiles();
@@ -179,15 +178,16 @@ if (\$transport && \$transport->xpdo) {
 return \$success;
 TEXT3;
     foreach($subPackages as $name => $signature) {
-        $tpl = str_replace('[[+elementType]] transport', 'Subpackage Resolver', $tpl);
-        $tpl = str_replace('[[+name]]', $name, $tpl);
-        $tpl = str_replace('[[+signature]]', $signature, $tpl);
+        $content = $tpl;
+        $content = str_replace('[[+elementType]] transport', 'Subpackage Resolver', $content);
+        $content = str_replace('[[+name]]', $name, $content);
+        $content = str_replace('[[+signature]]', $signature, $content);
 
-        $tpl = $this->helpers->replaceTags($tpl);
+        $content = $this->helpers->replaceTags($content);
         $dir = $this->resolverDir;
         $fileName = 'resolve.' . $name . '.php';
         if (!file_exists($dir . '/' . $fileName) || $this->mode != MODE_BOOTSTRAP) {
-            $this->helpers->writeFile($dir, $fileName, $tpl);
+            $this->helpers->writeFile($dir, $fileName, $content);
         } else {
             $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
                 $this->helpers->modx->lexicon('mc_file_already_exists')
@@ -232,6 +232,7 @@ if (\$transport && \$transport->xpdo) {
             \$packages = \$modx->getCollection('transport.modTransportPackage',\$c);
 
             foreach (\$packages as \$package) {
+                /** @var \$package modTransportPackage */
                 if (\$package->compareVersion(\$newVersion)) {
                     \$newer = false;
                     break;
@@ -246,18 +247,19 @@ return \$newer;
 TEXT4;
 
         foreach ($subPackages as $name => $signature) {
-            $tpl = str_replace('[[+elementType]] transport', 'Subpackage Validator', $tpl);
-            $tpl = str_replace('[[+name]]', $name, $tpl);
+            $content = $tpl;
+            $content = str_replace('[[+elementType]] transport', 'Subpackage Validator', $content);
+            $content = str_replace('[[+name]]', $name, $content);
             $version = str_replace($name . '-', '', $signature);
-            $tpl = str_replace('[[+version]]', $version, $tpl);
+            $content = str_replace('[[+version]]', $version, $content);
             $versionMajor = substr($version, 0, 1);
-            $tpl = str_replace('[[+versionMajor]]', $versionMajor, $tpl);
+            $content = str_replace('[[+versionMajor]]', $versionMajor, $content);
 
-            $tpl = $this->helpers->replaceTags($tpl);
+            $content = $this->helpers->replaceTags($content);
             $dir = $this->validatorDir;
             $fileName = 'validate.' . $name . '.php';
             if (!file_exists($dir . '/' . $fileName) || $this->mode != MODE_BOOTSTRAP) {
-                $this->helpers->writeFile($dir, $fileName, $tpl);
+                $this->helpers->writeFile($dir, $fileName, $content);
             } else {
                 $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
                     $this->helpers->modx->lexicon('mc_file_already_exists')

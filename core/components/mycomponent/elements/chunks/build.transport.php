@@ -305,7 +305,7 @@ $sources = array(
     'data' => $root . '_build/data/',
     'docs' => $root . 'core/components/' . PKG_NAME_LOWER . '/docs/',
     'install_options' => $root . '_build/install.options/',
-    'packages' => $root . 'core/packages',  /* no trailing slash */
+    'subpackages' => $root . '_build/subpackages/',
 
 );
 unset($root);
@@ -333,7 +333,7 @@ $hasSetupOptions = is_dir($sources['data'] . 'install.options'); /* HTML/PHP scr
 $hasMenu = file_exists($sources['data'] . 'transport.menus.php'); /* Add items to the MODx Top Menu */
 $hasSettings = file_exists($sources['data'] . 'transport.settings.php'); /* Add new MODx System Settings */
 $hasContextSettings = file_exists($sources['data'] . 'transport.contextsettings.php');
-$hasSubPackages = is_dir($sources['packages']);
+$hasSubPackages = is_dir($sources['subpackages']);
 $minifyJS = $modx->getOption('minifyJS', $props, false);
 
 $helper->sendLog(MODX::LOG_LEVEL_INFO, "\n" . $modx->lexicon('mc_project')
@@ -841,24 +841,11 @@ if ($hasSetupOptions && !empty($props['install.options'])) {
 $builder->setPackageAttributes($attr);
 
 /* Add subpackages */
-/* The transport.zip files will be copied to core/packages
- * but will have to be installed manually with "Add New Package and
- *  "Search Locally for Packages" in Package Manager
- */
 
-if ($hasSubPackages && $i == 1) {
-    $obj = $modx->newObject('xPDOFileVehicle');
-    $vehicle = $builder->createVehicle($obj, array(
-          xPDOTransport::PRESERVE_KEYS => true,
-          xPDOTransport::UPDATE_OBJECT => true,
-          ));
+if ($hasSubPackages) {
     $helper->sendLog(modX::LOG_LEVEL_INFO,
         $modx->lexicon('mc_packaging_subpackages'));
-    $vehicle->resolve('file', array(
-               'source' => $sources['packages'],
-               'target' => "return MODX_CORE_PATH;",
-          ));
-    $builder->putVehicle($vehicle);
+    include $sources['data'] . 'transport.subpackages.php';
 }
 
 
