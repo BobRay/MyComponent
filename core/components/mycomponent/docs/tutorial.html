@@ -3,6 +3,12 @@ build scripts for existing MODX Revolution components and by the structure
 of the MODX Package Manager code.
 </p>
 <br />
+<div class="box">
+<p>Important upgrade note. For safety, MyComponent doesn't overwrite existing <code>build.transport.php files</code>. When new features are added to MyComponent, there is often a change to this file. For existing projects that use any new or updated features, you'll need to update it manually, either by copying the file from the <code>core/components/mycomponent/elements/chunks/</code> directory to your project directory, or by simply deleting the file in your project's _build directory and running Bootstrap.</p>
+
+<p>This doesn't affect new projects, which will get the new file automatically.</p>
+</div>
+<br />
 <div class = "box">
 <h3>Version 3.1.0</h3>
 <p>Nothing has changed from versions 3.0.x that should affect existing projects. A number of bugs have been fixed and there are some fun new features.</p>
@@ -182,6 +188,25 @@ echo $this->modx->lexicon('mc_file_nf~~File Not Found')
 
 <p>It's a good practice to run LexiconHelper with <code>$rewriteCodeFiles => false</code> until you have corrected all the lexicon references in your files. If the references are malformed, you'll see it in the LexiconHelper output. Once they are all correct and all strings have been added to the lexicon files, you can set <code>$rewriteCodeFiles => true</code> and run LexiconHelper to remove all the ~~ strings in the lexicon references. Be sure to do this (or remove them manually) before running final Build prior to releasing your package or the ~~ strings will end up in your package.</p>
 
+<p>If your editor has a regular expression search, here's a handy regex that will find a common LexiconHelper error:</p>
+
+<pre><fixedpre>
+lexicon\('[^\)]+\.
+</fixedpre></pre>
+
+<p>The error is to put some extra code inside the <code>$modx->lexicon()</code> argument. Here's an example:</p>
+
+<pre><fixedpre>
+$output .= $modx->lexicon('mc_file_nf~~File Not Found' . ': ' . $fileName);
+</fixedpre></pre>
+
+<p>The error is that the <code>$fileName</code> is part of the argument to the <code>lexicon()</code> call. It's easy to do, especially if your editor has auto-completion for parentheses. The correct code would be:</p>
+
+<pre><fixedpre>
+$output .= $modx->lexicon('mc_file_nf~~File Not Found') . ': ' . $fileName;
+</fixedpre></pre>
+
+<p>The regex will turn up any cases where a period occurs before the closing <code>)</code> of the <code>lexicon()</code> call. If it doesn't find anything, you haven't made that mistake. Note that the regex can give you false positives if your lexicon string contains a period, so not all matches are errors. It's worth checking, though, because the error will result in incorrect lexicon strings that you may not notice before releasing your package.</p>
 
 <p>If your project doesn't have any lexicon strings (e.g., a simple utility snippet or plugin), you can skip using LexiconHelper altogether.</p>
 
