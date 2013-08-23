@@ -406,13 +406,19 @@ abstract class ObjectAdapter {
         $name = strtolower($name);
         $tpl = '';
         $field = '';
+        if ($type == 'modResource') {
+            $x = 1;
+        }
         $suppliedFileName = null;
         if (isset($this->myFields['filename'])) {
             $suppliedFileName = $this->myFields['filename'];
         }
-
-        $dir = $this->helpers->props['targetRoot'] . 'core/components/';
-        $dir .= $this->helpers->props['packageNameLower'] . '/';
+        if ($type == 'modResource') {
+            $dir = $this->helpers->props['targetRoot'];
+        } else {
+            $dir = $this->helpers->props['targetRoot'] . 'core/components/';
+            $dir .= $this->helpers->props['packageNameLower'] . '/';
+        }
         $codeDir = $this->helpers->getCodeDir($dir, $type);
         $path = $codeDir . '/' . $suppliedFileName;
         if ($suppliedFileName && file_exists($path)) {

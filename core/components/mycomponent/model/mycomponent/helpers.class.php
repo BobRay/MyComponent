@@ -224,6 +224,9 @@ class Helpers {
      * @return string - full path for element code file (without filename or trailing slash)
      */
     public function getCodeDir ($targetCore, $type) {
+        if ($type == 'modResource') {
+            return $targetCore . '_build/data/resources';
+        }
         $dir = $targetCore . 'elements/';
         $type = $type == 'modTemplateVar' ? 'modTv' : $type;
         return $dir . strtolower(substr($type, 3)) . 's';
