@@ -139,12 +139,12 @@ class Helpers {
         if (strstr($name, '.php') && !empty($text)) {
             /* make sure the header made it and do alerts if not */
             if (empty($text)) {
-                $this->sendLog(MODX::LOG_LEVEL_ERROR, '    [Helpers] ' .
+                $this->sendLog(modX::LOG_LEVEL_ERROR, '    [Helpers] ' .
                     $this->modx->lexicon('mc_problem_loading_tpl_file_empty')
                       . ' '  . $name  );
                 $text = "<?php\n/* empty header */\n\n";
             } elseif (strpos($text, '<' . '?' . 'php') === false) {
-                $this->sendLog(MODX::LOG_LEVEL_ERROR, '    [Helpers] ' .
+                $this->sendLog(modX::LOG_LEVEL_ERROR, '    [Helpers] ' .
                     $this->modx->lexicon('mc_problem_loading_tpl_file_no_php_tag')
                      . ' ' . $name);
                 $text = "<?php\n /* inserted PHP tag */\n\n" . $text;
@@ -297,14 +297,14 @@ class Helpers {
 
 
             if ($dryRun) {
-                $this->sendLog(MODX::LOG_LEVEL_INFO, "\n\n" .
+                $this->sendLog(modX::LOG_LEVEL_INFO, "\n\n" .
                 $this->modx->lexicon('mc_begin_file_content')
                     . "\n");
             } elseif (! $suppressOutput) {
-                $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $action . ' ' . $file);
+                $this->sendLog(modX::LOG_LEVEL_INFO, '    ' . $action . ' ' . $file);
             }
             if (empty($content) && ! $suppressOutput) {
-                $this->sendLog(MODX::LOG_LEVEL_INFO, ' ' .
+                $this->sendLog(modX::LOG_LEVEL_INFO, ' ' .
                     $this->modx->lexicon('mc_empty'), true);
             }
             fwrite($fp, $content);
@@ -312,12 +312,12 @@ class Helpers {
             if (! $dryRun) {
                 chmod($file, $this->filePermission);
             } else {
-                $this->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+                $this->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                     $this->modx->lexicon('mc_end_file_content')
                 . "\n\n");
             }
         } else {
-            $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+            $this->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                 $this->modx->lexicon('mc_could_not_write_file')
             . ' ' . $file);
         }
@@ -383,7 +383,7 @@ class Helpers {
         $mainObjectName = 'missing';
         $subsidiaryObjectType = 'missing';
         $subsidiaryObjectName = 'missing';
-        $this->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+        $this->sendLog(modX::LOG_LEVEL_INFO, "\n" .
             $this->modx->lexicon('mc_creating')
             . ' ' . $intersectType . ' ' .
             $this->modx->lexicon('mc_objects'));
@@ -413,7 +413,7 @@ class Helpers {
                         if ($ps) {
                             $values['propertyset'] = $ps->get('id');
                         } else {
-                            $this->sendLog(MODX::LOG_LEVEL_ERROR, '[Helpers] ' .
+                            $this->sendLog(modX::LOG_LEVEL_ERROR, '[Helpers] ' .
                                 $this->modx->lexicon('mc_property_set_nf')
                             . ': ' . $values['propertyset']);
                         }
@@ -428,7 +428,7 @@ class Helpers {
 
                     break;
                 default:
-                    $this->sendLog(MODX::LOG_LEVEL_ERROR, '[Helpers] ' .
+                    $this->sendLog(modX::LOG_LEVEL_ERROR, '[Helpers] ' .
                         $this->modx->lexicon('mc_asked_for_unknown_intersect_type'));
                     break;
 
@@ -439,7 +439,7 @@ class Helpers {
             $mainObject = $this->modx->getObject($mainObjectType, $searchFields);
 
             if (!$mainObject) {
-                $this->sendLog(MODX::LOG_LEVEL_ERROR, '    [Helpers] ' .
+                $this->sendLog(modX::LOG_LEVEL_ERROR, '    [Helpers] ' .
                     $this->modx->lexicon('mc_error_creating_intersect')
                     . ' ' . $intersectType . ': ' .
                     $this->modx->lexicon('mc_could_not_get_main_object')
@@ -452,7 +452,7 @@ class Helpers {
             $searchFields = array($alias => $subsidiaryObjectName);
             $subsidiaryObject = $this->modx->getObject($subsidiaryObjectType, $searchFields);
             if (! $subsidiaryObject) {
-                $this->sendLog(MODX::LOG_LEVEL_ERROR, '    [Helpers] ' .
+                $this->sendLog(modX::LOG_LEVEL_ERROR, '    [Helpers] ' .
                     $this->modx->lexicon('mc_error_creating_intersect')
                         . ' ' .  $intersectType . ': ' .
                         $this->modx->lexicon('mc_could_not_get_subsidiary_object')
@@ -490,7 +490,7 @@ class Helpers {
             $intersectObj = $this->modx->getObject($intersectType, $searchFields);
 
             if ($intersectObj) {
-                $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                $this->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                     $this->modx->lexicon('mc_intersect_already_exists_for')
                 . ' ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
 
@@ -514,13 +514,13 @@ class Helpers {
                         $intersectObj->set($k, $v);
                     }
                     if ($intersectObj->save()) {
-                        $this->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                        $this->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                             $this->modx->lexicon('mc_created_intersect')
                              . ' ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
 
                     }
                 } else {
-                    $this->sendLog(MODX::LOG_LEVEL_ERROR, '    [Helpers] ' .
+                    $this->sendLog(modX::LOG_LEVEL_ERROR, '    [Helpers] ' .
                         $this->modx->lexicon('mc_could_not_create_intersect_for')
                         . ' ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
                 }
@@ -589,7 +589,7 @@ class Helpers {
         $minimizerFile = $usePlus ? 'jsminplus.class.php' : 'jsmin.class.php';
         $createJsAll = $this->modx->getOption('createJSMinAll', $this->props, false);
 
-        $this->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+        $this->sendLog(modX::LOG_LEVEL_INFO, "\n" .
             $this->modx->lexicon('mc_creating_js_min_files') . '('
                 . $this->modx->lexicon('mc_using')
                 . ' ' . $minClass . ')');
@@ -694,7 +694,7 @@ class Helpers {
     public function sendLog($level, $message) {
         $msg = '';
 
-        if ($level == MODX::LOG_LEVEL_ERROR) {
+        if ($level == modX::LOG_LEVEL_ERROR) {
             $msg .= 'ERROR -- ';
         }
         $msg .= $message;

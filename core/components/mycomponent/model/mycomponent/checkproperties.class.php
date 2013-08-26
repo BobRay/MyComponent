@@ -99,11 +99,11 @@ class CheckProperties {
         $this->helpers = new Helpers($this->modx, $this->props);
         $this->helpers->init();
 
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
             $this->modx->lexicon('mc_project')
             . ': ' . $this->helpers->getProp('packageName'));
 
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
             $this->modx->lexicon('mc_action')
             . ': ' .
                 $this->modx->lexicon('mc_check_properties')
@@ -431,6 +431,6 @@ class CheckProperties {
 
     public function report() {
         // echo $this->output;
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, $this->output);
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, $this->output);
     }
 }

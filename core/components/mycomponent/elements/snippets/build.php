@@ -23,7 +23,7 @@ if (! class_exists('PropHelper')) {
 
         public function sendLog($level, $message) {
             $msg = '';
-            if ($level == MODX::LOG_LEVEL_ERROR) {
+            if ($level == modX::LOG_LEVEL_ERROR) {
                 $msg .= 'ERROR -- ';
             }
             $msg .= $message;

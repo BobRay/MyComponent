@@ -250,7 +250,7 @@ abstract class ObjectAdapter {
         }
         /* Object exists/Cannot Overwrite */
         if ($obj && !$overwrite) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $objClass . ' ' .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' . $objClass . ' ' .
                 $this->modx->lexicon('mc_already_exists')
                 .': ' . $name);
             $id = $obj->get($idKey);
@@ -258,13 +258,13 @@ abstract class ObjectAdapter {
             if (isset($this->myFields['category'])) {
                 $oldCat = $obj->get('category');
                 if ($oldCat && $oldCat != $this->myFields['category']) {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                    $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                         $this->modx->lexicon('mc_outdated_category')
                             . ' ' . $this->myFields['category']);
                     if (is_numeric($this->myFields['category'])) {
                         $obj->set('category', $this->myFields['category']);
                         $obj->save();
-                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                        $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                             $this->modx->lexicon('mc_updated_category_for')
                                 . ': ' . $name);
                     }
@@ -285,14 +285,14 @@ abstract class ObjectAdapter {
                     $this->modx->lexicon('mc_failed_to_create_object')
                      . "\n    class: " . $objClass .
                     "\n    nameKey: " . $nameKey . "\n    name: " . $name;
-                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, $msg);
+                $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, $msg);
                 $id =  -1;
             } else {
                 /* @var $obj xPDOObject */
                 $obj = $response->getObject();
                 $id = $obj->get($idKey);
 
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                     $this->modx->lexicon('mc_created')
                         . ' ' . $objClass . ': ' . $name);
             }
@@ -325,7 +325,7 @@ abstract class ObjectAdapter {
                     $this->modx->lexicon('mc_failed_to_create_object')
                     . "\n    class: " . $objClass .
                     "\n    nameKey: " . $nameKey . "\n    name: " . $name;
-                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, $msg);
+                $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, $msg);
                 $id = false;
             } else {
                 /* @var $o xPDOObject */
@@ -340,7 +340,7 @@ abstract class ObjectAdapter {
                                 foreach($tvValues as $k => $v) {
                                     $resource->setTVValue($k, $v);
                                 }
-                                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                                     $this->modx->lexicon('mc_set_tv_values')
                                     . ' ' . $this->myFields['pagetitle']);
                                 unset($resource);
@@ -350,13 +350,13 @@ abstract class ObjectAdapter {
 
                 }
 
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                     $this->modx->lexicon('mc_created')
                         . ' '. $objClass . ': ' . $name);
             }
         }
         if (! $id) {
-           /* $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[Object Adapter] ' .
+           /* $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, '[Object Adapter] ' .
                 $this->modx->lexicon('mc_no_id_for')
                     . ' ' . $objClass . ' ' . $name);*/
         } else {
@@ -382,13 +382,13 @@ abstract class ObjectAdapter {
         $obj = $modx->getObject($objClass, array($nameKey => $name));
         if ($obj) {
             $obj->remove();
-            $temp = $this->modx->setLogLevel(MODX::LOG_LEVEL_INFO);
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
+            $temp = $this->modx->setLogLevel(modX::LOG_LEVEL_INFO);
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' .
                 $this->modx->lexicon('mc_removed')
                     . ' '. $objClass . ': ' . $name);
             $this->modx->setLogLevel($temp);
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                 '[Object Adapter] ' .
                     $this->modx->lexicon('mc_class_file_nf')
                         . ' ' . $objClass . ': ' . $name);
@@ -471,7 +471,7 @@ abstract class ObjectAdapter {
             if (!empty($tpl) && !empty($field)) {
                 $this->myFields[$field] = $tpl;
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '    ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, '    ' .
                     $this->modx->lexicon('mc_tpl_nf')
                     . ': ' . $name);
             }
@@ -541,7 +541,7 @@ abstract class ObjectAdapter {
                     ( !empty($this->myFields['static']))) {
                     $this->helpers->writeFile($dir, $file, $tpl, $dryRun);
                 } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
+                    $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' .
                         $this->modx->lexicon('mc_file_already_exists')
                         . ': ' . $file);
                 }
@@ -584,7 +584,7 @@ abstract class ObjectAdapter {
 
         /* Abort if file exists and not in Export mode */
         if (file_exists($path . $transportFile) && $mode != MODE_EXPORT) {
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
+            $helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' .
                 $helpers->modx->lexicon('mc_file_already_exists')
                     . ': ' .  $transportFile);
             return;
@@ -617,7 +617,7 @@ abstract class ObjectAdapter {
         if (! file_exists($path . $transportFile) || $mode != MODE_BOOTSTRAP) {
             $helpers->writeFile($path, $transportFile, $tpl, $dryRun);
         } else {
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
+            $helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' .
                 $helpers->modx->lexicon('mc_file_already_exists')
                     . ': ' . $transportFile);
         }
@@ -720,7 +720,7 @@ abstract class ObjectAdapter {
         $fileName = $this->helpers->getFileName($this->getName(),
             $this->dbClass, 'properties');
         if (file_exists($dir . $fileName) && $mode != MODE_EXPORT) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                 $this->modx->lexicon('mc_file_already_exists')
                 . ': ' . $fileName);
         } else {

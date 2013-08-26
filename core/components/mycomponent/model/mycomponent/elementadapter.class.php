@@ -101,7 +101,7 @@ abstract class ElementAdapter extends ObjectAdapter {
             $me = $this->modx->getObject($this->dbClass, array($alias => $this->getName()));
             /* @var $me modElement */
             if (!$me) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, "[ElementAdapter] " .
+                $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, "[ElementAdapter] " .
                     $this->modx->lexicon('mc_self_nf'));
             } else {
                 $eps = $me->getMany('PropertySets');
@@ -138,7 +138,7 @@ abstract class ElementAdapter extends ObjectAdapter {
         if ($categoryObj) {
             $fields['category'] = $categoryObj->get('category');
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[Element Adapter] ' .
+            $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, '[Element Adapter] ' .
                 $this->modx->lexicon('mc_category_nf')
                 . ': ' . $fields['category']);
         }
@@ -169,24 +169,24 @@ abstract class ElementAdapter extends ObjectAdapter {
 
         $categories = $helpers->modx->getOption('ElementCategories', ObjectAdapter::$myObjects, array());
         if (empty($categories)) {
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+            $helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                 $helpers->modx->lexicon('mc_no_elements_to_process'));
             return;
         }
 
         foreach($categories as $category => $elementList) {
             $category = strtolower($category);
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $helpers->modx->lexicon('mc_processing_transport_files_for_category')
             . ': ' . $category);
             foreach($elementList['elements'] as $type => $elements) {
-                $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
+                $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
                     $helpers->modx->lexicon('mc_processing')
                      . ' ' . $type);
 
                 foreach($elements as $k => $fields ) {
                     $alias = $helpers->getNameAlias($type);
-                    $helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
+                    $helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' .
                         $helpers->modx->lexicon('mc_processing_object')
                      . ': ' . $fields[$alias]);
 
@@ -225,7 +225,7 @@ abstract class ElementAdapter extends ObjectAdapter {
             $path .= '/' . $fileName;
             $this->myFields['source'] = $this->modx->getOption('default_media_source');
             $this->myFields['static_file'] = $path;
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' .
                 $this->modx->lexicon('mc_set_static_path_to')
                 . ' ' . $path);
         }

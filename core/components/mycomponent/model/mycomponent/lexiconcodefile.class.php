@@ -206,6 +206,9 @@ abstract class AbstractLexiconCodeFile {
                 $this->subPattern = 'description';
                 break;
             case 'Php':
+                /* ToDo: Try this -- may prevent need to separate lex lines */
+                // $this->pattern = '#modx->lexicon\s * \(\s * (\'|\")(.+?)\1\)#';
+
                 $this->pattern = '#modx->lexicon\s*\(\s*(\'|\")(.*)\1\)#';
                 $this->subPattern = 'modx->lexicon';
                 break;
@@ -495,7 +498,7 @@ abstract class AbstractLexiconCodeFile {
                     fclose($fp);
                     $success = true;
                 } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
+                    $this->helpers->sendLog(modX::LOG_LEVEL_ERROR,
                         $this->modx->lexicon('mc_could_not_open_lex_file')
                         . ': ' . $path);
 

@@ -66,7 +66,7 @@ if (!class_exists('BuildHelper')) {
 
         public function sendLog($level, $message) {
             $msg = '';
-            if ($level == MODX::LOG_LEVEL_ERROR) {
+            if ($level == modX::LOG_LEVEL_ERROR) {
                 $msg .= $this->modx->lexicon('mc_error')
                     . ' -- ';
             }
@@ -157,7 +157,7 @@ if (!class_exists('BuildHelper')) {
             $files = $this->getFiles();
             require dirname(__FILE__) . '/utilities/' . $minimizerFile;
 
-            $this->sendLog(MODX::LOG_LEVEL_INFO,
+            $this->sendLog(modX::LOG_LEVEL_INFO,
                 $this->modx->lexicon('mc_creating_js_min_files') .
                 ' (' . $this->modx->lexicon('mc_using') .
                 ' ' . $minClass . ')');
@@ -336,17 +336,17 @@ $hasContextSettings = file_exists($sources['data'] . 'transport.contextsettings.
 $hasSubPackages = is_dir($sources['subpackages']);
 $minifyJS = $modx->getOption('minifyJS', $props, false);
 
-$helper->sendLog(MODX::LOG_LEVEL_INFO, "\n" . $modx->lexicon('mc_project')
+$helper->sendLog(modX::LOG_LEVEL_INFO, "\n" . $modx->lexicon('mc_project')
     . ': ' . $currentProject);
-$helper->sendLog(MODX::LOG_LEVEL_INFO, $modx->lexicon('mc_action')
+$helper->sendLog(modX::LOG_LEVEL_INFO, $modx->lexicon('mc_action')
     . ': ' . $modx->lexicon('mc_build')
 );
-$helper->sendLog(MODX::LOG_LEVEL_INFO, $modx->lexicon('mc_created_package')
+$helper->sendLog(modX::LOG_LEVEL_INFO, $modx->lexicon('mc_created_package')
     . ': ' . PKG_NAME_LOWER . '-' . PKG_VERSION . '-' . PKG_RELEASE);
-$helper->sendLog(MODX::LOG_LEVEL_INFO, "\n" . $modx->lexicon('mc_created_namespace')
+$helper->sendLog(modX::LOG_LEVEL_INFO, "\n" . $modx->lexicon('mc_created_namespace')
     . ': ' . PKG_NAME_LOWER);
 /* load builder */
-$modx->setLogLevel(MODX::LOG_LEVEL_ERROR);
+$modx->setLogLevel(modX::LOG_LEVEL_ERROR);
 $modx->loadClass('transport.modPackageBuilder', '', false, true);
 $builder = new modPackageBuilder($modx);
 $builder->createPackage(PKG_NAME_LOWER, PKG_VERSION, PKG_RELEASE);
@@ -355,7 +355,7 @@ $assetsPath = $hasAssets
     ? '{assets_path}components/' . PKG_NAME_LOWER . '/'
     : '';
 $builder->registerNamespace(PKG_NAME_LOWER, false, true, '{core_path}components/' . PKG_NAME_LOWER . '/', $assetsPath);
-$modx->setLogLevel(MODX::LOG_LEVEL_INFO);
+$modx->setLogLevel(modX::LOG_LEVEL_INFO);
 
 /* Transport Contexts */
 
@@ -489,10 +489,10 @@ foreach ($categories as $k => $categoryName) {
     $i++; /* will be 1 for the first category */
     $category->set('id', $i);
     $category->set('category', $categoryName);
-    $helper->sendLog(MODX::LOG_LEVEL_INFO,
+    $helper->sendLog(modX::LOG_LEVEL_INFO,
         $modx->lexicon('mc_creating_category')
             . ': ' . $categoryName);
-    $helper->sendLog(MODX::LOG_LEVEL_INFO, $modx->lexicon('mc_processing_elements_in_category')
+    $helper->sendLog(modX::LOG_LEVEL_INFO, $modx->lexicon('mc_processing_elements_in_category')
         . ': ' . $categoryName);
 
     /* add snippets */
@@ -691,7 +691,7 @@ foreach ($categories as $k => $categoryName) {
     $vehicle = $builder->createVehicle($category, $attr);
 
     if ($hasValidators && $i == 1) { /* only install these on first pass */
-        $helper->sendLog(MODX::LOG_LEVEL_INFO,
+        $helper->sendLog(modX::LOG_LEVEL_INFO,
             $modx->lexicon('mc_processing_validators'));
         $validators = empty($props['validators'])
             ? array()
@@ -719,7 +719,7 @@ foreach ($categories as $k => $categoryName) {
     }
 
     if ($hasCore && $i == 1) {
-        $helper->sendLog(MODX::LOG_LEVEL_INFO,
+        $helper->sendLog(modX::LOG_LEVEL_INFO,
             $modx->lexicon('mc_packaged_core_files'));
         $vehicle->resolve('file', array(
                                        'source' => $sources['source_core'],
@@ -733,7 +733,7 @@ foreach ($categories as $k => $categoryName) {
      */
 
     if ($hasAssets && $i == 1) {
-        $helper->sendLog(MODX::LOG_LEVEL_INFO,
+        $helper->sendLog(modX::LOG_LEVEL_INFO,
             $modx->lexicon('mc_packaged_assets_files'));
         $vehicle->resolve('file', array(
                                        'source' => $sources['source_assets'],
@@ -754,7 +754,7 @@ foreach ($categories as $k => $categoryName) {
                   'resource',
                   'propertyset'
              ), $resolvers);
-        $helper->sendLog(MODX::LOG_LEVEL_INFO,
+        $helper->sendLog(modX::LOG_LEVEL_INFO,
             $modx->lexicon('mc_processing_resolvers'));
 
         foreach ($resolvers as $resolver) {

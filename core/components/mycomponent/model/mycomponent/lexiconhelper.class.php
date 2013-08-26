@@ -121,10 +121,10 @@ class LexiconHelper {
         $this->helpers = new Helpers($this->modx, $this->props);
         $this->helpers->init();
 
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
             $this->modx->lexicon('mc_project')
             . ': ' . $this->helpers->getProp('packageName'));
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
             $this->modx->lexicon('mc_action')
             . ': ' .
             $this->modx->lexicon('mc_lexicon_helper')
@@ -171,9 +171,9 @@ class LexiconHelper {
             ),
         );
         foreach($toProcess as $processing => $directories) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->modx->lexicon('mc_stars'));
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                 $this->modx->lexicon('mc_processing') .
                 ' ' . $processing);
             foreach( $directories as $dir => $msg) {
@@ -186,13 +186,13 @@ class LexiconHelper {
                 $files = $this->helpers->getFiles();
                 if (!empty($files)) {
                     if (count($directories) > 1) {
-                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                        $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                             "\n    " . $this->modx->lexicon('mc_processing')  .
                             ' ' . $msg);
                     }
                     $this->processFiles($files);
                 } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                    $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                         "        " . $this->modx->lexicon('mc_no_code_files'));
                 }
             }
@@ -216,7 +216,7 @@ class LexiconHelper {
         $rewriteLexiconFiles = $this->helpers->getProp('rewriteLexiconFiles', false);
         $rewriteCodeFiles = $this->helpers->getProp('rewriteCodeFiles', false);
 
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . $indent .
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . $indent .
             $this->modx->lexicon('mc_processing') .
             ' ' . $fileName);
 
@@ -224,7 +224,7 @@ class LexiconHelper {
         $lcf = LexiconCodeFileFactory::getInstance($this->modx, $this->helpers,
             $fullPath, $fileName, $this->targetLexDir);
         $lexFiles = $lcf->lexFiles;
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $indent .
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' . $indent .
             $this->modx->lexicon('mc_lex_files') .
             ': ' . implode (', ', array_keys($lexFiles)));
         /* Create lexicon files if necessary */
@@ -240,7 +240,7 @@ class LexiconHelper {
             $this->usedSomewhere = array_merge($this->usedSomewhere, $used);
             $this->definedSomewhere = array_merge($this->definedSomewhere, $defined);
 
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '            ' .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '            ' .
                 count($used) . ' ' .
                 $this->modx->lexicon('mc_lex_strings_in_code_file'));
 
@@ -248,7 +248,7 @@ class LexiconHelper {
             if (!empty($missing)) {
 
                 if (count($lexFiles) > 1) {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '            ' .
+                    $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '            ' .
                         $this->modx->lexicon('mc_cannot_update_multiple_lex_files')
                         . ";\n" . $this->modx->lexicon('mc_paste_these_strings')
                               . ':'
@@ -256,39 +256,39 @@ class LexiconHelper {
                 } elseif ($rewriteLexiconFiles) {
                     $lcf->updateLexiconFile();
                     reset($lexFiles);
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '            ' .
+                    $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '            ' .
                         $this->modx->lexicon('mc_updated_lex_file')
                         . ' ' . key($lexFiles) . ' ' .
                         $this->modx->lexicon('mc_with_these_strings')
                         . ':'
                         );
                 } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '            ' .
+                    $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '            ' .
                         $this->modx->lexicon('mc_missing_lex_strings')
                               . ':'
                         );
                 }
                 $code = $this->_formatLexStrings($missing);
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                     $this->modx->lexicon('mc_stars'));
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, $code, true);
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, $code, true);
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                     $this->modx->lexicon('mc_stars'));
 
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '            ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '            ' .
                     'mc_all_lex_strings_defined');
             }
 
             if ($rewriteCodeFiles) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' .
                     $this->modx->lexicon('mc_rewriting_code_file'));
                 $lcf->updateCodeFile();
             }
 
 
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '            ' .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '            ' .
                 $this->modx->lexicon('mc_no_language_strings_in_file'));
         }
 
@@ -303,11 +303,11 @@ class LexiconHelper {
     }
 
     public function finalAudit() {
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
             $this->modx->lexicon('mc_stars'));
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
             $this->modx->lexicon('mc_stars'));
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
             $this->modx->lexicon('mc_final_audit'));
         $defined = $this->definedSomewhere;
         $used = $this->usedSomewhere;
@@ -343,32 +343,32 @@ class LexiconHelper {
 
         /* report undefined entries */
         if (empty($undefined)) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->modx->lexicon('mc_all_lex_strings_defined'));
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->modx->lexicon('mc_final_audit_undefined'));
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->_formatLexStrings($undefined));
         }
         /* report undefined entries */
         if (empty($unused)) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->modx->lexicon('mc_no_unused_lex_strings'));
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->modx->lexicon('mc_lex_strings_never_used'));
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->_formatLexStrings($unused, true));
         }
         /* report empty entries */
         if (empty($emptyEntries)) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->modx->lexicon('mc_no_empty_lex_strings_in_files'));
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->modx->lexicon('mc_empty_lex_strings'));
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->_formatLexStrings($emptyEntries, true));
         }
     }

@@ -51,7 +51,7 @@ class TemplateVarAdapter extends ElementAdapter
         } elseif ($mode == MODE_EXPORT) {
             $me = $this->modx->getObject('modTemplateVar', array('name' => $this->getName()));
             if (!$me) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[TemplateVar Adapter] ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, '[TemplateVar Adapter] ' .
                 $this->modx->lexicon('mc_self_nf'));
             } else {
                 $tvts = $me->getMany('TemplateVarTemplates');
@@ -91,12 +91,12 @@ class TemplateVarAdapter extends ElementAdapter
         /* Create tv.resolver.php resolver */
         /* @var $helpers Helpers */
         if (!empty($dir) && !empty($intersects)) {
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $helpers->modx->lexicon('mc_creating_tv_resolver'));
             $tpl = $helpers->getTpl('tvresolver.php');
             $tpl = $helpers->replaceTags($tpl);
             if (empty($tpl)) {
-                $helpers->sendLog(MODX::LOG_LEVEL_ERROR,
+                $helpers->sendLog(modX::LOG_LEVEL_ERROR,
                     '[TemplateVar Adapter] ' .
                         $helpers->modx->lexicon('mc_tvresolvertpl_empty'));
                 return false;
@@ -111,7 +111,7 @@ class TemplateVarAdapter extends ElementAdapter
                 $helpers->writeFile($dir, $fileName, $tpl);
             }
             else {
-                $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' ' .
+                $helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' . $fileName . ' ' .
                     $helpers->modx->lexicon('mc_already_exists'));
             }
         }

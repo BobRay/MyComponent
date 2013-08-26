@@ -38,7 +38,7 @@ class SubpackageAdapter {
         $helpers->dirWalk($this->packageDir, '.zip');
         $files = $helpers->getFiles();
         if (empty($files)) {
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n    No Packages Found");
+            $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n    No Packages Found");
             return;
         }
         $subPackages = array();
@@ -97,7 +97,7 @@ TEXT2;
         if (!file_exists($this->transportDir . '/' . $this->transportFile) || $this->mode != MODE_BOOTSTRAP) {
             $this->helpers->writeFile($this->transportDir, $this->transportFile, $tpl);
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' .
                 $this->helpers->modx->lexicon('mc_file_already_exists')
                 . ': ' . $this->transportFile);
         }
@@ -189,7 +189,7 @@ TEXT3;
         if (!file_exists($dir . '/' . $fileName) || $this->mode != MODE_BOOTSTRAP) {
             $this->helpers->writeFile($dir, $fileName, $content);
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' .
                 $this->helpers->modx->lexicon('mc_file_already_exists')
                 . ': ' . $fileName);
         }
@@ -261,7 +261,7 @@ TEXT4;
             if (!file_exists($dir . '/' . $fileName) || $this->mode != MODE_BOOTSTRAP) {
                 $this->helpers->writeFile($dir, $fileName, $content);
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' .
                     $this->helpers->modx->lexicon('mc_file_already_exists')
                     . ': ' . $fileName);
             }

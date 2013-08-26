@@ -42,17 +42,17 @@ class SystemEventAdapter extends ObjectAdapter
             if ($event && $event instanceof modEvent) {
                 $event->fromArray($this->myFields, "", true, true);
                 if ($event->save()) {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                    $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                         $this->modx->lexicon('mc_created_se')
                         . ': ' . $name);
                     $retVal = true;
                 } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '    [SystemEvent Adapter] ' .
+                    $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, '    [SystemEvent Adapter] ' .
                         $this->modx->lexicon('mc_could_not_save_se')
                         . ': ' . $name);
                 }
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '    [SystemEvent Adapter] ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, '    [SystemEvent Adapter] ' .
                     $this->modx->lexicon('mc_could_not_create_se')
                     . ': ' . $name);
             }
@@ -62,17 +62,17 @@ class SystemEventAdapter extends ObjectAdapter
             }
             if ($obj->save()) {
                 $retVal = true;
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                     $this->modx->lexicon('mc_updated_se')
                     . ': '. $name);
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                     $this->modx->lexicon('mc_failed_to_update_se')
                     . ': ' . $name);
             }
 
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                 $this->modx->lexicon('mc_se_already_exists')
                     . ': '. $name);
             $retVal = -1;
@@ -82,7 +82,7 @@ class SystemEventAdapter extends ObjectAdapter
 
     public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
         /* @var $helpers Helpers */
-        $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
+        $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
             $helpers->modx->lexicon('mc_processing_system_events'));
         $settings = $helpers->modx->getOption('newSystemEvents',ObjectAdapter::$myObjects, array());
         parent::createTransportFile($helpers, $settings, '', 'modEvent', $mode);

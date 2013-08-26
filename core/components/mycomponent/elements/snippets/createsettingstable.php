@@ -56,7 +56,7 @@ if (!class_exists('SettingsHelper')) {
         public function sendLog($level, $message) {
 
             $msg = '';
-            if ($level == MODX::LOG_LEVEL_ERROR) {
+            if ($level == modX::LOG_LEVEL_ERROR) {
                 $msg .= $this->modx->lexicon('mc_error')
                     . ' -- ';
             }

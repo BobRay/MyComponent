@@ -67,12 +67,12 @@ class CategoryAdapter extends ObjectAdapter {
         /* Create category.resolver.php resolver */
         /* @var $helpers Helpers */
         if (!empty($dir) && !empty($intersects)) {
-            $helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $helpers->modx->lexicon('mc_creating_category_resolver'));
             $tpl = $helpers->getTpl('categoryresolver.php');
             $tpl = $helpers->replaceTags($tpl);
             if (empty($tpl)) {
-                $helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[Category Adapter] ' .
+                $helpers->sendLog(modX::LOG_LEVEL_ERROR, '[Category Adapter] ' .
                     $helpers->modx->lexicon('mc_categoryresolver_tpl_empty'));
                 return false;
             }
@@ -86,7 +86,7 @@ class CategoryAdapter extends ObjectAdapter {
                 $helpers->writeFile($dir, $fileName, $tpl);
             }
             else {
-                $helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' ' .
+                $helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' . $fileName . ' ' .
                     $helpers->modx->lexicon('mc_already_exists'));
             }
         }
@@ -130,14 +130,14 @@ class CategoryAdapter extends ObjectAdapter {
             $adapterName = ucFirst(substr($class, 3)) . 'Adapter';
             $elements = $this->modx->getCollection($class, array('category' => $this->myId));
             if (!empty($elements)) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                     "\n" .
                         $this->modx->lexicon('mc_processing')
                         . ' ' .  $elementType . ' ' .
                         $this->modx->lexicon('mc_in_category')
                         . ': ' . $this->getName());
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
                     $this->modx->lexicon('mc_no')
                     . ' ' . $elementType . ' ' .
                     $this->modx->lexicon('mc_found_in_category')
@@ -170,7 +170,7 @@ class CategoryAdapter extends ObjectAdapter {
                 // include 'templatevar.adapter.class.php'
 
                 $o = new $adapterName($this->modx, $this->helpers, $fields, MODE_EXPORT);
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                     $this->modx->lexicon('mc_processing')
                 . ' ' . $o->getName());
 
@@ -187,7 +187,7 @@ class CategoryAdapter extends ObjectAdapter {
                         } else {
                             /* skip single-line plugins and snippets with 'return' */
                             if ( (substr_count($content, ';') == 1) && (stristr($content, 'include'))) {
-                                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                                     $this->modx->lexicon('mc_skipping_include_element_code_file')
                                     . ': ' . $o->getName());
                             } else {
@@ -195,12 +195,12 @@ class CategoryAdapter extends ObjectAdapter {
                             }
                         }
                     /*} else {
-                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                             $this->modx->lexicon('mc_skipping_static_element_code_file')
                         . ': ' . $o->getName());
                     }*/
                 } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                    $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                         '        ' . $this->modx->lexicon('mc_no_code_file_required'));
                 }
             }
@@ -211,8 +211,8 @@ class CategoryAdapter extends ObjectAdapter {
         $name = $this->getName();
         $obj = $this->modx->getObject('modCategory', array('category' => $name));
         if ($obj) {
-            $temp = $this->modx->setLogLevel(MODX::LOG_LEVEL_INFO);
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' .
+            $temp = $this->modx->setLogLevel(modX::LOG_LEVEL_INFO);
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' .
                 $this->modx->lexicon('mc_removed')
                 . ' ' . 'modCategory' . ': ' . $name);
             $this->modx->setLogLevel($temp);

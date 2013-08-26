@@ -169,7 +169,7 @@ class MyComponentProject {
         $this->dirPermission = $this->helpers->getProp('dirPermission');
         $this->updateProjectsFile($projectConfigPath);
         $this->configPath = $projectConfigPath;
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
             "\n" . $this->modx->lexicon('mc_project')
             . ': ' . $this->helpers->getProp('packageName'));
         ObjectAdapter::$myObjects = array();
@@ -198,12 +198,12 @@ class MyComponentProject {
                 $fp = fopen($projectsFile, 'w');
                 fwrite($fp, $content);
                 fclose($fp);
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                     $this->modx->lexicon('mc_updated_projects_file'));
             }
 
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                 $this->modx->lexicon('mc_created_projects_file'));
             $content = $header . "    '" . $newContent . $footer;
             $fp = fopen($projectsFile, 'w');
@@ -264,11 +264,11 @@ class MyComponentProject {
         $mode = MODE_BOOTSTRAP;
         ObjectAdapter::$myObjects = array();
         if (!$this->isMCInstalled()) { /* Only run if MC is installed */
-            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[MyComponentProject]' . $this->modx->lexicon('mc_mycomponent_not_installed_create_new'));
+            $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, '[MyComponentProject]' . $this->modx->lexicon('mc_mycomponent_not_installed_create_new'));
             return;
         }
 
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, $this->modx->lexicon('mc_action')
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, $this->modx->lexicon('mc_action')
          . ': ' . $this->modx->lexicon('mc_bootstrap'));
 
         /* Create basic files (no resolvers, transport files, or code files) */
@@ -341,8 +341,8 @@ class MyComponentProject {
 
         if ($mode == MODE_REMOVE) {
             /*  Create namespace */
-            $temp = $this->modx->setLogLevel(MODX::LOG_LEVEL_INFO);
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+            $temp = $this->modx->setLogLevel(modX::LOG_LEVEL_INFO);
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                 $this->modx->lexicon('mc_removing_objects'));
             $this->modx->setLogLevel($temp);
             $this->createNamespaces($mode);
@@ -363,7 +363,7 @@ class MyComponentProject {
         $contexts = $this->helpers->getProp('contexts', array());
         if (!empty($contexts)) {
             if ($mode != MODE_EXPORT) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                     $this->modx->lexicon('mc_processing_contexts'));
             }
             foreach ($contexts as $context => $fields) {
@@ -393,7 +393,7 @@ class MyComponentProject {
         $namespaces = $this->helpers->getProp('namespaces', array());
         if (!empty($namespaces)) {
             if ($mode != MODE_EXPORT) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                     $this->modx->lexicon('mc_processing_namespaces'));
             }
             foreach ($namespaces as $namespace => $fields) {
@@ -421,7 +421,7 @@ class MyComponentProject {
      */
     public function createCategories($mode = MODE_BOOTSTRAP) {
         $categories = $this->modx->getOption('categories', $this->props, array());
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
             $this->modx->lexicon('mc_processing_categories'));
         if (empty($categories)) {
             $packageName = $this->packageName;
@@ -497,7 +497,7 @@ class MyComponentProject {
             return;
         }
         if ($mode != MODE_EXPORT) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->modx->lexicon('mc_processing_new_system_settings'));
         }
         if ($mode == MODE_BOOTSTRAP) {
@@ -514,7 +514,7 @@ class MyComponentProject {
             $nameSpaces = $this->modx->getOption('namespaces', $this->props, array());
             /* Get namespaces from Project config */
             if (empty($nameSpaces)) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                     '    ' .
                     $this->modx->lexicon('mc_no_namespaces'));
                 return;
@@ -538,13 +538,13 @@ class MyComponentProject {
                             }
                         }
                     } else {
-                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                        $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                             '    ' .
                                 $this->modx->lexicon('mc_no_settings')
                                 . ': ' . $name);
                     }
                 } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
+                    $this->helpers->sendLog(modX::LOG_LEVEL_ERROR,
                         '[MyComponentProject] ' .
                             $this->modx->lexicon('mc_namespace_nf')
                             . ': ' . $name);
@@ -576,7 +576,7 @@ class MyComponentProject {
             return;
         }
         if ($mode != MODE_EXPORT) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->modx->lexicon('mc_processing_context_settings'));
         }
         if ($mode == MODE_BOOTSTRAP) {
@@ -614,7 +614,7 @@ class MyComponentProject {
             return;
         }
         if ($mode != MODE_EXPORT) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->modx->lexicon('mc_processing_new_system_events'));
         }
         if ($mode == MODE_BOOTSTRAP) {
@@ -656,11 +656,11 @@ class MyComponentProject {
              * In Export, they're pulled by category in the
              * CategoryAdapter, so not done here */
             if (isset($this->props['elements']) && !empty($this->props['elements'])) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                     $this->modx->lexicon('mc_processing_elements'));
                 $elements = $this->helpers->getProp('elements', array());
                 foreach ($elements as $element => $elementObjects) {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n    " .
+                    $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n    " .
                         $this->modx->lexicon('mc_processing')
                         . ' ' . ucfirst($element));
                     foreach ($elementObjects as $elementName => $fields) {
@@ -681,7 +681,7 @@ class MyComponentProject {
                 }
             }
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[MyComponentProject]' .
+            $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, '[MyComponentProject]' .
                 $this->modx->lexicon('mc_illegal_create_elements'));
         }
     }
@@ -696,7 +696,7 @@ class MyComponentProject {
             if (isset($this->props['resources']) && !empty($this->props['resources'])) {
                 /* @var $o ResourceAdapter */
                 $o = null;
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                     $this->modx->lexicon('mc_processing_resources'));
                 $resources = $this->helpers->getProp('resources', array());
                 foreach ($resources as $resource => $fields) {
@@ -726,7 +726,7 @@ class MyComponentProject {
         $menus = $this->helpers->getProp('menus', array());
         if (!empty($menus)) {
             if ($mode != MODE_EXPORT) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                     $this->modx->lexicon('mc_processing_menus'));
             }
             foreach ($menus as $k => $fields) {
@@ -843,13 +843,13 @@ class MyComponentProject {
                 ? $this->packageNameLower
                 : $name;
             $name = strtolower($name);
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->modx->lexicon('mc_creating_resolver')
                 . ': ' . $name);
             $tpl = $this->helpers->getTpl('genericresolver.php');
             $tpl = $this->helpers->replaceTags($tpl);
             if (empty($tpl)) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
+                $this->helpers->sendLog(modX::LOG_LEVEL_ERROR,
                     '[MyComponentProject]' .
                         $this->modx->lexicon('mc_empty_genericresolver'));
                 continue;
@@ -858,7 +858,7 @@ class MyComponentProject {
             if (!file_exists($dir . '/' . $fileName)) {
                 $this->helpers->writeFile($dir, $fileName, $tpl);
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $name . ' ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' . $name . ' ' .
                     $this->modx->lexicon('mc_resolver')
                     . ' ' .
                     $this->modx->lexicon('mc_already_exists'));
@@ -873,13 +873,13 @@ class MyComponentProject {
                 ? $this->packageNameLower
                 : $name;
             $name = strtolower($name);
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->modx->lexicon('mc_creating_validator')
              . ': ' . $name);
             $tpl = $this->helpers->getTpl('genericvalidator.php');
             $tpl = $this->helpers->replaceTags($tpl);
             if (empty($tpl)) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
+                $this->helpers->sendLog(modX::LOG_LEVEL_ERROR,
                     '[MyComponentProject] ' .
                         $this->modx->lexicon('mc_empty_genericvalidator'));
                 continue;
@@ -888,7 +888,7 @@ class MyComponentProject {
             if (!file_exists($dir . '/' . $fileName)) {
                 $this->helpers->writeFile($dir, $fileName, $tpl);
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $name . ' ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' . $name . ' ' .
                     $this->modx->lexicon('mc_validator')
                   . ' ' . $this->modx->lexicon('mc_already_exists'));
             }
@@ -911,7 +911,7 @@ class MyComponentProject {
         ContextSettingAdapter::createTransportFiles($this->helpers, $mode);
 
         if (is_dir($this->myPaths['targetBuild'] . 'subpackages')) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n    " .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n    " .
                 $this->modx->lexicon('mc_processing_subpackages'));
             $o = new SubpackageAdapter();
             $o->createSubpackages($this->modx, $this->helpers, $this->myPaths['targetBuild'], $mode);
@@ -927,7 +927,7 @@ class MyComponentProject {
         /* Transfer build.transport.php and build.config.php files */
 
         $dir = $this->myPaths['targetBuild'];
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
             $this->modx->lexicon('mc_creating_build_files'));
         $fileName = 'build.transport.php';
         if (!file_exists($dir . '/' . $fileName)) {
@@ -935,7 +935,7 @@ class MyComponentProject {
             $tpl = $this->helpers->replaceTags($tpl);
             $this->helpers->writeFile($dir, $fileName, $tpl);
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' ' .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' . $fileName . ' ' .
                 $this->modx->lexicon('mc_already already exists'));
         }
         /* transfer build.config.php from tpl chunk/file to target _build dir. */
@@ -946,7 +946,7 @@ class MyComponentProject {
             $dir = $this->myPaths['targetBuild'];
             $this->helpers->writeFile($dir, $fileName, $tpl);
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' '.
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' . $fileName . ' '.
                 $this->modx->lexicon('mc_already_exists'));
         }
 
@@ -957,7 +957,7 @@ class MyComponentProject {
             $tpl = $this->helpers->getTpl('example.config.php');
             $this->helpers->writeFile($dir, $fileName, $tpl);
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' '.
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' . $fileName . ' '.
                 $this->modx->lexicon('mc_already_exists'));
         }
 
@@ -977,13 +977,13 @@ class MyComponentProject {
     if (! file_exists($dir . $fileName)) {
         $this->helpers->writeFile($dir, $fileName, $tpl);
     } else {
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' '.
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' . $fileName . ' '.
             $this->modx->lexicon('mc_already_exists'));
     }
 
         /* Create language directories and files specified in project config */
         if (isset ($this->props['languages']) && !empty($this->props['languages'])) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->modx->lexicon('mc_creating_lexicon_files'));
             $lexiconBase = $this->myPaths['targetCore'] . 'lexicon/';
             foreach ($this->props['languages'] as $language => $languageFiles) {
@@ -1001,7 +1001,7 @@ class MyComponentProject {
                         $tpl = $this->helpers->replaceTags($tpl);
                         $this->helpers->writeFile($dir, $fileName, $tpl);
                     } else {
-                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $language . '/' . $fileName . ' ' . $this->modx->lexicon('mc_file')
+                        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' . $language . '/' . $fileName . ' ' . $this->modx->lexicon('mc_file')
                          . ' ' . $this->modx->lexicon('mc_already_exists'));
                     }
 
@@ -1014,7 +1014,7 @@ class MyComponentProject {
             : array();
 
         if (!empty($docs)) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->modx->lexicon('mc_creating_doc_files'));
             $toDir = $this->myPaths['targetCore'] . 'docs/';
             foreach ($docs as $doc) {
@@ -1023,7 +1023,7 @@ class MyComponentProject {
                     $tpl = $this->helpers->replaceTags($tpl);
                     $this->helpers->writeFile($toDir, $doc, $tpl);
                 } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $doc . ' ' .
+                    $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' . $doc . ' ' .
                         $this->modx->lexicon('mc_file')
                         . ' ' .
                         $this->modx->lexicon('mc_already_exists'));
@@ -1039,7 +1039,7 @@ class MyComponentProject {
                 $tpl = $this->helpers->replaceTags($tpl);
                 $this->helpers->writeFile($this->myPaths['targetRoot'], 'readme.md', $tpl);
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    readme.md file ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    readme.md file ' .
                     $this->modx->lexicon('mc_already_exists'));
             }
 
@@ -1071,12 +1071,12 @@ class MyComponentProject {
                         $this->helpers->writeFile($this->myPaths['targetBuild'] .
                             'utilities', $minimizer, $fileContent);
                     } else {
-                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                             $minimizer . ' ' .
                             $this->modx->lexicon('mc_already_exists'));
                     }
                 } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '    ' .
+                    $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, '    ' .
                         $this->modx->lexicon('mc_jsmin_nf') . $minimizer);
                 }
             }
@@ -1106,12 +1106,12 @@ class MyComponentProject {
                     $this->helpers->writeFile($dir, $fileName, $tpl);
                 }
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '    ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, '    ' .
                     $this->modx->lexicon('mc_file_nf')
                     . ': ' . $mcConfigDir . $fileName);
             }
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' '.
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' . $fileName . ' '.
                 $this->modx->lexicon('mc_already_exists'));
         }
 
@@ -1128,10 +1128,10 @@ class MyComponentProject {
         $optionalDirs = $this->modx->getOption('assetsDirs', $this->props, array());
         if (! is_array($optionalDirs)) {
             $optionalDirs = array();
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->modx->lexicon('mc_assets_dirs_not_an_array'));
         }
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
             $this->modx->lexicon('mc_creating_assets_directories'));
         /* Create Assets dir even if it will be empty */
         $targetDir = $this->myPaths['targetAssets'];
@@ -1143,13 +1143,13 @@ class MyComponentProject {
             if ($val) {
                 if (!is_dir($targetDir)) {
                     if (mkdir($targetDir, $this->dirPermission, true)) {
-                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                             $this->modx->lexicon('mc_created')
                             . ' ' . $targetDir .
                             $this->modx->lexicon('mc_directory'));
                     }
                 } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    Assets/' . $dir . ' ' .
+                    $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    Assets/' . $dir . ' ' .
                         $this->modx->lexicon('mc_directory')
                         . ' ' . $this->modx->lexicon('mc_already_exists'));
                 }
@@ -1165,7 +1165,7 @@ class MyComponentProject {
                         $tpl = $this->helpers->replaceTags($tpl);
                         $this->helpers->writeFile($path, $fileName, $tpl);
                     } else {
-                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $fileName . ' ' .
+                        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' . $fileName . ' ' .
                             $this->modx->lexicon('mc_already_exists'));
                     }
                 }
@@ -1182,7 +1182,7 @@ class MyComponentProject {
         if (empty($createCmpFiles)) {
             return;
         }
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
             $this->modx->lexicon('mc_writing_cmp_files'));
 
         /* Get the files to create from the project config file */
@@ -1233,7 +1233,7 @@ class MyComponentProject {
      * Create the main CMP class file
      */
     public function createCmpClassFile() {
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
             $this->modx->lexicon('mc_creating_cmp_class_file'));
         $dir = $this->myPaths['targetCore'] . 'model/' . $this->packageNameLower;
         $fileName = $this->packageNameLower . '.class.php';
@@ -1243,7 +1243,7 @@ class MyComponentProject {
             $tpl = $this->helpers->replaceTags($tpl);
             $this->helpers->writeFile($dir, $fileName, $tpl);
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $fileName . ' ' .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' . $fileName . ' ' .
                 $this->modx->lexicon('mc_already_exists'));
         }
     }
@@ -1254,7 +1254,7 @@ class MyComponentProject {
      * @param $cssFile
      */
     public function createCmpCssFile($cssFile) {
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
             $this->modx->lexicon('mc_creating_cmp_css_file'));
         $dir = $this->myPaths['targetAssets'] . 'css';
         $fileName = $cssFile;
@@ -1264,7 +1264,7 @@ class MyComponentProject {
             $tpl = $this->helpers->replaceTags($tpl);
             $this->helpers->writeFile($dir, $fileName, $tpl);
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $fileName . ' ' .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' . $fileName . ' ' .
                 $this->modx->lexicon('mc_already_exists'));
         }
     }
@@ -1274,7 +1274,7 @@ class MyComponentProject {
      *
      */
     public function createControllerRequestFile() {
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
             $this->modx->lexicon('mc_creating_controller_request_file'));
         $dir = $this->myPaths['targetCore'] . 'model/' . $this->packageNameLower . '/request';
         $fileName = $this->packageNameLower . 'controllerrequest.class.php';
@@ -1284,7 +1284,7 @@ class MyComponentProject {
             $tpl = $this->helpers->replaceTags($tpl);
             $this->helpers->writeFile($dir, $fileName, $tpl);
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $fileName . ' ' .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' . $fileName . ' ' .
                 $this->modx->lexicon('mc_already_exists'));
         }
     }
@@ -1295,7 +1295,7 @@ class MyComponentProject {
      * @param $actionFile
      */
     public function createActionFile($actionFile) {
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    '
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    '
             . $this->modx->lexicon('mc_creating_cmp_index_file'));
         $dir = $this->myPaths['targetCore'];
         $file = $actionFile;
@@ -1304,7 +1304,7 @@ class MyComponentProject {
         if (!file_exists($dir . $file)) {
             $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
         } else {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
                 $this->modx->lexicon('mc_already_exists'));
         }
     }
@@ -1315,7 +1315,7 @@ class MyComponentProject {
      * @param $processors
      */
     public function createProcessorFiles($processors) {
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    '
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    '
             . $this->modx->lexicon('mc_creating_cmp_processors'));
         $processorDir = $this->myPaths['targetProcessors'];
 
@@ -1327,7 +1327,7 @@ class MyComponentProject {
                 $tpl = $this->getProcessorTpl($dir, $file);
                 $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
                     $this->modx->lexicon('mc_already_exists'));
             }
         }
@@ -1418,7 +1418,7 @@ class MyComponentProject {
      * @param $controllers array
      */
     public function createControllerFiles($controllers) {
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
             $this->modx->lexicon('mc_creating_cmp_controllers'));
         $controllerDir = $this->myPaths['targetControllers'];
         foreach ($controllers as $controller) {
@@ -1437,7 +1437,7 @@ class MyComponentProject {
                 $tpl = $this->helpers->replaceTags($tpl);
                 $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
                     $this->modx->lexicon('mc_already_exists'));
             }
         }
@@ -1449,7 +1449,7 @@ class MyComponentProject {
      * @param $connectors
      */
     public function createConnectorFiles($connectors) {
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
             $this->modx->lexicon('mc_creating_cmp_connectors'));
         $dir = $this->myPaths['targetConnectors'];
         $tpl = $this->helpers->getTpl('cmp.connectorfile');
@@ -1459,7 +1459,7 @@ class MyComponentProject {
             if (!file_exists($dir . $file)) {
                 $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
                     $this->modx->lexicon('mc_already_exists'));
             }
         }
@@ -1471,7 +1471,7 @@ class MyComponentProject {
      * @param $jsFiles
      */
     public function createCmpJsFiles($jsFiles) {
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" . '    ' .
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
             $this->modx->lexicon('mc_creating_cmp_js_files'));
         $tpl = $this->helpers->getTpl('js');
         $jsDir = $this->myPaths['targetJs'];
@@ -1497,7 +1497,7 @@ class MyComponentProject {
                 $tpl = $this->helpers->replaceTags($tpl);
                 $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
                     $this->modx->lexicon('mc_already_exists'));
             }
 
@@ -1569,7 +1569,7 @@ class MyComponentProject {
     public function createInstallOptions() {
         $iScript = $this->modx->getOption('install.options', $this->props, '');
         if (!empty($iScript)) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->modx->lexicon('mc_creating_install_options'));
             $dir = $this->targetRoot . '_build/install.options';
             $fileName = 'user.input.php';
@@ -1579,7 +1579,7 @@ class MyComponentProject {
                 $tpl = $this->helpers->replaceTags($tpl);
                 $this->helpers->writeFile($dir, $fileName, $tpl);
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' . $fileName . ' ' .
                     $this->modx->lexicon('mc_already_exists'));
             }
         }
@@ -1590,7 +1590,7 @@ class MyComponentProject {
     public function createValidators() {
         $validators = $this->modx->getOption('validators', $this->props, '');
         if (!empty($validators)) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->modx->lexicon('mc_creating_validators'));
             $dir = $this->targetRoot . '_build/validators';
 
@@ -1605,7 +1605,7 @@ class MyComponentProject {
                     $tpl = $this->helpers->replaceTags($tpl);
                     $this->helpers->writeFile($dir, $fileName, $tpl);
                 } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' ' .
+                    $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' . $fileName . ' ' .
                         $this->modx->lexicon('mc_already_exists'));
                 }
             }
@@ -1623,7 +1623,7 @@ class MyComponentProject {
             ? $classes
             : array();
         if (!empty($classes)) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->modx->lexicon('mc_creating_class_files'));
             $baseDir = $this->myPaths['targetCore'] . 'model';
             foreach ($classes as $className => $data) {
@@ -1649,7 +1649,7 @@ class MyComponentProject {
                     $tpl = $this->helpers->replaceTags($tpl);
                     $this->helpers->writeFile($dir, $fileName, $tpl);
                 } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' . $fileName . ' ' .
+                    $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' . $fileName . ' ' .
                         $this->modx->lexicon('mc_already_exists'));
                 }
 
@@ -1673,13 +1673,13 @@ class MyComponentProject {
     public function exportComponent() {
         //Only run if MC is installed
         if (!$this->isMCInstalled()) {
-            $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR, '[MyComponentProject] ' .
+            $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, '[MyComponentProject] ' .
                 $this->modx->lexicon('mc_mycomponent_not_installed_export'));
             return;
         }
         ObjectAdapter::$myObjects = array();
 
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
             $this->modx->lexicon('mc_action')
          . ': ' .  $this->modx->lexicon('mc_export_objects'));
         $mode = MODE_EXPORT;
@@ -1715,7 +1715,7 @@ class MyComponentProject {
             $this->helpers->minifyJs();
         }
 
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
         $this->modx->lexicon('mc_updating_project_config'));
         $this->updateProjectConfig(MODE_EXPORT);
     }
@@ -1740,19 +1740,19 @@ class MyComponentProject {
         if (empty($directory)) {
             $directory = $this->myPaths['targetCore'] . 'elements/';
         }
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
             $this->modx->lexicon('mc_action')
          . ': ' . $this->modx->lexicon('mc_import_objects'));
         $toProcess = explode(',', $toProcess);
         foreach ($toProcess as $elementType) {
             $class = 'mod' . ucfirst(substr($elementType, 0, -1));
-            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, "\n" .
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
                 $this->modx->lexicon('mc_processing')
                 . ' ' . $elementType);
             $elements = $this->modx->getOption($elementType,$this->props['elements'], array());
             foreach ($elements as $element => $fields) {
                 if (isset($fields['static']) && !empty($fields['static'])) {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO, '    ' .
+                    $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                             $this->modx->lexicon('mc_skipping_static_element')
                     . ': ' . $element);
                     continue;
@@ -1770,7 +1770,7 @@ class MyComponentProject {
                         /* check again in case config file is wrong */
                         $static = $object->get('static');
                         if (!empty($static)) {
-                            $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                            $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                                 $this->modx->lexicon('mc_skipping_static_element')
                                     . $element);
                             continue;
@@ -1778,7 +1778,7 @@ class MyComponentProject {
                         $content = file_get_contents($dir . $fileName);
                         if (!empty($content)) {
                             if ($dryRun) {
-                                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                                $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                                     '    ' .
                                         $this->modx->lexicon('mc_would_be_updating')
                                 . ': ' . $element);
@@ -1790,7 +1790,7 @@ class MyComponentProject {
                                 if (file_exists($propsFile)) {
                                     $props = include ($propsFile);
                                     if (is_array($props)) {
-                                        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                                        $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                                             '    ' .
                                         $this->modx->lexicon('mc_setting_properties_for')
                                         . ' ' . $element);
@@ -1799,19 +1799,19 @@ class MyComponentProject {
                                 }
 
                                 if ($object->save()) {
-                                    $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                                    $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                                         '    ' . $this->modx->lexicon('mc_updated')
                                         . ': ' . $element);
                                 }
                             }
                         }
                     } else {
-                        $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
+                        $this->helpers->sendLog(modX::LOG_LEVEL_ERROR,
                             $this->modx->lexicon('mc_element_nf')
                             . ': ' . $element);
                     }
                 } else {
-                    $this->helpers->sendLog(MODX::LOG_LEVEL_ERROR,
+                    $this->helpers->sendLog(modX::LOG_LEVEL_ERROR,
                         $this->modx->lexicon('mc_file_nf')
                         . ': ' . $fileName);
                 }
@@ -1830,11 +1830,11 @@ class MyComponentProject {
      * @param bool $removeFiles - if set, files will be removed too
      */
     public function removeObjects($removeFiles = false) {
-        $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+        $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
             $this->modx->lexicon('mc_action')
             . ': ' .
             $this->modx->lexicon('mc_remove_objects'));
-        $oldLogLevel = $this->modx->setLogLevel(MODX::LOG_LEVEL_ERROR);
+        $oldLogLevel = $this->modx->setLogLevel(modX::LOG_LEVEL_ERROR);
         $this->createObjects(MODE_REMOVE);
         if ($removeFiles) {
             $dir = $this->targetRoot;
@@ -1843,16 +1843,16 @@ class MyComponentProject {
                 session_write_close();
                 die('mismatched or empty targetRoot -- aborting removeObjects');
             }
-            $temp = $this->modx->setLogLevel(MODX::LOG_LEVEL_INFO);
+            $temp = $this->modx->setLogLevel(modX::LOG_LEVEL_INFO);
             $this->helpers->sendLog(MODx::LOG_LEVEL_INFO,
                 $this->modx->lexicon('mc_removing_project_files'));
             $this->modx->setLogLevel($temp);
             $this->rrmdir($dir);
             if (! is_dir($dir)) {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                     $this->modx->lexicon('mc_files_and_directories_removed'));
             } else {
-                $this->helpers->sendLog(MODX::LOG_LEVEL_INFO,
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                     $this->modx->lexicon('mc_vc_files_may_remain'));
             }
         }
