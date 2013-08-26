@@ -407,9 +407,17 @@ abstract class AbstractLexiconCodeFile {
             ? 'modScript'
             : 'text';
 
+
+
         /* Need to handle trailing quote in scripts.
            Files with tags have no trailing quote */
         if (strpos($content, '~~') !== false) {
+            /* Protect naked '~~' */
+            $naked = false;
+            if (strpos($content, "'~~") !== false) {
+                $content = str_replace("'~~'", "'sqsq'", $content);
+                $naked = true;
+            }
             /* .php and .js files */
             if ($type == 'modScript') {
                 $pattern = '/~~.*([\'\"][\),])/';
@@ -422,6 +430,10 @@ abstract class AbstractLexiconCodeFile {
 
             $content = preg_replace($pattern, $replace, $content);
 
+            if ($naked) {
+                /* Restore naked '~~' */
+                $content = str_replace("'sqsq'", "'~~'", $content);
+            }
             if (!empty($content)) {
                 $fp = fopen($fullPath, 'w');
                 if ($fp) {
