@@ -81,8 +81,8 @@ class ExportTest extends PHPUnit_Framework_TestCase
 
     public function testInit()
     {
-        $this->modx->log(MODX::LOG_LEVEL_INFO, 'Component: ' . $this->mc->props['packageName']);
-        $this->modx->log(MODX::LOG_LEVEL_INFO, 'Target Root: ' . PHPUnit_Framework_Assert::readAttribute($this->mc, 'targetRoot'));
+        $this->modx->log(modX::LOG_LEVEL_INFO, 'Component: ' . $this->mc->props['packageName']);
+        $this->modx->log(modX::LOG_LEVEL_INFO, 'Target Root: ' . PHPUnit_Framework_Assert::readAttribute($this->mc, 'targetRoot'));
         $this->modx->log(MODx::LOG_LEVEL_INFO, 'TargetCore: ' . $this->mc->myPaths['targetCore']);
         $this->assertNotEmpty($this->mc->props);
         $this->assertNotEmpty($this->mc->props['targetRoot']);

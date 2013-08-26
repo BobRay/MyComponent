@@ -20,5 +20,6 @@
   'fwa' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/fwa.config.php',
   'privatepage' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/privatepage.config.php',
   'flexibility4' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/flexibility4.config.php',
+  'refreshcache' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/refreshcache.config.php',
 );
  return $projects;

@@ -203,41 +203,15 @@ $components = array(
     /* Array of Resource pagetitles for your Extra; All other fields optional.
        You can set any resource field here */
     'resources' => array(
-        'Site Check' => array(
-                'pagetitle' => 'Site Check',
-                'isfolder' => true,
-                'alias' => 'site-check',
-                'context_key' => 'web',
-                // 'template' => 'Template2',
-                'richtext' => false,
-                'published' => false,
-                'hidemenu' => true,
-                'content' => '[[!SiteCheck? &attemptFix=`0`]]',
-                'cacheable' => false,
-
-                /*'tvValues' => array(
-                    'Tv1' => 'SomeValue',
-                    'Tv2' => 'SomeOtherValue',
-                ),*/
-            ),
-
-        'Site Check Problem Resources' => array(
-            'pagetitle' => 'Site Check Problem Resources',
-            'alias' => 'site-check-problem-resources',
+        'SiteCheck Problem Resources' => array(
+            'pagetitle' => 'SiteCheck Problem Resources',
+            'alias' => 'sitecheck-problem-resources',
             'context_key' => 'web',
             // 'template' => 'Template2',
             'richtext' => false,
             'published' => false,
             'hidemenu' => true,
-            'parent' => 'Site Check',
-            'content' => '<p>This is a container for problem resources found by SiteCheck (for example, resources with an invalid parent).</p>
-             <p>If &amp;fix=`1`, all problem resources will be placed in this folder</p>',
-
-            
-            /*'tvValues' => array(
-                'Tv1' => 'SomeValue',
-                'Tv2' => 'SomeOtherValue',
-            ),*/
+            'parent' => 0,
         )
     ),
 
@@ -389,7 +363,6 @@ $components = array(
     'getResourcesById' => false,
 
     'exportResources' => array(
-        'Site Check',
         'Site Check Problem Resources'
     ),
     /* Array of resource parent IDs to get children of. */
@@ -401,9 +374,9 @@ $components = array(
 
     /* ******************** LEXICON HELPER SETTINGS ***************** */
     /* These settings are used by LexiconHelper */
-    'rewriteCodeFiles' => false,
+    'rewriteCodeFiles' => true,
     /*# remove ~~descriptions */
-    'rewriteLexiconFiles' => false,
+    'rewriteLexiconFiles' => true,
     /* automatically add missing strings to lexicon files */
     /* ******************************************* */
 
