@@ -267,13 +267,16 @@ class Helpers {
     /**
      * Write a file to disk -- will overwrite existing files
      * Creates dir if necessary
+     * Preserves CreatedOn Date
      *
      * @param $dir string - directory for file (should not have trailing slash!)
      * @param $fileName string - file name
      * @param $content - file content
      * @param $dryRun boolean - if true, writes to stdout instead of file.
+     * @param $suppressOutput boolean - silent operation (may write to error log)
      */
     public function writeFile ($dir, $fileName, $content, $dryRun = false, $suppressOutput = false) {
+
         /* just in case */
         $dir = str_replace('//', '/', $dir);
         /* create directory if necessary */
@@ -286,10 +289,17 @@ class Helpers {
         }
         $outFile = $dir . $fileName;
         $outFile = str_replace('//','/', $outFile);
+        $fileExists = file_exists($outFile);
+
+        if ($fileExists) {
+            $this->preserveCreatedOn($outFile, $content);
+        }
+
+
         /* write to stdout if dryRun is true */
         $file = $dryRun? 'php://output' : $outFile;
 
-        $action = ($file == $outFile) && file_exists($outFile)? $this->modx->lexicon('mc_updated') :
+        $action = ($file == $outFile) && $fileExists? $this->modx->lexicon('mc_updated') :
             $this->modx->lexicon('mc_Creating');
 
         $fp = fopen($file, 'w');
@@ -324,6 +334,57 @@ class Helpers {
 
 
     }
+
+    /**
+     * Preserve original "Created on" date in existing files
+     * 
+     * @param $fullPath string - full path to file to be written
+     * @param $content string - reference to file content
+     */
+    public function preserveCreatedOn($fullPath, &$content) {
+        static $pattern = null;
+        static $maxLen = null;
+        $newDate = null;
+        $oldDate = null;
+        if (empty($pattern)) {
+            $pattern = $this->modx->getOption('createdOnRegex',
+                $this->props, '/^.*(Created on\s*\d\d[:,\-\s]\d\d[:,\-\s]\d\d\d\d)\s*.*$/m');
+        }
+        if (empty($maxLen)) {
+            $maxLen = $this->modx->getOption('createdOnMaxLen',
+                $this->props, 500);
+        }
+        $matches = array();
+        preg_match($pattern, $content, $matches);
+            /* No date found - do nothing */
+        if (empty($matches)) {
+            return;
+        }
+        if (isset($matches[1])) {
+            /* Matched date in processed Tpl file */
+            $newDate = $matches[1];
+        }
+        $matches = array();
+        /* Get first $maxLen bytes of original file */
+        $originalContent = file_get_contents($fullPath, null, null, 0, 500);
+        preg_match($pattern, $originalContent, $matches);
+
+        if (isset($matches[1])) {
+            /* Matched date in original file */
+            $oldDate = $matches[1];
+        }
+
+        /* Replace new date with original date */
+        if ($newDate && $oldDate) {
+            $content = str_replace($newDate, $oldDate, $content);
+        }
+
+        return;
+
+
+
+
+}
 
     /**
      * Replaces all strings in $subject based on $replace associative array
@@ -739,5 +800,19 @@ class Helpers {
         $ary = preg_replace("/\n[ ]+array/", " array", var_export($ary, true));
         $ary =  str_replace("\n  ", "\n                ", $ary);
         return str_replace("\n)", "\n            )", $ary);
+    }
+
+    /**
+     * @param $path string - Full path to file
+     * @return string - Original Created on date or '' if not found
+     */
+    public function getCreatedOn($path) {
+        $content = file_get_contents($path);
+        preg_match('/^\s*\*.*(\d\d-\d\d-\d\d\d\d)\s*$/m', $content, $matches);
+        if (isset($matches[1])) {
+            return $matches[1];
+        } else {
+            return '';
+        }
     }
 }
