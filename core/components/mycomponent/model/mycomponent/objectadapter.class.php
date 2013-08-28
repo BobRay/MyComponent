@@ -576,14 +576,13 @@ abstract class ObjectAdapter {
 
         // Get the Transport File Name
         $transportFile = $helpers->getFileName('', $type, 'transport');
-        // $transportFile = 'transport.' . strtolower($variableName) . '.php';
-
+        $fileExists = file_exists($path . $transportFile);
         if (stristr($variableName, 'menus')) { /* note: may change in Revo 2.3 */
             $variableName = 'actions';
         }
 
         /* Abort if file exists and not in Export mode */
-        if (file_exists($path . $transportFile) && $mode != MODE_EXPORT) {
+        if ($fileExists && $mode != MODE_EXPORT) {
             $helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' .
                 $helpers->modx->lexicon('mc_file_already_exists')
                     . ': ' .  $transportFile);
@@ -614,14 +613,13 @@ abstract class ObjectAdapter {
         // write transport footer
         $tpl .= 'return $' . $variableName . ";\n";
 
-        if (! file_exists($path . $transportFile) || $mode != MODE_BOOTSTRAP) {
+        if (! $fileExists || $mode != MODE_BOOTSTRAP) {
             $helpers->writeFile($path, $transportFile, $tpl, $dryRun);
         } else {
             $helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' .
                 $helpers->modx->lexicon('mc_file_already_exists')
                     . ': ' . $transportFile);
         }
-
         unset($tpl);
     }
 
@@ -759,6 +757,10 @@ abstract class ObjectAdapter {
      * @return string - code for the elements properties
      */
     private function render_properties($arr) {
+        foreach ($arr as $k => $fields) {
+            unset($arr[$k]['desc_trans']);
+            unset($arr[$k]['area_trans']);
+        }
         $output =  '$properties = ';
         $output .= var_export($arr, true);
         $output .= ";\n\nreturn \$properties;";
