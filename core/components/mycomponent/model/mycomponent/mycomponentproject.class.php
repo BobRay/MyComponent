@@ -1844,7 +1844,7 @@ class MyComponentProject {
                 die('mismatched or empty targetRoot -- aborting removeObjects');
             }
             $temp = $this->modx->setLogLevel(modX::LOG_LEVEL_INFO);
-            $this->helpers->sendLog(MODx::LOG_LEVEL_INFO,
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                 $this->modx->lexicon('mc_removing_project_files'));
             $this->modx->setLogLevel($temp);
             $this->rrmdir($dir);
