@@ -211,9 +211,9 @@ class Helpers {
         }
 
         /* replace anything that shouldn't belong in a file name
-           with an underscore - allows alphanumeric, dot, slash
-           backslash, hyphen, and underscore  */
-        $output = preg_replace('#[^A-Za-z0-9\._\-\\/]#', '_', $output);
+           with an underscore - allows alphanumeric, dot,
+           hyphen, and underscore  */
+        $output = preg_replace('#[^A-Za-z0-9\._\-]#', '_', $output);
 
         return $output;
     }
