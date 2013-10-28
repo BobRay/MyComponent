@@ -31,13 +31,13 @@
   $packageName = 'mycomponent';
 */
 
-$base = 'c:/xampp/htdocs/addons/assets/mycomponents/cachemaster/';
-$propertiesFile = '_build/data/properties/properties.cachemaster.plugin.php';
+$base = 'c:/xampp/htdocs/addons/assets/mycomponents/sitecheck/';
+$propertiesFile = '_build/data/properties/properties.sitecheck.snippet.php';
 $propertiesFile = $base . $propertiesFile;
-$languageFile = 'core/components/cachemaster/lexicon/en/properties.inc.php';
+$languageFile = 'core/components/sitecheck/lexicon/en/properties.inc.php';
 $languageFile = $base . $languageFile;
 $rewriteCodeFile = false;
-$codeFile = $base . 'core/components/notify/elements/snippets/notify.snippet.php';
+$codeFile = $base . 'core/components/sitecheck/elements/snippets/sitecheck.snippet.php';
 
 
 $propertiesInjected = false; /* This will be set automatically if properties are injected */
