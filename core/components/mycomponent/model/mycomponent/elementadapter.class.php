@@ -209,6 +209,12 @@ abstract class ElementAdapter extends ObjectAdapter {
         unset($this->myFields['propertySets']);
         $fields = $this->myFields;
 
+        $class = $this->getClass();
+        $allStatic = $this->modx->getOption('allStatic', $this->helpers->props, false);
+        if (($class != 'modPropertySet') && ($class != 'modPlugin') && $allStatic) {
+            $fields['static'] = true;
+        }
+
         /* Handle static elements */
         if (isset($fields['static']) && !empty($fields['static'])) {
             $projectDir = str_replace(MODX_ASSETS_PATH . 'mycomponents/',
