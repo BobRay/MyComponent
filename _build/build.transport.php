@@ -314,9 +314,9 @@ $sources = array(
 unset($root);
 
 
-$categories = require_once $sources['build'] . 'config/categories.php';
+$categories = include $sources['build'] . 'config/categories.php';
 
-if (empty ($categories)) {
+if (empty ($categories) || (!is_array($categories))) {
     session_write_close();
     die ($modx->lexicon('no_categories'));
 }
