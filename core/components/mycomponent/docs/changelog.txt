@@ -1,5 +1,18 @@
 Changelog for MyComponent
 
+MyComponent 3.1.2
+-------------------
+Fix bug with allStatic
+Fix bug with createpropertiestable
+Fix bug with slashes in object names
+Correct MODX constants
+Update unit tests
+Preserve original creation date in original files
+Correct placeholders in CMP home component
+Protect naked ~~ from LexiconHelper
+Minor code optimization
+Fix bug with bootstrap not setting resource content
+
 MyComponent 3.1.1
 --------------------
 Fix bug with subpackages
