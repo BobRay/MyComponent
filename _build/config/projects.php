@@ -21,5 +21,7 @@
   'privatepage' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/privatepage.config.php',
   'flexibility4' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/flexibility4.config.php',
   'refreshcache' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/refreshcache.config.php',
+  'loglogins' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/loglogins.config.php',
+  'importusers' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/importusers.config.php',
 );
  return $projects;

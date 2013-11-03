@@ -7,8 +7,8 @@ $components = array(
     'packageName' => 'SiteCheck',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
     'packageDescription' => 'SiteCheck project for MyComponent extra',
-    'version' => '1.0.0',
-    'release' => 'beta1',
+    'version' => '1.0.1',
+    'release' => 'pl',
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
     'authorUrl' => 'http://bobsguides.com',
@@ -46,7 +46,48 @@ $components = array(
      * and export them with exportObjects. If you do that, be sure to set
      * their namespace to the lowercase package name of your extra */
 
-    'newSystemSettings' => array(),
+    'newSystemSettings' => array(
+        'sitecheck.createAliases' => array( // key
+            'key' => 'sitecheck.createAliases',
+            'name' => 'createAliases',
+            'description' => 'Create Aliases automatically for Resources with no alias; default: Yes',
+            'namespace' => 'sitecheck',
+            'xtype' => 'combo-boolean',
+            'value' => true,
+        ),
+        'sitecheck.deleteInvalidPackages' => array( // key
+            'key' => 'sitecheck.deleteInvalidPackages',
+            'name' => 'deleteInvalidPackages',
+            'description' => 'Have Sitecheck delete invalid packages that cannot be downloaded from the repository; default: No',
+            'namespace' => 'sitecheck',
+            'xtype' => 'combo-boolean',
+            'value' => false,
+        ),
+        'sitecheck.maxBackups' => array( // key
+            'key' => 'sitecheck.maxBackups',
+            'name' => 'maxBackups',
+            'description' => 'Maximum number of database backups to keep; the oldest backup will be deleted when the limit is reached; default: 5',
+            'namespace' => 'sitecheck',
+            'xtype' => 'textfield',
+            'value' => 5,
+        ),
+        'sitecheck.mysqldumpCommand' => array( // key
+            'key' => 'sitecheck.mysqldumpCommand',
+            'name' => 'mysqldumpCommand',
+            'description' => 'Command to execute the mysqldump database backup utility: default: mysqldump -u{db_user} -p{db_password} {database_name}',
+            'namespace' => 'sitecheck',
+            'xtype' => 'textfield',
+            'value' => 'mysqldump -u{db_user} -p{db_password} {database_name}',
+        ),
+        'sitecheck.proceedWithoutBackup' => array( // key
+            'key' => 'sitecheck.proceedWithoutBackup',
+            'name' => 'proceedWithoutBackup',
+            'description' => 'Perform Fix operations even if database cannot be backed up; default: No',
+            'namespace' => 'sitecheck',
+            'xtype' => 'combo-boolean',
+            'value' => false,
+        ),
+    ),
 
 
     /* ************************ NAMESPACE(S) ************************* */
@@ -207,11 +248,14 @@ $components = array(
             'pagetitle' => 'SiteCheck Problem Resources',
             'alias' => 'sitecheck-problem-resources',
             'context_key' => 'web',
-            // 'template' => 'Template2',
+            'template' => 'default',
+            'menuindex' => 0,
             'richtext' => false,
             'published' => false,
             'hidemenu' => true,
             'parent' => 0,
+            'searchable' => false,
+            'cacheable' => false,
         )
     ),
 
@@ -352,7 +396,7 @@ $components = array(
         'resources',
         // 'propertySets',
         // 'contextSettings',
-        // 'menus'
+        'menus'
     ),
     /*  Array  of resources to process. You can specify specific resources
         or parent (container) resources, or both.
@@ -363,7 +407,7 @@ $components = array(
     'getResourcesById' => false,
 
     'exportResources' => array(
-        'Site Check Problem Resources'
+        'SiteCheck Problem Resources'
     ),
     /* Array of resource parent IDs to get children of. */
     'parents' => array(),
