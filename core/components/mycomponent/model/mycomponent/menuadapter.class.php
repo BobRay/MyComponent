@@ -50,6 +50,11 @@ class MenuAdapter extends ObjectAdapter {
                 $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                     $this->modx->lexicon('mc_created_menu')
                     . ': ' . $fields['text']);
+            /* Refresh the action map */
+            $cm = $this->modx->getCacheManager();
+            $cm->refresh(array(
+                'action_map' => array(),
+            ));
             }
         } else {
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO,
