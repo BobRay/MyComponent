@@ -1,5 +1,9 @@
 Changelog for MyComponent
 
+MyComponent 3.?.?
+-------------------
+refresh action map when Bootstrap creates menus
+
 MyComponent 3.1.2
 -------------------
 Fix bug with allStatic
