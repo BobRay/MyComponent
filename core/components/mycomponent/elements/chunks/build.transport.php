@@ -633,7 +633,8 @@ foreach ($categories as $k => $categoryName) {
         xPDOTransport::RELATED_OBJECTS => true,
     );
 
-    if ($hasValidators && $i == 1) { /* only install these on first pass */
+    /* Only add this on first pass if no subPackages */
+    if ($hasValidators && ($i == 1) && (!$hasSubPackages)) {
         $attr[xPDOTransport::ABORT_INSTALL_ON_VEHICLE_FAIL] = true;
     }
 
