@@ -97,6 +97,10 @@ abstract class ElementAdapter extends ObjectAdapter {
                 ObjectAdapter::$myObjects['propertySetResolver'][] = $resolverFields;
             }
         } elseif ($mode == MODE_EXPORT) {
+            /* Don't export property sets unless set in config */
+            if (!isset($fields['propertySets'])) {
+                return;
+            }
             $alias = $this->helpers->getNameAlias($this->dbClass);
             $me = $this->modx->getObject($this->dbClass, array($alias => $this->getName()));
             /* @var $me modElement */
