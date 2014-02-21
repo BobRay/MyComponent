@@ -532,6 +532,10 @@ class MyComponentProject {
                         foreach ($settings as $setting) {
                             /* @var $setting modSystemSetting */
                             $fields = $setting->toArray();
+                            /* Let Value in config file override DB value */
+                            if (isset($newSystemSettings[$fields['key']]['value'])) {
+                                $fields['value'] = $newSystemSettings[$fields['key']]['value'];
+                            }
                             new SystemSettingAdapter($this->modx, $this->helpers, $fields, $mode);
                             if ($mode == MODE_REMOVE) {
                                 $setting->remove();

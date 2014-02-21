@@ -129,6 +129,8 @@ directory, so be sure to modify that one for your project rather than the one un
 
 <p>You should always run Bootstrap at least once after editing the project config file (and before running ExportObjects for the first time). It's also a good practice to run ExportObjects as a last step before running Build.</p>
 
+<p>As of Version 3.2.0, there are two changes in ExportObjects that help keep sensitive values out of your package. First, property sets are not exported unless they are specified in the project config file (see the Example project config file). Second, values for new System Settings in the config file will override the values from the database. For example, you can set an api_key, password, or secret key in a System Setting or Property Set without having it end up at GitHub or in your package.</p>
+
 <h3>ImportObjects</h3>
 
     <p>As you might guess, this is the opposite of ExportObjects, though it's use is more limited. ImportObjects updates any *elements* in MODX that are listed in the project config file based on the code files on the disk. If you make changes to a snippet's code file, you can use ImportObjects to update the snippet. It's important to remember that ImportObjects processes *only* elements, and only the elements listed in the <code>'process'</code> member of the project config file *and* it only processes elements that exist in the <code>'elements'</code> member.</p>
