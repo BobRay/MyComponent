@@ -50,12 +50,12 @@
         <h1>MyComponent Project: [[+current_project]]</h1>
     </div>
 
-    <div class="projects small-12 medium-3 columns columns1">
+    <div class="projects small-12 medium-6 columns columns1">
         <h2>Projects</h2>
         [[+mc.projects]]
     </div>
 
-    <div class="actions small-12 medium-3 columns columns1">
+    <div class="actions small-12 medium-6 columns columns1">
         <h2>MyComponent Actions</h2>
 
         <a href="javascript:doAction('bootstrap')" class="action small-12 columns" data-action="bootstrap">Bootstrap</a>
@@ -76,7 +76,7 @@
         </form>
     </div>
 
-    <div class="logs small-12 medium-6 columns columns1">
+    <div class="logs small-12 columns">
         <h2>Log</h2>
         <p>&nbsp;<b>[[+message]]</b></p>
 
