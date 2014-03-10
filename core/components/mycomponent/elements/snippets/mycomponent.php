@@ -56,7 +56,9 @@ if ( (!empty($_POST) ) && (isset($_POST['doit']) || isset($_POST['newproject']) 
     }
     switch ($action) {
         case 'switchproject':
-            if ($_POST['selectproject'] == $currentProject) {
+            if (empty($_POST['currentproject'])) {
+                $message = 'You must specify a project name';
+            } elseif ($_POST['selectproject'] == $currentProject) {
                 $message = 'Already on that project';
             } else {
                 $newProjectName = $_POST['selectproject'];

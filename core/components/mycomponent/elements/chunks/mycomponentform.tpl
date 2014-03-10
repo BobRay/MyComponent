@@ -27,8 +27,7 @@
         $('#switchproject').submit();
     }
 
-    function doAction(element){
-        action = $(element).attr('data-action');
+    function doAction(action){
         $('#doit').val(action);
         $('#mc_action').submit();
     }
@@ -42,8 +41,8 @@
 </form>
 
 <form id="mc_action" method="post" action="[[~[[*id]]]]">
+    <input type="hidden" name="currentproject" value="[[+current_project]]" id="currentproject"/>
     <input type="hidden" name="doit" id="doit"/>
-    <input type="hidden" name="switchproject" id="switchproject" value="Switch Project" />
 </form>
 
 <div class="row">
@@ -59,22 +58,19 @@
     <div class="actions small-12 medium-3 columns columns1">
         <h2>MyComponent Actions</h2>
 
-        <form id="mc_form" name="mc_form" method="post" action="[[~[[*id]]]]">
+        <a href="javascript:doAction('bootstrap')" class="action small-12 columns" data-action="bootstrap">Bootstrap</a>
+        <a href="javascript:doAction('exportobjects')" class="action small-12 columns" data-action="exportobjects">ExportObjects</a>
+        <a href="javascript:doAction('importobjects')" class="action small-12 columns" data-action="importobjects">ImportObjects</a>
+        <a href="javascript:doAction('lexiconhelper')" class="action small-12 columns" data-action="lexiconhelper">LexiconHelper</a>
+        <a href="javascript:doAction('checkproperties')" class="action small-12 columns" data-action="checkproperties">CheckProperties</a>
+        <a href="javascript:doAction('build')" class="action small-12 columns" data-action="build">Build</a>
+        <a href="javascript:doAction('removeobjects')" class="action small-12 columns" data-action="removeobjects">RemoveObjects</a>
+        <a href="javascript:doAction('removeobjectsandfiles')" class="action small-12 columns" data-action="removeobjectsandfiles">RemoveObjects and Files</a>
 
-            <div class="action small-12 columns" data-action="bootstrap">Bootstrap</div>
-            <div class="action small-12 columns" data-action="exportobjects">ExportObjects</div>
-            <div class="action small-12 columns" data-action="importobjects">ImportObjects</div>
-            <div class="action small-12 columns" data-action="lexiconhelper">LexiconHelper</div>
-            <div class="action small-12 columns" data-action="checkproperties">CheckProperties</div>
-            <div class="action small-12 columns" data-action="build">Build</div>
-            <div class="action small-12 columns" data-action="removeobjects">RemoveObjects</div>
-            <div class="action small-12 columns" data-action="removeobjectsandfiles">RemoveObjects and Files</div>
-
-        </form>
 
         <form id="mc_form" name="mc_form" method="post" action="[[~[[*id]]]]">
             <label for="bootstrap">
-                <input type="text" name="currentproject" value="[[+current_project]]" id="currentproject"/>
+                <input type="text" name="currentproject" value="NewProject" id="currentproject"/>
 
             </label><input type="submit" name="newproject" value="New Project">
         </form>
@@ -116,18 +112,10 @@
         }
     }
 
-    //Use like this:
     $(document).ready(function(){
         /*Keeps columns on homepage equal height*/
         equalHeight($('.columns1'));
         $(window).resize(function(){equalHeight($('.columns1'));});
-
-        $('.action').each(function(){
-            $(this).click(function(){
-                doAction(this);
-            })
-        });
-
     });
 
 </script>
