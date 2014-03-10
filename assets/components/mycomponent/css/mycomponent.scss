@@ -1,0 +1,37 @@
+/**
+ * CSS file for MyComponent extra
+ *
+ * Copyright 2012-2013 by Bob Ray
+ * Created on 12/05/2012
+ *
+ * @package mycomponent
+ */
+
+@import 'foundation/foundation';
+
+.projects {
+  background-color: #e6ffd3;
+}
+
+.actions {
+  background-color: #beffff;
+}
+
+.logs {
+  background-color: #fff;
+}
+
+div#my_component {
+
+}
+
+form#mc_form {
+    border:none;
+    text-align: left;
+    padding: 0;
+    margin:0;
+    width:50%
+
+}
+
+
