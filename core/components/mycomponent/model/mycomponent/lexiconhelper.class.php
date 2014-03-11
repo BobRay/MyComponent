@@ -162,6 +162,9 @@ class LexiconHelper {
             'classes' => array (
                 $this->targetCore . 'model/' => 'classes',
             ),
+            'processors' => array (
+                $this->targetCore . 'processors/' => 'processors',
+            ),
             'build files' => array (
                 $this->targetBase . '_build/' => 'build files',
             ),
