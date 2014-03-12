@@ -164,9 +164,15 @@ class CheckProperties {
             $this->helpers->dirWalk($dir, null, true);
             $this->classFiles = $this->helpers->getFiles();
         }
+        $this->helpers->resetFiles();
+        $dir = $this->targetCore . 'processors';
+        if (is_dir($dir)) {
+            $this->helpers->dirWalk($dir, NULL, true);
+            $this->classFiles = array_merge($this->helpers->getFiles(), $this->classFiles);
+        }
+
         if(!empty($this->classFiles)) {
             $this->output .= "\nFound these class files: " . implode(', ', array_keys($this->classFiles));
-
         }
 
         /* process each element */
