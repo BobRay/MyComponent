@@ -4,13 +4,15 @@
  * Copyright 2012-2013 by Bob Ray
  * Created on 12/05/2012
  *
+ * Amended 20140319 9:07pm
+ *
  * @package mycomponent
  */
 
 @import 'foundation/foundation';
 
 .projects {
-  background-color: #e6ffd3;
+  background-color: #caffbf;
 }
 
 .actions {
@@ -20,18 +22,3 @@
 .logs {
   background-color: #fff;
 }
-
-div#my_component {
-
-}
-
-form#mc_form {
-    border:none;
-    text-align: left;
-    padding: 0;
-    margin:0;
-    width:50%
-
-}
-
-

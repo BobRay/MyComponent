@@ -167,7 +167,7 @@ foreach ($projects as $k => $value) {
     if ($k == $currentProject) {
         $selected = ' active" ';
     }
-    $code .= "<a href='javascript:switchProject(\"$k\");' class='small-12 columns  $selected'>$k</a>";
+    $code .= "<a href='javascript:switchProject(\"$k\");' class='small-12 columns small button  $selected'>$k</a>";
 }
 
 $tpl = str_replace('[[+mc.projects]]', $code, $tpl);

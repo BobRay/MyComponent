@@ -58,21 +58,25 @@
     <div class="actions small-12 medium-6 columns columns1">
         <h2>MyComponent Actions</h2>
 
-        <a href="javascript:doAction('bootstrap')" class="action small-12 columns" data-action="bootstrap">Bootstrap</a>
-        <a href="javascript:doAction('exportobjects')" class="action small-12 columns" data-action="exportobjects">ExportObjects</a>
-        <a href="javascript:doAction('importobjects')" class="action small-12 columns" data-action="importobjects">ImportObjects</a>
-        <a href="javascript:doAction('lexiconhelper')" class="action small-12 columns" data-action="lexiconhelper">LexiconHelper</a>
-        <a href="javascript:doAction('checkproperties')" class="action small-12 columns" data-action="checkproperties">CheckProperties</a>
-        <a href="javascript:doAction('build')" class="action small-12 columns" data-action="build">Build</a>
-        <a href="javascript:doAction('removeobjects')" class="action small-12 columns" data-action="removeobjects">RemoveObjects</a>
-        <a href="javascript:doAction('removeobjectsandfiles')" class="action small-12 columns" data-action="removeobjectsandfiles">RemoveObjects and Files</a>
-
+        <a href="javascript:doAction('bootstrap')" class="action small-12 columns small button" data-action="bootstrap">Bootstrap</a>
+        <a href="javascript:doAction('exportobjects')" class="action small-12 columns small button" data-action="exportobjects">ExportObjects</a>
+        <a href="javascript:doAction('importobjects')" class="action small-12 columns small button" data-action="importobjects">ImportObjects</a>
+        <a href="javascript:doAction('lexiconhelper')" class="action small-12 columns small button" data-action="lexiconhelper">LexiconHelper</a>
+        <a href="javascript:doAction('checkproperties')" class="action small-12 columns small  button" data-action="checkproperties">CheckProperties</a>
+        <a href="javascript:doAction('build')" class="action small-12 columns small button" data-action="build">Build</a>
+        <a href="javascript:doAction('removeobjects')" class="action small-12 columns small button" data-action="removeobjects">RemoveObjects</a>
+        <a href="javascript:doAction('removeobjectsandfiles')" class="action small-12 columns small button" data-action="removeobjectsandfiles">RemoveObjects and Files</a>
 
         <form id="mc_form" name="mc_form" method="post" action="[[~[[*id]]]]">
-            <label for="bootstrap">
-                <input type="text" name="currentproject" value="NewProject" id="currentproject"/>
-
-            </label><input type="submit" name="newproject" value="New Project">
+               <div class="row collapse">
+                    <div class="small-10 columns">
+                        <input type="text" placeholder="NewProject" name="currentproject" value="NewProject" id="currentproject" >
+                    </div>
+                    <div class="small-2 columns">
+                        <a href="javascript:$('#mc_form').submit();" class="button postfix">Create</a>
+                    </div>
+                </div>
+           <input type="hidden" name="newproject" value="New Project">
         </form>
     </div>
 
