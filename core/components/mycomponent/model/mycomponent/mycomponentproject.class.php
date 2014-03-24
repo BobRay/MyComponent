@@ -241,7 +241,7 @@ class MyComponentProject {
         $paths['targetImages'] = $paths['targetAssets'] . 'images/';
         $paths['targetBuild'] = $paths['targetRoot'] . '_build/';
         $paths['targetData'] = $paths['targetBuild'] . 'data/';
-        $paths['targetResources'] = $paths['targetData'] . '_resources/';
+        $paths['targetResources'] = $paths['targetData'] . 'resources/';
         $paths['targetProperties'] = $paths['targetData'] . 'properties/';
         $paths['targetResolve'] = $paths['targetBuild'] . 'resolvers/';
         $paths['targetValidate'] = $paths['targetBuild'] . 'validators/';
@@ -1818,6 +1818,39 @@ class MyComponentProject {
                     $this->helpers->sendLog(modX::LOG_LEVEL_ERROR,
                         $this->modx->lexicon('mc_file_nf')
                         . ': ' . $fileName);
+                }
+            }
+
+        }
+
+        /* Do Resources - use exportResources array member for pagetitles */
+
+        $pageTitles = $this->modx->getOption('exportResources', $this->props, array());
+        if (count($pageTitles) > 0) {
+            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
+                $this->modx->lexicon('mc_processing')
+                . ' ' . 'Resources');
+        }
+        foreach($pageTitles as $pageTitle) {
+            if ($dryRun) {
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
+                    '    ' .
+                    $this->modx->lexicon('mc_would_be_updating')
+                    . ': ' . $pageTitle);
+            } else {
+                $fileName = $this->helpers->getFileName($pageTitle, 'modResource');
+                $dir = $this->myPaths['targetResources'];
+                $content = file_get_contents($dir . $fileName);
+                if (!empty($content)) {
+                    $resource = $this->modx->getObject('modResource', array('pagetitle' => $pageTitle));
+                    if ($resource) {
+                        $resource->setContent($content);
+                        if ($resource->save()) {
+                            $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
+                                '    ' . $this->modx->lexicon('mc_updated')
+                                . ': ' . $pageTitle);
+                        }
+                    }
                 }
             }
 
