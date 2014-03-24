@@ -1,8 +1,16 @@
 Changelog for MyComponent
 
-MyComponent 3.?.?
+MyComponent 3.2.0
 -------------------
-refresh action map when Bootstrap creates menus
+Do Resources in ImportObjects
+Refresh action map when Bootstrap creates menus
+System Setting value in config file overrides actual setting
+Fix bug with subPackage location
+Fix bug with user input file
+LexiconHelper checks processor directories
+Only package property sets if set in config file
+Fix bug with aborting when subPackages are up-to-date
+
 
 MyComponent 3.1.2
 -------------------

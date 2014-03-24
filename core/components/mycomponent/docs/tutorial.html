@@ -83,7 +83,7 @@ directory, so be sure to modify that one for your project rather than the one un
 
 <p>ExportObjects creates code files and build files based on the project as it exists in the MODX Manager.</p>
 
-<p>ImportObjects updates elements in the Manager based on changes in their code files.</p>
+<p>ImportObjects updates elements and resources in the Manager based on changes in their code files.</p>
 
 <p>LexiconHelper writes your Lexicon Files for you and checks to make sure that there are no empty, missing, or unused lexicon strings.</p>
 
@@ -129,11 +129,11 @@ directory, so be sure to modify that one for your project rather than the one un
 
 <p>You should always run Bootstrap at least once after editing the project config file (and before running ExportObjects for the first time). It's also a good practice to run ExportObjects as a last step before running Build.</p>
 
-<p>As of Version 3.2.0, there are two changes in ExportObjects that help keep sensitive values out of your package. First, property sets are not exported unless they are specified in the project config file (see the Example project config file). Second, values for new System Settings in the config file will override the values from the database. For example, you can set an api_key, password, or secret key in a System Setting or Property Set without having it end up at GitHub or in your package.</p>
+<p>As of Version 3.2.0, there are two changes in ExportObjects that help keep sensitive values out of your package. First, property sets are not exported unless they are specified in the project config file (see the Example project config file). This allows you to create property sets containing API keys or values that are only relevant to your local install without having them go into the package. Second, values for new System Settings in the config file will override the values from the database. With this change, you can now set an API key, password, or secret key in a System Setting or Property Set without having it end up at GitHub or in your package.</p>
 
 <h3>ImportObjects</h3>
 
-    <p>As you might guess, this is the opposite of ExportObjects, though it's use is more limited. ImportObjects updates any *elements* in MODX that are listed in the project config file based on the code files on the disk. If you make changes to a snippet's code file, you can use ImportObjects to update the snippet. It's important to remember that ImportObjects processes *only* elements, and only the elements listed in the <code>'process'</code> member of the project config file *and* it only processes elements that exist in the <code>'elements'</code> member.</p>
+    <p>As you might guess, this is the opposite of ExportObjects, though it's use is more limited. ImportObjects updates any elements or resources in MODX that are listed in the project config file based on the code files on the disk. If you make changes to a snippet's code file, for example, you can use ImportObjects to update the snippet. It's important to remember that ImportObjects processes *only* the elements listed in the <code>'process'</code> member of the project config file *and* it only processes elements that exist in the <code>'elements'</code> member. As of version 3.2.0, ImportObjects also processes any resources listed in the <code>'exportResources'</code> member of the config file.</p>
 
     <p>One common use of ImportObjects is to update elements in MODX after LexiconHelper has modified the language strings in the files.</p>
 
