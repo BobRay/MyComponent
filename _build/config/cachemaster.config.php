@@ -7,14 +7,14 @@ $components = array(
     'packageName' => 'CacheMaster',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
     'packageDescription' => 'CacheMaster project for MyComponent extra',
-    'version' => '1.1.1',
+    'version' => '1.2.0',
     'release' => 'pl',
     'author' => 'Bob Ray',
     'email' => '<http://bobsguides.com>',
     'authorUrl' => 'http://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
     'packageDocumentationUrl' => 'http://bobsguides.com/cachemaster-tutorial.html',
-    'copyright' => '2012-2013',
+    'copyright' => '2012-2014',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),

@@ -43,7 +43,7 @@ $_lang['mc_using'] = 'Using';
 /* used in Bootstrap or its included classes  */
 $_lang['mc_creating_cmp_class_file'] = 'Creating CMP class file';
 $_lang['mc_creating_cmp_css_file'] = 'Creating CMP css file';
-$_lang['mc_creating_controller_request_file'] = 'Creating CMP controller request file';
+$_lang['mc_creating_template_files'] = 'Creating CMP template file(s)';
 $_lang['mc_creating_cmp_index_file'] = 'Creating CMP index (action) file';
 $_lang['mc_creating_cmp_processors'] = 'Creating CMP processors';
 $_lang['mc_creating_cmp_controllers'] = 'Creating CMP controllers';

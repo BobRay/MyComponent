@@ -1196,7 +1196,7 @@ class MyComponentProject {
         $controllers = $this->helpers->getProp('controllers', array());
         $connectors = $this->helpers->getProp('connectors', array());
         $jsFiles = $this->helpers->getProp('cmpJsFiles', array());
-
+        $cmpTemplateFiles = $this->helpers->getProp('cmpTemplates', array());
         /* Create CMP class file */
         $this->createCmpClassFile();
 
@@ -1206,7 +1206,7 @@ class MyComponentProject {
         }
 
         /* Create controllerrequest file */
-        $this->createControllerRequestFile();
+        $this->createTemplateFiles($cmpTemplateFiles);
 
         /* Create main action file (index.php) */
         if (!empty($actionFile)) {
@@ -1274,22 +1274,25 @@ class MyComponentProject {
     }
 
     /**
-     * Create the main CMP controllerrequest file
+     * Create the template files
      *
      */
-    public function createControllerRequestFile() {
+    public function createTemplateFiles($templates) {
         $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
-            $this->modx->lexicon('mc_creating_controller_request_file'));
-        $dir = $this->myPaths['targetCore'] . 'model/' . $this->packageNameLower . '/request';
-        $fileName = $this->packageNameLower . 'controllerrequest.class.php';
-
-        if (!file_exists($dir . '/' . $fileName)) {
-            $tpl = $this->helpers->getTpl('cmp.controllerrequest.class.php');
-            $tpl = $this->helpers->replaceTags($tpl);
-            $this->helpers->writeFile($dir, $fileName, $tpl);
-        } else {
-            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' . $fileName . ' ' .
-                $this->modx->lexicon('mc_already_exists'));
+            $this->modx->lexicon('mc_creating_template_files'));
+        $dir = $this->myPaths['targetCore'] . 'templates';
+        foreach ($templates as $template) {
+            $couple = explode(':', $template);
+            $content = isset($couple[1])? $couple[1] : '';
+            $fileName = $couple[0];
+            if (!file_exists($dir . '/' . $fileName)) {
+                $tpl = $content;
+                $tpl = $this->helpers->replaceTags($tpl);
+                $this->helpers->writeFile($dir, $fileName . '.tpl', $tpl);
+            } else {
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' . $fileName . ' ' .
+                    $this->modx->lexicon('mc_already_exists'));
+            }
         }
     }
 
@@ -1431,13 +1434,7 @@ class MyComponentProject {
             $dir = $controllerDir . $couple[0];
             $file = $couple[1];
             if (!file_exists(rtrim($dir, '/') . '/' . $file)) {
-                if (strstr($file, 'index')) {
-                    $tpl = $this->helpers->getTpl('cmp.controllerindex');
-                } elseif (strstr($file, 'header')) {
-                    $tpl = $this->helpers->getTpl('cmp.controllerheader');
-                } elseif (strstr($file, 'home')) {
-                    $tpl = $this->helpers->getTpl('cmp.controllerhome');
-                }
+                $tpl = $this->helpers->getTpl('cmp.controllerhome');
                 $tpl = $this->helpers->replaceTags($tpl);
                 $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
             } else {
@@ -1484,7 +1481,7 @@ class MyComponentProject {
             $dir = $jsDir . $couple[0];
             $file = $couple[1];
             if (!file_exists($dir . '/' . $file)) {
-                if ($file == $this->packageNameLower . '.js') {
+                if ($file == $this->packageNameLower . '.class.js') {
                     /* Main JS file */
                     $tpl = $this->helpers->getTpl('cmp.defaultjs');
                 } elseif (strpos($file, 'grid') !== false) {

@@ -514,7 +514,7 @@ $components = array(
        It will automatically go in core/component/yourcomponent/
     */
 
-    'actionFile' => 'index.php',
+    'actionFile' => 'index.class.php',
 
     /* CSS file for CMP */
 
@@ -541,9 +541,7 @@ $components = array(
        Format: directory:filename */
 
     'controllers' => array(
-        ':index.php',
-        'mgr:header.php',
-        'mgr:home.php',
+        ':home.class.php',
     ),
 
     /* These will automatically go in assets/components/yourcomponent/ */
@@ -556,11 +554,21 @@ $components = array(
        Format: directory:filename */
 
     'cmpJsFiles' => array(
-        ':example.js',
+        ':example.class.js',
         'sections:home.js',
         'widgets:home.panel.js',
         'widgets:snippet.grid.js',
         'widgets:chunk.grid.js',
+    ),
+
+    /* These go to core/components/componentName/templates/
+     * The format is:
+     *    filename:content
+     * content is optional
+     */
+
+    'cmpTemplates' => array (
+         'mgr:<div id="example-panel-home-div"></div>',
     ),
 
 

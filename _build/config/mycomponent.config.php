@@ -201,21 +201,9 @@ $components = array(
                 'category' => 'MyComponent',
                 'filename' => 'cmp.connectorfile.tpl',
             ),
-            'cmp.controllerheader.tpl' => array(
-                'category' => 'MyComponent',
-                'filename' => 'cmp.controllerheader.tpl',
-            ),
             'cmp.controllerhome.tpl' => array(
                 'category' => 'MyComponent',
                 'filename' => 'cmp.controllerhome.tpl',
-            ),
-            'cmp.controllerindex.tpl' => array(
-                'category' => 'MyComponent',
-                'filename' => 'cmp.controllerindex.tpl',
-            ),
-            'cmp.controllerrequest.class.php' => array(
-                'category' => 'MyComponent',
-                'filename' => 'cmp.controllerrequest.class.php',
             ),
             'cmp.defaultjs.tpl' => array(
                 'category' => 'MyComponent',

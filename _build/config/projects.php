@@ -23,5 +23,13 @@
   'refreshcache' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/refreshcache.config.php',
   'loglogins' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/loglogins.config.php',
   'importusers' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/importusers.config.php',
+  'usermanagement' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/usermanagement.config.php',
+  'classextender' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/classextender.config.php',
+  'season' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/season.config.php',
+  'moveresources' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/moveresources.config.php',
+  'dirwalker' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/dirwalker.config.php',
+  'userphotos' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/userphotos.config.php',
+  'mandrillx' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/mandrillx.config.php',
+  'notify' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/notify.config.php',
 );
  return $projects;

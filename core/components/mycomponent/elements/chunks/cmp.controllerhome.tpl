@@ -12,11 +12,29 @@
  */
 /* @var $modx modX */
 
-$modx->regClientStartupScript($[[+packageNameLower]]->config['jsUrl'].'widgets/home.panel.js');
-$modx->regClientStartupScript($[[+packageNameLower]]->config['jsUrl'].'sections/home.js');
-$modx->regClientStartupScript($[[+packageNameLower]]->config['jsUrl'] . 'widgets/chunk.grid.js');
-$modx->regClientStartupScript($[[+packageNameLower]]->config['jsUrl'] . 'widgets/snippet.grid.js');
+class mc_packageNameHomeManagerController extends mc_packageNameManagerController {
+    /**
+     * The pagetitle to put in the <title> attribute.
+     *
+     * @return null|string
+     */
+    public function getPageTitle() {
+        return $this->modx->lexicon('mc_packageNameLower');
+    }
 
-$output = '<div id="[[+packageNameLower]]-panel-home-div"></div>';
+    /**
+     * Register all the needed javascript files.
+     */
 
-return $output;
+
+    public function loadCustomCssJs() {
+        $this->addJavascript($this->mc_packageNameLower->config['jsUrl'] . 'widgets/chunk.grid.js');
+        $this->addJavascript($this->mc_packageNameLower->config['jsUrl'] . 'widgets/snippet.grid.js');
+        $this->addJavascript($this->mc_packageNameLower->config['jsUrl'] . 'widgets/home.panel.js');
+        $this->addLastJavascript($this->mc_packageNameLower->config['jsUrl'] . 'sections/home.js');
+
+        $this->addCss($this->mc_packageNameLower->config['cssUrl'] . 'mgr.css');
+
+
+    }
+}

@@ -31,7 +31,7 @@
             'processorsPath' => $corePath.'processors/',
 
             'assetsUrl' => $assetsUrl,
-            'connectorUrl' => $assetsUrl.'connector.php',
+            'connector_url' => $assetsUrl.'connector.php',
             'cssUrl' => $assetsUrl.'css/',
             'jsUrl' => $assetsUrl.'js/',
         ),$config);
