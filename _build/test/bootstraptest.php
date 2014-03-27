@@ -562,7 +562,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
             $this->assertFileExists($fullPath);
             $content = file_get_contents($fullPath);
             $this->assertContains('License', $content);
-            $this->assertContains('extend', $content, $fullPath);
+            // $this->assertContains('extend', $content, $fullPath);
             $this->assertNotContains('[[+', $content, 'Unprocessed tag');
             $this->assertNotContains('mc_element', $content, 'Unprocessed tag', true);
         }
