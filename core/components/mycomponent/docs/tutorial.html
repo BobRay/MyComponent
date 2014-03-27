@@ -458,7 +458,7 @@ return include $MODX->getOption('mc.core_path') .
 
 <h3>CMP Support</h3>
 
-<p>One of the challenges of creating a full-featured Custom Manager Page (CMP) in MODX is getting all the necessary files in the right places. As of MyComponent 3.1.0, the Example project config file contains a cmpFiles section. The Example project contains a semi-working CMP, complete with a connector, controllers, processors, a request handler, and all the necessary modExt JS files. If you run Bootstrap, ExportObjects, and Build and install the Example extra, you'll see the Example CMP on the Components menu (after refreshing the Manager page). MyComponent uses the new class-based files (which I like a lot) for any CMPs.</p>
+<p>One of the challenges of creating a full-featured Custom Manager Page (CMP) in MODX is getting all the necessary files in the right places. As of MyComponent 3.1.0, the Example project config file contains a cmpFiles section. The Example project contains a semi-working CMP, complete with an action file, a connector, a controller, processors, and all the necessary modExt JS files. If you run Bootstrap, ExportObjects, and Build and install the Example extra, you'll see the Example CMP on the Components menu (after refreshing the Manager page). MyComponent uses the new class-based files (which I like a lot) for any CMPs.</p>
 <br />
 <div class="box">
 <p>In order for the Example CMP to run, you need to run LexiconHelper and then fill in the blank lexicon strings in the Example project's <code>default.inc.php</code> file *before* running <code>build.transport.php</code>.</p>

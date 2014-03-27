@@ -2,7 +2,8 @@ Changelog for MyComponent
 
 MyComponent 3.2.0
 -------------------
-Do Resources in ImportObjects
+Refactor Example CMP
+Process Resources in ImportObjects
 Refresh action map when Bootstrap creates menus
 System Setting value in config file overrides actual setting
 Fix bug with subPackage location
