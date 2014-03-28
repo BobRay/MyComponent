@@ -29,6 +29,7 @@
             'chunksPath' => $corePath.'elements/chunks/',
             'modelPath' => $corePath.'model/',
             'processorsPath' => $corePath.'processors/',
+            'templatesPath' => $corePath . 'templates/',
 
             'assetsUrl' => $assetsUrl,
             'connector_url' => $assetsUrl.'connector.php',
