@@ -26,6 +26,11 @@
 
 /* @var array $options */
 
+$oldStuff = array(
+   'cmp.controllerheader.tpl',
+   'cmp.controllerindex.tpl',
+   'cmp.controllerrequest.class.php'
+);
 if ($object->xpdo) {
     $modx =& $object->xpdo;
     switch ($options[xPDOTransport::PACKAGE_ACTION]) {
@@ -33,6 +38,17 @@ if ($object->xpdo) {
         case xPDOTransport::ACTION_UPGRADE:
             $path = MODX_CORE_PATH . 'components/mycomponent/_build/config/mycomponent.config.php';
             unlink($path);
+            foreach($oldStuff as $name) {
+                $c = $modx->getObject('modChunk', array('name' => $name));
+                if ($c) {
+                    $c->remove();
+                }
+                $path = MODX_CORE_PATH . 'components/mycomponent/elements/chunks/' . $name;
+                if (file_exists($path)) {
+                    unlink($path);
+                }
+            }
+
             break;
 
         case xPDOTransport::ACTION_UNINSTALL:
