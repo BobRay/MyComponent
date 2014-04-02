@@ -46,6 +46,8 @@ $projects = require $projectFile;
 
 if (!is_array($projects)) {
     die ('could not get projects array');
+} else {
+    natcasesort($projects);
 }
 
 // $tpl .= print_r($_POST, true);
