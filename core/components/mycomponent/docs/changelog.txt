@@ -11,6 +11,7 @@ Fix bug with user input file
 LexiconHelper checks processor directories
 Only package property sets if set in config file
 Fix bug with aborting when subPackages are up-to-date
+Sort project list for form
 
 
 MyComponent 3.1.2
