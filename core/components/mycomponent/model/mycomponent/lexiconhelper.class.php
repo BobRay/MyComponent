@@ -201,6 +201,11 @@ class LexiconHelper {
             }
         }
         $this->finalAudit();
+
+        $src = rtrim($this->targetLexDir, '/\\');
+        $dst = MODX_CORE_PATH . 'components/' . $this->packageNameLower . '/lexicon';
+        $this->helpers->copyDir($src, $dst);
+
         return;
     }
 
