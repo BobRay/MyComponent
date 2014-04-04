@@ -9,6 +9,7 @@ System Setting value in config file overrides actual setting
 Fix bug with subPackage location
 Fix bug with user input file
 LexiconHelper checks processor directories
+LexiconHelper copies lex files to real core/lexicon dir
 Only package property sets if set in config file
 Fix bug with aborting when subPackages are up-to-date
 Sort project list for form
