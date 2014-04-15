@@ -285,7 +285,7 @@ class LexiconHelper {
 
             } else {
                 $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '            ' .
-                    'mc_all_lex_strings_defined');
+                    $this->modx->lexicon('mc_all_lex_strings_defined'));
             }
 
             if ($rewriteCodeFiles) {
