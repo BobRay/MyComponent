@@ -209,8 +209,10 @@ abstract class AbstractLexiconCodeFile {
                 /* ToDo: Try this -- may prevent need to separate lex lines */
                 // $this->pattern = '#modx->lexicon\s * \(\s * (\'|\")(.+?)\1\)#';
 
-                $this->pattern = '#modx->lexicon\s*\(\s*(\'|\")(.*)\1\)#';
-                $this->subPattern = 'modx->lexicon';
+                /*$this->pattern = '#modx->lexicon\s*\(\s*(\'|\")(.*)\1\)#';
+                $this->subPattern = 'modx->lexicon';*/
+                $this->pattern = '#(?:modx|xpdo)->lexicon\s*\(\s*(\'|\")(.*)\1\)#';
+                $this->subPattern = '->lexicon';
                 break;
             case 'Js':
                 $this->pattern = '#_\(\s*(\'|\")(.*)\1\)#';
