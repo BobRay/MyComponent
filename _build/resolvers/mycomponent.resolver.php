@@ -26,6 +26,33 @@
 
 /* @var array $options */
 
+
+$configPath = $path = MODX_CORE_PATH . 'components/mycomponent/_build/config/';
+$currentProjectFile = $configPath . 'current.project.php';
+$projectsFile = $configPath . 'projects.php';
+
+$initialCurrentProjectFile = "<" . "?" . "p" . "h" . "p" . "
+/** MyComponent Current Project
+ *  Change this file whenever you work on another project
+ *
+ *  This should be set to the lowercase name of your package and
+ *  Should match the \$packageNameLower value in the Project Config
+ *  file (which must be named {packageNameLower}.config.php)
+ * */
+
+\$currentProject = 'example';
+";
+
+
+
+$initialProjectsFile = "<" . "?" . "php" . "
+\$projects = array(\n" .
+    "    'example' => '" . MODX_ASSETS_PATH . "/mycomponents/mycomponent/_build/config/example.config.php'," .
+"\n);\n\nreturn \$projects;
+";
+
+
+
 $oldStuff = array(
    'cmp.controllerheader.tpl',
    'cmp.controllerindex.tpl',
@@ -36,7 +63,26 @@ if ($object->xpdo) {
     switch ($options[xPDOTransport::PACKAGE_ACTION]) {
         case xPDOTransport::ACTION_INSTALL:
         case xPDOTransport::ACTION_UPGRADE:
-            $path = MODX_CORE_PATH . 'components/mycomponent/_build/config/mycomponent.config.php';
+            if (!file_exists($currentProjectFile)) {
+                $fp = fopen($currentProjectFile, 'w');
+                if ($fp) {
+                    fwrite($fp, $initialCurrentProjectFile);
+                    fclose($fp);
+                } else {
+                    $modx->log(xPDO::LOG_LEVEL_INFO, 'Could not write Current Project File');
+                }
+            }
+            if (!file_exists($projectsFile)) {
+                $fp = fopen($projectsFile, 'w');
+                if ($fp) {
+                    fwrite($fp, $initialProjectsFile);
+                    fclose($fp);
+                } else {
+                    $modx->log(xPDO::LOG_LEVEL_INFO, 'Could not write Projects File');
+                }
+            }
+
+        $path = MODX_CORE_PATH . 'components/mycomponent/_build/config/mycomponent.config.php';
             unlink($path);
             foreach($oldStuff as $name) {
                 $c = $modx->getObject('modChunk', array('name' => $name));
