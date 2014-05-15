@@ -1,5 +1,10 @@
 Changelog for MyComponent
 
+MyComponent 3.2.1
+-------------------
+Don't overwrite existing projects and currentProject file on upgrade
+
+
 MyComponent 3.2.0
 -------------------
 Refactor Example CMP
