@@ -487,5 +487,11 @@ link.</p>
 
 <p>If you install your extra in another version of MODX for testing, remember that changes you make there will never make it into your package unless you cut-and-paste them into the project files or (better) paste them into MODX and run ExportObjects.</p>
 
+<div class="box">
+<p><b>Important Tip</b> &mdash; If your package creates new System Settings (or User or Context Settings), be sure to add a prefix to their keys. That way you'll be sure they won't collide with any existing settings. &quot;Creating&quot; a System Setting called <code>core_path</code>, for example, can trash your site.</p>
+
+</div>
+
+
 <p>Whatever method you use, it's critical to have a version control system, such as Git, in place. I commit any changes just before running ExportObjects or LexiconHelper, and after running them, do a <code>git status</code> and sometimes <code>git diff</code> to make sure no unwanted changes have occurred.</p>
 <p>&nbsp;</p>
