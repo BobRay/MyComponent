@@ -1158,23 +1158,29 @@ class MyComponentProject {
                         . ' ' . $this->modx->lexicon('mc_already_exists'));
                 }
             }
-            $doCmp = $this->helpers->getProp('createCmpFiles');
+            $doCmp = $this->helpers->getProp('createCmpFiles', false);
             if ( $val && ($dir == 'css' || $dir == 'js')) {
                 /* Don't do JS files here unless CreateCmpFiles is false */
-                if ( ($dir != 'js') || (! $doCmp) ) {
+                $files = array();
+                if ($dir == 'js' && (! $doCmp)) {
+                    $files = $this->helpers->getProp('jsFiles', array());
+                } elseif ($dir == 'css') {
+                    $files = $this->helpers->getProp('cssFiles', array());
+                }
+
+                /* write JS and CSS files listed in config file */
+                foreach($files as $file) {
                     $path = $this->myPaths['targetAssets'] . $dir;
-                    $fileName = $this->packageNameLower . '.' . $dir;
-                    if (!file_exists($path . '/' . $fileName)) {
+                    if (!file_exists($path . '/' . $file)) {
                         $tpl = $this->helpers->getTpl($dir);
                         $tpl = $this->helpers->replaceTags($tpl);
-                        $this->helpers->writeFile($path, $fileName, $tpl);
+                        $this->helpers->writeFile($path, $file, $tpl);
                     } else {
-                        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' . $fileName . ' ' .
+                        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
                             $this->modx->lexicon('mc_already_exists'));
                     }
                 }
-
-            }
+           }
         }
     }
 
