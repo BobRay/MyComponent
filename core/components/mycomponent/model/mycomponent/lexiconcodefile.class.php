@@ -595,6 +595,11 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
                         continue;
                     }
 
+                    /* skip references to core lexicon files */
+                    if (strpos($matches[1], 'core:') !== false) {
+                        continue;
+                    }
+
                     if ($isMenuFile) {
                         if ($matches[1] == $this->helpers->props['packageNameLower']) {
                             /* Correct if just the package name */
