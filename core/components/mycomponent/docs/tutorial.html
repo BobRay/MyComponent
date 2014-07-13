@@ -135,6 +135,8 @@ directory, so be sure to modify that one for your project rather than the one un
 
     <p>As you might guess, this is the opposite of ExportObjects, though it's use is more limited. ImportObjects updates any elements or resources in MODX that are listed in the project config file based on the code files on the disk. If you make changes to a snippet's code file, for example, you can use ImportObjects to update the snippet. It's important to remember that ImportObjects processes *only* the elements listed in the <code>'process'</code> member of the project config file *and* it only processes elements that exist in the <code>'elements'</code> member. As of version 3.2.0, ImportObjects also processes any resources listed in the <code>'exportResources'</code> member of the config file.</p>
 
+<p>Note that ImportObjects will not update element descriptions when you change them in the transport.<i>elements</i>.php file. To change element descriptions, you need to modify them in MODX and run ExportObjects. </p>
+
     <p>One common use of ImportObjects is to update elements in MODX after LexiconHelper has modified the language strings in the files.</p>
 
     <h3>LexiconHelper</h3>
