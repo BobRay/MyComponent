@@ -31,13 +31,13 @@
   $packageName = 'mycomponent';
 */
 
-$base = 'c:/xampp/htdocs/addons/assets/mycomponents/sitecheck/';
-$propertiesFile = '_build/data/properties/properties.sitecheck.snippet.php';
+$base = 'c:/xampp/htdocs/addons/assets/mycomponents/newspublisher/';
+$propertiesFile = '_build/data/properties/properties.npeditthisbutton.snippet.php';
 $propertiesFile = $base . $propertiesFile;
-$languageFile = 'core/components/sitecheck/lexicon/en/properties.inc.php';
+$languageFile = 'core/components/newspublisher/lexicon/en/button.inc.php';
 $languageFile = $base . $languageFile;
 $rewriteCodeFile = false;
-$codeFile = $base . 'core/components/sitecheck/elements/snippets/sitecheck.snippet.php';
+$codeFile = $base . 'core/components/newspublisher/elements/snippets/npeditthisbutton.snippet.php';
 
 
 $propertiesInjected = false; /* This will be set automatically if properties are injected */
@@ -114,7 +114,7 @@ function parseDesc($text, &$fields) {
     /* ~~ and prior text is now removed */
     /* get default and remove it from description */
     if (stristr($text,'default')) {
-        $pattern = '/(.+)[Dd]efault[:\s](.+)$/';
+        $pattern = '/(.+)[^_][Dd]efault[:\s](.+)$/';
         preg_match($pattern, $text, $matches);
         $fields['desc'] = $matches[1];
 
@@ -142,6 +142,7 @@ foreach($properties as $property) {
         'description' => $property['desc'],
         'default' => $property['value'],
     );
+    $isYesNo = $property['type'] == 'combo-boolean'? true : false;
     if (isset($_lang[$replaceFields['description']])) {
         $replaceFields['description'] = $_lang[$replaceFields['description']];
     }
@@ -151,7 +152,22 @@ foreach($properties as $property) {
     }
     if (isset($fields['default']) && empty($replaceFields['default'])) {
             $replaceFields['default'] = $fields['default'];
-        }
+    }
+
+    if ($isYesNo) {
+        $replaceFields['default'] = $replaceFields['default'] == '1' ||
+            $replaceFields['default'] == 'yes' ||
+            $replaceFields['default'] == 'YES'? '1' : '0';
+    }
+
+    /* Wrap in <fixedpre> if more than 5 tags in default value */
+    $needle = '<>';
+    $haystack = $replaceFields['default'];
+    $count = strlen($haystack) - strlen(str_replace(str_split($needle), '', $haystack));
+    if ($count > 10) {
+        $replaceFields['default'] = '<fixedpre>' . $haystack . '</fixedpre>';
+    }
+
     $row = str_replace($findFields,$replaceFields,$rowTpl);
 
     $rows .= $row;
