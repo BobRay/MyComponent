@@ -190,6 +190,7 @@ class CheckProperties {
 
             //$this->output .= "\n ********************************* \n" . $this->scriptCode;
             $this->getProperties();
+            $this->codeMatches = array_unique($this->codeMatches);
             $this->output .= "\n" . count($this->codeMatches) . ' properties in code';
             $this->checkProperties($element, $type);
         }
@@ -218,12 +219,13 @@ class CheckProperties {
         $typeName = strtolower(substr($type, 3));
         $dir = $this->targetCore . 'elements/' . $typeName . 's/';
         if (empty($fileName)) {
+            $fileName = $element . '.' . $typeName . '.php';
             $file = $dir . $element . '.' . $typeName . '.php';
         } else {
             $file = $dir . $fileName;
         }
         $this->output .= "\n\n*********************************************";
-        $this->output .= "\n" . 'Processing Element: ' . $element . " -- Type: " . $type;
+        $this->output .= "\n" . 'Processing Element: ' . $fileName . " -- Type: " . $type;
         $this->scriptCode = file_get_contents($file);
         $this->included[] = $element;
         $this->getIncludes($file);
@@ -369,8 +371,10 @@ class CheckProperties {
         }
         if ($hasCodeProperties) {
             foreach($this->codeMatches as $key => $value) {
-                if (! in_array($value, $missing)) {
-                    $missing[] = $value;
+                if (! in_array($value, array_keys($props))) {
+                    if (! in_array($value, $missing)) {
+                        $missing[] = $value;
+                    }
                 }
             }
             if (!empty($missing)) {
@@ -404,7 +408,7 @@ class CheckProperties {
         $prefix = $this->modx->getOption('prefix', $this->props, '');
         $packageNameLower = $this->helpers->getProp('packageNameLower');
         $propertyTpl = "
-        array(
+        '[[+name]]' => array(
             'name' => '[[+name]]',
             'desc' => '{$prefix}[[+name]]_desc',
             'type' => 'textfield',
