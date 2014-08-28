@@ -1634,6 +1634,9 @@ class MyComponentProject {
                 $this->modx->lexicon('mc_creating_class_files'));
             $baseDir = $this->myPaths['targetCore'] . 'model';
             foreach ($classes as $className => $data) {
+                if ($className == 'methods') {
+                    continue;
+                }
                 $data = explode(':', $data);
                 if (!empty($data[1])) {
                     $dir = $baseDir . '/' . $data[0];
@@ -1654,6 +1657,10 @@ class MyComponentProject {
                     $tpl = str_replace('MyClass', $className, $tpl);
                     $tpl = str_replace('[[+className]]', $className, $tpl);
                     $tpl = $this->helpers->replaceTags($tpl);
+                    $methods = $this->getMethods($className);
+                    if ($methods !== false) {
+                        $tpl = str_replace('/* [[+code]] */', $methods, $tpl);
+                    }
                     $this->helpers->writeFile($dir, $fileName, $tpl);
                 } else {
                     $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' . $fileName . ' ' .
@@ -1664,6 +1671,20 @@ class MyComponentProject {
         }
     }
 
+    public function getMethods($className) {
+        if (! isset($this->props['classes']['methods'][$className])) {
+            return false;
+        }
+        $methodString = '';
+        $methods = $this->props['classes']['methods'][$className];
+        foreach ($methods as $method) {
+            if (strpos($method, 'function') === false) {
+                $method= "public function " . $method;
+            }
+            $methodString .= "\n    " . $method  . " {\n\n    }\n";
+        }
+        return $methodString;
+    }
     /* *****************************************************************************
        Export Objects
     ***************************************************************************** */

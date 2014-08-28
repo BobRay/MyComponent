@@ -11,7 +11,7 @@
  */
 
 
- class MyClass {
+class MyClass {
     /** @var $modx modX */
     public $modx;
     /** @var $props array */
@@ -21,5 +21,7 @@
         $this->modx =& $modx;
         $this->props =& $config;
     }
+
+    /* [[+code]] */
 
 }

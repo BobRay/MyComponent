@@ -496,10 +496,23 @@ $components = array(
      *
      *  Class file will be created as:
      * yourcomponent/core/components/yourcomponent/model/[directory/]{filename}.class.php
+     * Note: If a CMP is being created, classes containing the
+     * project name will be ignored here.
      *
      * Set to array() if there are no classes. */
     'classes' => array(
-        'Example' => 'example:example',
+        'AnotherClass' => 'example:anotherclass',
+
+        /* (optional) - Specify methods for each class.
+           if 'function' is missing, 'public function ' will
+           be prepended. Curly braces will be added   */
+        'methods' => array(
+            /* Add one array here for each class with methods */
+            'AnotherClass' => array(
+                'public function method1()',
+                'method2($arg1, $arg2 = false)',
+            ),
+        ),
     ),
 
     /* ************************************
