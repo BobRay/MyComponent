@@ -112,7 +112,10 @@ class ResourceAdapter extends ObjectAdapter {
         $resolverFields['pagetitle'] = $fields['pagetitle'];
         $resolverFields['parent'] = isset($fields['parent'])
             ? $fields['parent']
-            : 'default';
+            : '0';
+        if ($resolverFields['parent'] == 'default') {
+            $resolverFields['parent'] = '0';
+        }
         $resolverFields['template'] = isset($fields['template'])
             ? $fields['template']
             : 'default';
