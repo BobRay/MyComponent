@@ -1758,7 +1758,6 @@ class MyComponentProject {
      * Create and overwrites MODX Objects based on the elements
      * in the 'elements' member of the Project config
      *
-     * Will not process static elements
      *
      * @param array $toProcess - array of object to import
      * @param string $directory - directory to place objects in
@@ -1779,31 +1778,29 @@ class MyComponentProject {
                 . ' ' . $elementType);
             $elements = $this->modx->getOption($elementType,$this->props['elements'], array());
             foreach ($elements as $element => $fields) {
-                if (isset($fields['static']) && !empty($fields['static'])) {
-                    $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
-                            $this->modx->lexicon('mc_skipping_static_element')
-                    . ': ' . $element);
-                    continue;
-                }
                 if (isset($fields['filename'])) {
                     $fileName = $fields['filename'];
                 } else {
-                    $fileName = $this->helpers->getFileName($element, $class);
+                    $fileName =
+                        $this->helpers->getFileName($element, $class);
                 }
-                $dir = $directory . $elementType . '/';
-                if (file_exists($dir . $fileName)) {
-                    $alias = $this->helpers->getNameAlias($class);
-                    $object = $this->modx->getObject($class, array($alias => $element));
+                $alias = $this->helpers->getNameAlias($class);
+                $object = $this->modx->getObject($class,
+                    array($alias => $element));
+                $static = $object->get('static');
+                if (!empty($static)) {
+                    $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
+                        $this->modx->lexicon('mc_processing_static_element')
+                        . $element);
+                    $path = MODX_BASE_PATH . $object->get('static_file');
+
+                } else {
+                    $path = $directory . $elementType . '/' . $fileName;
+                }
+                // $dir = $directory . $elementType . '/';
+                if (file_exists($path)) {
                     if ($object) {
-                        /* check again in case config file is wrong */
-                        $static = $object->get('static');
-                        if (!empty($static)) {
-                            $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
-                                $this->modx->lexicon('mc_skipping_static_element')
-                                    . $element);
-                            continue;
-                        }
-                        $content = file_get_contents($dir . $fileName);
+                        $content = file_get_contents($path);
                         if (!empty($content)) {
                             if ($dryRun) {
                                 $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
