@@ -661,14 +661,15 @@ abstract class ObjectAdapter {
             // $fields['properties'] ='';
         }
         /* ************  */
+
         unset(
             $fields['snippet'],
             $fields['content'],
             $fields['plugincode'],
             $fields['editor_type'],
             $fields['category'],
-            $fields['static'],
-            $fields['static_file'],
+            //$fields['static'],
+            //$fields['static_file'],
             $fields['moduleguid'],
             $fields['locked'],
             $fields['source'],
@@ -695,7 +696,19 @@ abstract class ObjectAdapter {
         if ($type == 'modResource') {
             $tpl .= "\$resources[" . $i . "]->setContent(file_get_contents(\$sources['data']." . "'resources/" . $fileName . "'));\n\n";
         } elseif ($type == 'modChunk' || $type == 'modSnippet' || $type == 'modPlugin' || $type == 'modTemplate') {
-            $tpl .= '$' . $variableName . '[' . $i . "]->setContent(file_get_contents(\$sources['source_core'] . '/elements/" . strtolower($variableName) . '/' . $fileName . "'));\n\n" ;
+            if (isset($fields['static'])
+                && (!empty($fields['static']))
+                && isset($fields['static_file'])
+                && (!empty($fields['static_file']))
+            ) {
+                $source = "MODX_BASE_PATH . " . "'" .
+                    $fields['static_file'] . "'";
+            } else {
+                $source = "\$sources['source_core'] . '/elements/" .
+                    strtolower($variableName) . '/' . $fileName . "'";
+            }
+            unset($fields['static'], $fields['static_file']);
+            $tpl .= '$' . $variableName . '[' . $i . "]->setContent(file_get_contents(" . $source . "));\n\n" ;
         }
 
         /* handle properties */
