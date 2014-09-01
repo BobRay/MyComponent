@@ -10,6 +10,7 @@
   'defaultresourcegroup' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/defaultresourcegroup.config.php',
   'defaultusergroup' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/defaultusergroup.config.php',
   'dirwalker' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/dirwalker.config.php',
+  'dottest' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/dottest.config.php',
   'emptyalias' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/emptyalias.config.php',
   'example' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/example.config.php',
   'example2' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/example2.config.php',
@@ -36,6 +37,6 @@
   'unittest' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/unittest.config.php',
   'usermanagement' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/usermanagement.config.php',
   'userphotos' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/userphotos.config.php',
-  'dottest' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/dottest.config.php',
+  'gorevo' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/gorevo.config.php',
 );
  return $projects;
