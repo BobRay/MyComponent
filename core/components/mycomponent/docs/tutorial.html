@@ -10,10 +10,12 @@ of the MODX Package Manager code.
 </div>
 <br />
 <div class = "box">
-<h3>Version 3.1.0</h3>
+<h3>Version 3.1.0-3.2.2</h3>
 <p>Nothing has changed from versions 3.0.x that should affect existing projects. A number of bugs have been fixed and there are some fun new features.</p>
 
 <p>Most notable, Version 3.0 has support for Custom Manager Pages (CMPs) and subpackages are now installed when your package is installed (see below). In addition, LexiconHelper has been completely refactored and vastly improved. It no longer uses the project config file. Instead, it walks through all of the project directories and analyzes all files that might contain lexicon strings. It's also smarter about detecting which lexicon file to use for which files and about handling properties and settings files. The handling of quotation marks in object names, properties, and elsewhere is also much more reliable.</p>
+
+<p>Version 3.2.2 is now fully compatible with MODX 2.3.x. The handling of menu items has been updated. (If you had trouble with Menu items in version 3.2.1, set the namespace of the Menu item to the namespace of your extra &mdash; 3.2.2 will do this automatically.) CMPs are now fully class-based, simpler, and more secure. Version 3.2.2 also has a number of bug fixes as well giving you the ability to specify methods for class files and list specific CSS and JS files you want to create (see the new example.config.php file). It also features better handling of static elements, and many other improvements.</p>
 </div>
 <br />
 <div class="box">
@@ -223,7 +225,9 @@ $output .= $modx->lexicon('mc_file_nf~~File Not Found') . ': ' . $fileName;
 <h3>CheckProperties</h3>
         <p>This utility looks for cases in code where you use a default property. It checks any usages against the properties file(s) in the project's <code>_build</code> directory. CheckProperties uses the <code>'scriptPropertiesAliases'</code> member near the end of the project config file to tell it how to find usages. It already knows about most common aliases for the <code>$scriptProperties</code> array, but feel free to add ones you use if they're not there already.</p>
 
-<p>If none of your resources or elements have default properties, you can skip using this utility.</p>
+<p>If none of your resources or elements use properties, you can skip using this utility.</p>
+
+<p>Note that your project may have properties that you don't want included in the default properties. If so, don't add those to the build files.</p>
 
         <h3>Build</h3>
 <p>If your package is going to be distributed to the public, the final step is to submit your
@@ -231,10 +235,17 @@ Transport Package .zip file at <a
         href="http://modx.com/extras">http://modx.com/extras</a>
 </p>
 
-        <p>Of course, you'll need a transport.zip file first. That's the job of the Build utility. Build runs the <code>build.transport.php</code> file which actually creates the .zip file. The
-        <code>build.transport.php</code> file is universal (or almost universal). It examines the <code>_build</code> directory for your project and creates a package based on the files it finds. At present, it will not handle users or permission-related objects, but will do just about anything else (see the <code>example.config.php</code> file for examples of what it *will* handle).</p>
+        <p>Of course, you'll need a transport.zip file first. That's the job of the Build utility. Build runs the <code>build.transport.php</code> file which actually creates the .zip file. The <code>build.transport.php</code> file is universal (or almost universal). It examines the <code>_build</code> directory for your project and creates a package based on the files it finds. At present, it will not handle users or permission-related objects, but will do just about anything else (see the <code>example.config.php</code> file for examples of what it *will* handle).</p>
 
 <p>The build script will also create or update any minimized JS file in your project if you have that option set in the project config file, so you can count on them always being up to date in the package. As of MyComponent 3.1.0, you have the option of using either JsMin or JsMinPlus to minimize your files. JsMinPlus uses a source-level JS parser so it is a little slower, but more reliable. You can also choose to create a js-min-all file which will combine all the JS files in your project into a single minimized JS file.</p>
+
+<h3>CreatePropertiesTable, CreateSettingsTable</h3>
+
+<p>CreatePropertiesTable finds all properties used in the code of a snippet or plugin and their included classes and creates a table to paste into your docs. CreateSettings does the same thing with settings. Because they work on a variety of files, you'll need to edit the beginning of the code to tell it which files you want processed.</p>
+
+<h3>Delete Objects and Files</h3>
+
+<p>These are rarely used. Their only purpose is to completely remove project objects and/or files so that you can start over from scratch. I use them often in developing MyComponent, but they are almost never necessary when building another project, except at the very beginning when you find that your project config file is not correct and you want to start over.</p>
 
 <h3>Building and Installing the Example Project</h3>
 
@@ -264,7 +275,7 @@ Look at the Example files in the Manager. You should see all the Resources and E
 
     <li>You can run CheckProperties if you like, but it won't show much since the Example project doesn't have any (unless you created some).
 
-    <li>In the Example UI, select &quot;Build&quot; and click on the &quot;Submit&quot; button. This will build the Example transport file in the <code>core/packages</code> directory. This is the file you submit to MODX when you want to distribute your package.
+    <li>In the MyComponent UI with the Example project selected, select &quot;Build&quot; and click on the &quot;Submit&quot; button. This will build the Example transport file in the <code>core/packages</code> directory. This is the file you submit to MODX when you want to distribute your package.
 
     <li>Go to Package Manager, click on the down arrow at the upper left of the grid and select "Search Locally for Packages." This will place the Example transport package in the grid. Reload the page (this is only necessary with certain browsers to prevent seeing a blank console in the next step). Click on the &quot;Install&quot; button for the Example package. Clear the site cache and reload the Manager Page.
 
@@ -290,8 +301,8 @@ Look at the Example files in the Manager. You should see all the Resources and E
 
     <p>Each chunk in the MyComponent category is duplicated as a file in the <code>chunks</code> directory mentioned above. If you prefer to work with the files, simply delete or rename the chunks in the MODX Manager and MyComponent will use the files in the <code>chunks</code> directory.</p>
 
-    <p>The first chunk you'll want to modify is the <code>example.config.php</code> chunk. Duplicate it and call the chunk <code>myexample.config.php</code> (or remove the chunk and duplicate the <code>example.config.php</code> file in the
-    <code>core/components/mycomponent/elements/chunks</code> directory).</p>
+    <p>The first chunk you'll want to modify is the <code>example.config.php</code> chunk. It's used as a template for all new projects. Duplicate it and call the chunk <code>myexample.config.php</code> (or remove the chunk and rename the <code>example.config.php</code> file in the
+    <code>core/components/mycomponent/elements/chunks</code> directory to <code>myexample.config.php)</code>.</p>
 
 <p>There are two important things to remember when editing the file. First, the file is mainly a large PHP array and it must be valid PHP in order for MyComponent to function. Use a good code editor and edit carefully. Second, do *not* change the word Example anywhere &mdash; it's necessary for the file to work properly as a template for new projects.</p>
 
@@ -308,11 +319,10 @@ Look at the Example files in the Manager. You should see all the Resources and E
     <h3>New Project</h3>
     <p>If your component is new, the process is very simple. In the UI, type the name of your new project in the form field next to the &quot;New Project&quot; button, then click on the button.<p>
 
-    <p>What happens when you click on the &quot;New Project&quot; button?  MyComponent creates a copy of the <code>example.config.php</code> Tpl chunk (or, more likely, the <code>
-    myexample.config.php</code> Tpl chunk) and places it in the MyComponent <code>
+    <p>What happens when you click on the &quot;New Project&quot; button?  MyComponent creates a copy of the <code>example.config.php</code> Tpl chunk (or, more likely, the <code>myexample.config.php</code> Tpl chunk) and places it in the MyComponent <code>
     _build/config</code> directory. It renames the file after your new project and replaces all instances of the word &quot;example&quot; with the case-appropriate name of your project.</p>
 
-    <p>Once that has occurred, you can edit the new file (<code>projectName.config.php</code>) to meet the needs of your project and then run Bootstrap. Comments in the project config file will (hopefully) tell you all you need to know about the various members. You can generally delete any object types that you don't need in your project. Note that all config files are a single large PHP array. They must contain valid PHP code in order for MyComponent to run, so using a good code editor such as PhpStorm can be really helpful.</p>
+    <p>Once that has occurred, you can edit the new file (<code><i>projectName</i>.config.php</code>) to meet the needs of your project and then run Bootstrap. Comments in the project config file will (hopefully) tell you all you need to know about the various members. You can generally delete any object types that you don't need in your project. Note that all config files are a single large PHP array. They must contain valid PHP code in order for MyComponent to run, so using a good code editor like PhpStorm can be really helpful.</p>
 
 <br />
 
@@ -334,7 +344,7 @@ Look at the Example files in the Manager. You should see all the Resources and E
 
 <p>The safest way to make the change is to locate and put the cursor on the opening parenthesis of the array. Hopefully, you have a code editor that will highlight the matching closing parenthesis (if not, by all means get one). Just highlight and delete everything between the two parentheses, leaving the parentheses themselves and the following comma.</p>
 
-<p>The second method is to remove the member altogether, so the entire section below would be removed:</p>
+<p>The second method is to simply remove the member altogether, so the entire section below would be removed:</p>
 
 <pre><fixedpre>
 $snippets => (
@@ -344,9 +354,9 @@ $snippets => (
 ),
 </fixedpre></pre>
 
-<p>The third method is to comment out the stuff you don't want using <code>/* ... */</code> comment tags. This is handy if you'll want to add the objects in later, but you have to be careful. You can't have comments inside of comments, so you'll have to either delete any comments in the section or change them to <code>//</code> comments.</p>
+<p>The third method is to comment out the stuff you don't want using <code>/* ... */</code> comment tags. This is handy if you'll want to add the objects in later, but you have to be careful. You can't have comments inside of comments in PHP, so you'll have to either delete any comments in the section or change them to <code>//</code> comments.</p>
 
-<p>I tend to use a combination of these methods depending on my future plans for the project.       </p>
+<p>I tend to use a combination of these methods depending on my future plans for the project.</p>
 
     <p>Once you're finished editing the project config file, you can run Bootstrap and all your Resources, Elements, and other objects and all necessary files for the project will be created for you. You can work on them in the Manager until you get things working the way you want. Once the component is finished, you can run ExportObjects, LexiconHelper, and Build and your Extra will be ready to release.</p>
 
@@ -463,7 +473,7 @@ return include $MODX->getOption('mc.core_path') .
 <p>One of the challenges of creating a full-featured Custom Manager Page (CMP) in MODX is getting all the necessary files in the right places. As of MyComponent 3.1.0, the Example project config file contains a cmpFiles section. The Example project contains a semi-working CMP, complete with an action file, a connector, a controller, processors, and all the necessary modExt JS files. If you run Bootstrap, ExportObjects, and Build and install the Example extra, you'll see the Example CMP on the Components menu (after refreshing the Manager page). MyComponent uses the new class-based files (which I like a lot) for any CMPs.</p>
 <br />
 <div class="box">
-<p>In order for the Example CMP to run, you need to run LexiconHelper and then fill in the blank lexicon strings in the Example project's <code>default.inc.php</code> file *before* running <code>build.transport.php</code>.</p>
+<p>In order for the Example CMP to display proper messages and prompts, you need to run LexiconHelper and then fill in the blank lexicon strings in the Example project's <code>default.inc.php</code> file *before* running <code>build.transport.php</code>.</p>
 </div>
 
 <p>The Example CMP is a grid-based utility (kind of like Batcher) that lets you perform bulk actions on elements. The grid will be updated, but the processors are disabled (with a <code>return</code> statement at the beginning), so playing with it it won't actually change anything at your site.</p>
@@ -485,7 +495,7 @@ link.</p>
 
 <p>There are several ways to avoid this kind of trouble. One is to always add new objects to the Project Config File and run Bootstrap. Then, *always* make modifications that will affect the build files in MODX rather than the build files. That way ExportObjects will always reflect your changes (this is generally what I do). The second way is to stop using MyComponent at some point in the project and rely solely on the files. You can still run LexiconHelper as needed, but stop running ImportObjects and ExportObjects. Note that this warning doesn't apply to the code files for elements, which can be imported with ImportObjects before running ExportObjects, but the warning below does.</p>
 
-<p>Another common pitfall is to make changes to the code files for elements and then run ExportObjects, which will overwrite your changes with the content of the elements in MODX. Running ImportObject first will prevent that, but *only* if the elements are listed in the 'process' member *and* in the <code>$elements</code> array. Whenever you create a new object, be sure to add it to the project config before running anything.</p>
+<p>Another common pitfall is to make changes to the code files for elements and then run ExportObjects, which will overwrite your changes with the content of the elements in MODX. Running ImportObjects first will prevent that, but *only* if the elements are listed in the 'process' member *and* in the <code>$elements</code> array. Whenever you create a new object, be sure to add it to the project config before running anything.</p>
 
 <p>If you install your extra in another version of MODX for testing, remember that changes you make there will never make it into your package unless you cut-and-paste them into the project files or (better) paste them into MODX and run ExportObjects.</p>
 
@@ -495,5 +505,5 @@ link.</p>
 </div>
 
 
-<p>Whatever method you use, it's critical to have a version control system, such as Git, in place. I commit any changes just before running ExportObjects or LexiconHelper, and after running them, do a <code>git status</code> and sometimes <code>git diff</code> to make sure no unwanted changes have occurred.</p>
+<p>Whatever method you use, it really helps to have a version control system, such as Git, in place. I commit any changes just before running ExportObjects or LexiconHelper, and after running them, do a <code>git status</code> and sometimes <code>git diff</code> before committing the changes to make sure no unwanted changes have occurred.</p>
 <p>&nbsp;</p>
