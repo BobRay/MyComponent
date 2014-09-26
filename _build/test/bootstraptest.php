@@ -323,8 +323,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
         $this->mc->createAssetsDirs();
         $this->assertFileExists($this->mc->myPaths['targetAssets'] . 'css/' . $this->mc->packageNameLower . '.css');
         $this->assertnotEmpty(file_get_contents($this->mc->myPaths['targetAssets'] . 'css/' . $this->mc->packageNameLower . '.css'));
-        $this->assertFileExists($this->mc->myPaths['targetAssets'] . 'js/' . $this->mc->packageNameLower . '.js');
-        $this->assertnotEmpty(file_get_contents($this->mc->myPaths['targetAssets'] . 'js/' . $this->mc->packageNameLower . '.js'));
+        $this->assertTrue(is_dir($this->mc->myPaths['targetAssets'] . 'js/'));
     }
     public function testCreateResolvers() {
         $this->mc->createCategories();
@@ -418,10 +417,13 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
         $this->mc->createResources();
 
         $ResourceTemplates = $this->modx->getOption('resourceResolver', ObjectAdapter::$myObjects, '');
-        $this->assertNotEmpty($ResourceTemplates);
+        $this->assertNotEmpty($ResourceTemplates, "Empty ResourceTemplates");
         foreach ($ResourceTemplates as $k => $fields) {
             $this->assertNotEmpty($fields['pagetitle']);
-            $this->assertNotEmpty($fields['parent']);
+            if ($fields['pagetitle'] != 'utResource1') {
+                $this->assertNotEmpty($fields['parent'], "Empty parent: " . $fields['pagetitle']);
+            }
+
             $this->assertNotEmpty($fields['template']);
             $resource = $this->modx->getObject('modResource', array('pagetitle' => $fields['pagetitle']));
             $this->assertInstanceOf('modResource', $resource);
@@ -439,9 +441,12 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase
                 $fields['parent'] = 0;
             } else {
                 $parent = $this->modx->getObject('modResource', array('pagetitle' => $fields['parent']));
-                $this->assertInstanceOf('modResource', $parent);
-                $fields['parent'] = $parent->get('id');
-                $this->assertEquals($fields['parent'], $resource->get('parent'));
+                if ($fields['pagetitle'] != 'utResource1') {
+                    $this->assertInstanceOf('modResource', $parent);
+
+                    $fields['parent'] = $parent->get('id');
+                    $this->assertEquals($fields['parent'], $resource->get('parent'));
+                }
             }
             if (isset($fields['tvValues'])) {
                 foreach($fields['tvValues'] as $tv => $value){

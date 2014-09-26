@@ -312,7 +312,10 @@ $components = array(
     $jsFiles = array(
         'unittest.js',
     ),
-
+    /* Desired CSS files */
+    'cssFiles' => array(
+        'unittest.css',
+    ),
 
     /* ********************************************* */
     /* Define basic directories and files to be created in project*/
