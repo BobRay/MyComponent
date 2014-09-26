@@ -1,5 +1,21 @@
 Changelog for MyComponent
 
+MyComponent 3.2.2
+-------------------
+Allow specification of methods in class files
+Improve handling of static elements correctly on import and export
+Mods for MODX 2.3 menus
+Fix bug with default JS file
+Improve output in CheckProperties
+Skip references to core lex files in LexiconHelper
+Allow listing of css and js files in config
+Delete created contexts on uninstall
+Synchronize build files
+Improve output in Build
+Fix bug with named CSS files
+Improve Docs
+Update unit tests
+
 MyComponent 3.2.1
 -------------------
 Don't overwrite existing projects and currentProject file on upgrade
