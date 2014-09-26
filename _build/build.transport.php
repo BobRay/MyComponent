@@ -308,7 +308,7 @@ $sources = array(
     'data' => $root . '_build/data/',
     'docs' => $root . 'core/components/' . PKG_NAME_LOWER . '/docs/',
     'install_options' => $root . '_build/install.options/',
-    'packages' => $root . 'core/packages',  /* no trailing slash */
+    'subpackages' => $root . '_build/subpackages/',
 
 );
 unset($root);
@@ -332,11 +332,11 @@ $hasContexts = file_exists($sources['data'] . 'transport.contexts.php');
 $hasResources = file_exists($sources['data'] . 'transport.resources.php');
 $hasValidators = is_dir($sources['build'] . 'validators'); /* Run a validators before installing anything */
 $hasResolvers = is_dir($sources['build'] . 'resolvers');
-$hasSetupOptions = is_dir($sources['data'] . 'install.options'); /* HTML/PHP script to interact with user */
+$hasSetupOptions = is_dir($sources['install_options']); /* HTML/PHP script to interact with user */
 $hasMenu = file_exists($sources['data'] . 'transport.menus.php'); /* Add items to the MODx Top Menu */
 $hasSettings = file_exists($sources['data'] . 'transport.settings.php'); /* Add new MODx System Settings */
 $hasContextSettings = file_exists($sources['data'] . 'transport.contextsettings.php');
-$hasSubPackages = is_dir($sources['packages']);
+$hasSubPackages = is_dir($sources['subpackages']);
 $minifyJS = $modx->getOption('minifyJS', $props, false);
 
 $helper->sendLog(modX::LOG_LEVEL_INFO, "\n" . $modx->lexicon('mc_project')
@@ -819,22 +819,6 @@ foreach ($categories as $k => $categoryName) {
         }
     }
 
-    /* Add subpackages */
-    /* The transport.zip files will be copied to core/packages
-     * but will have to be installed manually with "Add New Package and
-     *  "Search Locally for Packages" in Package Manager
-     */
-
-    if ($hasSubPackages && $i == 1) {
-        $helper->sendLog(modX::LOG_LEVEL_INFO,
-            $modx->lexicon('mc_packaging_subpackages')
-                . '.');
-        $vehicle->resolve('file', array(
-            'source' => $sources['packages'],
-            'target' => "return MODX_CORE_PATH;",
-        ));
-    }
-
     /* Put the category vehicle (with all the stuff we added to the
      * category) into the package
      */
@@ -854,20 +838,20 @@ if ($hasMenu) {
                     . '.');
         } else {
             $vehicle = $builder->createVehicle($menu, array(
-            xPDOTransport::PRESERVE_KEYS => true,
-            xPDOTransport::UPDATE_OBJECT => true,
-            xPDOTransport::UNIQUE_KEY => 'text',
-            xPDOTransport::RELATED_OBJECTS => true,
-            xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
-                'Action' => array (
-                    xPDOTransport::PRESERVE_KEYS => false,
-                    xPDOTransport::UPDATE_OBJECT => true,
-                    xPDOTransport::UNIQUE_KEY => array(
-                       'namespace',
-                       'controller'
-                       ),
-                    ),
-                ),
+               xPDOTransport::PRESERVE_KEYS => true,
+               xPDOTransport::UPDATE_OBJECT => true,
+               xPDOTransport::UNIQUE_KEY => 'text',
+               xPDOTransport::RELATED_OBJECTS => true,
+               xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array(
+                   'Action' => array(
+                       xPDOTransport::PRESERVE_KEYS => false,
+                       xPDOTransport::UPDATE_OBJECT => true,
+                       xPDOTransport::UNIQUE_KEY => array(
+                           'namespace',
+                           'controller'
+                        ),
+                   ),
+               ),
             ));
             $builder->putVehicle($vehicle);
             unset($vehicle, $menu);
@@ -878,7 +862,7 @@ if ($hasMenu) {
                 $modx->lexicon('mc_menu_items')
                 . '.');
     }
-    $helper->sendLog(modX::LOG_LEVEL_INFO,
+    $helper->sendLog(modX::LOG_LEVEL_INFO, '    ' .
         $modx->lexicon('mc_packaged')
             . ' ' . count($menus) . ' ' .
             $modx->lexicon('mc_menu_items')
@@ -902,6 +886,15 @@ if ($hasSetupOptions && !empty($props['install.options'])) {
     $attr['setup-options'] = array();
 }
 $builder->setPackageAttributes($attr);
+
+/* Add subpackages */
+
+if ($hasSubPackages) {
+    $helper->sendLog(modX::LOG_LEVEL_INFO,
+        $modx->lexicon('mc_packaging_subpackages'));
+    include $sources['data'] . 'transport.subpackages.php';
+}
+
 
 /* Last step - zip up the package */
 $builder->pack();
