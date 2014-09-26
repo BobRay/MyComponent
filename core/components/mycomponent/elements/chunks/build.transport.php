@@ -367,7 +367,7 @@ if ($hasContexts) {
         $attributes = array(
             xPDOTransport::UNIQUE_KEY => 'key',
             xPDOTransport::PRESERVE_KEYS => true,
-            xPDOTransport::UPDATE_OBJECT => false,
+            xPDOTransport::UPDATE_OBJECT => true,
         );
         foreach ($contexts as $context) {
             $vehicle = $builder->createVehicle($context, $attributes);
