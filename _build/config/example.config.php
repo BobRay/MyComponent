@@ -417,7 +417,7 @@ $components = array(
     ),
 
     /* Desired CSS files */
-    'cssfiles' => array(
+    'cssFiles' => array(
         'example.css',
     ),
 
