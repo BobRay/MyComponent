@@ -3,12 +3,12 @@ Changelog for MyComponent
 MyComponent 3.2.2
 -------------------
 Allow specification of methods in class files
-Improve handling of static elements correctly on import and export
+Improve handling of static elements on import and export
 Mods for MODX 2.3 menus
 Fix bug with default JS file
 Improve output in CheckProperties
-Skip references to core lex files in LexiconHelper
-Allow listing of css and js files in config
+Skip references to core lex. files in LexiconHelper
+Allow listing of CSS and JS files in config
 Delete created contexts on uninstall
 Synchronize build files
 Improve output in Build
