@@ -12,6 +12,9 @@ class MenuAdapter extends ObjectAdapter {
         /* @var $helpers Helpers */
         parent::__construct($modx, $helpers);
         if (is_array($fields)) {
+            if (!isset($fields['namespace'])) {
+                $fields['namespace'] = $this->helpers->getProp('packageNameLower');
+            }
             $this->myFields = $fields;
             $actionFields = $modx->getOption('action', $fields, array());
 
@@ -89,6 +92,10 @@ class MenuAdapter extends ObjectAdapter {
                     $menus = $action->getMany('Menus');
                     foreach($menus as $menu) {
                         $m_fields = $menu->toArray();
+                        if (!isset($m_fields['namespace'])) {
+                            $m_fields['namespace'] = !empty($namespace) ? $namespace
+                                : $helpers->getProp('packageNameLower');
+                        }
                         unset($m_fields['action']);
                         $menuFields[] = $m_fields;
                         $actionObj = $menu->getOne('Action');
