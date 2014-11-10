@@ -1787,7 +1787,11 @@ class MyComponentProject {
                 $alias = $this->helpers->getNameAlias($class);
                 $object = $this->modx->getObject($class,
                     array($alias => $element));
-                $static = $object->get('static');
+                if (! $object) {
+                    $static = false;
+                } else {
+                    $static = $object->get('static');
+                }
                 if (!empty($static)) {
                     $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                         $this->modx->lexicon('mc_processing_static_element')
