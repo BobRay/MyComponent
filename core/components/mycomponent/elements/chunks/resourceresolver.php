@@ -45,14 +45,18 @@ if($object->xpdo) {
                     if (! checkFields('pagetitle,parent,template', $fields)) {
                         continue;
                     }
-                    $resource = $modx->getObject('modResource', array('pagetitle' => $fields['pagetitle']));
+                    $resource = $modx->getObject('modResource',
+                        array('pagetitle' => $fields['pagetitle']));
                     if (! $resource) {
                         continue;
                     }
                     if ($fields['template'] == 'default') {
                         $resource->set('template', $modx->getOption('default_template'));
+                    } elseif (empty($fields['template'])) {
+                        $resource->set('template', 0);
                     } else {
-                        $templateObj = $modx->getObject('modTemplate', array('templatename' => $fields['template']));
+                        $templateObj = $modx->getObject('modTemplate',
+                            array('templatename' => $fields['template']));
                         if ($templateObj) {
                             $resource->set('template', $templateObj->get('id'));
                         } else {
