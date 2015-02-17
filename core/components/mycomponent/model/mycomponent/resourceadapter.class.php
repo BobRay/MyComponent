@@ -264,6 +264,13 @@ class ResourceAdapter extends ObjectAdapter {
             $fileName = 'resource.resolver.php';
 
             if (!file_exists($dir . '/' . $fileName) || $mode == MODE_EXPORT) {
+                foreach ($intersects as $k => $fields) {
+                    foreach ($fields as $key => $value) {
+                        if ($key == 'template' && empty($value)) {
+                            $intersects[$k][$key] = '0';
+                        }
+                    }
+                }
                 $intersectArray = $helpers->beautify($intersects);
                 $tpl = str_replace("'[[+intersects]]'", $intersectArray, $tpl);
 
