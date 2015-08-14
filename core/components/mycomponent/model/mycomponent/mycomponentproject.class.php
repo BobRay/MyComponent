@@ -460,7 +460,7 @@ class MyComponentProject {
                     'chunks',
                     'templates',
                     'templateVars',
-                    'propertySets'
+                    'propertySets',
                 );
                 $toProcess = array();
                 if ($mode == MODE_REMOVE) {
@@ -948,6 +948,7 @@ class MyComponentProject {
         MenuAdapter::createTransportFiles($this->helpers, $mode);
         ContextAdapter::createTransportFiles($this->helpers, $mode);
         ContextSettingAdapter::createTransportFiles($this->helpers, $mode);
+        DashboardWidgetAdapter::CreateTransportFiles($this->helpers, $mode);
 
         if (is_dir($this->myPaths['targetBuild'] . 'subpackages')) {
             $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n    " .
@@ -1768,6 +1769,9 @@ class MyComponentProject {
 
         if (in_array('resources', $toProcess)) {
             $this->createResources($mode);
+        }
+        if (in_array('widgets', $toProcess)) {
+            $this->createWidgets($mode);
         }
 
         $this->createResolvers($mode);

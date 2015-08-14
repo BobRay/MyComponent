@@ -64,43 +64,27 @@ class DashboardWidgetAdapter extends ObjectAdapter {
     public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
         /* @var $helpers Helpers */
         $widgetFields = array();
-        $actionFields = array();
         $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
             $helpers->modx->lexicon('mc_processing_widgets'));
         if ($mode == MODE_BOOTSTRAP) {
             $widgets = $helpers->modx->getOption('widgets', ObjectAdapter::$myObjects, array());
             foreach($widgets as $widget => $fields) {
-                $actionFields[] = $fields['action'];
-                unset($fields['action']);
+                $rank = $fields['rank'];
+                $dashboard = $fields['dashboard'];
+                unset($fields['rank'], $fields['dashboard']);
                 $widgetFields[] = $fields;
             }
         } elseif ($mode == MODE_EXPORT) {
-            $nameSpaces = $helpers->modx->getOption('nameSpaces',
-                ObjectAdapter::$myObjects, array());
-            foreach($nameSpaces as $namespace => $fields) {
+            /* $namespaces = $helpers->modx->getOption('namespaces',
+                ObjectAdapter::$myObjects, array()); */
+            $namespaces = $helpers->props['namespaces'];
+            foreach($namespaces as $namespace => $fields) {
                 $name = isset($fields['name']) ? $fields['name'] : $namespace;
                 $name = strtolower($name);
                 $widgets = $helpers->modx->getCollection('modDashboardWidget', array('namespace' => $name));
-                foreach($widgets as $widget) {
-                    /* @var $widget modDashboardWidget */
-                    /* @var $placement modDashBoardWidgetPlacement */
-                    $placements = $widget->getMany('Placements');
-                    foreach($placements as $placement) {
-                        $m_fields = $placement->toArray();
-
-                        $widgetFields[] = $m_fields;
-                        $actionObj = $widget->getOne('Action');
-                        $a_fields = $actionObj->toArray();
-                        unset($a_fields['id']);
-                        $actionFields[] = $a_fields;
-                    }
-
-                }
-
             }
-
         }
-        if (! empty($widgetFields)) {
+        if (! empty($widgets)) {
             $transportFile = 'transport.widgets.php';
             $tpl = $helpers->getTpl('transportfile.php');
             $variableName = 'widgets';
@@ -108,17 +92,19 @@ class DashboardWidgetAdapter extends ObjectAdapter {
             $tpl = $helpers->replaceTags($tpl);
             $tpl .= '/' . '*' . ' @var xPDOObject[] ' . '$' . $variableName . ' *' . "/\n\n";
             $i = 0;
-            foreach($widgetFields as $k => $fields) {
+
+            foreach($widgets as $widget) {
+                /** @var $widget modDashboardWidget */
+                $widgetFields = $widget->toArray();
                 $code = '';
-                $actionFields[$i]['id'] = $i + 1;
-                /* do Action */
+                /*$actionFields[$i]['id'] = $i + 1;
                 $code .= "\$action = \$modx->newObject('modAction');\n";
                 $code .= "\$action->fromArray( ";
                 $code .= var_export($actionFields[$i], true);
-                $code  .= ", '', true, true);\n";
+                $code  .= ", '', true, true);\n";*/
 
-                /* do Widget item */
-                $widgetFields[$i]['id'] = $i + 1;
+                /* do Widget  */
+                $widgetFields['id'] = $i + 1;
                 $code .= "\n";
                 $code .= "\$";
                 $code .= "widgets[";
@@ -126,14 +112,12 @@ class DashboardWidgetAdapter extends ObjectAdapter {
                 $code .= "\$";
                 $code .= "widgets[";
                 $code .= $i + 1 . ']->fromArray( ';
-                $code .= var_export($widgetFields[$i], true);
-                $code .= ", '', true, true);\n";
-                $code .= "\$";
+                $code .= var_export($widgetFields, true);
+                $code .= ", '', false, true);\n";
+ /*               $code .= "\$";
                 $code .= "widgets[";
                 $code .= $i + 1 . ']->addOne(';
-                $code .= "\$action);\n";
-
-
+                $code .= "\$action);\n";*/
                 $tpl .= $code;
                 $i++;
             }
