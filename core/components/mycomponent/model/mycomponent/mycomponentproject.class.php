@@ -339,6 +339,9 @@ class MyComponentProject {
         /* Create menus */
         $this->createMenus($mode);
 
+        /* Create Widgets */
+        $this->createWidgets($mode);
+        
         if ($mode == MODE_REMOVE) {
             /*  Create namespace */
             $temp = $this->modx->setLogLevel(modX::LOG_LEVEL_INFO);
@@ -751,6 +754,36 @@ class MyComponentProject {
         }
     }
 
+    /**
+     * Create, export, or remove widgets and actions
+     * specified in the project config file
+     *
+     * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT, MODE_REMOVE
+     */
+    public function createWidgets($mode = MODE_BOOTSTRAP)
+    {
+        $widgets = $this->helpers->getProp('widgets', array());
+        if (!empty($widgets)) {
+            if ($mode != MODE_EXPORT) {
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
+                    $this->modx->lexicon('mc_processing_widgets'));
+            }
+            foreach ($widgets as $k => $fields) {
+                if ($mode == MODE_BOOTSTRAP) {
+                    // include 'dashboardwidgetadapter.class.php';
+                    $this->addToModx('DashboardWidgetAdapter', $fields);
+                } elseif ($mode == MODE_EXPORT || $mode == MODE_REMOVE) {
+                    $a = new DashboardWidgetAdapter($this->modx, $this->helpers, $fields, $mode);
+                    if ($mode == MODE_EXPORT) {
+                        //$a->export();
+                    } elseif ($mode == MODE_REMOVE) {
+                        $a->remove();
+                    }
+                }
+            }
+        }
+    }
+
 
     /**
      * Called on Bootstrap to add items to MODX
@@ -768,6 +801,8 @@ class MyComponentProject {
         // include 'snippetadapter.class.php';
         // include 'templateadapter.class.php';
         // include 'templatevaradapter.class.php'
+        // include 'dashboardwidgetadapter.class.php';
+        // include 'menuadapter.class.php
 
         /* @var $o ObjectAdapter */
         // include 'objectadapter.class.php';
