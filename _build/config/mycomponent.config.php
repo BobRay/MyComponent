@@ -325,6 +325,10 @@ $components = array(
                 'category' => 'MyComponent',
                 'filename' => 'user.input.php',
             ),
+            'widgetresolver.php' => array(
+                'category' => 'MyComponent',
+                'filename' => 'widgetresolver.php',
+            ),
         ),
 
         'templates' => array(
@@ -531,7 +535,7 @@ $components = array(
     /* These settings are used by LexiconHelper */
     'rewriteCodeFiles' => false,
     // remove ~~descriptions
-    'rewriteLexiconFiles' => true,
+    'rewriteLexiconFiles' => false,
     // automatically add missing strings to lexicon files
     /* ******************************************* */
 

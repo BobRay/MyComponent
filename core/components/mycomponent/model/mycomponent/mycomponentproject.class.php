@@ -339,6 +339,9 @@ class MyComponentProject {
         /* Create menus */
         $this->createMenus($mode);
 
+        /* Create Widgets */
+        $this->createWidgets($mode);
+        
         if ($mode == MODE_REMOVE) {
             /*  Create namespace */
             $temp = $this->modx->setLogLevel(modX::LOG_LEVEL_INFO);
@@ -457,7 +460,7 @@ class MyComponentProject {
                     'chunks',
                     'templates',
                     'templateVars',
-                    'propertySets'
+                    'propertySets',
                 );
                 $toProcess = array();
                 if ($mode == MODE_REMOVE) {
@@ -751,6 +754,36 @@ class MyComponentProject {
         }
     }
 
+    /**
+     * Create, export, or remove widgets and actions
+     * specified in the project config file
+     *
+     * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT, MODE_REMOVE
+     */
+    public function createWidgets($mode = MODE_BOOTSTRAP)
+    {
+        $widgets = $this->helpers->getProp('widgets', array());
+        if (!empty($widgets)) {
+            if ($mode != MODE_EXPORT) {
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
+                    $this->modx->lexicon('mc_processing_widgets'));
+            }
+            foreach ($widgets as $k => $fields) {
+                if ($mode == MODE_BOOTSTRAP) {
+                    // include 'dashboardwidgetadapter.class.php';
+                    $this->addToModx('DashboardWidgetAdapter', $fields);
+                } elseif ($mode == MODE_EXPORT || $mode == MODE_REMOVE) {
+                    $a = new DashboardWidgetAdapter($this->modx, $this->helpers, $fields, $mode);
+                    if ($mode == MODE_EXPORT) {
+                        //$a->export();
+                    } elseif ($mode == MODE_REMOVE) {
+                        $a->remove();
+                    }
+                }
+            }
+        }
+    }
+
 
     /**
      * Called on Bootstrap to add items to MODX
@@ -768,6 +801,8 @@ class MyComponentProject {
         // include 'snippetadapter.class.php';
         // include 'templateadapter.class.php';
         // include 'templatevaradapter.class.php'
+        // include 'dashboardwidgetadapter.class.php';
+        // include 'menuadapter.class.php
 
         /* @var $o ObjectAdapter */
         // include 'objectadapter.class.php';
@@ -794,6 +829,11 @@ class MyComponentProject {
         /* Connect Elements to Property Sets */
         $intersects = $this->modx->getOption('propertySetResolver', $o, array());
         $this->helpers->createIntersects('modElementPropertySet', $intersects);
+
+        /* Connect Widgets to Dashboards */
+        $intersects = $this->modx->getOption('widgetResolver', $o, array());
+        $this->helpers->createIntersects('modDashboardWidgetPlacement', $intersects);
+
     }
 
 
@@ -837,6 +877,10 @@ class MyComponentProject {
         /* Property Set Resolver */
         $intersects = $this->modx->getOption('propertySetResolver', $o, array());
         PropertySetAdapter::createResolver($dir, $intersects, $this->helpers, $mode);
+
+        /* Widget Resolver */
+        $intersects = $this->modx->getOption('widgetResolver', $o, array());
+        DashboardWidgetAdapter::createResolver($dir, $intersects, $this->helpers, $mode);
 
         /* extra resolvers */
         /* These user-specific resolvers never get updated, even on Export */
@@ -913,6 +957,7 @@ class MyComponentProject {
         MenuAdapter::createTransportFiles($this->helpers, $mode);
         ContextAdapter::createTransportFiles($this->helpers, $mode);
         ContextSettingAdapter::createTransportFiles($this->helpers, $mode);
+        DashboardWidgetAdapter::CreateTransportFiles($this->helpers, $mode);
 
         if (is_dir($this->myPaths['targetBuild'] . 'subpackages')) {
             $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n    " .
@@ -1733,6 +1778,9 @@ class MyComponentProject {
 
         if (in_array('resources', $toProcess)) {
             $this->createResources($mode);
+        }
+        if (in_array('widgets', $toProcess)) {
+            $this->createWidgets($mode);
         }
 
         $this->createResolvers($mode);

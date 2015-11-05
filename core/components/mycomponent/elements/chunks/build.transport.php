@@ -331,6 +331,7 @@ $hasValidators = is_dir($sources['build'] . 'validators'); /* Run a validators b
 $hasResolvers = is_dir($sources['build'] . 'resolvers');
 $hasSetupOptions = is_dir($sources['install_options']); /* HTML/PHP script to interact with user */
 $hasMenu = file_exists($sources['data'] . 'transport.menus.php'); /* Add items to the MODx Top Menu */
+$hasWidgets = file_exists($sources['data'] . 'transport.dashboardwidgets.php'); /* Add items to the MODx Top Menu */
 $hasSettings = file_exists($sources['data'] . 'transport.settings.php'); /* Add new MODx System Settings */
 $hasContextSettings = file_exists($sources['data'] . 'transport.contextsettings.php');
 $hasSubPackages = is_dir($sources['subpackages']);
@@ -461,6 +462,31 @@ if ($hasContextSettings) {
         unset($settings, $setting, $attributes);
     }
 }
+
+/* load widgets */
+if ($hasWidgets) {
+    $widgets = include $sources['data'] . 'transport.dashboardwidgets.php';
+    if (!is_array($widgets)) {
+        $helper->sendLog(modX::LOG_LEVEL_ERROR, $modx->lexicon('mc_context_widgets_not_an_array')
+            . '.');
+    } else {
+        $attributes = array(
+            xPDOTransport::UNIQUE_KEY => 'name',
+            xPDOTransport::PRESERVE_KEYS => false,
+            xPDOTransport::UPDATE_OBJECT => true,
+        );
+        foreach ($widgets as $widget) {
+            $vehicle = $builder->createVehicle($widget, $attributes);
+            $builder->putVehicle($vehicle);
+        }
+        $helper->sendLog(modX::LOG_LEVEL_INFO, $modx->lexicon('mc_packaged')
+            . ' ' . count($widgets) .
+            ' ' . $modx->lexicon('mc_widgets')
+            . '.');
+        unset($widgets, $widget, $attributes);
+    }
+}
+
 
 /* minify JS */
 
@@ -775,7 +801,8 @@ foreach ($categories as $k => $categoryName) {
                   'plugin',
                   'tv',
                   'resource',
-                  'propertyset'
+                  'propertyset',
+                  'widget',
              ), $resolvers);
         $helper->sendLog(modX::LOG_LEVEL_INFO,
             $modx->lexicon('mc_processing_resolvers'));

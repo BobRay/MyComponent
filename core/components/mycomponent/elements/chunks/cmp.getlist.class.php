@@ -12,7 +12,7 @@
  */
 
 /* @var $modx modX */
-
+$modx->lexicon->load('mycomponent:default');
 
 class mc_ProcessorTypeProcessor extends modObjectGetListProcessor {
     public $classKey = 'modmc_Element';
@@ -40,7 +40,7 @@ class mc_ProcessorTypeProcessor extends modObjectGetListProcessor {
                 if ($categoryObj) {
                     $fields['category'] = $categoryObj->get('category');
                 } else {
-                    $fields['category'] = $this->modx->lexicon('invalid_category');
+                    $fields['category'] = $this->modx->lexicon('mc_invalid_category');
                 }
             } else {
                 $fields['category'] = $this->modx->lexicon('none');
@@ -52,7 +52,7 @@ class mc_ProcessorTypeProcessor extends modObjectGetListProcessor {
                 if ($templateObj) {
                     $fields['template'] = $templateObj->get('category');
                 } else {
-                    $fields['template'] = $this->modx->lexicon('invalid_template');
+                    $fields['template'] = $this->modx->lexicon('mc_invalid_template');
                 }
             } else {
                 $fields['template'] = $this->modx->lexicon('none');
