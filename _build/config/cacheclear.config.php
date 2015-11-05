@@ -14,7 +14,7 @@ $components = array(
     'authorUrl' => 'http://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
     'packageDocumentationUrl' => 'http://bobsguides.com/cacheclear-tutorial.html',
-    'copyright' => '2012-2014',
+    'copyright' => '2012-2015',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
@@ -160,6 +160,7 @@ $components = array(
      * (other resolvers may be created above for TVs and plugins).
      * Suffix 'resolver.php' will be added automatically */
     'resolvers' => array(
+        'default',
     ),
 
     /* (optional) Validators can abort the install after checking

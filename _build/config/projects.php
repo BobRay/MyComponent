@@ -17,6 +17,7 @@
   'flexibility4' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/flexibility4.config.php',
   'foryourapproval' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/foryourapproval.config.php',
   'fwa' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/fwa.config.php',
+  'gorevo' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/gorevo.config.php',
   'hhc' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/hhc.config.php',
   'importusers' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/importusers.config.php',
   'loglogins' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/loglogins.config.php',
@@ -37,6 +38,6 @@
   'unittest' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/unittest.config.php',
   'usermanagement' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/usermanagement.config.php',
   'userphotos' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/userphotos.config.php',
-  'gorevo' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/gorevo.config.php',
+  'upgrademodx' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/upgrademodx.config.php',
 );
  return $projects;
