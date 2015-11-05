@@ -480,6 +480,20 @@ class Helpers {
                         }
                     }
                     break;
+                case 'modDashboardWidgetPlacement':
+                    $subIdField = 'id';
+                    $mainObjectType = 'modDashboardWidget';
+                    $subsidiaryObjectType = 'modDashboard';
+                    $mainObjectName = $values['widget'];
+                    if ((int) $values['dashboard'] === 1 || strtolower($values['dashboard']) === 'default') {
+                        $d = $this->modx->getObject('modDashboard', 1);
+                        if ($d) {
+                            $values['dashboard'] = $d->get('name');
+                        }
+                    }
+                    // $this->modx->getObject('modDashboard', $values['dashboard']);
+                    $subsidiaryObjectName = $values['dashboard'];
+                    break;
                 case 'modElementPropertySet':
                     $subIdField = 'id';
                     $mainObjectType = $values['element_class'];
@@ -542,8 +556,18 @@ class Helpers {
                         'element_class' => $mainObjectType,
                         'property_set' => $subsidiaryObject->get($subIdField),
                     );
+                    break;
+
+                case 'modDashboardWidgetPlacement':
+                    $searchFields = array(
+                        'widget' => $mainObject->get($mainIdField),
+                        'dashboard' => $subsidiaryObject->get($subIdField),
+                    );
 
                     break;
+
+
+
                 default:
                     break;
             }

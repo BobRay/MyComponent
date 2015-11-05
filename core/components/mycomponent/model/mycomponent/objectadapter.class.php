@@ -672,10 +672,11 @@ abstract class ObjectAdapter {
             $source = "\$sources['source_core'] . '/elements/" .
                 strtolower($variableName) . '/' . $fileName . "'";
         }
-
+        if ($type !== 'modDashboardWidget') {
+            unset($fields['content']);
+        }
         unset(
             $fields['snippet'],
-            $fields['content'],
             $fields['plugincode'],
             $fields['editor_type'],
             $fields['category'],

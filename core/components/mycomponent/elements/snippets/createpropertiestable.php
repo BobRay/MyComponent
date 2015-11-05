@@ -31,13 +31,13 @@
   $packageName = 'mycomponent';
 */
 
-$base = 'c:/xampp/htdocs/addons/assets/mycomponents/newspublisher/';
-$propertiesFile = '_build/data/properties/properties.npeditthisbutton.snippet.php';
+$base = 'c:/xampp/htdocs/addons/assets/mycomponents/upgrademodx/';
+$propertiesFile = '_build/data/properties/properties.upgrademodxwidget.snippet.php';
 $propertiesFile = $base . $propertiesFile;
-$languageFile = 'core/components/newspublisher/lexicon/en/button.inc.php';
-$languageFile = $base . $languageFile;
+$languageFile = 'core/components/upgrademodx/lexicon/en/default.inc.php';
+$languageFile = 'C:\xampp\htdocs\addons\assets\mycomponents\upgrademodx\core\components\upgrademodx\lexicon\en\default.inc.php';
 $rewriteCodeFile = false;
-$codeFile = $base . 'core/components/newspublisher/elements/snippets/npeditthisbutton.snippet.php';
+$codeFile = $base . 'core/components/upgrademodx/elements/snippets/upgrademodxwidget.snippet.php';
 
 
 $propertiesInjected = false; /* This will be set automatically if properties are injected */

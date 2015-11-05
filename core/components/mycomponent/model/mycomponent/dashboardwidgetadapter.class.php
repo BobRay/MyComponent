@@ -1,5 +1,7 @@
 <?php
 
+/* $modx->lexicon->load('mycomponent:default'); */
+
 class DashboardWidgetAdapter extends ObjectAdapter {
     protected $dbClass = 'modDashboardWidget';
     protected $dbClassIDKey = 'id';
@@ -10,11 +12,19 @@ class DashboardWidgetAdapter extends ObjectAdapter {
     final public function __construct(&$modx, $helpers, $fields, $mode = MODE_BOOTSTRAP) {
         /* @var $modx modX */
         /* @var $helpers Helpers */
+
         parent::__construct($modx, $helpers);
+        $this->name = $fields['name'];
+
         if (is_array($fields)) {
             if (!isset($fields['namespace'])) {
                 $fields['namespace'] = $this->helpers->getProp('packageNameLower');
             }
+            if (isset($fields['dashboards'])) {
+                $this->setWidgetResolver($fields, $mode);
+                unset($fields['dashboards']);
+            }
+
             $this->myFields = $fields;
             ObjectAdapter::$myObjects['widgets'][] = $fields;
             $this->myFields = $fields;
@@ -40,7 +50,7 @@ class DashboardWidgetAdapter extends ObjectAdapter {
                 $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                     $this->modx->lexicon('mc_created_widget')
                     . ': ' . $fields['name']);
-                $widget = $this->modx->getObject('modDashboardWidget', array('name' => $fields['name'], 'namespace' => $fields['namespace']));
+                /*$widget = $this->modx->getObject('modDashboardWidget', array('name' => $fields['name'], 'namespace' => $fields['namespace']));
                 if ($widget) {
                     $id = $widget->get('id');
                     $widgetPlacement = $this->modx->getObject('modDashboardWidgetPlacement', array('dashboard'=> 1, 'widget' => $id));
@@ -52,7 +62,7 @@ class DashboardWidgetAdapter extends ObjectAdapter {
                         $widgetPlacement->save();
                     }
 
-                }
+                }*/
             }
         } else {
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO,
@@ -61,22 +71,81 @@ class DashboardWidgetAdapter extends ObjectAdapter {
         }
     }
 
+    public function setWidgetResolver($fields, $mode)
+    {
+        if ($mode == MODE_BOOTSTRAP) {
+            foreach($fields as $placement) {
+                foreach ($placement as $dashboard => $rank) {
+                    $resolverFields = array();
+                    $resolverFields['dashboard'] = $dashboard;
+                    $resolverFields['widget'] = $this->getName();
+                    $resolverFields['rank'] = isset($rank) && !empty($rank) ? $rank : '0';
+                    ObjectAdapter::$myObjects['widgetResolver'][] = $resolverFields;
+                }
+            }
+        } elseif ($mode == MODE_EXPORT) {
+            $me = $this->modx->getObject('modDashboardWidget', array('name' => $this->getName()));
+            if (!$me) {
+                $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, '[TemplateVar Adapter] ' .
+                    $this->modx->lexicon('mc_self_nf'));
+            } else {
+                $placements = $me->getMany('Placements');
+                if (!empty($placements)) {
+                    foreach ($placements as $placement) {
+                        /* @var $placement modDashboardWidgetPlacement */
+                        $fields = $placement->toArray();
+                        $widgetObj = $this->modx->getObject('modDashboardWidget',
+                                $fields['widget']);
+                        $widgetName = $widgetObj->get('name');
+
+                        $resolverFields = array(
+                            'widget' => $widgetName,
+                            'dashboard' => $fields['dashboard'],
+                            'rank' => $fields['rank'],
+                        );
+                        ObjectAdapter::$myObjects['widgetResolver'][] = $resolverFields;
+                    }
+                }
+            }
+        }
+
+    }
+
     public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
         /* @var $helpers Helpers */
+        $widgets = array();
+        $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
+            $helpers->modx->lexicon('mc_processing_widgets'));
+        if ($mode == MODE_BOOTSTRAP) {
+            $widgets = $helpers->modx->getOption('widgets', ObjectAdapter::$myObjects, array());
+            foreach ($widgets as $widget => $fields) {
+                unset($fields['dashboards']);
+            }
+        } elseif ($mode == MODE_EXPORT) {
+            $namespaces = $helpers->props['namespaces'];
+            foreach ($namespaces as $namespace => $fields) {
+
+                $name = isset($fields['name']) ? $fields['name'] : $namespace;
+                $name = strtolower($name);
+                $objects = $helpers->modx->getCollection('modDashboardWidget', array('namespace' => $name));
+                foreach($objects as $object) {
+                    /** @var $object xPDOObject */
+                    $fields = $object->toArray();
+                    $widgets[] = $fields;
+                }
+            }
+        }
+        parent::createTransportFile($helpers, $widgets, '', 'modDashboardWidget', $mode);
+        return;
         $widgetFields = array();
         $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
             $helpers->modx->lexicon('mc_processing_widgets'));
         if ($mode == MODE_BOOTSTRAP) {
             $widgets = $helpers->modx->getOption('widgets', ObjectAdapter::$myObjects, array());
             foreach($widgets as $widget => $fields) {
-                $rank = $fields['rank'];
-                $dashboard = $fields['dashboard'];
-                unset($fields['rank'], $fields['dashboard']);
-                $widgetFields[] = $fields;
+                unset($fields['dashboards']);
             }
         } elseif ($mode == MODE_EXPORT) {
-            /* $namespaces = $helpers->modx->getOption('namespaces',
-                ObjectAdapter::$myObjects, array()); */
             $namespaces = $helpers->props['namespaces'];
             foreach($namespaces as $namespace => $fields) {
                 $name = isset($fields['name']) ? $fields['name'] : $namespace;
@@ -93,9 +162,9 @@ class DashboardWidgetAdapter extends ObjectAdapter {
             $tpl .= '/' . '*' . ' @var xPDOObject[] ' . '$' . $variableName . ' *' . "/\n\n";
             $i = 0;
 
-            foreach($widgets as $widget) {
+            foreach($widgets as $widget => $fields) {
                 /** @var $widget modDashboardWidget */
-                $widgetFields = $widget->toArray();
+                $widgetFields = $fields;
                 $code = '';
                 /*$actionFields[$i]['id'] = $i + 1;
                 $code .= "\$action = \$modx->newObject('modAction');\n";
@@ -133,6 +202,37 @@ class DashboardWidgetAdapter extends ObjectAdapter {
             }
         }
 
+    }
+
+    public static function createResolver($dir, $intersects, $helpers, $mode = MODE_BOOTSTRAP) {
+
+        /* Create widget.resolver.php resolver */
+        /* @var $helpers Helpers */
+        if (!empty($dir) && !empty($intersects)) {
+            $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
+                $helpers->modx->lexicon('mc_creating_widget_resolver'));
+            $tpl = $helpers->getTpl('widgetresolver.php');
+            $tpl = $helpers->replaceTags($tpl);
+            if (empty($tpl)) {
+                $helpers->sendLog(modX::LOG_LEVEL_ERROR,
+                    '[Widget Adapter] ' .
+                    $helpers->modx->lexicon('mc_widgetresolvertpl_empty'));
+                return false;
+            }
+
+            $fileName = 'widget.resolver.php';
+
+            if (!file_exists($dir . '/' . $fileName) || $mode == MODE_EXPORT) {
+                $intersectArray = $helpers->beautify($intersects);
+                $tpl = str_replace("'[[+intersects]]'", $intersectArray, $tpl);
+
+                $helpers->writeFile($dir, $fileName, $tpl);
+            } else {
+                $helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' . $fileName . ' ' .
+                    $helpers->modx->lexicon('mc_already_exists'));
+            }
+        }
+        return true;
     }
 
     public function remove() {

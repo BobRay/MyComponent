@@ -829,6 +829,11 @@ class MyComponentProject {
         /* Connect Elements to Property Sets */
         $intersects = $this->modx->getOption('propertySetResolver', $o, array());
         $this->helpers->createIntersects('modElementPropertySet', $intersects);
+
+        /* Connect Widgets to Dashboards */
+        $intersects = $this->modx->getOption('widgetResolver', $o, array());
+        $this->helpers->createIntersects('modDashboardWidgetPlacement', $intersects);
+
     }
 
 
@@ -872,6 +877,10 @@ class MyComponentProject {
         /* Property Set Resolver */
         $intersects = $this->modx->getOption('propertySetResolver', $o, array());
         PropertySetAdapter::createResolver($dir, $intersects, $this->helpers, $mode);
+
+        /* Widget Resolver */
+        $intersects = $this->modx->getOption('widgetResolver', $o, array());
+        DashboardWidgetAdapter::createResolver($dir, $intersects, $this->helpers, $mode);
 
         /* extra resolvers */
         /* These user-specific resolvers never get updated, even on Export */
