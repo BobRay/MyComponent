@@ -1,7 +1,7 @@
 /**
  * JS file for [[+packageName]] extra
  *
- * Copyright 2013 by Bob Ray <http://bobsguides.com>
+ * Copyright 2013-2016 by Bob Ray <http://bobsguides.com>
  * Created on 04-13-2013
  *
  * [[+packageName]] is free software; you can redistribute it and/or modify it under the
