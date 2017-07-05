@@ -1,7 +1,7 @@
 <?php
 /**
  * CreateSettingsTable
- * Copyright 2012-2013 Bob Ray
+ * Copyright 2012-2017 Bob Ray
  *
  * CreateSettingsTable is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -17,18 +17,17 @@
  * Suite 330, Boston, MA 02111-1307 USA
  *
  * @package mycomponent
- * @author Bob Ray <http://bobsguides.com>
-
+ * @author Bob Ray <https://bobsguides.com>
  *
  * Description: The CreateSettingsTable snippet creates a table of
  * System Settings and descriptions to paste into tutorials and documentation.
  * The table is based on the settings in a transport.settings.php file
  * and on a default.inc.php language file to pull descriptions from.
  * /
-
-/*
-  Modified: June, 2012
-  $packageName = 'mycomponent';
+ *
+* /*
+  * Modified: June, 2012
+  * $packageName = 'mycomponent';
 */
 
 
@@ -70,7 +69,7 @@ if (!class_exists('SettingsHelper')) {
     }
 }
 
-/* Instantiate MODx -- if this require fails, check your
+/* Instantiate MODX -- if this require fails, check your
  * _build/build.config.php file
  */
 require_once dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/_build/build.config.php';
@@ -159,7 +158,7 @@ $props = $properties;
 
 $settingsFile = $targetRoot . '_build/data/transport.settings.php';
 
-$languageFile = $targetRoot . 'core/components/' . $packageNameLower . '/lexicon/en/default.inc.php';
+$languageFile = $targetRoot . 'core/components/' . $packageNameLower . '/lexicon/en/setting.inc.php';
 $rewriteCodeFile = $modx->getOption('rewriteCodeFiles', $props, false);
 $codeFile = $settingsFile;
 
@@ -250,47 +249,66 @@ function parseDesc($text, &$fields) {
 
 //echo "COUNT: " . count($settings) . "\n";
 $settingsComment = '';
-foreach($settings as $settingObject) {
-    /* @var $settingObject modSystemSetting */
-    $setting = $settingObject->toArray();
-    $fields = array();
+$areas = array();
 
-    $replaceFields = array(
-        'name' => $setting['key'],
-        'description' => '',
-        'default' => $setting['value'],
-    );
-
-    $replaceFields['default'] = $replaceFields['default'] == '999'? '(set automatically)' : $replaceFields['default'];
-    $languageKey = 'setting_' . $replaceFields['name'] . '_desc';
-    if (isset($_lang[$languageKey])) {
-        $replaceFields['description'] = $_lang[$languageKey];
+foreach ($settings as $setting) {
+    /** @var $setting modSystemSetting */
+    $areaString = $setting->get('area');
+    if (!in_array($areaString, $areas) && !empty($areaString)) {
+        $areas[] = $areaString;
     }
-    parseDesc($replaceFields['description'], $fields);
-    if (isset($fields['desc']) && !empty($fields['desc'])) {
-        $replaceFields['description'] = $fields['desc'];
-    }
-    if (isset($fields['default']) && empty($replaceFields['default'])) {
-            $replaceFields['default'] = $fields['default'];
-    }
-    $replaceFields['default'] = $replaceFields['default'] === false? 'false' : $replaceFields['default'];
-    $replaceFields['default'] = $replaceFields['default'] === true
-        ? 'true'
-        : $replaceFields['default'];
-    $row = str_replace($findFields,$replaceFields,$rowTpl);
-
-    $rows .= $row;
-
-    /* add to properties comment */
-
-    $settingsComment .= ' * @property &' . $setting['key'] . ' ' . $setting['xtype'];
-    $settingsComment .= ' -- ' . $fields['desc'] . '; Default: ';
-    $settingsComment .= empty($fields['default'])? '(empty).' : $fields['default'];
-    $settingsComment .= ".\n";
-
-
 }
 
+foreach ($areas as $area) {
+    if (!empty($area)) {
+        $settingsComment .= "\n           AREA: " . $area . "\n\n";
+    }
+    $rows .= '<tr><td colspan="3" class="properties_header">' . $area . '</td></tr>';
+    foreach ($settings as $settingObject) {
+        $areaString = $settingObject->get('area');
+        if ($areaString !== $area) {
+            continue;
+        }
+        /* @var $settingObject modSystemSetting */
+        $setting = $settingObject->toArray();
+        $fields = array();
+
+        $replaceFields = array(
+            'name' => $setting['key'],
+            'description' => '',
+            'default' => $setting['value'],
+        );
+
+        $replaceFields['default'] = $replaceFields['default'] == '999' ? '(set automatically)' : $replaceFields['default'];
+        $languageKey = 'setting_' . $replaceFields['name'] . '_desc';
+        if (isset($_lang[$languageKey])) {
+            $replaceFields['description'] = $_lang[$languageKey];
+        }
+        parseDesc($replaceFields['description'], $fields);
+        if (isset($fields['desc']) && !empty($fields['desc'])) {
+            $replaceFields['description'] = $fields['desc'];
+        }
+        if (isset($fields['default']) && empty($replaceFields['default'])) {
+            $replaceFields['default'] = $fields['default'];
+        }
+        $replaceFields['default'] = $replaceFields['default'] === false ? 'false' : $replaceFields['default'];
+        $replaceFields['default'] = $replaceFields['default'] === true
+            ? 'true'
+            : $replaceFields['default'];
+        $row = str_replace($findFields, $replaceFields, $rowTpl);
+
+        $rows .= $row;
+
+        /* add to properties comment */
+
+        $settingsComment .= ' * @property &' . $setting['key'] . ' ' . $setting['xtype'];
+        $settingsComment .= ' -- ' . $fields['desc'] . '; Default: ';
+        $settingsComment .= empty($fields['default']) ? '(empty).' : $fields['default'];
+        $settingsComment .= ".\n";
+
+
+    }
+}
 $output = str_replace('[[+rows]]', $rows, $tableTpl);
 if ($rewriteCodeFile && !empty($codeFile) ) {
     $content = file_get_contents($codeFile);

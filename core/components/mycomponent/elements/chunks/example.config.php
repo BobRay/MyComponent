@@ -10,10 +10,10 @@ $components = array(
     'version' => '1.0.0',
     'release' => 'beta1',
     'author' => 'Bob Ray',
-    'email' => '<http://bobsguides.com>',
-    'authorUrl' => 'http://bobsguides.com',
+    'email' => '<https://bobsguides.com>',
+    'authorUrl' => 'https://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
-    'packageDocumentationUrl' => 'http://bobsguides.com/example-tutorial.html',
+    'packageDocumentationUrl' => 'https://bobsguides.com/example-tutorial.html',
     'copyright' => '2014',
 
     /* no need to edit this except to change format */

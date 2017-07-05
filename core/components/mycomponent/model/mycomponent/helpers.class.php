@@ -3,7 +3,7 @@
  * helpers.class.php file for MyComponent Extra
  *
  * @author Bob Ray
- * Copyright 2012-2013 by Bob Ray <http://bobsguides.com>
+ * Copyright 2012-2017 Bob Ray <https://bobsguides.com>
  *
  * MyComponent is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software

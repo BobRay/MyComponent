@@ -2,7 +2,7 @@
 /**
  * CheckProperties Utility Script for My Component
  * @author Bob Ray
- * Copyright 2012-2013 Bob Ray
+ * Copyright 2012-2017 Bob Ray
  * Modified: July, 2012
  *
  * CheckProperties is free software; you can redistribute it and/or modify it
@@ -19,8 +19,7 @@
  * Suite 330, Boston, MA 02111-1307 USA
  *
  * @package mycomponent
- * @author Bob Ray <http://bobsguides.com>
-
+ * @author Bob Ray <https://bobsguides.com>
  *
  * Description: The CheckProperties script identifies properties
  * used in code with $modx->getOption() or some version of $scriptProperties and checks 

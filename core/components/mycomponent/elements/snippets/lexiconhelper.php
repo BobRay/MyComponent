@@ -1,7 +1,7 @@
 <?php
 /**
  * LexiconHelper
- * Copyright 2012-2013 Bob Ray
+ * Copyright 2012-2017 Bob Ray
  *
  * LexiconHelper is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -17,8 +17,7 @@
  * Suite 330, Boston, MA 02111-1307 USA
  *
  * @package lexiconhelper
- * @author Bob Ray <http://bobsguides.com>
- 
+ * @author Bob Ray <https://bobsguides.com>
  *
  * Description: The LexiconHelper snippet identifies lexicon strings
  * in code and checks them against strings in a language file.
@@ -28,33 +27,33 @@
  * Output can be pasted into language file for editing.
  * ToDo: More info here (~~ option, rewrite files options)
  * /
-
-/*
-
-  Modified: June, 2012
-
-   
-  Properties:
-    @property code_path  - (required) Path to directory with code
-         file. Should end in a slash.
-         {core_path} and {assets_path} will be translated.
-
-    @property code_file - (required) name of code file to be analyzed.
-
-    @property language_path - (required) Path to directory with code
-         file. Should end in a slash.
-         {core_path} and {assets_path} will be translated.
-
-    @property language_file - (optional) Path to language file.
-         Default: default.inc.php
-
-    @property language - (optional) Two-letter language code identifying
-         language file to process.
-         Default: en
-    @property manager_language - (optional) Two-letter language code
-         to use in error messages and reports. Use only to override manager
-         language.
-         Default: manager_language System Setting
+ *
+* /*
+ *
+* Modified: June, 2012
+ *
+*
+* Properties:
+    * @property code_path  - (required) Path to directory with code
+         * file. Should end in a slash.
+         * {core_path} and {assets_path} will be translated.
+ *
+* @property code_file - (required) name of code file to be analyzed.
+ *
+* @property language_path - (required) Path to directory with code
+         * file. Should end in a slash.
+         * {core_path} and {assets_path} will be translated.
+ *
+* @property language_file - (optional) Path to language file.
+         * Default: default.inc.php
+ *
+* @property language - (optional) Two-letter language code identifying
+         * language file to process.
+         * Default: en
+    * @property manager_language - (optional) Two-letter language code
+         * to use in error messages and reports. Use only to override manager
+         * language.
+         * Default: manager_language System Setting
 */
 
 /**

@@ -2,7 +2,7 @@
 /**
  * ExportObjects script for MyComponent Extra
  *
- * Copyright 2012-2013 by Bob Ray <http://bobsguides.com>
+ * Copyright 2012-2017 Bob Ray <https://bobsguides.com>
  *
  * @author Bob Ray
  * 3/27/12
@@ -23,7 +23,7 @@
  * @package exportobjects
  */
 /**
- * MODx ExportObjects script
+ * MODX ExportObjects script
  *
  * Description:
  * ------------

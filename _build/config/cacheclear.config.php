@@ -10,10 +10,10 @@ $components = array(
     'version' => '1.0.3',
     'release' => 'pl',
     'author' => 'Bob Ray',
-    'email' => '<http://bobsguides.com>',
-    'authorUrl' => 'http://bobsguides.com',
+    'email' => '<https://bobsguides.com>',
+    'authorUrl' => 'https://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
-    'packageDocumentationUrl' => 'http://bobsguides.com/cacheclear-tutorial.html',
+    'packageDocumentationUrl' => 'https://bobsguides.com/cacheclear-tutorial.html',
     'copyright' => '2012-2015',
 
     /* no need to edit this except to change format */

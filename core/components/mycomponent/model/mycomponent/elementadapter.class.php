@@ -142,9 +142,10 @@ abstract class ElementAdapter extends ObjectAdapter {
         if ($categoryObj) {
             $fields['category'] = $categoryObj->get('category');
         } else {
-            $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, '[Element Adapter] ' .
+            $fields['category'] = '0';
+            /*$this->helpers->sendLog(modX::LOG_LEVEL_ERROR, '[Element Adapter] ' .
                 $this->modx->lexicon('mc_category_nf')
-                . ': ' . $fields['category']);
+                . ': ' . $fields['category']);*/
         }
     }
 
@@ -159,7 +160,10 @@ abstract class ElementAdapter extends ObjectAdapter {
             $categoryObj = $this->modx->getObject('modCategory', array('category' => $fields['category']));
             if ($categoryObj) {
                 $fields['category'] = $categoryObj->get('id');
+            } else {
+                $fields['category'] = '0';
             }
+
         }
     }
 

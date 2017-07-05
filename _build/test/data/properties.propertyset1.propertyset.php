@@ -2,7 +2,7 @@
 /**
  * Properties file for PropertySet1 propertyset
  *
- * Copyright 2012 by Bob Ray <http://bobsguides.com>
+ * Copyright 2012-2017 Bob Ray <https://bobsguides.com>
  * Created on 08-25-2012
  *
  * @package example

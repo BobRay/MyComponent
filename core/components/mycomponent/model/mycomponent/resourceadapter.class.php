@@ -319,47 +319,57 @@ class ResourceAdapter extends ObjectAdapter {
             $helpers->modx->lexicon('mc_processing_resources'));
         $byId = $modx->getOption('getResourcesById', $props, false);
         $method = $byId? 'ID' : 'pagetitle';
-        $resources = $modx->getOption('exportResources', $props, array());
-        if (!empty($resources)) {
-            foreach ($resources as $resource) {
-                if ($byId) {
-                    $resObject = $modx->getObject('modResource', $resource);
-                } else {
-                    $resObject = $modx->getObject('modResource', array('pagetitle' => trim($resource)));
-                }
-                if ($resObject) {
-                    $objects[] = $resObject;
-                } else {
-                    $helpers->sendLog(modX::LOG_LEVEL_ERROR,
-                        '[Resource Adapter] ' .
-                        $helpers->modx->lexicon('mc_could_not_get_resource_with_method')
-                        . ' ' . $method . ': ' . $resource);
-                }
-            }
-        }
-        /* if $parents is set in project config, add children (and optionally parent
-           to  $resources array */
-        $parents = $modx->getOption('parents', $props, array() );
-        $includeParents = $modx->getOption('includeParents', $props, false);
-        if (!empty($parents)) {
-            foreach ($parents as $parentResource) {
-                if ($byId) {
-                    $parentObj = $modx->getObject('modResource', $parentResource);
-                } else {
-                    $parentObj = $modx->getObject('modResource', array('pagetitle' => $parentResource));
-                }
-                if ($parentObj) {
-                    if ($includeParents) {
-                        $objects[] = $parentObj;
+        if ($props['allResources']) {
+            $objects = $modx->getCollection('modResource');
+
+        } else {
+
+            $resources = $modx->getOption('exportResources', $props, array());
+
+            if (!empty($resources)) {
+                foreach ($resources as $resource) {
+                    if ($byId) {
+                        $resObject = $modx->getObject('modResource', $resource);
+                    } else {
+                        $resObject = $modx->getObject('modResource', array('pagetitle' => trim($resource)));
                     }
-                    $children = $parentObj->getMany('Children');
-                    if (!empty ($children)) {
-                        $objects = array_merge($objects, $children);
+                    if ($resObject) {
+                        $objects[] = $resObject;
+                    } else {
+                        $helpers->sendLog(modX::LOG_LEVEL_ERROR,
+                            '[Resource Adapter] ' .
+                            $helpers->modx->lexicon('mc_could_not_get_resource_with_method')
+                            . ' ' . $method . ': ' . $resource);
                     }
                 }
             }
 
+            /* if $parents is set in project config, add children (and optionally parent
+               to $resources array */
+            $parents = $modx->getOption('parents', $props, array());
+            $includeParents = $modx->getOption('includeParents', $props, false);
+            if (!empty($parents)) {
+                foreach ($parents as $parentResource) {
+                    if ($byId) {
+                        $parentObj = $modx->getObject('modResource', $parentResource);
+                    } else {
+                        $parentObj = $modx->getObject('modResource', array('pagetitle' => $parentResource));
+                    }
+                    if ($parentObj) {
+                        if ($includeParents) {
+                            $objects[] = $parentObj;
+                        }
+                        $children = $parentObj->getMany('Children');
+                        if (!empty ($children)) {
+                            $objects = array_merge($objects, $children);
+                        }
+                    }
+                }
+
+            }
         }
+
+
         if (!empty($objects)) {
             /* @var $object modResource */
             $dryRun = $props['dryRun'];
@@ -369,7 +379,11 @@ class ResourceAdapter extends ObjectAdapter {
                 if ($mode == MODE_REMOVE) {
                     $a->remove();
                 } elseif ($mode == MODE_EXPORT) {
-                    $content = $object->getContent();
+                    if ($object->get('class_key') == 'Article') {
+                        $content = $object->get('content');
+                    } else {
+                        $content = $object->getContent();
+                    }
                     $a->createCodeFile(true, $content,  $mode, $dryRun );
                     if (isset($fields['properties']) && !empty($fields['properties'])) {
                         $a->writePropertiesFile($a->getName(), $fields['properties'], MODE_EXPORT);

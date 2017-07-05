@@ -1,7 +1,7 @@
 <?php
 /**
  * CreatePropertiesTable
- * Copyright 2012-2013 Bob Ray
+ * Copyright 2012-2017 Bob Ray
  *
  * CreatePropertiesTable is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -17,27 +17,26 @@
  * Suite 330, Boston, MA 02111-1307 USA
  *
  * @package mycomponent
- * @author Bob Ray <http://bobsguides.com>
-
+ * @author Bob Ray <https://bobsguides.com>
  *
  * Description: The CreatePropertiesTable snippet creates a table of
  * properties to paste into tutorials and documentation.
  * The table is based on the properties in a properties file
  * and on a properties language file to pull descriptions from.
  * /
-
-/*
-  Modified: June, 2012
-  $packageName = 'mycomponent';
+ *
+* /*
+  * Modified: June, 2012
+  * $packageName = 'mycomponent';
 */
 
-$base = 'c:/xampp/htdocs/addons/assets/mycomponents/upgrademodx/';
-$propertiesFile = '_build/data/properties/properties.upgrademodxwidget.snippet.php';
+$base = 'c:/xampp/htdocs/addons/assets/mycomponents/newspublisher/';
+$propertiesFile = '_build/data/properties/properties.newspublisher.snippet.php';
 $propertiesFile = $base . $propertiesFile;
-$languageFile = 'core/components/upgrademodx/lexicon/en/default.inc.php';
-$languageFile = 'C:\xampp\htdocs\addons\assets\mycomponents\upgrademodx\core\components\upgrademodx\lexicon\en\default.inc.php';
+$languageFile = 'core/components/newspublisher/lexicon/en/default.inc.php';
+$languageFile = 'C:\xampp\htdocs\addons\assets\mycomponents\newspublisher\core\components\newspublisher\lexicon\en\properties.inc.php';
 $rewriteCodeFile = false;
-$codeFile = $base . 'core/components/upgrademodx/elements/snippets/upgrademodxwidget.snippet.php';
+$codeFile = $base . 'core/components/newspublisher/elements/snippets/newspublisher.snippet.php';
 
 
 $propertiesInjected = false; /* This will be set automatically if properties are injected */
@@ -134,52 +133,83 @@ function parseDesc($text, &$fields) {
 
 //echo "COUNT: " . count($properties) . "\n";
 $propertiesComment = '';
-foreach($properties as $property) {
-    $fields = array();
 
-    $replaceFields = array(
-        'name' => $property['name'],
-        'description' => $property['desc'],
-        'default' => $property['value'],
-    );
-    $isYesNo = $property['type'] == 'combo-boolean'? true : false;
-    if (isset($_lang[$replaceFields['description']])) {
-        $replaceFields['description'] = $_lang[$replaceFields['description']];
+$areas = array();
+foreach ($properties as $property) {
+    if (! in_array($property['area'], $areas) && !empty($property['area'])) {
+        $areas[] = $property['area'];
     }
-    parseDesc($replaceFields['description'], $fields);
-    if (isset($fields['desc']) && !empty($fields['desc'])) {
-        $replaceFields['description'] = $fields['desc'];
+}
+
+// print_r($areas, true);
+
+
+
+reset($properties);
+
+foreach ($areas as $area) {
+    if (!empty($area)) {
+        $propertiesComment .= "\n           AREA: " . $area . "\n\n";
     }
-    if (isset($fields['default']) && empty($replaceFields['default'])) {
+    $rows .= '<tr><td colspan="3" class="properties_header">' . $area . '</td></tr>';
+    foreach ($properties as $property) {
+        if ($property['area'] !== $area) {
+            continue;
+        }
+        $fields = array();
+
+        $replaceFields = array(
+            'name' => $property['name'],
+            'description' => $property['desc'],
+            'default' => $property['value'],
+        );
+        $isYesNo = $property['type'] == 'combo-boolean' ? true : false;
+        if (isset($_lang[$replaceFields['description']])) {
+            $replaceFields['description'] = $_lang[$replaceFields['description']];
+        }
+        parseDesc($replaceFields['description'], $fields);
+        if (isset($fields['desc']) && !empty($fields['desc'])) {
+            $replaceFields['description'] = $fields['desc'];
+        }
+        if (isset($fields['default']) && empty($replaceFields['default'])) {
             $replaceFields['default'] = $fields['default'];
-    }
+        }
 
-    if ($isYesNo) {
-        $replaceFields['default'] = $replaceFields['default'] == '1' ||
+        if ($isYesNo) {
+            $replaceFields['default'] = $replaceFields['default'] == '1' ||
             $replaceFields['default'] == 'yes' ||
-            $replaceFields['default'] == 'YES'? '1' : '0';
+            $replaceFields['default'] == 'YES' ? '1' : '0';
+        }
+
+        /* Wrap in <fixedpre> if more than 5 tags in default value */
+        $needle = '<>';
+        $haystack = $replaceFields['default'];
+        $count = strlen($haystack) - strlen(str_replace(str_split($needle), '', $haystack));
+        if ($count > 8) {
+            $haystack = str_replace('>', '>,', $haystack);
+            $haystack= htmlentities($haystack);
+        }
+
+        $commaCount = substr_count($haystack, ',');
+        if ($commaCount > 5) {
+            $haystack = str_replace(',', ',<wbr>', $haystack);
+        }
+
+        $replaceFields['default'] = $haystack;
+
+
+        $row = str_replace($findFields, $replaceFields, $rowTpl);
+
+        $rows .= $row;
+
+        /* add to properties comment */
+
+        $propertiesComment .= ' * @property &' . $property['name'] . ' ' . $property['type'];
+        $propertiesComment .= ' -- ' . $fields['desc'] . '; Default: ';
+        $propertiesComment .= empty($fields['default']) ? '(empty).' : $fields['default'];
+        $propertiesComment = rtrim($propertiesComment, '.');
+        $propertiesComment .= ".\n";
     }
-
-    /* Wrap in <fixedpre> if more than 5 tags in default value */
-    $needle = '<>';
-    $haystack = $replaceFields['default'];
-    $count = strlen($haystack) - strlen(str_replace(str_split($needle), '', $haystack));
-    if ($count > 10) {
-        $replaceFields['default'] = '<fixedpre>' . $haystack . '</fixedpre>';
-    }
-
-    $row = str_replace($findFields,$replaceFields,$rowTpl);
-
-    $rows .= $row;
-
-    /* add to properties comment */
-
-    $propertiesComment .= ' * @property &' . $property['name'] . ' ' . $property['type'];
-    $propertiesComment .= ' -- ' . $fields['desc'] . '; Default: ';
-    $propertiesComment .= empty($fields['default'])? '(empty).' : $fields['default'];
-    $propertiesComment .= ".\n";
-
-
 }
 
 $output = str_replace('[[+rows]]', $rows, $tableTpl);
@@ -187,7 +217,7 @@ if ($rewriteCodeFile && !empty($codeFile) ) {
     $content = file_get_contents($codeFile);
     $count = 0;
     if (!empty($content) && !empty($propertiesComment)) {
-        $propertiesComment = wrapComment($propertiesComment);
+        // $propertiesComment = wrapComment($propertiesComment);
         $content = str_replace('[[+properties]]', "Properties:\n" . $propertiesComment, $content, $count);
 
         if ($count == 1) {
@@ -201,8 +231,8 @@ if ($rewriteCodeFile && !empty($codeFile) ) {
         }
     }
 }
-$output .= "\n\n/* Properties\n\n";
-$output .= $propertiesComment;
+$output .= "\n\n/* Properties\n";
+$output .= wrapComment($propertiesComment);
 $output .= "\n */\n";
 if ($propertiesInjected) {
     $output .=  "\n\n Properties injected into code file\n\nScroll up for table and properties comment";

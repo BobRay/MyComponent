@@ -11,10 +11,10 @@ $components = array(
     'version' => '1.0.0',
     'release' => 'beta1',
     'author' => 'Bob Ray',
-    'email' => '<http://bobsguides.com>',
-    'authorUrl' => 'http://bobsguides.com',
+    'email' => '<https://bobsguides.com>',
+    'authorUrl' => 'https://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
-    'packageDocumentationUrl' => 'http://bobsguides.com/foryourapproval-tutorial.html',
+    'packageDocumentationUrl' => 'https://bobsguides.com/foryourapproval-tutorial.html',
     'copyright' => '2012-2013',
 
     /* no need to edit this except to change format */

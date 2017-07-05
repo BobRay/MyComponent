@@ -2,7 +2,7 @@
 /**
  * Example class file for Example extra
  *
- * Copyright 2012 by Bob Ray <http://bobsguides.com>
+ * Copyright 2012-2017 Bob Ray <https://bobsguides.com>
  * Created on 08-17-2012
  *
  * Example is free software; you can redistribute it and/or modify it under the

@@ -3,7 +3,7 @@
 * Resource resolver  for MyComponent extra.
 * Sets template, parent, and (optionally) TV values
 *
-* Copyright 2012-2013 by Bob Ray <http://bobsguides.com>
+* Copyright 2012-2017 Bob Ray <https://bobsguides.com>
 * Created on 10-30-2012
 *
  * MyComponent is free software; you can redistribute it and/or modify it under the

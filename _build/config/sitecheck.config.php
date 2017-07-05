@@ -7,14 +7,14 @@ $components = array(
     'packageName' => 'SiteCheck',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
     'packageDescription' => 'SiteCheck project for MyComponent extra',
-    'version' => '1.0.7',
+    'version' => '1.1.1',
     'release' => 'pl',
     'author' => 'Bob Ray',
-    'email' => '<http://bobsguides.com>',
-    'authorUrl' => 'http://bobsguides.com',
+    'email' => '<https://bobsguides.com>',
+    'authorUrl' => 'https://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
-    'packageDocumentationUrl' => 'http://bobsguides.com/sitecheck-tutorial.html',
-    'copyright' => '2012-2015',
+    'packageDocumentationUrl' => 'https://bobsguides.com/sitecheck-tutorial.html',
+    'copyright' => '2012-2017',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),

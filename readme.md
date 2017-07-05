@@ -1,10 +1,14 @@
-MyComponent Extra for MODx Revolution
+MyComponent Extra for MODX Revolution
 =======================================
 
 
-**Author:** Bob Ray <http://bobsguides.com> [Bob's Guides](http://bobsguides.com)
+**Author:** Bob Ray [Bob's Guides](https://bobsguides.com)
 
-Documentation is available at [Bob's Guides](http://bobsguides.com/mycomponent-tutorial.html)
+**Documentation:** [MyComponent Docs](https://bobsguides.com/mycomponent-tutorial.html)
+
+**Bugs and requests:** [MyComponent Issues](https://github.com/BobRay/MyComponent/issues)
+
+**Questions about using MyComponent** [MODX Forums](https://forums.modx.com)
 
 MyComponent provides a development environment for creating and distributing Extras
 for MODX Revolution.

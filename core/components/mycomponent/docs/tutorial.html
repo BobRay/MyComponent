@@ -232,7 +232,7 @@ $output .= $modx->lexicon('mc_file_nf~~File Not Found') . ': ' . $fileName;
         <h3>Build</h3>
 <p>If your package is going to be distributed to the public, the final step is to submit your
 Transport Package .zip file at <a
-        href="http://modx.com/extras">http://modx.com/extras</a>
+        href="https://modx.com/extras">https://modx.com/extras</a>
 </p>
 
         <p>Of course, you'll need a transport.zip file first. That's the job of the Build utility. Build runs the <code>build.transport.php</code> file which actually creates the .zip file. The <code>build.transport.php</code> file is universal (or almost universal). It examines the <code>_build</code> directory for your project and creates a package based on the files it finds. At present, it will not handle users or permission-related objects, but will do just about anything else (see the <code>example.config.php</code> file for examples of what it *will* handle).</p>
@@ -258,7 +258,7 @@ Transport Package .zip file at <a
 
     <li>Check the &quot;Bootstrap&quot; radio option and click on the &quot;submit&quot; button. Once Bootstrap has finished, you can scroll down to see the log showing everything it has done. Marvel at how much it did and how little time it took.
 
-    <li>Take a look at Example project config file (<code>core/components/mycomponent/config/example.config.php</code>). This is similar to the one you will use for your project, though yours will probably be much simpler. The Example config file contains an example of almost everything you might want to do with MyComponent.
+    <li>Take a look at Example project config file (<code>core/components/mycomponent/_build/config/example.config.php</code>). This is similar to the one you will use for your project, though yours will probably be much simpler. The Example config file contains an example of almost everything you might want to do with MyComponent.
 
     <li>Examine the project files in the <code>assets/mycomponents/example/</code> directory. This directory contains all the files that are part of the Example project.
 Look at the Example files in the Manager. You should see all the Resources and Elements. The Elements will be under the Example category.
@@ -484,7 +484,7 @@ return include $MODX->getOption('mc.core_path') .
 
 <p>As we said earlier, when you run build.transport.php the Transport
 Package .zip file will be created in your site's <code>core/packages</code> directory.
-The final step is to submit that .zip file at <a href="http://modx.com/extras">http://modx.com/extras</a>. You'll need to log in and then click on the &quot;submit a new extra&quot;
+The final step is to submit that .zip file at <a href="https://modx.com/extras">https://modx.com/extras</a>. You'll need to log in and then click on the &quot;submit a new extra&quot;
 link.</p>
 
 <p>Be sure to fill in all the appropriate sections of the submission form and designate the file you attach as a Transport Package. If you have installed the package on your site, there will also be another file with the same name, but without the .zip extension. Be sure to submit the .zip file rather than the other file.</p>

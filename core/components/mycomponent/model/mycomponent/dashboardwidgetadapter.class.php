@@ -122,7 +122,7 @@ class DashboardWidgetAdapter extends ObjectAdapter {
                 unset($fields['dashboards']);
             }
         } elseif ($mode == MODE_EXPORT) {
-            $namespaces = $helpers->props['namespaces'];
+            $namespaces = $helpers->modx->getOption('namespaces', $helpers->props, array());
             foreach ($namespaces as $namespace => $fields) {
 
                 $name = isset($fields['name']) ? $fields['name'] : $namespace;

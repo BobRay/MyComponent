@@ -2,7 +2,7 @@
 /**
  * Resolver for MyComponent extra
  *
- * Copyright 2012-2013 by Bob Ray <http://bobsguides.com>
+ * Copyright 2012-2017 Bob Ray <https://bobsguides.com>
  * Created on 12-08-2012
  *
  * MyComponent is free software; you can redistribute it and/or modify it under the

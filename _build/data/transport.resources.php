@@ -2,7 +2,7 @@
 /**
  * resources transport file for MyComponent extra
  *
- * Copyright 2012-2013 by Bob Ray <http://bobsguides.com>
+ * Copyright 2012-2017 Bob Ray <https://bobsguides.com>
  * Created on 10-30-2012
  *
  * @package mycomponent

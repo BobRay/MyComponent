@@ -2,11 +2,11 @@
 MyComponent
 
 
-Author: Bob Ray <http://bobsguides.com>
-Copyright 2012-2013
+Author: Bob Ray <https://bobsguides.com>
+Copyright 2012-2017 Bob Ray
 
-Official Documentation: http://bobsguides.com/mycomponent-tutorial.html
+Official Documentation: https://bobsguides.com/mycomponent-tutorial.html
 
 Bugs and Feature Requests: https://github.com/BobRay/MyComponent
 
-Questions: http://forums.modx.com
+Questions: https://forums.modx.com

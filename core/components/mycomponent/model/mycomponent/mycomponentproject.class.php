@@ -74,7 +74,7 @@ class MyComponentProject {
     }
 
     /* *****************************************************************************
-       Construction and Support Functions (in MODxObjectAdapter)
+       Construction and Support Functions (in Object Adapter class)
     ***************************************************************************** */
     /**
      * MyComponentProject constructor

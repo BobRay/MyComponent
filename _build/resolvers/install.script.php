@@ -3,7 +3,7 @@
 /**
  * MyComponent resolver script - runs on install.
  *
- * Copyright 2011 Your Name <you@yourdomain.com>
+ * Copyright 2017 Your Name <you@yourdomain.com>
  * @author Your Name <you@yourdomain.com>
  * 1/1/11
  *

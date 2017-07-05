@@ -2,8 +2,8 @@
 /**
  * Utility snippet for MyComponent development
  *
- * Copyright 2011 Your Name <you@yourdomain.com>
- * @author Your Name <you@yourdomain.com>
+ * Copyright 2011-2017 Bob Ray
+ * @author Bob Ray <https://bobsguides.com>
  * 1/1/11
  *
  * MyComponent is free software; you can redistribute it and/or modify it
@@ -24,7 +24,7 @@
 
 /**
  * Utility snippet for development - just installs the
- * Tpl chunks into MODx. Not used by the package.
+ * Tpl chunks into MODX. Not used by the package.
  * It can also install the snippets if you uncomment
  * the snippet section.
  *
@@ -49,7 +49,7 @@ $sources= array (
 );
 unset($root);
 
-/* instantiate MODx */
+/* instantiate MODX */
 require_once $sources['build'].'build.config.php';
 require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
 $modx= new modX();

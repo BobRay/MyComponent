@@ -1,4 +1,4 @@
-[[+packageName]] Extra for MODx Revolution
+[[+packageName]] Extra for MODX Revolution
 =======================================
 
 

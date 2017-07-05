@@ -2,7 +2,7 @@
 /**
  * menus transport file for Example extra
  *
- * Copyright 2013 by Bob Ray <http://bobsguides.com>
+ * Copyright 2013-2017 Bob Ray <https://bobsguides.com>
  * Created on 06-07-2013
  *
  * @package example

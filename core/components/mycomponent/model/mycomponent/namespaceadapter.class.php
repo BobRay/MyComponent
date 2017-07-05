@@ -3,7 +3,7 @@
 /**
  * Description
  * -----------
- * Abstracts the Namespace from the MODx Revolution installation. Every Component
+ * Abstracts the Namespace from the MODX Revolution installation. Every Component
  * has at least a single Namespace. Namespaces control Lexicons and System
  * Settings.
  *
