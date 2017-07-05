@@ -130,7 +130,7 @@ abstract class ObjectAdapter {
     /**
      * Convenience Method for getting the xPDO Class of the current object.
      *
-     * @return String - The proper 'mod' prefixed class for MODx.
+     * @return String - The proper 'mod' prefixed class for MODX.
      */
     public function getClass() {
         return $this->dbClass;
