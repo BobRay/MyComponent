@@ -41,7 +41,7 @@ class CategoryAdapter extends ObjectAdapter {
 
 
 /* *****************************************************************************
-   Bootstrap and Support Functions (in MODxObjectAdapter)
+   Bootstrap and Support Functions (in Object Adapter class)
 ***************************************************************************** */
 
     public function addToMODx($overwrite = false) {
@@ -113,8 +113,40 @@ class CategoryAdapter extends ObjectAdapter {
         }
   }
 /* *****************************************************************************
-   Export Objects and Support Functions (in MODxObjectAdapter)
+   Export Objects and Support Functions (in Object Adapter Class)
 ***************************************************************************** */
+
+
+
+    public function convertCategories($skips) {
+        $convertedArray = array();
+        foreach ($skips as $k => $v) {
+            $error = false;
+            if (! is_numeric($v)) {
+                $cat = $this->modx->getObject('modCategory', array('category' => $v));
+                if ($cat) {
+                    $convertedArray[$cat->get('id')] = true;
+                } else {
+                    $error = true;
+                }
+            } else {
+                if (! $this->modx->getCount('modCategory', $v)) {
+                    $error = true;
+                } else {
+                    $convertedArray[$v] = true;
+                }
+            }
+            if ($error) {
+                $this->helpers->sendLog(modX::LOG_LEVEL_ERROR,
+                    "\n" .
+                    $this->modx->lexicon('mc_category_nf')
+                    . ': ' . $v);
+            }
+        }
+
+        return $convertedArray;
+
+    }
 
     public function exportElements($toProcess, $dryRun = false) {
         $c = $this->modx->getObject('modCategory', array('category' => $this->myFields['category']));
@@ -128,7 +160,23 @@ class CategoryAdapter extends ObjectAdapter {
 
             $class = 'mod' . ucfirst(substr($elementType, 0, -1));
             $adapterName = ucFirst(substr($class, 3)) . 'Adapter';
-            $elements = $this->modx->getCollection($class, array('category' => $this->myId));
+
+            if ($this->helpers->props['allElements']) {
+                $elements = $this->modx->getCollection($class);
+                if (!empty($props['skipCategories'])) {
+                    $skips = $props['skipCategories'];
+                    $skips = $this->convertCategories($skips);
+
+                    foreach ($elements as $k => $element) {
+                        $cat = $element->get('category');
+                        if (isset($skips[$cat])) {
+                            unset($elements[$k]);
+                        }
+                    }
+                }
+            } else {
+                $elements = $this->modx->getCollection($class, array('category' => $this->myId));
+            }
             if (!empty($elements)) {
                 $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                     "\n" .
@@ -156,7 +204,7 @@ class CategoryAdapter extends ObjectAdapter {
                 $fields = $element->toArray();
                 /* @var $o ElementAdapter */
                 $name = $class == 'modTemplate' ? $fields['templatename'] : $fields['name'];
-                $elementList = $this->modx->getOption($elementType, $this->helpers->props['elements']);
+                $elementList = $this->modx->getOption($elementType, $this->helpers->props['elements'], array());
                 foreach ($elementList as $elementName => $propFields) {
                     if ($elementName == $name && isset($propFields['filename'])) {
                         $fields['filename'] = $propFields['filename'];
