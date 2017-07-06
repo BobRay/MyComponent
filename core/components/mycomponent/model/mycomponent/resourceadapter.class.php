@@ -319,7 +319,7 @@ class ResourceAdapter extends ObjectAdapter {
             $helpers->modx->lexicon('mc_processing_resources'));
         $byId = $modx->getOption('getResourcesById', $props, false);
         $method = $byId? 'ID' : 'pagetitle';
-        if ($props['allResources']) {
+        if (isset($props['allResources']) && $props['allResources'] ) {
             $objects = $modx->getCollection('modResource');
 
         } else {

@@ -161,7 +161,7 @@ class CategoryAdapter extends ObjectAdapter {
             $class = 'mod' . ucfirst(substr($elementType, 0, -1));
             $adapterName = ucFirst(substr($class, 3)) . 'Adapter';
 
-            if ($this->helpers->props['allElements']) {
+            if (isset($this->helpers->props['allElements']) && $this->helpers->props['allElements']) {
                 $elements = $this->modx->getCollection($class);
                 if (!empty($props['skipCategories'])) {
                     $skips = $props['skipCategories'];
