@@ -23,12 +23,8 @@
  * properties to paste into tutorials and documentation.
  * The table is based on the properties in a properties file
  * and on a properties language file to pull descriptions from.
- * /
- *
-* /*
-  * Modified: June, 2012
-  * $packageName = 'mycomponent';
-*/
+ */
+
 
 $base = 'c:/xampp/htdocs/addons/assets/mycomponents/newspublisher/';
 $propertiesFile = '_build/data/properties/properties.newspublisher.snippet.php';
