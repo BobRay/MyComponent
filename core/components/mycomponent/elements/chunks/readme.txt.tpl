@@ -3,7 +3,7 @@
 
 
 Author: [[+author]] [[+email]]
-Copyright [[+copyright]]
+Copyright [[+copyright]] [[+author]]
 
 Official Documentation: [[+packageUrl]]
 
