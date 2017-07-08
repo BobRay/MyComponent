@@ -2,7 +2,7 @@
 /**
  * [[+elementName]] [[+elementType]] for [[+packageName]] extra
  *
- * Copyright [[+copyright]] by [[+author]] [[+email]]
+ * Copyright [[+copyright]] [[+author]] [[+email]]
  * Created on [[+createdon]]
  *
 [[+license]]

@@ -3,7 +3,7 @@
 /**
  * Script to interact with user during [[+packageName]] package install
  *
- * Copyright [[+copyright]] by [[+author]] [[+email]]
+ * Copyright [[+copyright]] [[+author]] [[+email]]
  * Created on [[+createdon]]
  *
 [[+license]]

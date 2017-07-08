@@ -4,7 +4,7 @@
  *
  * It assumes that all copyrights are in one of these forms (with your name):
  *
- * Copyright 2014 Bob Ray
+ * Copyright 2014-2017 Bob Ray
  * Copyright 2014-2017 Bob Ray
  * Copyright 2014-2017 by Bob Ray
  *
@@ -67,7 +67,8 @@ $projects = array(
    // 'loglogins',
    // 'logpagenotfound',
    // 'mandrillx',
-    'messagemanager',
+   // 'messagemanager',
+     'mycomponent',
     'newspublisher',
     'notify',
     'objectexplorer',

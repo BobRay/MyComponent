@@ -3,8 +3,8 @@
 /**
  * MyComponent resolver script - runs on install.
  *
- * Copyright 2017 Your Name <you@yourdomain.com>
- * @author Your Name <you@yourdomain.com>
+ * Copyright 2011-2017 Bob Ray <https://bobsguides.com>
+ * @author Bob Ray <https://bobsguides.com>
  * 1/1/11
  *
  * MyComponent is free software; you can redistribute it and/or modify it

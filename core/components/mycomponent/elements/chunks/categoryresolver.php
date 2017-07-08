@@ -3,7 +3,7 @@
  * Category resolver  for [[+packageName]] extra.
  * Sets Category Parent
  *
- * Copyright [[+copyright]] by [[+author]] [[+email]]
+ * Copyright [[+copyright]] [[+author]] [[+email]]
  * Created on [[+createdon]]
  *
 [[+license]]

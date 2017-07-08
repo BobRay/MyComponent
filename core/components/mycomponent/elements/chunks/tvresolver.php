@@ -2,7 +2,7 @@
 /**
 * Resolver to connect TVs to templates for [[+packageName]] extra
 *
-* Copyright [[+copyright]] by [[+author]] [[+email]]
+* Copyright [[+copyright]] [[+author]] [[+email]]
 * Created on [[+createdon]]
 *
 [[+license]]

@@ -3,7 +3,7 @@
 * Resource resolver  for [[+packageName]] extra.
 * Sets template, parent, and (optionally) TV values
 *
-* Copyright [[+copyright]] by [[+author]] [[+email]]
+* Copyright [[+copyright]] [[+author]] [[+email]]
 * Created on [[+createdon]]
 *
 [[+license]]

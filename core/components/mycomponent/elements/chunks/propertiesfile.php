@@ -2,7 +2,7 @@
 /**
  * Properties file for [[+element]] [[+elementType]]
  *
- * Copyright [[+copyright]] by [[+author]] [[+email]]
+ * Copyright [[+copyright]] [[+author]] [[+email]]
  * Created on [[+createdon]]
  *
  * @package [[+packageNameLower]]
