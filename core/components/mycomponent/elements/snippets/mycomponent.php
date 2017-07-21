@@ -27,6 +27,7 @@ if (!isset($currentProject)) {
 }
 
 $cssFile = $modx->getOption('mc.assets_url', null, $modx->getOption('assets_url') . 'components/mycomponent/') . 'css/mycomponent.css';
+$jsFile = $modx->getOption('mc.assets_url', null, $modx->getOption('assets_url') . 'components/mycomponent/') . 'js/jquery-1.11.0.min.js';
 
 $modx->regClientCSS($cssFile);
 
@@ -172,17 +173,19 @@ if ( (!empty($_POST) ) && (isset($_POST['doit']) || isset($_POST['newproject']) 
 foreach ($projects as $k => $value) {
     $selected = '';
     if ($k == $currentProject) {
-        $selected = ' selected="selected" ';
+        $selected = ' active" ';
     }
-    $code .= '        <option value="' . $k . '"' . $selected . '>' . $k . "</option >\n";
+    $code .= "<a href='javascript:switchProject(\"$k\");' class='small-12 columns small button  $selected'>$k</a>";
 }
 
-$tpl = str_replace('[[+projects]]', $code, $tpl);
+$tpl = str_replace('[[+mc.projects]]', $code, $tpl);
+$tpl = str_replace('[[+mc.jsFile]]', $jsFile, $tpl);
 $tpl = str_replace('[[+message]]', $message, $tpl);
+$tpl = str_replace('[[+mc.logs]]', $output, $tpl);
 $tpl = str_replace('[[+current_project]]', $currentProject, $tpl);
 $tpl = str_replace('[[+confirm_remove_objects]]', 'Are you sure you want to remove all objects?', $tpl);
 $tpl = str_replace('[[+confirm_remove_objects_and_files]]', 'Are you sure you want to remove all objects and files?', $tpl);
 
 // $tpl .= "\nNEW PROJECT: " . $newProjectName . "\n" . 'URL: ' . $url . "\n\n" . print_r($projects, true);
 
-return $tpl . '<pre>' . $output;
+return $tpl;

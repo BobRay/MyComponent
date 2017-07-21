@@ -1,3 +1,4 @@
+<script type="text/javascript" src="[[+mc.jsFile]]"></script>
 <script type="text/javascript">
     function getRadioValue(formName, groupName) {
         var radioGroup = document[formName][groupName];
@@ -21,52 +22,104 @@
 
     }
 
+    function switchProject(project) {
+        $('#selectproject').val(project);
+        $('#switchproject').submit();
+    }
+
+    function doAction(action){
+        $('#doit').val(action);
+        $('#mc_action').submit();
+    }
+
 </script>
 
+<form id="switchproject" method="post" action="[[~[[*id]]]]">
+    <input type="hidden" name="currentproject" value="[[+current_project]]" id="currentproject"/>
+    <input type="hidden" name="selectproject" id="selectproject" />
+    <input type="hidden" name="switchproject" id="switchproject" value="Switch Project" />
+</form>
 
+<form id="mc_action" method="post" action="[[~[[*id]]]]">
+    <input type="hidden" name="currentproject" value="[[+current_project]]" id="currentproject"/>
+    <input type="hidden" name="doit" id="doit"/>
+</form>
 
-    <h3>MyComponent Actions</h3>
+<div class="row">
+    <div class="small-12 columns">
+        <h1>MyComponent Project: [[+current_project]]</h1>
+    </div>
 
+    <div class="projects small-12 medium-6 columns columns1">
+        <h2>Projects</h2>
+        [[+mc.projects]]
+    </div>
 
+    <div class="actions small-12 medium-6 columns columns1">
+        <h2>MyComponent Actions</h2>
 
-    <form id="mc_form" name="mc_form" method="post" action="[[~[[*id]]]]">
+        <a href="javascript:doAction('bootstrap')" class="action small-12 columns small button" data-action="bootstrap">Bootstrap</a>
+        <a href="javascript:doAction('exportobjects')" class="action small-12 columns small button" data-action="exportobjects">ExportObjects</a>
+        <a href="javascript:doAction('importobjects')" class="action small-12 columns small button" data-action="importobjects">ImportObjects</a>
+        <a href="javascript:doAction('lexiconhelper')" class="action small-12 columns small button" data-action="lexiconhelper">LexiconHelper</a>
+        <a href="javascript:doAction('checkproperties')" class="action small-12 columns small  button" data-action="checkproperties">CheckProperties</a>
+        <a href="javascript:doAction('build')" class="action small-12 columns small button" data-action="build">Build</a>
+        <a href="javascript:doAction('removeobjects')" class="action small-12 columns small button" data-action="removeobjects">RemoveObjects</a>
+        <a href="javascript:doAction('removeobjectsandfiles')" class="action small-12 columns small button" data-action="removeobjectsandfiles">RemoveObjects and Files</a>
+
+        <form id="mc_form" name="mc_form" method="post" action="[[~[[*id]]]]">
+               <div class="row collapse">
+                    <div class="small-10 columns">
+                        <input type="text" placeholder="NewProject" name="currentproject" value="NewProject" id="currentproject" >
+                    </div>
+                    <div class="small-2 columns">
+                        <a href="javascript:$('#mc_form').submit();" class="button postfix">Create</a>
+                    </div>
+                </div>
+           <input type="hidden" name="newproject" value="New Project">
+        </form>
+    </div>
+
+    <div class="logs small-12 columns">
+        <h2>Log</h2>
         <p>&nbsp;<b>[[+message]]</b></p>
-        <label for="bootstrap">
-        Current Project:
-                    <input type="text" name="currentproject" value="[[+current_project]]" id="currentproject"/>
 
-                </label><input type="submit" name="newproject" value="New Project">
-                <br/><br />
+        <!--Messages from MyComponent, if any-->
+        <pre>
+            [[+mc.logs]]
+        </pre>
+    </div>
+</div>
 
-                <label for="selectproject">
+<script type="text/javascript">
+    /*Keeps columns equal height*/
+    //Modified from http://www.cssnewbie.com/equal-height-columns-with-jquery/#.UtX2EJ5dXTc
+    function equalHeight(group) {
 
-                   <select name="selectproject">
-                      [[+projects]]
-                   </select></label> <input type="submit" name="switchproject" value="Switch Project" id="selectproject">
-                   <br />
-                   <br />
+        group.each(function(){
+            $(this).css('height', 'auto');
+        })
 
-        <label for="bootstrap">
-            <input type="radio" name="doit" value="bootstrap" id="bootstrap"/>
-            Bootstrap
-        </label><br/><br />
-        <label for="exportobjects"> <input type="radio" name="doit" value="exportobjects" id="exportobjects"/>
-            ExportObjects</label><br/><br/>
-        <label for="importobjects"> <input type="radio" name="doit" value="importobjects" id="importobjects"/>
-                        ImportObjects</label><br/><br/>
-        <label for="lexiconhelper"> <input type="radio" name="doit" value="lexiconhelper" id="lexiconhelper"/>
-            LexiconHelper</label><br/><br/>
-        <label for="checkproperties"> <input type="radio" name="doit" value="checkproperties" id="checkproperties"/>
-            CheckProperties</label><br/><br/>
-        <label for="build"> <input type="radio" name="doit" value="build" id="build"/>
-            Build</label><br/><br/><br/><br/>
-        <label for="removeobjects"> <input type="radio" name="doit" value="removeobjects" id="removeobjects"/>
-            RemoveObjects</label><br/><br/>
-            <label for="removeobjectsandfiles"> <input type="radio" name="doit" value="removeobjectsandfiles" id="removeobjectsandfiles"/>
-                        RemoveObjects and Files</label><br/><br/><br/>
+        if ($(document).width() > 600) {
+            var tallest = 0;
+            group.each(function() {
+                var thisHeight = $(this).height();
+                if(thisHeight > tallest) {
+                    tallest = thisHeight;
+                }
+            });
+            group.css('height', tallest + 'px');
+        } else {
+            group.each(function(){
+                $(this).css('height', 'auto');
+            })
+        }
+    }
 
-        <input type="submit" value="Submit" onclick="return confirmSubmit();">
-    </form>
-<br /><br/>
+    $(document).ready(function(){
+        /*Keeps columns on homepage equal height*/
+        equalHeight($('.columns1'));
+        $(window).resize(function(){equalHeight($('.columns1'));});
+    });
 
-
+</script>
