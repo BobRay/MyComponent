@@ -1,6 +1,7 @@
 <?php
 
   $projects = array (
+  'all' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/all.config.php',
   'cacheclear' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/cacheclear.config.php',
   'cachemaster' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/cachemaster.config.php',
   'canonical' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/canonical.config.php',
@@ -15,6 +16,7 @@
   'emptyalias' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/emptyalias.config.php',
   'example' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/example.config.php',
   'example2' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/example2.config.php',
+  'exporthtml' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/exporthtml.config.php',
   'flexibility4' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/flexibility4.config.php',
   'foryourapproval' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/foryourapproval.config.php',
   'fwa' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/fwa.config.php',
@@ -24,6 +26,7 @@
   'loglogins' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/loglogins.config.php',
   'mailchimpplus' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/mailchimpplus.config.php',
   'mandrillx' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/mandrillx.config.php',
+  'messagemanager' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/messagemanager.config.php',
   'moveresources' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/moveresources.config.php',
   'mycomponent' => 'c:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/mycomponent.config.php',
   'newspublisher' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/newspublisher.config.php',
@@ -44,6 +47,6 @@
   'upgrademodx' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/upgrademodx.config.php',
   'usermanagement' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/usermanagement.config.php',
   'userphotos' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/userphotos.config.php',
-  'all' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/all.config.php',
+  'customsearch' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/customsearch.config.php',
 );
  return $projects;

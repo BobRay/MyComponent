@@ -25,14 +25,14 @@
  * and on a properties language file to pull descriptions from.
  */
 
-
-$base = 'c:/xampp/htdocs/addons/assets/mycomponents/newspublisher/';
-$propertiesFile = '_build/data/properties/properties.newspublisher.snippet.php';
+$name = 'messagemanager';
+$base = "c:/xampp/htdocs/addons/assets/mycomponents/{$name}/";
+$propertiesFile = "_build/data/properties/properties.{$name}.snippet.php";
 $propertiesFile = $base . $propertiesFile;
-$languageFile = 'core/components/newspublisher/lexicon/en/default.inc.php';
-$languageFile = 'C:\xampp\htdocs\addons\assets\mycomponents\newspublisher\core\components\newspublisher\lexicon\en\properties.inc.php';
+$languageFile = $base . "core/components/{$name}/lexicon/en/default.inc.php";
+$languageFile = $base . "core/components/{$name}/lexicon/en/properties.inc.php";
 $rewriteCodeFile = false;
-$codeFile = $base . 'core/components/newspublisher/elements/snippets/newspublisher.snippet.php';
+$codeFile = $base . "core/components/{$name}/elements/snippets/{$name}.snippet.php";
 
 
 $propertiesInjected = false; /* This will be set automatically if properties are injected */
@@ -138,7 +138,9 @@ foreach ($properties as $property) {
 }
 
 // print_r($areas, true);
-
+if (empty($areas)){
+    $areas = array('1' => '');
+}
 
 
 reset($properties);
