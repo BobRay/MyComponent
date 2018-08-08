@@ -1378,9 +1378,14 @@ class MyComponentProject {
         $processorDir = $this->myPaths['targetProcessors'];
 
         foreach ($processors as $processor) {
-            $couple = explode(':', $processor);
-            $dir = $processorDir . $couple[0];
-            $file = $couple[1] . '.class.php';
+            if (strpos($processor, ':') !== false) {
+                $couple = explode(':', $processor);
+                $dir = $processorDir . $couple[0];
+                $file = $couple[1] . '.class.php';
+            } else {
+                $dir = $processorDir;
+                $file = $processor . '.class.php';
+            }
             if (!file_exists(rtrim($dir, '/') . '/' . $file)) {
                 $tpl = $this->getProcessorTpl($dir, $file);
                 $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
