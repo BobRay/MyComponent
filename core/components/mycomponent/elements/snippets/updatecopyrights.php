@@ -39,7 +39,7 @@ $projectDirectory = 'c:/xampp/htdocs/addons/assets/mycomponents/';
 $excludeDirs = '.git,.idea,.svn';
 
 /* Exclude files with these patterns in their file names */
-$excludeFiles = '.jpg,.jpeg,.gif,.png,.svg,.less,.sass,.scss,.zip,.gitignore,.min,jsmin.,jsminplus,jquery,JQuery';
+$excludeFiles = '.jpg,.jpeg,.gif,.png,.ttf,.svg,.less,.sass,.scss,.zip,.gitignore,.min,jsmin.,jsminplus,jquery,JQuery';
 
 /* List of project directory names under assets/mycomponents directory */
 $projects = array(
@@ -68,24 +68,24 @@ $projects = array(
    // 'logpagenotfound',
    // 'mandrillx',
    // 'messagemanager',
-     'mycomponent',
-    'newspublisher',
-    'notify',
-    'objectexplorer',
-    'orphans',
-    'personalize',
-    'quickemail',
-    'reflectblock',
-    'refreshcache',
-    'season',
-    'siteatoz',
-    'SiteCheck',
-    'sizematters',
-    'spform',
-    'stagecoach',
-    'subscribe',
-    'syntaxhighlighter',
-    'thermx',
+   // 'mycomponent',
+   // 'newspublisher',
+   // 'notify',
+   // 'objectexplorer',
+   // 'orphans',
+   // 'personalize',
+   // 'quickemail',
+   // 'reflectblock',
+   //  'refreshcache',
+   // 'season',
+   // 'siteatoz',
+   // 'SiteCheck',
+   // 'sizematters',
+   // 'spform',
+   // 'stagecoach',
+   // 'subscribe',
+   // 'syntaxhighlighter',
+   // 'thermx',
     'upgrademodx',
 );
 
