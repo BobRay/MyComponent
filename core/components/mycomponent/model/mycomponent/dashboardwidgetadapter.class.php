@@ -74,15 +74,16 @@ class DashboardWidgetAdapter extends ObjectAdapter {
     public function setWidgetResolver($fields, $mode)
     {
         if ($mode == MODE_BOOTSTRAP) {
-            foreach($fields as $placement) {
-                foreach ($placement as $dashboard => $rank) {
+            // foreach($fields as $placement) {
+              //   $this->modx->log(modX::LOG_LEVEL_ERROR, print_r($fields, true) . ' --- ' . print_r($placement, true));
+                foreach ($fields as $dashboard => $rank) {
                     $resolverFields = array();
                     $resolverFields['dashboard'] = $dashboard;
                     $resolverFields['widget'] = $this->getName();
                     $resolverFields['rank'] = isset($rank) && !empty($rank) ? $rank : '0';
                     ObjectAdapter::$myObjects['widgetResolver'][] = $resolverFields;
                 }
-            }
+            // }
         } elseif ($mode == MODE_EXPORT) {
             $me = $this->modx->getObject('modDashboardWidget', array('name' => $this->getName()));
             if (!$me) {
