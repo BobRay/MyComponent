@@ -131,7 +131,7 @@ directory, so be sure to modify that one for your project rather than the one un
 
 <p>You should always run Bootstrap at least once after editing the project config file (and before running ExportObjects for the first time). It's also a good practice to run ExportObjects as a last step before running Build.</p>
 
-<p>As of Version 3.2.0, there are two changes in ExportObjects that help keep sensitive values out of your package. First, property sets are not exported unless they are specified in the project config file (see the Example project config file). This allows you to create property sets containing API keys or values that are only relevant to your local install without having them go into the package. Second, values for new System Settings in the config file will override the values from the database. With this change, you can now set an API key, password, or secret key in a System Setting or Property Set without having it end up at GitHub or in your package.</p>
+<p><b>New System Settings:</b> In the current version, any sensitive System Settings that should not be in your package or at GitHub should be created in the core namespace. MyComponent will ignore them completely. New System Settings no longer need to be in the config file. If they're there, MyComponent will install them, but it's much easier to just create them in the Manager and export them. See the section below on System Settings.</p>
 
 <h3>ImportObjects</h3>
 
@@ -183,7 +183,7 @@ rewriteCodeFiles
 echo $this->modx->lexicon('mc_file_nf~~File Not Found') . ': ' . $filename;
 </fixedpre></pre>
 
-    <p>Because LexiconHelper processes the file a line at a time, the solution is easy. Just make sure that each <code>$modx->lexicon()</code> is on it's own line with a hard return at the end and no quotation marks after the call. In other words, the code above should look like this:</p>
+    <p>Because LexiconHelper processes the file a line at a time, the solution is easy. Just make sure that each <code>$modx->lexicon()</code> is on its own line with a hard return at the end and no quotation marks after the call. In other words, the code above should look like this:</p>
 
 <pre><fixedpre>
 echo $this->modx->lexicon('mc_file_nf~~File Not Found')
@@ -221,6 +221,21 @@ $output .= $modx->lexicon('mc_file_nf~~File Not Found') . ': ' . $fileName;
 <div class="box">
 <p>LexiconHelper has been completely refactored for MyComponent 3.1.0. It no longer uses the config file to select files, instead, it searches your entire development directory and checks all files that might have lexicon strings in them. It will find lexicon strings in all resources and elements, JavaScript files, controllers, processors, and connectors. In addition, it will process lexicon strings correctly for properties and settings.</p>
 </div>
+
+<h3>System Settings</h3>
+
+<p>If your project has no new System Settings, you can skip this part. System Settings are really easy with MyComponent. They don't need to be in the config file. Just create them in the Manager and fill in all fields. In the Name, Description, and Area fields, put just the Name, Description and Area, in your default language, as you would like them to appear (do *not* user <code>~~</code> tokens or lexicon keys). As long as they are in a namespace associated with your project, MyComponent will create the proper transport files for them and Lexicon Helper will create the proper lexicon strings.</p>
+
+<p>Steps for System Settings</p>
+
+<ol>
+    <li><b>Before Creating any System Settings</b> run Import Objects to make sure everything is current</li>
+    <li>Do *not* use <code>'~~'</code> anywhere</li>
+    <li>Create your System Settings in the MODX manager as described in the paragraph above</li>
+    <li>Run Export Objects</li>
+    <li>Run Lexicon Helper</li>
+</ol>
+
 
 <h3>CheckProperties</h3>
         <p>This utility looks for cases in code where you use a default property. It checks any usages against the properties file(s) in the project's <code>_build</code> directory. CheckProperties uses the <code>'scriptPropertiesAliases'</code> member near the end of the project config file to tell it how to find usages. It already knows about most common aliases for the <code>$scriptProperties</code> array, but feel free to add ones you use if they're not there already.</p>

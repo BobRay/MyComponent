@@ -164,6 +164,9 @@ abstract class AbstractLexiconCodeFile {
      * strings type in files of this type (other lines are skipped) */
     public $subPattern = '';
 
+    /** @var $namespace string - project namespace */
+    public $namespaces = '';
+
 
     /**
      * Children have no constructor so this will always be called
@@ -200,6 +203,17 @@ abstract class AbstractLexiconCodeFile {
         /* Set pattern and subPattern used to search for lex strings
          * in code file
          */
+        $ns = $this->modx->getOption('namespaces', $this->helpers->props, '');
+        $nameSpaces = array();
+        if (! empty ($ns)) {
+            foreach ($ns as $nsArray) {
+                $nameSpaces[] = $nsArray['name'];
+            }
+        }
+
+        $this->namespaces = $nameSpaces;
+
+
         switch ($this->type) {
             case 'Menu':
                 $this->pattern = '#[\'\"]description[\'\"]\s*=>\s*(\'|\")(.*)\1#';
@@ -427,8 +441,14 @@ abstract class AbstractLexiconCodeFile {
             if ($type == 'modScript') {
                 $pattern = '/~~.*([\'\"][\),])/';
                 $replace = '$1';
+
+            /* Settings files */
+            /* Keep part *after* squiggles */
+            } else if ($type ==  'Settings') {
+                $pattern  = '/([\'\"].*~~)/';
+                $replace = '';
             } else {
-                /* text files */
+            /* text files */
                 $pattern = '/~~[^\]\?&]+/';
                 $replace = '';
             }
@@ -802,11 +822,51 @@ class SettingsLexiconCodeFile extends LexiconCodeFile {
                 if (empty($description)) {
                     $description = '';
                 }
+                /* Get name and desc lex strings from database */
+                $dbNameObj = $this->modx->getObject('modLexiconEntry', array('name' =>'setting_' .
+                    $key, 'namespace:IN' => $this->namespaces));
+                $dbName = $dbNameObj? $dbNameObj->get('value') : '';
+                $dbName = empty($dbName)? '' : $dbName;
+
+                $dbDescObj = $this->modx->getObject('modLexiconEntry', array('name' => 'setting_' .
+                    $key .'_desc', 'namespace:IN' => $this->namespaces));
+                $dbDesc = $dbDescObj? $dbDescObj->get('value') : '';
+                $dbDesc = empty($dbDesc) ? '' : $dbDesc;
+
+                /* ~~ shouldn't be used here, but if it is, use the part after it */
+                $pos = strpos($name, '~~');
+                if ($pos !== false) {
+                    $name = substr($name, $pos + 2);
+                }
+                $pos = strpos($description, '~~');
+                if ($pos !== false) {
+                    $name = substr($description, $pos + 2);
+                }
+                $pos = strpos($dbName, '~~');
+                if ($pos !== false) {
+                    $dbName = substr($dbName, $pos + 2);
+                    if ($dbNameObj) {
+                        $dbNameObj->set('value', $dbName);
+                        $dbNameObj->save();
+                    }
+                }
+                $pos = strpos($dbDesc, '~~');
+                if ($pos !== false) {
+                    $dbDesc = substr($dbDesc, $pos + 2);
+                    if ($dbDescObj) {
+                        $dbDescObj->set('value', $dbDesc);
+                        $dbDescObj->save();
+                    }
+                }
+
+                /* Use whichever is longer */
+                $name = (strlen($dbName) >= strlen($name))? $dbName : $name;
                 $this->addLexString('setting_' . $key . '~~' . $name);
+                $description = (strlen($dbDesc) >= strlen($description)) ? $dbDesc : $description;
                 $this->addLexString('setting_' . $key . '_desc' . '~~' . $description);
             }
         } else {
-            $this->_setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
+            $this->_setError($this->modx->lexicon('mc_file_not_found') . ' ' . $fullPath);
         }
     }
 }
@@ -843,17 +903,19 @@ class MenuLexiconCodeFile extends LexiconCodeFile {
             } else {
                 /** @var $object modMenu */
                 foreach ($objects as $object) {
-                    $action = $object->getOne('Action');
-                    $topic = $action->get('lang_topics');
-                    if ($topic !== null) {
-                        if ($topic == $this->helpers->props['packageNameLower']) {
-                            /* Correct if just the package name */
-                            $topic = $topic . ':' . 'default';
-                        }
-                        $this->addLexFile($topic);
-                        /* bail out at the first non-empty lexicon specification */
-                        break;
+                    if (property_exists($object, 'action')) {
+                        $action = $object->getOne('Action');
+                        $topic = $action->get('lang_topics');
+                        if ($topic !== null) {
+                            if ($topic == $this->helpers->props['packageNameLower']) {
+                                /* Correct if just the package name */
+                                $topic = $topic . ':' . 'default';
+                            }
+                            $this->addLexFile($topic);
+                            /* bail out at the first non-empty lexicon specification */
+                            break;
 
+                        }
                     }
                 }
             }
