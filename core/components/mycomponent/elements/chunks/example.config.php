@@ -14,7 +14,7 @@ $components = array(
     'authorUrl' => 'https://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
     'packageDocumentationUrl' => 'https://bobsguides.com/example-tutorial.html',
-    'copyright' => '2014',
+    'copyright' => '2019',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
@@ -180,15 +180,8 @@ $components = array(
             'params' => '',
             'handler' => '',
             'permissions' => '',
-
-            'action' => array(
-                'id' => '',
-                'namespace' => 'example',
-                'controller' => 'index',
-                'haslayout' => true,
-                'lang_topics' => 'example:default',
-                'assets' => '',
-            ),
+            'namespace' => 'example',
+            'controller' => 'index',
         ),
     ),
 
