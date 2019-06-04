@@ -16,36 +16,16 @@ class MenuAdapter extends ObjectAdapter {
                 $fields['namespace'] = $this->helpers->getProp('packageNameLower');
             }
             $this->myFields = $fields;
-            /*$actionFields = $modx->getOption('action', $fields, array());
-
-            if (empty($actionFields)) {
-                $helpers->sendLog(modX::LOG_LEVEL_ERROR, '    ' .
-                    $this->modx->lexicon('mc_menu_has_no_action'));
-                return;
-            }*/
-           /* if (empty($actionFields['namespace'])) {
-                $helpers->sendLog(modX::LOG_LEVEL_ERROR, '    ' .
-                    $this->modx->lexicon('mc_menu_action_no_namespace'));
-                return;
-            }*/
             ObjectAdapter::$myObjects['menus'][] = $fields;
             $this->myFields = $fields;
-
         }
-
-
-
-
     }
 
     public function addToMODx($overwrite = false) {
         $fields = $this->myFields;
         $obj = $this->modx->getObject('modMenu', array('text' => $fields['text'], 'parent' => $fields['parent']));
         if (! $obj) {
-           /* $actionFields = $fields['action'];
-            $action = $this->modx->newObject('modAction');
-            $action->fromArray($actionFields, '', true, true);
-            unset($fields['action'], $fields['id']);*/
+            unset($fields['id']);
             $menu = $this->modx->newObject('modMenu');
             $menu->fromArray($fields, '', true, true);
             // $menu->addOne($action);
@@ -91,9 +71,7 @@ class MenuAdapter extends ObjectAdapter {
 
                         $menuFields[] = $m_fields;
                 }
-
             }
-
         }
         if (! empty($menuFields)) {
             $transportFile = 'transport.menus.php';
@@ -105,12 +83,6 @@ class MenuAdapter extends ObjectAdapter {
             $i = 0;
             foreach($menuFields as $k => $fields) {
                 $code = '';
-               /* $actionFields[$i]['id'] = $i + 1;
-                  // do Action
-                $code .= "\$action = \$modx->newObject('modAction');\n";
-                $code .= "\$action->fromArray( ";
-                $code .= var_export($actionFields[$i], true);
-                $code  .= ", '', true, true);\n";*/
 
                 /* do Menu item */
                 $menuFields[$i]['id'] = $i + 1;
@@ -123,11 +95,6 @@ class MenuAdapter extends ObjectAdapter {
                 $code .= $i + 1 . ']->fromArray( ';
                 $code .= var_export($menuFields[$i], true);
                 $code .= ", '', true, true);\n";
-               /* $code .= "\$";
-                $code .= "menus[";
-                $code .= $i + 1 . ']->addOne(';
-                $code .= "\$action);\n";*/
-
 
                 $tpl .= $code;
                 $i++;
@@ -143,7 +110,6 @@ class MenuAdapter extends ObjectAdapter {
                     . ': ' . $transportFile);
             }
         }
-
     }
 
     public function remove() {
@@ -161,6 +127,5 @@ class MenuAdapter extends ObjectAdapter {
             }
         }
     }
-
 
 }
