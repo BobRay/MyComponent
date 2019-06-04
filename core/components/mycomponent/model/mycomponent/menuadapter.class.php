@@ -53,11 +53,6 @@ class MenuAdapter extends ObjectAdapter {
                 $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                     $this->modx->lexicon('mc_created_menu')
                     . ': ' . $fields['text']);
-            /* Refresh the action map */
-            $cm = $this->modx->getCacheManager();
-            $cm->refresh(array(
-                'action_map' => array(),
-            ));
             }
         } else {
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO,
@@ -157,16 +152,6 @@ class MenuAdapter extends ObjectAdapter {
         /* @var $menu modMenu */
         $menu = $this->modx->getObject('modMenu', array('text' => $fields['text'], 'parent' => $fields['parent']));
         if ($menu) {
-           /* $action = $menu->getOne('Action');
-            if ($action) {
-                if ($action->remove()) {
-                    $temp = $this->modx->setLogLevel(modX::LOG_LEVEL_INFO);
-                    $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
-                        $this->modx->lexicon('mc_removed_menu_item')
-                        . ': ' . $fields['text']);
-                    $this->modx->setLogLevel($temp);
-                }
-            }*/
             if ($menu->remove()) {
                 $temp = $this->modx->setLogLevel(modX::LOG_LEVEL_INFO);
                 $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
