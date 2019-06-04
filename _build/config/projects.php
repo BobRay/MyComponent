@@ -8,6 +8,7 @@
   'caseinsensitiveurls' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/caseinsensitiveurls.config.php',
   'chimpsync' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/chimpsync.config.php',
   'classextender' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/classextender.config.php',
+  'customsearch' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/customsearch.config.php',
   'defaultresourcegroup' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/defaultresourcegroup.config.php',
   'defaultusergroup' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/defaultusergroup.config.php',
   'dirwalker' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/dirwalker.config.php',
@@ -21,6 +22,7 @@
   'foryourapproval' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/foryourapproval.config.php',
   'fwa' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/fwa.config.php',
   'gorevo' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/gorevo.config.php',
+  'guzzle6' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/guzzle6.config.php',
   'hhc' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/hhc.config.php',
   'importusers' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/importusers.config.php',
   'loglogins' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/loglogins.config.php',
@@ -47,6 +49,5 @@
   'upgrademodx' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/upgrademodx.config.php',
   'usermanagement' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/usermanagement.config.php',
   'userphotos' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/userphotos.config.php',
-  'customsearch' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/customsearch.config.php',
 );
  return $projects;
