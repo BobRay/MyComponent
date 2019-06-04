@@ -7,14 +7,14 @@ $components = array(
     'packageName' => 'SiteCheck',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
     'packageDescription' => 'SiteCheck project for MyComponent extra',
-    'version' => '1.1.1',
+    'version' => '1.2.0',
     'release' => 'pl',
     'author' => 'Bob Ray',
     'email' => '<https://bobsguides.com>',
     'authorUrl' => 'https://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
     'packageDocumentationUrl' => 'https://bobsguides.com/sitecheck-tutorial.html',
-    'copyright' => '2012-2017',
+    'copyright' => '2012-2019',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
@@ -133,46 +133,27 @@ $components = array(
      *
      * Every menu should have exactly one action */
 
-    /*'menus' => array(
+    'menus' => array(
         'SiteCheck' => array(
             'text' => 'SiteCheck',
             'parent' => 'components',
-            'description' => 'ex_menu_desc',
+            'description' => 'sitecheck_menu_desc',
             'icon' => '',
             'menuindex' => 0,
             'params' => '',
             'handler' => '',
             'permissions' => '',
+            'namespace' => 'sitecheck',
+            'action' => 'index',
 
-            'action' => array(
-                'id' => '',
-                'namespace' => 'sitecheck',
-                'controller' => 'index',
-                'haslayout' => true,
-                'lang_topics' => 'sitecheck:default',
-                'assets' => '',
-            ),
         ),
-    ),*/
+    ),
 
 
     /* ************************* ELEMENTS **************************** */
 
 
     'elements' => array(
-
-/*        'propertySets' => array( 
-            'PropertySet1' => array(
-                'name' => 'PropertySet1',
-                'description' => 'Description for PropertySet1',
-                'category' => 'SiteCheck',
-            ),
-            'PropertySet2' => array(
-                'name' => 'PropertySet2',
-                'description' => 'Description for PropertySet2',
-                'category' => 'SiteCheck',
-            ),
-        ),*/
 
         'snippets' => array(
             'SiteCheck' => array(
@@ -189,49 +170,8 @@ $components = array(
             ),
 
         ),
-        /*'templates' => array(
-            'Template1' => array(
-                'category' => 'SiteCheck',
-            ),
-            'Template2' => array(
-                'category' => 'SiteCheck',
-                'description' => 'Description for Template two',
-                'static' => false,
-                'propertySets' => array(
-                    'PropertySet2',
-                ),
-            ),
-        ),*/
-        /*'templateVars' => array(
-            'Tv1' => array(
-                'category' => 'SiteCheck',
-                'description' => 'Description for TV one',
-                'caption' => 'TV One',
-                'propertySets' => array(
-                    'PropertySet1',
-                    'PropertySet2',
-                ),
-                'templates' => array(
-                    'default' => 1,
-                    'Template1' => 4,
-                    'Template2' => 4,
 
 
-                ),
-            ),
-            'Tv2' => array( 
-                'category' => 'SiteCheck',
-                'description' => 'Description for TV two',
-                'caption' => 'TV Two',
-                'static' => false,
-                'default_text' => '@INHERIT',
-                'templates' => array( // second value is display rank
-                    'default' => 3, 
-                    'Template1' => 4,
-                    'Template2' => 1,
-                ),
-            ),
-        ),*/
     ),
     /* (optional) will make all element objects static - 'static' field above will be ignored */
     'allStatic' => false,
@@ -326,7 +266,7 @@ $components = array(
      *  named after the package suffix 'validator.php' will be added */
 
     'validators' => array(
-        // 'default',
+        'default',
         // 'hasGdLib'
     ),
 
