@@ -88,6 +88,7 @@
 */
 
 /* ToDo:  check System Setting descriptions */
+/* ToDo:  check System Setting Area lex strings */
 /* ToDo: update version */
 /* ToDo: update tutorial */
 /* ToDo: lexicon strings in resources and chunks */

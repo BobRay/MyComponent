@@ -159,18 +159,25 @@ $props = $properties;
 $settingsFile = $targetRoot . '_build/data/transport.settings.php';
 
 $languageFile = $targetRoot . 'core/components/' . $packageNameLower . '/lexicon/en/setting.inc.php';
+$languageFileAlt = $targetRoot . 'core/components/' . $packageNameLower . '/lexicon/en/default.inc.php';
 $rewriteCodeFile = $modx->getOption('rewriteCodeFiles', $props, false);
 $codeFile = $settingsFile;
 
 
 
-if (!file_exists($settingsFile)) {
+if (file_exists($settingsFile)) {
+    $settings = include $settingsFile;
+} else {
     echo 'Could not find settings file';
 }
-if (!file_exists($languageFile)) {
-    echo 'Could not get language file';
+if (file_exists($languageFile)) {
+    include $languageFile;
+} elseif (file_exists($languageFileAlt)) {
+    include $languageFileAlt;
+} else {
+    echo 'Could not find language file';
 }
-$settings = include $settingsFile;
+
 if (empty($settings)) {
     return 'No settings';
 }

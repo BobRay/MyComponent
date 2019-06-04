@@ -805,6 +805,7 @@ class SettingsLexiconCodeFile extends LexiconCodeFile {
     /**
      * Overrides parent method
      */
+    /* ToDo: Handle 'area' field lexicon strings */
     public function _setUsed() {
         $fullPath = $this->path . '/' . $this->fileName;
         if (file_exists($fullPath)) {
