@@ -7,14 +7,14 @@ $components = array(
     'packageName' => 'CacheMaster',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
     'packageDescription' => 'CacheMaster project for MyComponent extra',
-    'version' => '1.2.3',
+    'version' => '1.2.4',
     'release' => 'pl',
     'author' => 'Bob Ray',
     'email' => '<https://bobsguides.com>',
     'authorUrl' => 'https://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
     'packageDocumentationUrl' => 'https://bobsguides.com/cachemaster-tutorial.html',
-    'copyright' => '2012-2017',
+    'copyright' => '2012-2019',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
@@ -221,6 +221,7 @@ $components = array(
      * (other resolvers may be created above for TVs and plugins).
      * Suffix 'resolver.php' will be added automatically */
     'resolvers' => array(
+
     ),
 
     /* (optional) Validators can abort the install after checking
