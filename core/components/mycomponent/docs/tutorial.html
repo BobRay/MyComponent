@@ -509,6 +509,8 @@ link.</p>
 
 <p>Another common pitfall is to make changes to the code files for elements and then run ExportObjects, which will overwrite your changes with the content of the elements in MODX. Running ImportObjects first will prevent that, but *only* if the elements are listed in the 'process' member *and* in the <code>$elements</code> array. Whenever you create a new object, be sure to add it to the project config before running anything.</p>
 
+<p>One more error, one I still make occasionally, is to use the down arrow in MyComponent to switch projects, but forget to click on the &quot;Switch Projects&quot; button. When you do this, you haven't really switched projects and any actions you take will be on the wrong project. If you've changed files but haven't run ImportObjects, for example, you'll be wiping out your changes.</p>
+
 <p>If you install your extra in another version of MODX for testing, remember that changes you make there will never make it into your package unless you cut-and-paste them into the project files or (better) paste them into MODX and run ExportObjects.</p>
 
 <div class="box">
