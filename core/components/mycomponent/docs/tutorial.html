@@ -6,18 +6,12 @@ of the MODX Package Manager code.
 <div class="box">
 <p>Important upgrade note. For safety, MyComponent doesn't overwrite existing <code>build.transport.php</code> files. When new features are added to MyComponent, there is often a change to this file. For existing projects that use any new or updated features, you'll need to update it manually, either by copying the file from the <code>core/components/mycomponent/elements/chunks/</code> directory to your project directory, or by simply deleting the file in your project's _build directory and running Bootstrap.</p>
 
+<p><b>If you have customized the <code>build.transport.php</code> file, be sure to make a note of your changes so you can apply them to the new file.</b></p>
+
 <p>This doesn't affect new projects, which will get the new file automatically.</p>
 </div>
 <br />
-<div class = "box">
-<h3>Version 3.1.0-3.2.2</h3>
-<p>Nothing has changed from versions 3.0.x that should affect existing projects. A number of bugs have been fixed and there are some fun new features.</p>
 
-<p>Most notable, Version 3.0 has support for Custom Manager Pages (CMPs) and subpackages are now installed when your package is installed (see below). In addition, LexiconHelper has been completely refactored and vastly improved. It no longer uses the project config file. Instead, it walks through all of the project directories and analyzes all files that might contain lexicon strings. It's also smarter about detecting which lexicon file to use for which files and about handling properties and settings files. The handling of quotation marks in object names, properties, and elsewhere is also much more reliable.</p>
-
-<p>Version 3.2.2 is now fully compatible with MODX 2.3.x. The handling of menu items has been updated. (If you had trouble with Menu items in version 3.2.1, set the namespace of the Menu item to the namespace of your extra &mdash; 3.2.2 will do this automatically.) CMPs are now fully class-based, simpler, and more secure. Version 3.2.2 also has a number of bug fixes as well giving you the ability to specify methods for class files and list specific CSS and JS files you want to create (see the new example.config.php file). It also features better handling of static elements, and many other improvements.</p>
-</div>
-<br />
 <div class="box">
     <h3>Upgrading from versions earlier than 3.0</h3>
 
@@ -81,15 +75,15 @@ directory, so be sure to modify that one for your project rather than the one un
 
     <p>The basic utilities in the MyComponent package are Bootstrap, ExportObjects, ImportObjects, LexiconHelper, CheckProperties, and Build. Each one plays a separate role in the creation of a transport package. Here's a quick introduction. Be sure to read the more detailed information on them below.</p>
 
-<p>Basically, Bootstrap gets things off the ground by creating the files, directories, and MODX objects needed for your extra. Bootstrap can also be used to add additional objects you discover you need at any point in a project.</p>
+<p>Basically, Bootstrap gets things off the ground by creating the files, directories, and MODX objects needed for your extra. Bootstrap can also be used to add additional objects you discover you need at any point in a project. Bootstrap is non-destructive and won't modify any existing MODX objects.</p>
 
-<p>ExportObjects creates code files and build files based on the project as it exists in the MODX Manager.</p>
+<p>ExportObjects creates or updates code files and build files based on the project as it exists in the MODX Manager.</p>
 
 <p>ImportObjects updates elements and resources in the Manager based on changes in their code files.</p>
 
 <p>LexiconHelper writes your Lexicon Files for you and checks to make sure that there are no empty, missing, or unused lexicon strings.</p>
 
-<p>CheckProperties looks for references to default properties of elements in code and produces code to be pasted in to the properties file for the build.</p>
+<p>CheckProperties looks for references to default properties of elements in code and produces code to be pasted into the properties file for the build.</p>
 
 <p>Build creates the actual transport package .zip file.</p>
 
@@ -127,11 +121,13 @@ directory, so be sure to modify that one for your project rather than the one un
 
     <p>Unlike Bootstrap, ExportObjects will overwrite the code files for any objects that are processed unless the <code>'dryRun'</code> member of the project config file is set to <code>true</code>. If that's the case, ExportObjects will report what files it would be changing without actually changing them. Be careful &mdash; if you work on the code of a file that is represented by an object in MODX, be sure to run ImportObjects before running ExportObjects or your work will be overwritten by the content of the MODX object. </p>
 
-    <p>The main function of ExportObjects is to let you create or modify MODX objects in the Manager, test them, then export them to files for the build phase of package creation. ExportObjects will not only update the code files for elements and resources, it will also create or update *all* the necessary files for making a transport package for your project.
+    <p>The main function of ExportObjects is to let you create or modify MODX objects in the Manager, test them, then export them to files for the build phase of package creation. ExportObjects will not only update the code files for elements and resources, it will also create or update *all* the necessary files for making a transport package for your project. It's a good practice to always run ImportObjects before working on any code in the Manager. Otherwise, you may end up overwriting work done earlier on other files.
 
 <p>You should always run Bootstrap at least once after editing the project config file (and before running ExportObjects for the first time). It's also a good practice to run ExportObjects as a last step before running Build.</p>
 
-<p><b>New System Settings:</b> In the current version, any sensitive System Settings that should not be in your package or at GitHub should be created in the core namespace. MyComponent will ignore them completely. New System Settings no longer need to be in the config file. If they're there, MyComponent will install them, but it's much easier to just create them in the Manager and export them. See the section below on System Settings.</p>
+<p>When using a version control system (VCS) like git, it's a good idea to make sure all changes are committed before running ExportObjects. After running ExportObjects, check the VCS (e.g., <code>git status</code>) to make sure there are no surprises.</p>
+
+<p><b>New System Settings:</b> In the current version, any sensitive System Settings that should not be in your package or at GitHub (e.g., passwords, tokens, private keys, etc.) should be created in the core namespace. MyComponent will ignore them completely because they are not in your project's namespace. New System Settings no longer need to be in the config file. If they're there, MyComponent will install them, but it's much easier to just create them in the Manager and export them. See the section below on System Settings.</p>
 
 <h3>ImportObjects</h3>
 
@@ -161,7 +157,7 @@ $message = $modx->lexicon('mc_file_nf~~File Not Found');
 [[%mc_file_nf~~File Not Found]]
 </fixedpre></pre>
 
-<p>LexiconHelper will find all instances where you use the MODX Lexicon. It will create a language string and write it into the appropriate lexicon file for you (and optionally remove the part after the ~~ from the file). The only case where this will fail is if you have a file that uses more than one lexicon topic. If that's the case, LexiconHelper doesn't know which file to write the various language strings to. In that case LexiconHelper outputs the lexicon strings to the screen so you can paste them into the appropriate files.</p>
+<p>LexiconHelper will find all instances where you use the MODX Lexicon in  your project. It will create a language string and write it into the appropriate lexicon file for you (and optionally remove the part after the ~~ from the file). The only case where this will fail is if you have a file that uses more than one lexicon topic. If that's the case, LexiconHelper doesn't know which file to write the various language strings to. In that case LexiconHelper outputs the lexicon strings to the screen so you can paste them into the appropriate files.</p>
 
 <p>Whether LexiconHelper modifies the lexicon files and removes the ~~ and it's following string from the code files depend on the following two settings in the project config file:</p>
 
@@ -209,7 +205,8 @@ $output .= $modx->lexicon('mc_file_nf~~File Not Found' . ': ' . $fileName);
 <p>The error is that the <code>$fileName</code> is part of the argument to the <code>lexicon()</code> call. It's easy to do, especially if your editor has auto-completion for parentheses. The correct code would be:</p>
 
 <pre><fixedpre>
-$output .= $modx->lexicon('mc_file_nf~~File Not Found') . ': ' . $fileName;
+$output .= $modx->lexicon('mc_file_nf~~File Not Found')
+    . ': ' . $fileName;
 </fixedpre></pre>
 
 <p>The regex will turn up any cases where a period occurs before the closing <code>)</code> of the <code>lexicon()</code> call. If it doesn't find anything, you haven't made that mistake. Note that the regex can give you false positives if your lexicon string contains a period, so not all matches are errors. It's worth checking, though, because the error will result in incorrect lexicon strings that you may not notice before releasing your package.</p>
@@ -342,7 +339,7 @@ Look at the Example files in the Manager. You should see all the Resources and E
 <br />
 
     <div class="box">
-        <p><b>Important!</b> Although there is a copy of your project config file in your project directory, you should never edit that file. Most of it is ignored by the MyComponent utilities. The &quot;official&quot; project config file is the one in the <code>core/components/mycomponent/_build/config</code> directory and that's always the one you should modify.</p>
+        <p><b>Important reminder!</b> Although there is a copy of your project config file in your project directory, you should never edit that file. Most of it is ignored by the MyComponent utilities. The &quot;official&quot; project config file is the one in the <code>core/components/mycomponent/_build/config</code> directory and that's always the one you should modify.</p>
 
 <p>If you make changes to the project config file and they have no effect, you're probably editing the wrong one. Just edit the right one and MyComponent will overwrite the one in the project directory with it when you run ExportObjects. </p>
     </div>
@@ -392,7 +389,7 @@ chunk1.chunk.html
 </fixedpre></pre>
 
     <p>For a new project, Bootstrap will create the files using this standard naming convention.</p>
-    <p>For an existing project, you can rename your files to match the format above, or you can specify the filename as a field for any element in the project config file (see the examples in example.config.php) if your file names don't match the standard.
+    <p>For an existing project, you can rename your files to match the format above, or you can specify the filename as a field for any element in the project config file (see the examples in <code>example.config.php</code>) if your file names don't match the standard.
     </p>
 
 <h3>Install the Package</h3>
@@ -421,7 +418,7 @@ core/mycomponents/yourcomponent/core/yourcomponent
 
 <p>It's easy to get confused and edit the wrong file when you're working on the package. In addition, the objects created by Bootstrap or ImportObjects already exist in the Manager so you won't know whether they were installed by your packages or were already there.</p>
 
-<p>Often, the safest and best solution is to install the package a completely separate MODX installation. To do that, just copy the transport.zip file for your extra from the <code>core/packages</code> directory to the <code>core/packages</code> directory of the other MODX install. Then, in Package Manager, search locally for packages and install the package as usual. Even if you don't do this during development, you should do it at least once before releasing the package to make sure that it installs and runs as it should.</p>
+<p>Often, the safest and best solution is to install the package in a completely separate MODX installation. To do that, just copy the transport.zip file for your extra from the <code>core/packages</code> directory to the <code>core/packages</code> directory of the other MODX install. Then, in Package Manager, search locally for packages and install the package as usual. Even if you don't do this during development, you should do it at least once before releasing the package to make sure that it installs and runs as it should.</p>
 
 
 <h3>Running Your Component</h3>
@@ -472,7 +469,7 @@ return include $MODX->getOption('mc.core_path') .
 <br />
 
 <div class="box">
-<p>If you have existing projects, remember that the <code>build.transport.php</code> file is never overwritten once it exists. When you upgrade MyComponent, you may need the new version of that file for each project. Either copy the file from the <code>core/components/mycomponent/elements/chunks/</code> directory to the <code>assets/components/yourcomponent/_build</code> directory, or (easier) just delete the old <code>build.transport.php</code> file in your project's development directory and run Bootstrap for each project.</p>
+<p>If you have existing projects, remember that the <code>build.transport.php</code> file is never overwritten once it exists. When you upgrade MyComponent, you may need the new version of that file for each project. Either copy the file from the <code>core/components/mycomponent/elements/chunks/</code> directory to the <code>assets/components/yourcomponent/_build</code> directory, or (easier) just delete the old <code>build.transport.php</code> file in your project's development directory and run Bootstrap for each project. If you've customized the build file, you'll have to redo your changes after using either method.</p>
 </div>
 <br />
 <p>The transport files for the other extras will be transferred to the <code>core/packages/</code> directory when your extra is installed and will be automatically installed, one-by-one, but only if the included extras are newer versions or not installed already.</p>
