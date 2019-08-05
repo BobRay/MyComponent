@@ -120,9 +120,11 @@ if (! file_exists($transportPath)) {
 $content = file_get_contents($transportPath);
 
 $msg = <<<EOD
+<div style="margin:60;">
 <p style="color:red">Old-style build.transport.php file found. This file had to be modified for more recent versions of MODX.</p>
-<p style="color:red">If you have not customized the transport file, you can simply copy the <code>core/components/mycomponent/elements/chunks/build.transport.php</code> file to <code>$transportPath</code>.</p>
+<p style="color:red">If you have not customized the transport file, you can simply copy the <code>core/components/mycomponent/elements/chunks/build.transport.php</code> file to replace the <code>$transportPath</code> file.</p>
 <p style="color:red">If you have made changes to the transport file, make a note of them, copy the new version as described above, and make your changes to the new version before continuing.</p>
+</div>
 EOD;
 
 if (strpos($content, 'dirWalk') === false) {
