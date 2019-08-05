@@ -45,7 +45,7 @@ $excludeFiles = '.jpg,.jpeg,.gif,.png,.ttf,.svg,.less,.sass,.scss,.zip,.gitignor
 $projects = array(
     // 'activationemail',
    // 'botblockx',
-   // 'cacheclear',
+    'cacheclear',
    // 'cachemaster',
    // 'canonical',
    // 'captcha',
@@ -86,7 +86,7 @@ $projects = array(
    // 'subscribe',
    // 'syntaxhighlighter',
    // 'thermx',
-    'upgrademodx',
+   // 'upgrademodx',
 );
 
 /* Instantiate MODX if necessary */
