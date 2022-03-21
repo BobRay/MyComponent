@@ -33,6 +33,12 @@ if (!function_exists('checkFields')) {
 }
 if ($object->xpdo) {
     $modx =& $object->xpdo;
+
+    $classPrefix = $modx->getVersionData()['version'] >= 3
+            ? 'MODX\Revolution\\'
+            : '';
+
+
     switch ($options[xPDOTransport::PACKAGE_ACTION]) {
         case xPDOTransport::ACTION_INSTALL:
         case xPDOTransport::ACTION_UPGRADE:
@@ -45,11 +51,11 @@ if ($object->xpdo) {
                     if (!checkFields('category,parent', $fields)) {
                         continue;
                     }
-                    $categoryObj = $modx->getObject('modCategory', array('category' => $fields['category']));
+                    $categoryObj = $modx->getObject($classPrefix . 'modCategory', array('category' => $fields['category']));
                     if (!$categoryObj) {
                         continue;
                     }
-                    $parentObj = $modx->getObject('modCategory', array('category' => $fields['parent']));
+                    $parentObj = $modx->getObject($classPrefix . 'modCategory', array('category' => $fields['parent']));
                         if ($parentObj) {
                             $categoryObj->set('parent', $parentObj->get('id'));
                         }

@@ -33,6 +33,11 @@ if (!function_exists('checkFields')) {
 
 if ($object->xpdo) {
     $modx =& $object->xpdo;
+
+    $classPrefix = $modx->getVersionData()['version'] >= 3
+            ? 'MODX\Revolution\\'
+            : '';
+
     switch ($options[xPDOTransport::PACKAGE_ACTION]) {
         case xPDOTransport::ACTION_INSTALL:
         case xPDOTransport::ACTION_UPGRADE:
@@ -45,20 +50,20 @@ if ($object->xpdo) {
                     if (!checkFields('tmplvarid,templateid', $fields)) {
                         continue;
                     }
-                    $tv = $modx->getObject('modTemplateVar', array('name' => $fields['tmplvarid']));
+                    $tv = $modx->getObject($classPrefix . 'modTemplateVar', array('name' => $fields['tmplvarid']));
                     if ($fields['templateid'] == 'default') {
-                        $template = $modx->getObject('modTemplate', $modx->getOption('default_template'));
+                        $template = $modx->getObject($classPrefix . 'modTemplate', $modx->getOption('default_template'));
                     } else {
-                        $template = $modx->getObject('modTemplate', array('templatename' => $fields['templateid']));
+                        $template = $modx->getObject($classPrefix . 'modTemplate', array('templatename' => $fields['templateid']));
                     }
                     if (!$tv || !$template) {
                         $modx->log(xPDO::LOG_LEVEL_ERROR, 'Could not find Template and/or TV ' .
                             $fields['templateid'] . ' - ' . $fields['tmplvarid']);
                         continue;
                     }
-                    $tvt = $modx->getObject('modTemplateVarTemplate', array('templateid' => $template->get('id'), 'tmplvarid' => $tv->get('id')));
+                    $tvt = $modx->getObject($classPrefix . 'modTemplateVarTemplate', array('templateid' => $template->get('id'), 'tmplvarid' => $tv->get('id')));
                     if (! $tvt) {
-                        $tvt = $modx->newObject('modTemplateVarTemplate');
+                        $tvt = $modx->newObject($classPrefix . 'modTemplateVarTemplate');
                     }
                     if ($tvt) {
                         $tvt->set('tmplvarid', $tv->get('id'));

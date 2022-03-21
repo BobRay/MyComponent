@@ -36,6 +36,11 @@ if (!function_exists('checkFields')) {
 
 if ($object->xpdo) {
     $modx =& $object->xpdo;
+
+    $classPrefix = $modx->getVersionData()['version'] >= 3
+            ? 'MODX\Revolution\\'
+            : '';
+
     switch ($options[xPDOTransport::PACKAGE_ACTION]) {
         case xPDOTransport::ACTION_INSTALL:
         case xPDOTransport::ACTION_UPGRADE:
@@ -50,9 +55,9 @@ if ($object->xpdo) {
                     if (!checkFields('widget,dashboard', $fields)) {
                         continue;
                     }
-                    $widget = $modx->getObject('modDashboardWidget', array('name' => $fields['widget']));
+                    $widget = $modx->getObject($classPrefix . 'modDashboardWidget', array('name' => $fields['widget']));
 
-                    $dashboard = $modx->getObject('modDashboard', (int) $fields['dashboard']);
+                    $dashboard = $modx->getObject($classPrefix . 'modDashboard', (int) $fields['dashboard']);
 
                     if (!$widget || !$dashboard) {
                         if (!$widget) {
@@ -65,7 +70,7 @@ if ($object->xpdo) {
                         }
                         continue;
                     }
-                    $widgetPlacement = $modx->getObject('modDashboardWidgetPlacement',
+                    $widgetPlacement = $modx->getObject($classPrefix . 'modDashboardWidgetPlacement',
                         array(
                             'widget'=>$widget->get('id'),
                             'dashboard' => (int)$fields['dashboard'],
@@ -73,7 +78,7 @@ if ($object->xpdo) {
                     );
                     
                     if (!$widgetPlacement) {
-                        $widgetPlacement = $modx->newObject('modDashboardWidgetPlacement');
+                        $widgetPlacement = $modx->newObject($classPrefix . 'modDashboardWidgetPlacement');
                     }
                     if ($widgetPlacement) {
                         $fields['rank'] = isset($fields['rank']) ? (int) $fields['rank'] : 0;

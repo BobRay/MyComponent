@@ -53,6 +53,11 @@ if (!function_exists('checkFields')) {
 }
 if ($object->xpdo) {
     $modx =& $object->xpdo;
+
+    $classPrefix = $modx->getVersionData()['version'] >= 3
+            ? 'MODX\Revolution\\'
+            : '';
+
     switch ($options[xPDOTransport::PACKAGE_ACTION]) {
         case xPDOTransport::ACTION_INSTALL:
         case xPDOTransport::ACTION_UPGRADE:
@@ -64,10 +69,10 @@ if ($object->xpdo) {
                 if (!checkFields('element,element_class,property_set', $fields)) {
                     continue;
                 }
-                $elementObj = $modx->getObject($fields['element_class'],
+                $elementObj = $modx->getObject($classPrefix . $fields['element_class'],
                     array(getNameAlias($fields['element_class']) => $fields['element']));
 
-                $propertySetObj = $modx->getObject('modPropertySet', array('name' => $fields['property_set']));
+                $propertySetObj = $modx->getObject($classPrefix . 'modPropertySet', array('name' => $fields['property_set']));
 
                 if (!$elementObj || !$propertySetObj) {
                     $modx->log(xPDO::LOG_LEVEL_ERROR, 'Could not find Element and/or Property Set ' .
@@ -77,9 +82,9 @@ if ($object->xpdo) {
                 $fields['element'] = $elementObj->get('id');
                 $fields['property_set'] = $propertySetObj->get('id');
 
-                $tvt = $modx->getObject('modElementPropertySet', $fields);
+                $tvt = $modx->getObject($classPrefix . 'modElementPropertySet', $fields);
                 if (!$tvt) {
-                    $tvt = $modx->newObject('modElementPropertySet');
+                    $tvt = $modx->newObject($classPrefix . 'modElementPropertySet');
                 }
                 if ($tvt) {
                     foreach($fields as $key => $value) {
