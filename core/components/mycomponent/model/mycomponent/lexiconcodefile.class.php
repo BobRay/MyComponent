@@ -233,7 +233,7 @@ abstract class AbstractLexiconCodeFile {
                 $this->subPattern = '_(';
                 break;
             case 'Text':
-                $this->pattern = '#(\[\[)!*%([^\?&\]]*)#';
+                $this->pattern = '#(\[\[)!*%([^\?&\s\]]+)#';
                 $this->subPattern = '[[';
                 break;
             case 'Properties':
