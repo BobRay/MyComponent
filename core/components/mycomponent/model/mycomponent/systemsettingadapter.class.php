@@ -24,9 +24,10 @@ class SystemSettingAdapter extends ObjectAdapter
             if (! isset($fields['namespace'])) {
                 $fields['namespace'] = $this->helpers->props['packageNameLower'];
             }
-            if (! isset ($fields['name'])) {
-                $fields['name'] = $fields['key'];
-            }
+
+            $fields['name'] = 'setting_' . $fields['key'];
+            $fields['description'] = 'setting' . $fields['key'] . '_desc';
+
             if (is_array($fields)) {
                 $this->myFields =& $fields;
             }
@@ -34,16 +35,8 @@ class SystemSettingAdapter extends ObjectAdapter
                 $fields['area'] = $this->myFields[$this->dbClassParentKey];
             }
         } elseif ($mode == MODE_EXPORT) {
-            $this->modx->lexicon->load($fields['namespace'] . ':default');
-            if (! isset($fields['name'])) {
-                $fields['name'] = $this->modx->lexicon('setting_' . $fields['key'] );
-            }
-            if (! isset($fields['description'])) {
-                /* Hide this from LexiconHelper */
-                $d = 'setting_' . $fields['key'] . '_desc';
-                $fields['description'] = $this->modx->lexicon($d);
-            }
-
+            $fields['name'] = 'setting_' . $fields['key'];
+            $fields['description'] = 'setting_' . $fields['key'] . '_desc';
             unset($fields['editedon']);
         }
         $this->name = $fields['key'];
