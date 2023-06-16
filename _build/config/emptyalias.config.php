@@ -6,15 +6,15 @@ $components = array(
     /* These are used to define the package and set values for placeholders */
     'packageName' => 'EmptyAlias',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
-    'packageDescription' => 'Utility snippet to reports Resources with empty aliases',
-    'version' => '1.0.0',
-    'release' => 'beta1',
+    'packageDescription' => 'Utility snippet to reports Resources with empty aliases and fix them',
+    'version' => '1.0.3',
+    'release' => 'pl',
     'author' => 'Bob Ray',
     'email' => '<https://bobsguides.com>',
     'authorUrl' => 'https://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
     'packageDocumentationUrl' => 'https://bobsguides.com/emptyalias-tutorial.html',
-    'copyright' => '2012-2013',
+    'copyright' => '2012-2023',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),

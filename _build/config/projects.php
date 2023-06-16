@@ -49,5 +49,6 @@
   'upgrademodx' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/upgrademodx.config.php',
   'usermanagement' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/usermanagement.config.php',
   'userphotos' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/userphotos.config.php',
+  'chunkinfo' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/chunkinfo.config.php',
 );
  return $projects;

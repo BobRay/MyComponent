@@ -7,14 +7,14 @@ $components = array(
     'packageName' => 'Subscribe',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
     'packageDescription' => 'Subscribe manages user registration',
-    'version' => '1.0.0',
-    'release' => 'beta1',
+    'version' => '1.3.0',
+    'release' => 'pl',
     'author' => 'Bob Ray',
     'email' => '<https://bobsguides.com>',
     'authorUrl' => 'https://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
     'packageDocumentationUrl' => 'https://bobsguides.com/subscribe-tutorial.html',
-    'copyright' => '2012-2014',
+    'copyright' => '2012-2022',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
@@ -308,7 +308,7 @@ $components = array(
                 'description' => 'Report on subscribers',
                 'static' => false,
             ),
-            'sbsSubScribeForm' => array(
+            'sbsSubscribeForm' => array(
                 'category' => 'Subscribe',
                 'description' => 'Creates the subscribe form',
                 'static' => false,
@@ -469,8 +469,13 @@ $components = array(
      * (other resolvers may be created above for TVs and plugins).
      * Suffix 'resolver.php' will be added automatically */
     'resolvers' => array(
+            'default',
     ),
 
+    /* Dependencies */
+    'requires' => array(
+         'login' => '>=1.9.0',
+    ),
 
     /* (optional) install.options is needed if you will interact
      * with user during the install.
@@ -478,7 +483,8 @@ $components = array(
      * Set this to 'install.options' or ''
      * The file will be created as _build/install.options/user.input.php
      * Don't change the filename or directory name. */
-    'install.options' => 'install.options',
+
+   // 'install.options' => 'install.options',
 
 
     /* Suffixes to use for resource and element code files (not implemented)  */
@@ -511,7 +517,7 @@ $components = array(
      *
      * Set to array() if there are no classes. */
     'classes' => array(
-        'CheckBox' => 'subscribe:checkbox',
+        'CheckBoxes' => 'subscribe:checkboxes',
         'Unsubscribe' => 'subscribe:unsubscribe',
     ),
 
@@ -523,7 +529,7 @@ $components = array(
        without changing anything. Note: On some platforms,
        dryRun is *very* slow  */
 
-    'dryRun' => '1',
+    'dryRun' => '0',
 
     /* Array of elements to export. All elements set below will be handled.
      *
@@ -532,7 +538,7 @@ $components = array(
     */
     'process' => array(
         'snippets',
-        // 'chunks',
+        'chunks',
         'resources',
         'systemSettings',
     ),

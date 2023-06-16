@@ -6,15 +6,15 @@ $components = array(
     /* These are used to define the package and set values for placeholders */
     'packageName' => 'CacheMaster',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
-    'packageDescription' => 'CacheMaster project for MyComponent extra',
-    'version' => '1.2.4',
+    'packageDescription' => 'CacheMaster extra',
+    'version' => '1.3.0',
     'release' => 'pl',
     'author' => 'Bob Ray',
     'email' => '<https://bobsguides.com>',
     'authorUrl' => 'https://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
     'packageDocumentationUrl' => 'https://bobsguides.com/cachemaster-tutorial.html',
-    'copyright' => '2012-2019',
+    'copyright' => '2012-2022',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),

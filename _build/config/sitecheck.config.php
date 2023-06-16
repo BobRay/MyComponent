@@ -7,14 +7,14 @@ $components = array(
     'packageName' => 'SiteCheck',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
     'packageDescription' => 'SiteCheck project for MyComponent extra',
-    'version' => '1.2.0',
+    'version' => '1.3.3',
     'release' => 'pl',
     'author' => 'Bob Ray',
     'email' => '<https://bobsguides.com>',
     'authorUrl' => 'https://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
     'packageDocumentationUrl' => 'https://bobsguides.com/sitecheck-tutorial.html',
-    'copyright' => '2012-2019',
+    'copyright' => '2012-2022',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
@@ -86,6 +86,14 @@ $components = array(
             'namespace' => 'sitecheck',
             'xtype' => 'combo-boolean',
             'value' => false,
+        ),
+        'sitecheck.queryLimit' => array( // key
+                'key' => 'sitecheck.queryLimit',
+                'name' => 'Query Limit',
+                'description' => 'Limit potentially large queries to this number of results; default: 0 (no limit)',
+                'namespace' => 'sitecheck',
+                'xtype' => 'textfield',
+                'value' => 0,
         ),
     ),
 
@@ -271,7 +279,7 @@ $components = array(
     ),
 
     /* (optional) install.options is needed if you will interact
-     * with user during the install.
+     * with user during installation.
      * See the user.input.php file for more information.
      * Set this to 'install.options' or ''
      * The file will be created as _build/install.options/user.input.php
@@ -336,6 +344,7 @@ $components = array(
         'resources',
         // 'propertySets',
         // 'contextSettings',
+        'systemSettings',
         'menus'
     ),
     /*  Array  of resources to process. You can specify specific resources
@@ -360,14 +369,14 @@ $components = array(
     /* These settings are used by LexiconHelper */
     'rewriteCodeFiles' => true,
     /*# remove ~~descriptions */
-    'rewriteLexiconFiles' => true,
+    'rewriteLexiconFiles' => false,
     /* automatically add missing strings to lexicon files */
     /* ******************************************* */
 
      /* Array of aliases used in code for the properties array.
      * Used by the checkproperties utility to check properties in code against
      * the properties in your properties transport files.
-     * if you use something else, add it here (OK to remove ones you never use.
+     * if you use something else, add it here (OK to remove ones you never use).
      * Search also checks with '$this->' prefix -- no need to add it here. */
     'scriptPropertiesAliases' => array(
         'props',
