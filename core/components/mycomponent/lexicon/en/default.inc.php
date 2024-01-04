@@ -185,6 +185,7 @@ $_lang['mc_creating_widget_resolver'] = 'Creating widget resolver';
 $_lang['mc_widgetresolvertpl_empty'] = 'Widget resolver Tpl is empty';
 $_lang['mc_removed_widget_placement'] = 'Remove modWidgetPlacement';
 $_lang['mc_removed_widget'] = 'Removed widget';
+$_lang['mc_widgets'] = 'widget(s)';
 
 /* used in LexiconHelper or its included classes  */
 $_lang['mc_lexicon_helper'] = 'Lexicon Helper';
