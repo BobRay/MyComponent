@@ -15,17 +15,24 @@
 
 /* @var array $options */
 
-if ($object->xpdo) {
-    $modx =& $object->xpdo;
-    switch ($options[xPDOTransport::PACKAGE_ACTION]) {
-        case xPDOTransport::ACTION_INSTALL:
-        case xPDOTransport::ACTION_UPGRADE:
-            /* [[+code]] */
-            break;
+/** @var modTransportPackage $transport */
 
-        case xPDOTransport::ACTION_UNINSTALL:
-            break;
-    }
+if ($transport) {
+    $modx =& $transport->xpdo;
+} else {
+    $modx =& $object->xpdo;
 }
+
+
+switch ($options[xPDOTransport::PACKAGE_ACTION]) {
+    case xPDOTransport::ACTION_INSTALL:
+    case xPDOTransport::ACTION_UPGRADE:
+        /* [[+code]] */
+        break;
+
+    case xPDOTransport::ACTION_UNINSTALL:
+        break;
+}
+
 
 return true;
