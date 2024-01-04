@@ -45,7 +45,7 @@ class Helpers {
     protected $files = array();
 
     protected $output = '';
-    
+
 
     function  __construct(&$modx, &$props = array()) {
         $this->modx =& $modx;
@@ -56,7 +56,7 @@ class Helpers {
     public function getProp($propName, $default = '') {
         return $this->modx->getOption($propName, $this->props, $default);
     }
-    
+
     public function init() {
         $this->tplPath = $this->getProp('mycomponentRoot') . 'elements/chunks/';
         if (substr($this->tplPath, -1) != "/") {
@@ -213,7 +213,7 @@ class Helpers {
         /* replace anything that shouldn't belong in a file name
            with an underscore - allows alphanumeric, dot,
            hyphen, and underscore  */
-        $output = preg_replace('#[^A-Za-z0-9\._\-]#', '_', $output);
+        $output = preg_replace('#[^A-Za-z0-9\._\-\s]#', '_', $output);
 
         return $output;
     }
@@ -283,6 +283,9 @@ class Helpers {
         if (!is_dir($dir)) {
             mkdir($dir, $this->dirPermission, true);
         }
+        /* Force single newline at EOF */
+        $content = rtrim($content) . "\n";
+
         /* add trailing slash if not there */
         if (substr($dir, -1) != "/") {
             $dir .= "/";
@@ -337,7 +340,7 @@ class Helpers {
 
     /**
      * Preserve original "Created on" date in existing files
-     * 
+     *
      * @param $fullPath string - full path to file to be written
      * @param $content string - reference to file content
      */
