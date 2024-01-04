@@ -22,4 +22,3 @@
  *
  * @package [[+packageNameLower]]
  **/
-
