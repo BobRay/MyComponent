@@ -83,8 +83,8 @@ class ResourceAdapter extends ObjectAdapter {
             $this->defaults['searchable'] = $modx->getOption('search_default', null);
             $this->defaults['context_key'] = $modx->getOption('default_context', null);
 
-            if (!isset($fields['class_key'])) {
-                $fields['class_key'] = 'modDocument';
+            if (isset($fields['class_key'])) {
+                unset($fields['class_key']);
             }
             foreach ($this->defaults as $field => $value) {
                 $fields[$field] = isset($fields[$field])
@@ -375,6 +375,9 @@ class ResourceAdapter extends ObjectAdapter {
             $dryRun = $props['dryRun'];
             foreach($objects as $object) {
                 $fields = $object->toArray();
+                if (isset($fields['class_key'])) {
+                    unset($fields['class_key']);
+                }
                 $a = new ResourceAdapter($modx, $helpers, $fields, $mode);
                 if ($mode == MODE_REMOVE) {
                     $a->remove();

@@ -126,7 +126,7 @@ abstract class ObjectAdapter {
         $name = strtolower(str_replace(' ', '', $name));
         return $name;
     }
-    
+
     /**
      * Convenience Method for getting the xPDO Class of the current object.
      *
@@ -135,9 +135,9 @@ abstract class ObjectAdapter {
     public function getClass() {
         return $this->dbClass;
     }
-    
+
     /**
-     * Convenience Method for getting the File System Safe xPDO Class of the 
+     * Convenience Method for getting the File System Safe xPDO Class of the
      * current object.
      *
      * This is for use in file names (e.g.'snippet' for use in snippet1.snippet.php)
@@ -167,9 +167,9 @@ abstract class ObjectAdapter {
      *    properties: properties.myobject.plugin.php
      */
     public function getFileName($fileType = 'code') {
-        if ($fileType == 'transport') 
+        if ($fileType == 'transport')
             return $this->getTransportFileName();
-        elseif ($fileType == 'code') 
+        elseif ($fileType == 'code')
             return $this->getCodeFileName();
         elseif ($fileType == 'properties')
             return $this->getPropertiesFileName();
@@ -185,13 +185,13 @@ abstract class ObjectAdapter {
         $type = $this->getClass();
         $name = $this->getSafeName();
         $suffix = $this->getSafeClass();
-        
+
     /* Initialize Defaults */
         $output = '';
         $extension = 'php';
-            
+
     /* fall-throughs are intentional */
-        switch ($type) 
+        switch ($type)
         {   case 'modResource':
                 $suffix = 'content';
             case 'modTemplate':
@@ -675,6 +675,9 @@ abstract class ObjectAdapter {
         if ($type !== 'modDashboardWidget') {
             unset($fields['content']);
         }
+        if ($type == 'modResource') {
+            unset($fields['class_key']);
+        }
         unset(
             $fields['snippet'],
             $fields['plugincode'],
@@ -697,8 +700,11 @@ abstract class ObjectAdapter {
             $fields['editedon'],
             $fields['desc_trans'],
             $fields['text'],
-            $fields['menu']
+            $fields['menu'],
         );
+        if (isset($fields['class_key']) && ($fields['class_key'] == 'modDocument')) {
+            unset($fields['class_key']);
+        }
 
         $tpl .= var_export($fields, true);
 
