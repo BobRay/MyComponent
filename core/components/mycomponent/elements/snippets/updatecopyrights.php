@@ -30,7 +30,11 @@ $addBy = false;
 $upperCase = true; // Capitalize the C in Copyright
 
 $currentYear = strftime("%Y");
-$max = 1;  // Number of projects to
+
+/* Optional -- sets copyright to current year + 1 */
+// $currentYear = (int) strftime("%Y") + 1 ;
+// $currentYear = (string) $currentYear;
+$max = 1;  // Number of projects to operate on
 
 /* Directory containing projects */
 $projectDirectory = 'c:/xampp/htdocs/addons/assets/mycomponents/';
@@ -43,22 +47,22 @@ $excludeFiles = '.jpg,.jpeg,.gif,.png,.ttf,.svg,.less,.sass,.scss,.zip,.gitignor
 
 /* List of project directory names under assets/mycomponents directory */
 $projects = array(
-    // 'activationemail',
+   // 'activationemail',
    // 'botblockx',
-    'cacheclear',
+   //'cacheclear',
    // 'cachemaster',
-   // 'canonical',
-   // 'captcha',
-   // 'caseinsensitiveurls',
-   //  'classextender',
+  // 'canonical',
+  // 'captcha',
+  // 'caseinsensitiveurls',
+   // 'classextender',
    // 'constantcontact',
-   // 'convertdatabasecharset',
-   // 'defaultresourcegroup',
-   // 'defaultusergroup',
+   // convertdatabasecharset',
+   //'defaultresourcegroup',
+   //  'defaultusergroup',
    // 'dirwalker',
    // 'emailresource',
    // 'emptyalias',
-   // 'ezfaq',
+   //'ezfaq',
    // 'fileupload',
    // 'fixedpre',
    // 'getDynaDescription',
@@ -71,7 +75,7 @@ $projects = array(
    // 'mycomponent',
    // 'newspublisher',
    // 'notify',
-   // 'objectexplorer',
+   'objectexplorer',
    // 'orphans',
    // 'personalize',
    // 'quickemail',
@@ -399,7 +403,7 @@ foreach($projects as $project) {
         }
         /* replacement required */
 
-        $by = $addBy ? 'by ' : $byFound && !$removeBy ? 'by ' : '';
+        $by = $addBy ? 'by ' : ($byFound && !$removeBy ? 'by ' : '');
 
         $matches[4] = $currentYear;
         $copyright = $upperCase? 'Copyright' : 'copyright';
