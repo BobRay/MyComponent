@@ -103,6 +103,7 @@ class DashboardWidgetAdapter extends ObjectAdapter {
                             'widget' => $widgetName,
                             'dashboard' => $fields['dashboard'],
                             'rank' => $fields['rank'],
+                            'size' => $fields['size'],
                         );
                         ObjectAdapter::$myObjects['widgetResolver'][] = $resolverFields;
                     }
