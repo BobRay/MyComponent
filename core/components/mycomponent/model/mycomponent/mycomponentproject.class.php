@@ -119,7 +119,7 @@ class MyComponentProject {
 
         $projectConfigPath = $this->modx->getOption('mc.root', null,
             $this->modx->getOption('core_path') . 'components/mycomponent/') .
-            '_build/config/' . strtoLower($currentProject) . '.config.php';
+            '_build/config/' . strtolower($currentProject) . '.config.php';
 
         if (file_exists($projectConfigPath)) {
             $properties = include $projectConfigPath;
@@ -1812,7 +1812,7 @@ class MyComponentProject {
      * in the 'elements' member of the Project config
      *
      *
-     * @param array $toProcess - array of object to import
+     * @param string $toProcess - array of object to import
      * @param string $directory - directory to place objects in
      * @param bool $dryRun -- if set, will just report what it would have done
      */
