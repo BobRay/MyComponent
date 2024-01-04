@@ -86,7 +86,7 @@ if($object->xpdo) {
                             }
                         }
                     }
-
+                    /** @var array $fields ['tvValues'] */
                     if (isset($fields['tvValues'])) {
                         foreach($fields['tvValues'] as $tvName => $value) {
                             $resource->setTVValue($tvName, $value);
