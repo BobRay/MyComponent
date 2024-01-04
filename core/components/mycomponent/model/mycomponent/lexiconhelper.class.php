@@ -222,6 +222,7 @@ class LexiconHelper {
     public function processFile($fileName, $fullPath) {
         $indent = '        ';
         $rewriteLexiconFiles = $this->helpers->getProp('rewriteLexiconFiles', false);
+        $rewriteLexiconFiles = false;
         $rewriteCodeFiles = $this->helpers->getProp('rewriteCodeFiles', false);
 
         $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . $indent .
