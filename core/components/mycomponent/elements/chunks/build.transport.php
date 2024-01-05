@@ -369,7 +369,7 @@ if ($hasContexts) {
         $attributes = array(
             xPDOTransport::UNIQUE_KEY => 'key',
             xPDOTransport::PRESERVE_KEYS => true,
-            xPDOTransport::UPDATE_OBJECT => true,
+            xPDOTransport::UPDATE_OBJECT => false,
         );
         foreach ($contexts as $context) {
             $vehicle = $builder->createVehicle($context, $attributes);
@@ -876,7 +876,7 @@ if ($hasMenu) {
 }
 
 /* Next-to-last step - pack in the license file, readme.txt, changelog,
- * and setup options 
+ * and setup options
  */
 $attr = array(
     'license' => file_get_contents($sources['docs'] . 'license.txt'),
