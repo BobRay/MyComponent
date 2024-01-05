@@ -861,6 +861,7 @@ if ($hasMenu) {
             ));
             $builder->putVehicle($vehicle);
             unset($vehicle, $menu);
+
         }
         $helper->sendLog(modX::LOG_LEVEL_INFO,
             $modx->lexicon('mc_packaged')
@@ -868,11 +869,6 @@ if ($hasMenu) {
                 $modx->lexicon('mc_menu_items')
                 . '.');
     }
-    $helper->sendLog(modX::LOG_LEVEL_INFO, '    ' .
-        $modx->lexicon('mc_packaged')
-            . ' ' . count($menus) . ' ' .
-            $modx->lexicon('mc_menu_items')
-            . '.');
 }
 
 /* Next-to-last step - pack in the license file, readme.txt, changelog,
