@@ -870,7 +870,7 @@ if ($hasMenu) {
 }
 
 /* Next-to-last step - pack in the license file, readme.txt, changelog,
- * and setup options 
+ * and setup options
  */
 $attr = array(
     'license' => file_get_contents($sources['docs'] . 'license.txt'),

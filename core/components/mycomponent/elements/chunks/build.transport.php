@@ -369,7 +369,7 @@ if ($hasContexts) {
         $attributes = array(
             xPDOTransport::UNIQUE_KEY => 'key',
             xPDOTransport::PRESERVE_KEYS => true,
-            xPDOTransport::UPDATE_OBJECT => false,
+            xPDOTransport::UPDATE_OBJECT => true,
         );
         foreach ($contexts as $context) {
             $vehicle = $builder->createVehicle($context, $attributes);
@@ -861,7 +861,10 @@ if ($hasSetupOptions && !empty($props['install.options'])) {
 }
 
 if ($hasDependencies) {
-    $attr['requires'] = $modx->getOption('requires', $props, array(), true);
+    $dependencies = $modx->getOption('requires', $props, array(), true);
+    if (!empty($dependencies)) {
+        $attr['requires'] = $dependencies;
+    }
 }
 
 $builder->setPackageAttributes($attr);
