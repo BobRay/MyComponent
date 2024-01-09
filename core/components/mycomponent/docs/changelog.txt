@@ -1,129 +1,148 @@
 Changelog for MyComponent
 
+MyComponent 4.0.3
+ - Fixed bug in pattern for text files (chunks)
+ - Fix bootstrap and export to use proper values for name and description
+ - Fix issues with widgets
+ - Update dependency code
+ - Updates for MODX 3
+ - Add setting resolver; add dependencies; remove duplicate resolvers
+ - Update docs
+ - Add unit test notes
+ - Fix handling of System Setting lexicon strings
+ - Update System Settings section in tutorial
+ - Normalize file endings to keep diff happy
+ - Handle new menu objects without related action object
+ - Fix bug with processor directory
+ - Add UpdateCopyrights snippet
+ - Update copyrights in ExportObjects
+ - Add error checks for array members
+ - Add option to skip categories
+ - Mods for Articles; add option to export all resources
+ - Force empty template value to string
+ - Allow setting empty template in resource resolver
+ - Fix bug with renamed objects not being found
+ - Detect old-style build file and explain fix
+ - Numerous other bug fixes and improvements
+
 MyComponent 3.2.2
 -------------------
-Allow specification of methods in class files
-Improve handling of static elements on import and export
-Mods for MODX 2.3 menus
-Fix bug with default JS file
-Improve output in CheckProperties
-Skip references to core lex. files in LexiconHelper
-Allow listing of CSS and JS files in config
-Delete created contexts on uninstall
-Synchronize build files
-Improve output in Build
-Fix bug with named CSS files
-Improve Docs
-Update unit tests
+ - Allow specification of methods in class files
+ - Improve handling of static elements on import and export
+ - Mods for MODX 2.3 menus
+ - Fix bug with default JS file
+ - Improve output in CheckProperties
+ - Skip references to core lex. files in LexiconHelper
+ - Allow listing of CSS and JS files in config
+ - Delete created contexts on uninstall
+ - Synchronize build files
+ - Improve output in Build
+ - Fix bug with named CSS files
+ - Improve Docs
+ - Update unit tests
 
 MyComponent 3.2.1
 -------------------
-Don't overwrite existing projects and currentProject file on upgrade
-
+ - Don't overwrite existing projects and currentProject file on upgrade
 
 MyComponent 3.2.0
 -------------------
-Refactor Example CMP
-Process Resources in ImportObjects
-Refresh action map when Bootstrap creates menus
-System Setting value in config file overrides actual setting
-Fix bug with subPackage location
-Fix bug with user input file
-LexiconHelper checks processor directories
-LexiconHelper copies lex files to real core/lexicon dir
-Only package property sets if set in config file
-Fix bug with aborting when subPackages are up-to-date
-Sort project list for form
-
+ - Refactor Example CMP
+ - Process Resources in ImportObjects
+ - Refresh action map when Bootstrap creates menus
+ - System Setting value in config file overrides actual setting
+ - Fix bug with subPackage location
+ - Fix bug with user input file
+ - LexiconHelper checks processor directories
+ - LexiconHelper copies lex files to real core/lexicon dir
+ - Only package property sets if set in config file
+ - Fix bug with aborting when subPackages are up-to-date
+ - Sort project list for form
 
 MyComponent 3.1.2
 -------------------
-Fix bug with allStatic
-Fix bug with createPropertiesTable
-Fix bug with slashes in object names
-Correct MODX constants
-Update unit tests
-Preserve creation date in original files
-Correct placeholders in CMP home component
-Protect naked ~~ from LexiconHelper
-Minor code optimization
-Fix bug with bootstrap not setting resource content
+ - Fix bug with allStatic
+ - Fix bug with createPropertiesTable
+ - Fix bug with slashes in object names
+ - Correct MODX constants
+ - Update unit tests
+ - Preserve creation date in original files
+ - Correct placeholders in CMP home component
+ - Protect naked ~~ from LexiconHelper
+ - Minor code optimization
+ - Fix bug with bootstrap not setting resource content
 
 MyComponent 3.1.1
 --------------------
-Fix bug with subpackages
-Fix bug with createSettingsTable snippet
-Fix bug with LexiconHelper failing to remove ~~ strings when no missing entries
-Fix creation of unwanted JS file
-Fix bug with empty topic in LexiconCodeFile class
-
-
+ - Fix bug with subpackages
+ - Fix bug with createSettingsTable snippet
+ - Fix bug with LexiconHelper failing to remove ~~ strings when no missing entries
+ - Fix creation of unwanted JS file
+ - Fix bug with empty topic in LexiconCodeFile class
 
 MyComponent 3.1.0
 -----------------
-Handle CMP files
-Create working Example CMP file
-Fix critical bug with Tpl file path
-Refactor LexiconHelper to use actual files rather than config
-Add LexiconCodeFile class for LexiconHelper
-Add More reliable processing in LexiconHelper
-Better handling of embedded quotes in fields and object names
-Direct handling of lexicon strings in menu and properties transport files
-Fix bug with processor Tpls
-Handle custom file names in Check Properties
-Install subpackages when package is installed
-Detect subpackages automatically
-Fix bug in identifying properties build files
-Prefix internal methods with underscore
-Remove naive getters and setters for speed
-Improved reporting and error messages
-Use var_export for more reliable handling of properties
-Add option to use JSMinPlus for minimizing JS file
-Add option to create JS-All combined JS file
-No longer ignore static element files in Export Objects
-E_NOTICE fixes
-Many minor bug fixes
-
-
+ - Handle CMP files
+ - Create working Example CMP file
+ - Fix critical bug with Tpl file path
+ - Refactor LexiconHelper to use actual files rather than config
+ - Add LexiconCodeFile class for LexiconHelper
+ - Add More reliable processing in LexiconHelper
+ - Better handling of embedded quotes in fields and object names
+ - Direct handling of lexicon strings in menu and properties transport files
+ - Fix bug with processor Tpls
+ - Handle custom file names in Check Properties
+ - Install subpackages when package is installed
+ - Detect subpackages automatically
+ - Fix bug in identifying properties build files
+ - Prefix internal methods with underscore
+ - Remove naive getters and setters for speed
+ - Improved reporting and error messages
+ - Use var_export for more reliable handling of properties
+ - Add option to use JSMinPlus for minimizing JS file
+ - Add option to create JS-All combined JS file
+ - No longer ignore static element files in Export Objects
+ - E_NOTICE fixes
+ - Many minor bug fixes
 
 MyComponent 3.0.7
 -----------------
-Report Version and Release in build
-Create assets dir if set in config even if it will be empty
-Export System Settings from DB rather than config file
+ - Report Version and Release in build
+ - Create assets dir if set in config even if it will be empty
+ - Export System Settings from DB rather than config file
 
 MyComponent 3.0.6
 -----------------
-Bruno17 - initialize MODX only if necessary in build file
-Bruno17 - mods for lowercase category
-Bruno17 - mods for PHP < 5/3
-Bruno17 - Option to get example Tpl from file
-E_NOTICE and Fatal Error bug fixes
-Updated copyright year
-Added Context settings to build
-get Error service when initializing MODX
-Fixed bug with System Setting updates
-Fixed LexiconHelper bug with System Setting descriptions
-Export ignores one-line include snippets
-Fixed bug with content field being ignored in Bootstrap
-Fixed bug in CheckProperties
-LexiconHelper skips dynamic load specifications
-Minor bug fixes
+ - Bruno17 - initialize MODX only if necessary in build file
+ - Bruno17 - mods for lowercase category
+ - Bruno17 - mods for PHP < 5/3
+ - Bruno17 - Option to get example Tpl from file
+ - E_NOTICE and Fatal Error bug fixes
+ - Updated copyright year
+ - Added Context settings to build
+ - get Error service when initializing MODX
+ - Fixed bug with System Setting updates
+ - Fixed LexiconHelper bug with System Setting descriptions
+ - Export ignores one-line include snippets
+ - Fixed bug with content field being ignored in Bootstrap
+ - Fixed bug in CheckProperties
+ - LexiconHelper skips dynamic load specifications
+ - Minor bug fixes
 
 MyComponent 3.0.5
 -----------------
-Updated installation instructions
-Fixed bugs in CreateSettingsTable
-Fixed bug with System Settings in lexicon helper
-Fixed typo in textfield x-type that prevented system setting updates
-Fixed typo in readme.txt
-Fixed bug in checkproperties.php when there is no model dir.
+ - Updated installation instructions
+ - Fixed bugs in CreateSettingsTable
+ - Fixed bug with System Settings in lexicon helper
+ - Fixed typo in textfield x-type that prevented system setting updates
+ - Fixed typo in readme.txt
+ - Fixed bug in checkproperties.php when there is no model dir.
 
 MyComponent 3.0.3
 -----------------
-Refactored Version
-Numerous changes (see docs)
+ - Refactored Version
+ - Numerous changes (see docs)
 
 MyComponent 1.0.0
 -------------------
-Initial Version
+ - Initial Version
