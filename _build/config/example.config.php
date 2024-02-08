@@ -70,7 +70,7 @@ $components = array(
     /* ************************ NEW SYSTEM EVENTS ************************* */
 
     /* Array of your new System Events (not default
-     * MODX System Events). Listed here so they can be created during
+     * MODX System Events). Listed here, so they can be created during
      * install and removed during uninstall.
      *
      * Warning: Do *not* list regular MODX System Events here !!! */
