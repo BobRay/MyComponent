@@ -242,6 +242,17 @@ $output .= $modx->lexicon('mc_file_nf~~File Not Found')
     <li>Run Lexicon Helper</li>
 </ol>
 
+<p>Remember that System Settings are not affected by ImportObjects. Bootstrap will set them, and their lexicon stings, but to change them, you have to modify them in MODX and export them.</p>
+
+<p>The System Setting <code>name</code> and <code>description</code> fields don't actually exist. Lexicon keys for them are computed by MODX in the Manager based on the key of the System Setting. For example, a System Setting with the key <code>delay</code> in the <code>somenamespace</code> namespace will have its name and description lexicon keys in a language file (usually <code>default.inc.php</code>) in this that namespace in this form:</p>
+<pre><fixedpre>
+$_lang['setting_delay'] = 'Delay';
+$_lang['setting_delay_desc'] = 'Delay between cURL requests';
+</fixedpre></pre>
+
+
+
+
 
 <h3>CheckProperties</h3>
         <p>This utility looks for cases in code where you use a default property. It checks any usages against the properties file(s) in the project's <code>_build</code> directory. CheckProperties uses the <code>'scriptPropertiesAliases'</code> member near the end of the project config file to tell it how to find usages. It already knows about most common aliases for the <code>$scriptProperties</code> array, but feel free to add ones you use if they're not there already.</p>
