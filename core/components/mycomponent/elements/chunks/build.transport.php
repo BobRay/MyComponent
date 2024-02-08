@@ -331,10 +331,10 @@ $hasValidators = is_dir($sources['build'] . 'validators'); /* Run a validators b
 $hasResolvers = is_dir($sources['build'] . 'resolvers');
 $hasSetupOptions = is_dir($sources['install_options']); /* HTML/PHP script to interact with user */
 $hasMenu = file_exists($sources['data'] . 'transport.menus.php'); /* Add items to the MODX Top Menu */
-$hasWidgets = file_exists($sources['data'] . 'transport.dashboardwidgets.php'); /* Add items to the MODX Top Menu */
+$hasWidgets = file_exists($sources['data'] . 'transport.dashboardwidgets.php'); /* Add widgets to package */
 $hasSettings = file_exists($sources['data'] . 'transport.settings.php'); /* Add new MODX System Settings */
 $hasContextSettings = file_exists($sources['data'] . 'transport.contextsettings.php');
-$hasSubPackages = is_dir($sources['subpackages']);
+// $hasSubPackages = is_dir($sources['subpackages']);
 $minifyJS = $modx->getOption('minifyJS', $props, false);
 $hasDependencies = $modx->getOption('requires', $props, false, true);
 
@@ -658,8 +658,9 @@ foreach ($categories as $k => $categoryName) {
         xPDOTransport::RELATED_OBJECTS => true,
     );
 
-    /* Only add this on first pass if no subPackages */
-    if ($hasValidators && ($i == 1) && (!$hasSubPackages)) {
+    /* Only add this on first pass */
+    // if ($hasValidators && ($i == 1) && (!$hasSubPackages)) {
+    if ($hasValidators && ($i == 1)) {
         $attr[xPDOTransport::ABORT_INSTALL_ON_VEHICLE_FAIL] = true;
     }
 
@@ -861,9 +862,14 @@ if ($hasSetupOptions && !empty($props['install.options'])) {
 }
 
 if ($hasDependencies) {
+    $helper->sendLog(modX::LOG_LEVEL_INFO,
+        $modx->lexicon('mc_packaging_dependencies'));
     $dependencies = $modx->getOption('requires', $props, array(), true);
     if (!empty($dependencies)) {
         $attr['requires'] = $dependencies;
+        $helper->sendLog(modX::LOG_LEVEL_INFO, $modx->lexicon('mc_packaged')
+            . ' ' .
+            count($dependencies) . ' ' . $modx->lexicon('mc_dependencies'));
     }
 }
 
