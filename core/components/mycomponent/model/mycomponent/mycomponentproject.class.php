@@ -341,7 +341,7 @@ class MyComponentProject {
 
         /* Create Widgets */
         $this->createWidgets($mode);
-        
+
         if ($mode == MODE_REMOVE) {
             /*  Create namespace */
             $temp = $this->modx->setLogLevel(modX::LOG_LEVEL_INFO);
@@ -509,6 +509,10 @@ class MyComponentProject {
                 if (!isset($fields['key'])) {
                     $fields['key'] = $key;
                 }
+
+                $fields['name'] = $this->helpers->handleTilde($fields['name']);
+                $fields['description'] = $this->helpers->handleTilde($fields['description']);
+
                 // include 'systemsettingadapter.class.php';
                 $this->addToModx('SystemSettingAdapter', $fields);
             }
@@ -525,24 +529,57 @@ class MyComponentProject {
 
             foreach ($nameSpaces as $nameSpace => $n_fields) {
                 $name = isset($n_fields['name']) ? $n_fields['name'] : $nameSpace;
-                $nameSpace = $this->modx->getObject('modNamespace',
+                $nameSpaceObj = $this->modx->getObject('modNamespace',
                     array('name' => $name));
-                if ($nameSpace) {
+                if ($nameSpaceObj) {
                     /* Get settings as namespace related objects */
-                    $settings = $nameSpace->getMany('SystemSettings');
+                    $settings = $nameSpaceObj->getMany('SystemSettings');
                     $count = count($settings);
                     if (! empty ($settings)) {
                         foreach ($settings as $setting) {
                             /* @var $setting modSystemSetting */
-                            $fields = $setting->toArray();
-                            /* Let Value in config file override DB value */
-                            if (isset($newSystemSettings[$fields['key']]['value'])) {
-                                $fields['value'] = $newSystemSettings[$fields['key']]['value'];
-                            }
-                            new SystemSettingAdapter($this->modx, $this->helpers, $fields, $mode);
                             if ($mode == MODE_REMOVE) {
                                 $setting->remove();
+                                continue;
                             }
+                            /* Export */
+                            $fields = $setting->toArray();
+
+                            /* These two are not fields of the object, so
+                               we get them from the config file or lexicon in DB */
+
+                            /* First, the name */
+                            $configString = $this->helpers->handleTilde($newSystemSettings[$fields['key']]['name']);
+
+                            $dbString = $this->helpers->getLexiconString('setting_' . $fields['key'], $nameSpace);
+
+                            /* Use $dbString if not empty */
+                            if (!empty($dbString)) {
+                                $name = $dbString;
+                            } elseif (!empty($configString)) {
+                                $name = $configString;
+                            } else { // neither is set
+                                $name = '';
+                            }
+                            $fields['name'] = $name;
+
+                            /* Now description */
+                            $configString = $this->helpers->handleTilde($newSystemSettings[$fields['key']]['description']);
+
+                            $dbString = $this->helpers->getLexiconString('setting_' . $fields['key'] . '_desc', $nameSpace);
+
+                            /* Use $dbString if not empty */
+                            if (!empty($dbString)) {
+                                $name = $dbString;
+                            } elseif (!empty($configString)) {
+                                $name = $configString;
+                            } else { // neither is set
+                                $name = '';
+                            }
+                            $fields['description'] = $name;
+
+                            new SystemSettingAdapter($this->modx, $this->helpers, $fields, $mode);
+
                         }
                     } else {
                         $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
@@ -575,7 +612,8 @@ class MyComponentProject {
             foreach($namespaces as $namespace => $fields) {
                 $namespaceName = isset($fields['name'])? $fields['name'] : $namespace;
                 $settings = $this->modx->getCollection('modContextSetting', array('namespace' => $namespaceName));
-                $newContextSettings = array_merge($newContextSettings, $settings);
+
+               $newContextSettings = array_merge($newContextSettings, $settings);
             }
         }
 
@@ -601,6 +639,8 @@ class MyComponentProject {
 
             foreach ($newContextSettings as $obj) {
                     $fields = $obj->toArray();
+
+
                     new ContextSettingAdapter($this->modx, $this->helpers, $fields, $mode);
                     if ($mode == MODE_REMOVE) {
                         $obj->remove();
@@ -2002,4 +2042,3 @@ class MyComponentProject {
         }
     }
 }
-

@@ -842,4 +842,29 @@ class Helpers {
             return '';
         }
     }
+
+    /** Get a lexicon string from a key , namespace, and topic
+     *  handle trailing handle ~~
+     * @param $path string - Full path to file
+     * @return string - Original Created on date or '' if not found
+     */
+    public function getLexiconString($key, $namespace, $topic = 'default') {
+        $key = $this->handleTilde($key, true);
+        $this->modx->lexicon->load($namespace . ':' . $topic);
+        $lexString =  $this->modx->lexicon($key);
+        return $this->handleTilde($lexString);
+    }
+
+    /** Handle string containing ~~
+     *  Return the part ahead of it if $key is true
+     *  else return part after it
+     */
+    public function handleTilde($string, $key=false) {
+        if (strpos($string, '~~') !== false) {
+            $a = explode('~~', $string);
+            $string = $key? $a[0] : $a[1];
+        }
+
+        return ($string);
+    }
 }

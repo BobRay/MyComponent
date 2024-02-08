@@ -1,6 +1,7 @@
 <?php
 // Include the Base Class (only once)
 
+/* Runs once for each new System Setting */
 class SystemSettingAdapter extends ObjectAdapter
 {//These will never change.
     protected $dbClass = 'modSystemSetting';
@@ -15,29 +16,93 @@ class SystemSettingAdapter extends ObjectAdapter
     protected $myFields;
 
     final public function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP) {
-
+        /* Fields are already set from config */
         $this->modx =& $modx;
         $this->helpers =& $helpers;
         $this->myComponent =& $myComponent;
+        if (!isset($fields['namespace'])) {
+            $fields['namespace'] = $this->helpers->props['packageNameLower'];
+        }
+        /* used later */
+        $namespace = $fields['namespace'];
 
         if ($mode == MODE_BOOTSTRAP) {
-            if (! isset($fields['namespace'])) {
-                $fields['namespace'] = $this->helpers->props['packageNameLower'];
-            }
 
-            $fields['name'] = 'setting_' . $fields['key'];
-            $fields['description'] = 'setting' . $fields['key'] . '_desc';
-
-            if (is_array($fields)) {
+            /* Get name and description from config file */
+           /* $key = $fields['key'];
+            if (isset($this->helpers->props['newSystemSettings'])) {
+                $settings = $this->helpers->props['newSystemSettings'];
+                if (isset($settings[$key]['name'])) {
+                    $fields['name'] = $settings[$key]['name'];
+                }
+                if (isset($settings[$key]['description'])) {
+                    $fields['description'] = $settings[$key]['description'];
+                }
+                if (isset($settings[$key]['xtype'])) {
+                    $fields['xtype'] = $settings[$key]['xtype'];
+                }
+                if (isset($settings[$key]['area'])) {
+                    $fields['area'] = $settings[$key]['area'];
+                } else {
+                    $fields['area'] = '';
+                }
+            }*/
+            $fields['editedon'] = '0000-00-00 00:00:00';
+            if (is_array($fields) && !empty($fields)) {
                 $this->myFields =& $fields;
             }
-            if (!isset($fields['area'])) {
-                $fields['area'] = $this->myFields[$this->dbClassParentKey];
-            }
         } elseif ($mode == MODE_EXPORT) {
-            $fields['name'] = 'setting_' . $fields['key'];
-            $fields['description'] = 'setting_' . $fields['key'] . '_desc';
-            unset($fields['editedon']);
+            if (false) {
+                $lexField = 'setting_' . $fields['key'];
+                $dbObject = $modx->getObject('modLexiconEntry', array('namespace' => $namespace, 'name' => $lexField));
+                $dbString = $dbObject ? $dbObject->get('value') : '';
+                // handle ~~, if any
+                if (strpos($dbString, '~~') !== false) {
+                    $dbString = explode('~~', $dbString);
+                    $dbString = $dbString[1];
+                }
+                $configString = $fields['name'];
+                if (strpos($configString, '~~') !== false) {
+                    $configString = explode('~~', $configString);
+                    $configString = $configString[1];
+                }
+
+                // Use $dbString if not empty
+                if (!empty($dbString)) {
+                    $name = $dbString;
+                } elseif (!empty($configString)) {
+                    $name = $configString;
+                } else { // neither is set
+                    $name = '';
+                }
+
+                $fields['name'] = $name;
+
+                // Do the same with description
+                $lexField = 'setting_' . $fields['key'] . '_desc';
+                $dbObject = $modx->getObject('modLexiconEntry', array('namespace' => $fields['namespace'], 'name' => $lexField));
+                $dbString = $dbObject ? $dbObject->get('value') : '';
+                // handle ~~, if any
+                if (strpos($dbString, '~~') !== false) {
+                    $dbString = explode('~~', $dbString);
+                    $dbString = $dbString[1];
+                }
+                $configString = $fields['description'];
+                if (strpos($configString, '~~') !== false) {
+                    $configString = explode('~~', $configString);
+                    $configString = $configString[1];
+                }
+
+                // Use $dbString if not empty
+                if (!empty($dbString)) {
+                    $name = $dbString;
+                } elseif (!empty($configString)) {
+                    $name = $configString;
+                } else { // neither is set
+                    $name = '';
+                }
+                $fields['description'] = $name;
+            }
         }
         $this->name = $fields['key'];
         ObjectAdapter::$myObjects['newSystemSettings'][] = $fields;
