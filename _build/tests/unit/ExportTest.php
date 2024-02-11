@@ -12,8 +12,10 @@ use PHPUnit_Framework_Assert;
 use PHPUnit_Framework_TestCase;
 
 include_once 'c:\xampp\htdocs\addons\assets\mycomponents\mycomponent\core\components\mycomponent\model\mycomponent\mycomponentproject.class.php';
-ob_start();
 
+/**
+ * @method assertStringContainsString(string $string, string $path)
+ */
 class ExportTest extends PHPUnit_Framework_TestCase {
     /**
      * @outputBuffering enabled
@@ -35,6 +37,7 @@ class ExportTest extends PHPUnit_Framework_TestCase {
      */
 
     protected function setUp():void {
+        ob_start();
         require_once dirname(__FILE__) . '/build.config.php';
         require_once dirname(__FILE__) . '/uthelpers.class.php';
         require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
@@ -82,19 +85,24 @@ class ExportTest extends PHPUnit_Framework_TestCase {
         $this->mc->modx = null;
         $this->modx = null;
         $this->mc = null;
+        ob_end_clean();
     }
 
 
     public function testInit() {
         $this->modx->log(modX::LOG_LEVEL_INFO, 'Component: ' . $this->mc->props['packageName']);
-        $this->modx->log(modX::LOG_LEVEL_INFO, 'Target Root: ' . PHPUnit_Framework_Assert::readAttribute($this->mc, 'targetRoot'));
+
+        $this->modx->log(modX::LOG_LEVEL_INFO, 'Target Root: ' . $this->mc->targetRoot);
         $this->modx->log(modX::LOG_LEVEL_INFO, 'TargetCore: ' . $this->mc->myPaths['targetCore']);
         $this->assertNotEmpty($this->mc->props);
         $this->assertNotEmpty($this->mc->props['targetRoot']);
         $this->assertTrue(method_exists($this->mc->helpers, 'replaceTags'));
-        $this->assertNotEmpty(PHPUnit_Framework_Assert::readAttribute($this->mc, 'packageNameLower'));
-        $this->assertNotEmpty(PHPUnit_Framework_Assert::readAttribute($this->mc, 'targetRoot'));
-        $this->assertNotEmpty(PHPUnit_Framework_Assert::readAttribute($this->mc, 'dirPermission'));
+
+        $this->assertNotEmpty($this->mc->packageNameLower);
+
+        $this->assertNotEmpty($this->mc->targetRoot);
+
+        $this->assertNotEmpty($this->mc->dirPermission);
     }
 
     public function testProcessResources() {
@@ -250,7 +258,7 @@ class ExportTest extends PHPUnit_Framework_TestCase {
         $this->mc->exportComponent();
         $path = $this->mc->myPaths['targetBuild'] . 'build.transport.php';
         $this->assertFileExists($path);
-        $this->assertContains('unittest', $path);
+        $this->assertStringContainsString('unittest', $path);
         $this->assertNotEmpty(MODX_CORE_PATH);
         $packagePath = MODX_CORE_PATH . 'packages/unittest-1.0.0-beta1.transport.zip';
         @unlink($packagePath);
