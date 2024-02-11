@@ -36,7 +36,7 @@ class ContextSettingAdapter extends ObjectAdapter {
                 $fields['area'] = $this->myFields[$this->dbClassParentKey];
             }
         } elseif ($mode == MODE_EXPORT) {
-            $this->modx->lexicon->load($fields['namespace'] . ':default');
+            $this->modx->lexicon->load($fields['namespace'] . ':setting');
             if (!isset($fields['name'])) {
                 $fields['name'] = $this->modx->lexicon('setting_' . $fields['key']);
             }

@@ -18,13 +18,14 @@ $loginFile = 'c:\Users\Bob Ray\mc_auth.php';
  * If you have not moved the core, the current values should work.
  * In some cases, you may have to hard-code the full paths */
 if (!defined('MODX_CORE_PATH')) {
-    define('MODX_CORE_PATH', dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/core/');
-    define('MODX_BASE_PATH', dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/');
+    define('MODX_CORE_PATH', dirname(dirname(__FILE__), 6) . '/core/');
+
+    define('MODX_BASE_PATH', dirname(__FILE__, 7) . '/');
     define('MODX_MANAGER_PATH', MODX_BASE_PATH . 'manager/');
     define('MODX_CONNECTORS_PATH', MODX_BASE_PATH . 'connectors/');
     define('MODX_ASSETS_PATH', MODX_BASE_PATH . 'assets/');
 }
-
+$x = 1;
 /* not used -- here to prevent E_NOTICE warnings */
 if (!defined('MODX_BASE_URL')) {
     define('MODX_BASE_URL', 'http://localhost/addons/');
