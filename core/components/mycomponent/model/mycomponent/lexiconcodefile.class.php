@@ -233,7 +233,7 @@ abstract class AbstractLexiconCodeFile {
                 $this->subPattern = '_(';
                 break;
             case 'Text':
-                $this->pattern = '#(\[\[)!*%([^\?&\s\]]+)#';
+                $this->pattern = '#(\[\[)!*%([^\?&\]]+)#';
                 $this->subPattern = '[[';
                 break;
             case 'Properties':
@@ -957,4 +957,3 @@ class MenuLexiconCodeFile extends LexiconCodeFile {
     }
 
 }
-
