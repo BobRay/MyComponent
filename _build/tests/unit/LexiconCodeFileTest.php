@@ -186,7 +186,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
     }
 
     protected function tearDown():void {
-        // $this->utHelpers->rrmdir($this->targetRoot);
+        $this->utHelpers->rrmdir($this->targetRoot);
     }
 
     public function testSetup() {

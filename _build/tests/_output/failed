@@ -1,6 +1,0 @@
-tests\unit\MyComponentProjectTest.php:testHelpers
-tests\unit\MyComponentProjectTest.php:testCreateNewSystemSettings
-tests\unit\MyComponentProjectTest.php:testCreateResources
-tests\unit\MyComponentProjectTest.php:testCreateResolvers
-tests\unit\MyComponentProjectTest.php:testCreateIntersects
-tests\unit\MyComponentProjectTest.php:testResourceValues
