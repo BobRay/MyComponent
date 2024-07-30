@@ -826,8 +826,9 @@ class Helpers {
     }
     public function beautify($ary) {
         $ary = preg_replace("/\n[ ]+array/", " array", var_export($ary, true));
-        $ary =  str_replace("\n  ", "\n                ", $ary);
-        return str_replace("\n)", "\n            )", $ary);
+        $ary = str_replace("\n  ", "\n            ", $ary);
+        $ary = str_replace("\n)", "\n        )", $ary);
+        return str_replace("\n              ", "\n                ", $ary);
     }
 
     /**

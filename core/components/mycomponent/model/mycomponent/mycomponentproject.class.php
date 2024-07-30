@@ -604,47 +604,104 @@ class MyComponentProject {
      * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT, MODE_REMOVE
      */
     public function createContextSettings($mode = MODE_BOOTSTRAP) {
-        $newContextSettings = array();
-        if ($mode == MODE_BOOTSTRAP) {
-            $newContextSettings = $this->modx->getOption('contextSettings', $this->props, array());
-        } else {
-            $namespaces = $this->modx->getOption('namespaces', $this->props, array());
-            foreach($namespaces as $namespace => $fields) {
-                $namespaceName = isset($fields['name'])? $fields['name'] : $namespace;
-                $settings = $this->modx->getCollection('modContextSetting', array('namespace' => $namespaceName));
-
-               $newContextSettings = array_merge($newContextSettings, $settings);
-            }
-        }
-
-        if (empty($newContextSettings)) {
+        $newContextSettings = $this->modx->getOption('newSystemSettings', $this->props, array());
+        if (empty($newContextSettings) && $mode == MODE_BOOTSTRAP) {
             return;
         }
         if ($mode != MODE_EXPORT) {
             $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
-                $this->modx->lexicon('mc_processing_context_settings'));
+                $this->modx->lexicon('mc_processing_new_context_settings'));
         }
         if ($mode == MODE_BOOTSTRAP) {
-            $contextSettings = $this->helpers->getProp('contextSettings', array());
-            foreach ($contextSettings as $key => $fields) {
+            $settings = $this->helpers->getProp('contextSettings', array());
+            foreach ($settings as $key => $fields) {
                 if (!isset($fields['key'])) {
                     $fields['key'] = $key;
                 }
-                // include 'contextsettingadapter.class.php';
+
+                $fields['name'] = $this->helpers->handleTilde($fields['name']);
+                $fields['description'] = $this->helpers->handleTilde($fields['description']);
+
+                // include 'systemsettingadapter.class.php';
                 $this->addToModx('ContextSettingAdapter', $fields);
             }
 
         } elseif ($mode == MODE_EXPORT || $mode == MODE_REMOVE) {
-            /* @var $obj modContextSetting  */
+            $nameSpaces = $this->modx->getOption('namespaces', $this->props, array());
+            /* Get namespaces from Project config */
+            if (empty($nameSpaces)) {
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
+                    '    ' .
+                    $this->modx->lexicon('mc_no_namespaces'));
+                return;
+            }
 
-            foreach ($newContextSettings as $obj) {
-                    $fields = $obj->toArray();
+            foreach ($nameSpaces as $nameSpace => $n_fields) {
+                $name = isset($n_fields['name']) ? $n_fields['name'] : $nameSpace;
+                $nameSpaceObj = $this->modx->getObject('modNamespace',
+                    array('name' => $name));
+                if ($nameSpaceObj) {
+                    /* Get settings as namespace related objects */
+                    $settings = $nameSpaceObj->getMany('ContextSettings');
+                    $count = count($settings);
+                    if (! empty ($settings)) {
+                        foreach ($settings as $setting) {
+                            /* @var $setting modContextSetting */
+                            if ($mode == MODE_REMOVE) {
+                                $setting->remove();
+                                continue;
+                            }
+                            /* Export */
+                            $fields = $setting->toArray();
 
+                            /* These two are not fields of the object, so
+                               we get them from the config file or lexicon in DB */
 
-                    new ContextSettingAdapter($this->modx, $this->helpers, $fields, $mode);
-                    if ($mode == MODE_REMOVE) {
-                        $obj->remove();
+                            /* First, the name */
+                            $configString = $this->helpers->handleTilde($newContextSettings[$fields['key']]['name']);
+
+                            $dbString = $this->helpers->getLexiconString('setting_' . $fields['key'], $nameSpace);
+
+                            /* Use $dbString if not empty */
+                            if (!empty($dbString)) {
+                                $name = $dbString;
+                            } elseif (!empty($configString)) {
+                                $name = $configString;
+                            } else { // neither is set
+                                $name = '';
+                            }
+                            $fields['name'] = $name;
+
+                            /* Now description */
+                            $configString = $this->helpers->handleTilde($newContextSettings [$fields['key']]['description']);
+
+                            $dbString = $this->helpers->getLexiconString('setting_' . $fields['key'] . '_desc', $nameSpace);
+
+                            /* Use $dbString if not empty */
+                            if (!empty($dbString)) {
+                                $name = $dbString;
+                            } elseif (!empty($configString)) {
+                                $name = $configString;
+                            } else { // neither is set
+                                $name = '';
+                            }
+                            $fields['description'] = $name;
+
+                            new ContextSettingAdapter($this->modx, $this->helpers, $fields, $mode);
+
+                        }
+                    } else {
+                        $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
+                            '    ' .
+                                $this->modx->lexicon('mc_no_settings')
+                                . ': ' . $name);
                     }
+                } else {
+                    $this->helpers->sendLog(modX::LOG_LEVEL_ERROR,
+                        '[MyComponentProject] ' .
+                            $this->modx->lexicon('mc_namespace_nf')
+                            . ': ' . $name);
+                }
             }
         }
     }

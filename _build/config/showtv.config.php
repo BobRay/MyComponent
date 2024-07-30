@@ -7,14 +7,14 @@ $components = array(
     'packageName' => 'ShowTv',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
     'packageDescription' => 'ShowTv project for MyComponent extra',
-    'version' => '1.0.0',
-    'release' => 'beta1',
+    'version' => '1.1.3',
+    'release' => 'pl',
     'author' => 'Bob Ray',
     'email' => '<https://bobsguides.com>',
     'authorUrl' => 'https://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
     'packageDocumentationUrl' => 'https://bobsguides.com/showtv-tutorial.html',
-    'copyright' => '2012-2013',
+    'copyright' => '2012-2024',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
@@ -90,7 +90,7 @@ $components = array(
         'snippets' => array(
             'ShowTv' => array(
                 'category' => 'ShowTv',
-                'description' => 'Show any TV, anywhere',
+                'description' => 'Show the value of any TV, anywhere',
                 'static' => false,
             ),
         ),

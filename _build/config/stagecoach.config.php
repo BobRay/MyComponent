@@ -7,14 +7,14 @@ $components = array(
     'packageName' => 'StageCoach',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
     'packageDescription' => 'StageCoach project for MyComponent extra',
-    'version' => '1.5.3',
+    'version' => '1.6.3',
     'release' => 'pl',
     'author' => 'Bob Ray',
     'email' => '<https://bobsguides.com>',
     'authorUrl' => 'https://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
     'packageDocumentationUrl' => 'https://bobsguides.com/stagecoach-tutorial.html',
-    'copyright' => '2012-2018',
+    'copyright' => '2012-2024',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),

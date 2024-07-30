@@ -14,7 +14,7 @@ $components = array(
     'authorUrl' => 'https://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
     'packageDocumentationUrl' => 'https://bobsguides.com/sitecheck-tutorial.html',
-    'copyright' => '2012-2022',
+    'copyright' => '2012-2024',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
@@ -112,7 +112,7 @@ $components = array(
 
     ),
 
-   
+
 
     /* ************************* CATEGORIES *************************** */
     /* (optional) List of categories. This is only necessary if you
