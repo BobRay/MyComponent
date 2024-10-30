@@ -276,7 +276,6 @@ $components = array(
 
     'validators' => array(
         'default',
-        // 'hasGdLib'
     ),
 
     /* (optional) install.options is needed if you will interact
