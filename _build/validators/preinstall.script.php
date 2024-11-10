@@ -37,9 +37,19 @@
 /* The $modx object is not available here. In its place we
  * use $object->xpdo
  */
-$modx =& $object->xpdo;
+/** @var $transport modTransportPackage */
+/** @var $object xPDOObject */
+if ($transport) {
+    $modx =& $transport->xpdo;
+} else {
+    $modx =& $object->xpdo;
+}
 
+$classPrefix = $modx->getVersionData()['version'] >= 3
+    ? 'MODX\Revolution\\'
+    : '';
 
+/** @var array $options */
 $modx->log(xPDO::LOG_LEVEL_INFO,'Running PHP Validator.');
 switch($options[xPDOTransport::PACKAGE_ACTION]) {
     case xPDOTransport::ACTION_INSTALL:
@@ -47,7 +57,7 @@ switch($options[xPDOTransport::PACKAGE_ACTION]) {
         $modx->log(xPDO::LOG_LEVEL_INFO,'Checking for installed getResources snippet ');
         $success = true;
         /* Check for getResources */
-        $gr = $modx->getObject('modSnippet',array('name'=>'getResources'));
+        $gr = $modx->getObject($classPrefix . 'modSnippet',array('name'=>'getResources'));
         if ($gr) {
             $modx->log(xPDO::LOG_LEVEL_INFO,'getResources found - install will continue');
             unset($gr);

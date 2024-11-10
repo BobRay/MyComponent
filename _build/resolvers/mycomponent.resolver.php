@@ -43,8 +43,6 @@ $initialCurrentProjectFile = "<" . "?" . "p" . "h" . "p" . "
 \$currentProject = 'example';
 ";
 
-
-
 $initialProjectsFile = "<" . "?" . "php" . "
 \$projects = array(\n" .
     "    'example' => '" . MODX_ASSETS_PATH . "/mycomponents/mycomponent/_build/config/example.config.php'," .
@@ -58,48 +56,58 @@ $oldStuff = array(
    'cmp.controllerindex.tpl',
    'cmp.controllerrequest.class.php'
 );
-if ($object->xpdo) {
+
+/** @var $transport modTransportPackage */
+if ($transport) {
+    $modx =& $transport->xpdo;
+} else {
     $modx =& $object->xpdo;
-    switch ($options[xPDOTransport::PACKAGE_ACTION]) {
-        case xPDOTransport::ACTION_INSTALL:
-        case xPDOTransport::ACTION_UPGRADE:
-            if (!file_exists($currentProjectFile)) {
-                $fp = fopen($currentProjectFile, 'w');
-                if ($fp) {
-                    fwrite($fp, $initialCurrentProjectFile);
-                    fclose($fp);
-                } else {
-                    $modx->log(xPDO::LOG_LEVEL_INFO, 'Could not write Current Project File');
-                }
-            }
-            if (!file_exists($projectsFile)) {
-                $fp = fopen($projectsFile, 'w');
-                if ($fp) {
-                    fwrite($fp, $initialProjectsFile);
-                    fclose($fp);
-                } else {
-                    $modx->log(xPDO::LOG_LEVEL_INFO, 'Could not write Projects File');
-                }
-            }
+}
 
-        $path = MODX_CORE_PATH . 'components/mycomponent/_build/config/mycomponent.config.php';
-            unlink($path);
-            foreach($oldStuff as $name) {
-                $c = $modx->getObject('modChunk', array('name' => $name));
-                if ($c) {
-                    $c->remove();
-                }
-                $path = MODX_CORE_PATH . 'components/mycomponent/elements/chunks/' . $name;
-                if (file_exists($path)) {
-                    unlink($path);
-                }
+$classPrefix = $modx->getVersionData()['version'] >= 3
+    ? 'MODX\Revolution\\'
+    : '';
+
+switch ($options[xPDOTransport::PACKAGE_ACTION]) {
+    case xPDOTransport::ACTION_INSTALL:
+    case xPDOTransport::ACTION_UPGRADE:
+        if (!file_exists($currentProjectFile)) {
+            $fp = fopen($currentProjectFile, 'w');
+            if ($fp) {
+                fwrite($fp, $initialCurrentProjectFile);
+                fclose($fp);
+            } else {
+                $modx->log(xPDO::LOG_LEVEL_INFO, 'Could not write Current Project File');
             }
+        }
+        if (!file_exists($projectsFile)) {
+            $fp = fopen($projectsFile, 'w');
+            if ($fp) {
+                fwrite($fp, $initialProjectsFile);
+                fclose($fp);
+            } else {
+                $modx->log(xPDO::LOG_LEVEL_INFO, 'Could not write Projects File');
+            }
+        }
 
-            break;
+    $path = MODX_CORE_PATH . 'components/mycomponent/_build/config/mycomponent.config.php';
+        unlink($path);
+        foreach($oldStuff as $name) {
+            $c = $modx->getObject($classPrefix . 'modChunk', array('name' => $name));
+            if ($c) {
+                $c->remove();
+            }
+            $path = MODX_CORE_PATH . 'components/mycomponent/elements/chunks/' . $name;
+            if (file_exists($path)) {
+                unlink($path);
+            }
+        }
 
-        case xPDOTransport::ACTION_UNINSTALL:
-            break;
-    }
+        break;
+
+    case xPDOTransport::ACTION_UNINSTALL:
+        break;
+
 }
 
 return true;

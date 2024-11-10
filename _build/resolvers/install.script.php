@@ -34,10 +34,21 @@
  * use $object->xpdo
  */
 
-$modx =& $object->xpdo;
+/** @var $transport modTransportPackage */
+/** @var $object xPDOObject */
+if ($transport) {
+    $modx =& $transport->xpdo;
+} else {
+    $modx =& $object->xpdo;
+}
+
+$classPrefix = $modx->getVersionData()['version'] >= 3
+    ? 'MODX\Revolution\\'
+    : '';
+
 
 /* Remember that the files in the _build directory are not available
- * here and we don't know the IDs of any objects, so resources,
+ * here, and we don't know the IDs of any objects, so resources,
  * elements, and other objects must be retrieved by name with
  * $modx->getObject().
  */
@@ -89,13 +100,14 @@ $connectPropertySets = true;
 $success = true;
 
 $modx->log(xPDO::LOG_LEVEL_INFO,'Running PHP Resolver.');
+/** @var array $options */
 switch($options[xPDOTransport::PACKAGE_ACTION]) {
-    /* This code will execute during an install */
+    /* This code will execute during an installation */
     case xPDOTransport::ACTION_INSTALL:
         /* Assign plugins to System events */
         if ($hasPlugins) {
             foreach($plugins as $k => $plugin) {
-                $pluginObj = $modx->getObject('modPlugin',array('name'=>$plugin));
+                $pluginObj = $modx->getObject($classPrefix . 'modPlugin',array('name'=>$plugin));
                 if (! $pluginObj) $modx->log(xPDO::LOG_LEVEL_INFO,'cannot get object: ' . $plugin);
                 if (empty($pluginEvents)) $modx->log(xPDO::LOG_LEVEL_INFO,'Cannot get System Events');
                 if (!empty ($pluginEvents) && $pluginObj) {
@@ -103,7 +115,7 @@ switch($options[xPDOTransport::PACKAGE_ACTION]) {
                     $modx->log(xPDO::LOG_LEVEL_INFO,'Assigning Events to Plugin ' . $plugin);
 
                     foreach($pluginEvents as $k => $event) {
-                        $intersect = $modx->newObject('modPluginEvent');
+                        $intersect = $modx->newObject($classPrefix . 'modPluginEvent');
                         $intersect->set('event',$event);
                         $intersect->set('pluginid',$pluginObj->get('id'));
                         $intersect->save();
@@ -118,24 +130,24 @@ switch($options[xPDOTransport::PACKAGE_ACTION]) {
          */
 
         if ($hasTemplates && $hasTemplateVariables) {
-            $categoryObj = $modx->getObject('modCategory',array('category'=> $category));
+            $categoryObj = $modx->getObject($classPrefix . 'modCategory',array('category'=> $category));
             if (! $categoryObj) {
-                $modx->log(xPDO::LOG_LEVEL_INFO,'Coult not retrieve category object: ' . $category);
+                $modx->log(xPDO::LOG_LEVEL_INFO,'Could not retrieve category object: ' . $category);
             } else {
                 $categoryId = $categoryObj->get('id');
             }
 
             $modx->log(xPDO::LOG_LEVEL_INFO,'Attempting to attach TVs to Templates');
             $ok = true;
-            $templates = $modx->getCollection('modTemplate', array('category'=> $categoryId));
+            $templates = $modx->getCollection($classPrefix . 'modTemplate', array('category'=> $categoryId));
             if (!empty($templates)) {
 
-                $tvs = $modx->getCollection('modTemplateVar', array('category'=> $categoryId));
+                $tvs = $modx->getCollection($classPrefix . 'modTemplateVar', array('category'=> $categoryId));
 
                 if (!empty($tvs)) {
                     foreach ($templates as $template) {
                         foreach($tvs as $tv) {
-                            $tvt = $modx->newObject('modTemplateVarTemplate');
+                            $tvt = $modx->newObject($classPrefix . 'modTemplateVarTemplate');
                             if ($tvt) {
                                 $r1 = $tvt->set('templateid', $template->get('id'));
                                 $r2 = $tvt->set('tmplvarid', $tv->get('id'));
@@ -168,13 +180,13 @@ switch($options[xPDOTransport::PACKAGE_ACTION]) {
             }
         }
         /* This section will set the site_name system setting based on the checkbox and
-         * input field in the user.input.php form presented during the install.
+         * input field in the user.input.php form presented during the installation.
          */
         $setSiteName = $modx->getOption('change_sitename', $options, false);
         if ($setSiteName) {
             $siteName = $modx->getOption('sitename', $options);
             $modx->log(xPDO::LOG_LEVEL_INFO,'Setting site name to: ' . $siteName);
-            $setting = $modx->getObject('modSystemSetting','site_name');
+            $setting = $modx->getObject($classPrefix . 'modSystemSetting','site_name');
             $setting->set('value', $siteName);
             $setting->save();
         }
@@ -183,7 +195,7 @@ switch($options[xPDOTransport::PACKAGE_ACTION]) {
         if ($hasExistingSettings) {
             $modx->log(xPDO::LOG_LEVEL_INFO,'Attempting so set existing System Settings');
             foreach($settings as $key=>$value) {
-                $setting = $modx->getObject('modSystemSetting',array('key'=>$key));
+                $setting = $modx->getObject($classPrefix . 'modSystemSetting',array('key'=>$key));
                 if ($setting) {
                     $setting->set('value',$value);
                     if ($setting->save()){
@@ -222,11 +234,11 @@ switch($options[xPDOTransport::PACKAGE_ACTION]) {
          */
          $snippetName = 'MySnippet1';
          $propertySetName = 'MyPropertySet1';
-         $snippet = $modx->getObject('modSnippet', array('name'=>$snippetName));
+         $snippet = $modx->getObject($classPrefix . 'modSnippet', array('name'=>$snippetName));
          if ($snippet) {
-             $propertySet = $modx->getObject('modPropertySet',array('name'=>$propertySetName));
+             $propertySet = $modx->getObject($classPrefix . 'modPropertySet',array('name'=>$propertySetName));
              if ($propertySet) {
-                 $intersect = $modx->newObject('modElementPropertySet');
+                 $intersect = $modx->newObject($classPrefix . 'modElementPropertySet');
                  $intersect->set('element',$snippet->get('id'));
                  $intersect->set('element_class','modSnippet');
                  $intersect->set('property_set',$propertySet->get('id'));
