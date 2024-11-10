@@ -126,7 +126,7 @@ switch ($options[xPDOTransport::PACKAGE_ACTION]) {
                         }
 
                         /* Create and save placement */
-                        $dbp = $modx->newObject('MODX\Revolution\modDashboardWidgetPlacement');
+                        $dbp = $modx->newObject($classPrefix . 'modDashboardWidgetPlacement');
                         if ($dbp) {
                             /* Add current user to array */
                             $placementFields['user'] = $user;
