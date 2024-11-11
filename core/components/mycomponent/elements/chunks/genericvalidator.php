@@ -33,7 +33,7 @@ switch ($options[xPDOTransport::PACKAGE_ACTION]) {
         break;
     case xPDOTransport::ACTION_UPGRADE:
         /* return false if conditions are not met */
-        /* [[+code]] */
+        /*  [[+code]] */
         break;
 
     case xPDOTransport::ACTION_UNINSTALL:
