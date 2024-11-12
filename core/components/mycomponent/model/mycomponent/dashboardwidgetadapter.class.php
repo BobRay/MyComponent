@@ -30,10 +30,6 @@ class DashboardWidgetAdapter extends ObjectAdapter {
             $this->myFields = $fields;
 
         }
-
-
-
-
     }
 
     public function addToMODx($overwrite = false) {
@@ -245,7 +241,7 @@ class DashboardWidgetAdapter extends ObjectAdapter {
         if ($widget) {
             /* Remove widget placements here if necessary  */
             /*$placements = $widget->getMany('Placements');
-            if (!empty *$placements) {
+            if (!empty $placements) {
                 foreach($placements as $placement) {
                     if ($placement->remove()) {
                         $temp = $this->modx->setLogLevel(modX::LOG_LEVEL_INFO);
@@ -265,6 +261,4 @@ class DashboardWidgetAdapter extends ObjectAdapter {
             }
         }
     }
-
-
 }
