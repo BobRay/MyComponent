@@ -13,6 +13,8 @@ use PHPUnit_Framework_TestCase;
 
 include_once 'c:\xampp\htdocs\addons\assets\mycomponents\mycomponent\core\components\mycomponent\model\mycomponent\mycomponentproject.class.php';
 
+
+
 /**
  * @method assertStringContainsString(string $string, string $path)
  */

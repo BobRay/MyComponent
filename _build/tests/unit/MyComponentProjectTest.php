@@ -38,6 +38,8 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
     /* @var $category modCategory */
     public $category;
 
+    public $classPrefix;
+
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before each test is executed.
@@ -50,12 +52,17 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
         $this->utHelpers = new UtHelpers();
 
         $modx = new modX();
+
+        $this->classPrefix = $modx->getVersionData()['version'] >= 3
+            ? 'MODX\Revolution\\'
+            : '';
+
         $modx->initialize('mgr');
         $modx->getService('error', 'error.modError', '', '');
         $modx->getService('lexicon', 'modLexicon');
         $modx->getRequest();
         $homeId = $modx->getOption('site_start');
-        $homeResource = $modx->getObject('modResource', $homeId);
+        $homeResource = $modx->getObject($this->classPrefix . 'modResource', $homeId);
 
         if ($homeResource instanceof modResource) {
             $modx->resource = $homeResource;
@@ -82,7 +89,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
         foreach ($category as $categoryObj) {
             $categoryObj->remove();
         }
-        $namespace = $this->modx->getObject('modNamespace', array('name' => 'unittest'));
+        $namespace = $this->modx->getObject($this->classPrefix . 'modNamespace', array('name' => 'unittest'));
         if ($namespace) {
             $namespace->remove();
         }
@@ -109,7 +116,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
         foreach ($category as $categoryObj) {
             $categoryObj->remove();
         }
-        $namespace = $this->modx->getObject('modNamespace', array('name' => 'unittest'));
+        $namespace = $this->modx->getObject($this->classPrefix . 'modNamespace', array('name' => 'unittest'));
         if ($namespace) {
             $namespace->remove();
         }
@@ -151,11 +158,11 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
         $categories = $this->mc->props['categories'];
         $this->assertNotEmpty($categories);
         foreach ($categories as $category => $fields) {
-            $category = $this->modx->getObject('modCategory', array('category' => $category));
+            $category = $this->modx->getObject($this->classPrefix . 'modCategory', array('category' => $category));
             $this->assertInstanceOf('modCategory', $category);
             $p = $category->get('parent');
             if (!empty($p)) {
-                $pObj = $this->modx->GetObject('modCategory', $p);
+                $pObj = $this->modx->getObject($this->classPrefix . 'modCategory', $p);
                 $this->assertEquals($fields['parent'], $pObj->get('category'));
             }
         }
@@ -166,7 +173,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
     public function testCreateNamespaces() {
         /* @var $namespace modNamespace */
         $this->mc->createNamespaces();
-        $namespace = $this->modx->getObject('modNamespace', array('name' => 'unittest'));
+        $namespace = $this->modx->getObject($this->classPrefix . 'modNamespace', array('name' => 'unittest'));
         $this->assertInstanceOf('modNamespace', $namespace);
         $this->assertNotEmpty($namespace->get('path'));
         $this->assertTrue(strstr($namespace->get('path'), '{core_path}') !== false);
@@ -184,7 +191,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
         // @var $object modSystemSetting
         foreach ($settings as $settingKey => $fields) {
 
-            $object = $this->modx->getObject('modSystemSetting', array('key' => $settingKey));
+            $object = $this->modx->getObject($this->classPrefix . 'modSystemSetting', array('key' => $settingKey));
             $this->assertInstanceOf('modSystemSetting', $object);
             $this->assertEquals($this->mc->props['packageNameLower'], $object->get('namespace'));
             $object->remove();
@@ -197,7 +204,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
         $events = $this->mc->props['newSystemEvents'];
         $this->assertNotEmpty($events);
         foreach ($events as $key => $fields) {
-            $object = $this->modx->getObject('modEvent', array('name' => $key));
+            $object = $this->modx->getObject($this->classPrefix . 'modEvent', array('name' => $key));
             $this->assertInstanceOf('modEvent', $object);
             $object->remove();
         }
@@ -217,7 +224,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
             if (!empty($elementNames)) {
                 $alias = $this->mc->helpers->getNameAlias($elementType);
                 foreach ($elementNames as $elementName => $fields) {
-                    $obj = $this->modx->getObject($elementType, array($alias => $elementName));
+                    $obj = $this->modx->getObject($this->classPrefix . $elementType, array($alias => $elementName));
                     //$this->assertNotInstanceOf($elementType,$obj);
                     $fileName = $this->mc->helpers->getFileName($elementName, $elementType);
                     $codeDir = $this->mc->helpers->getCodeDir
@@ -237,7 +244,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
             if (!empty($elementNames)) {
                 $alias = $this->mc->helpers->getNameAlias($elementType);
                 foreach ($elementNames as $elementName => $fields) {
-                    $obj = $this->modx->getObject($elementType, array($alias => $elementName));
+                    $obj = $this->modx->getObject($this->classPrefix . $elementType , array($alias => $elementName));
                     $this->assertInstanceOf($elementType, $obj);
                     $fileName = $this->mc->helpers->getFileName($elementName, $elementType);
                     $codeDir = $this->mc->helpers->getCodeDir
@@ -263,7 +270,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
         $this->assertNotEmpty($resources);
         $id = null;
         foreach ($resources as $resource => $fields) {
-            $r = $this->modx->getObject('modResource', array('pagetitle' => $resource));
+            $r = $this->modx->getObject($this->classPrefix . 'modResource', array('pagetitle' => $resource));
             $this->assertInstanceOf('modResource', $r);
             $pagetitle = $r->get('pagetitle');
             $this->assertNotEmpty($pagetitle);
@@ -273,7 +280,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
                 $this->assertEquals(0, $r->get('parent'));
                 $id = $r->get('id');
             } elseif ($pagetitle == 'utResource2') {
-                $templateObj = $this->modx->getObject('modTemplate',
+                $templateObj = $this->modx->getObject($this->classPrefix . 'modTemplate',
                     array('templatename' => 'utTemplate1'));
                 $templateId = $templateObj->get('id');
                 $this->assertEquals($templateId, $r->get('template'));
@@ -385,14 +392,14 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
         $pes = ObjectAdapter::$myObjects['pluginResolver'];
         $this->assertNotEmpty($pes);
         foreach ($pes as $k => $fields) {
-            $plugin = $this->modx->getObject('modPlugin', array('name' => $fields['pluginid']));
+            $plugin = $this->modx->getObject($this->classPrefix . 'modPlugin', array('name' => $fields['pluginid']));
             $this->assertNotEmpty($plugin);
             $fields['pluginid'] = $plugin->get('id');
             if (!empty($fields['propertyset'])) {
-                $pSet = $this->modx->getObject('modPropertySet', array('name' => $fields['propertyset']));
+                $pSet = $this->modx->getObject($this->classPrefix . 'modPropertySet', array('name' => $fields['propertyset']));
                 $fields['propertyset'] = $pSet->get('id');
             }
-            $pe = $this->modx->getObject('modPluginEvent', $fields);
+            $pe = $this->modx->getObject($this->classPrefix . 'modPluginEvent', $fields);
             $this->assertInstanceOf('modPluginEvent', $pe);
         }
         /* templateVarTemplate */
@@ -402,14 +409,14 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
             if ($fields['templateid'] == 'default') {
                 $fields['templateid'] = $this->modx->getOption('default_template');
             } else {
-                $template = $this->modx->getObject('modTemplate', array('templatename' => $fields['templateid']));
+                $template = $this->modx->getObject($this->classPrefix . 'modTemplate', array('templatename' => $fields['templateid']));
                 $this->assertNotEmpty($template);
                 $fields['templateid'] = $template->get('id');
             }
-            $tv = $this->modx->getObject('modTemplateVar', array('name' => $fields['tmplvarid']));
+            $tv = $this->modx->getObject($this->classPrefix . 'modTemplateVar', array('name' => $fields['tmplvarid']));
             $this->assertNotEmpty($tv);
             $fields['tmplvarid'] = $tv->get('id');
-            $tvt = $this->modx->getObject('modTemplateVarTemplate', $fields);
+            $tvt = $this->modx->getObject($this->classPrefix . 'modTemplateVarTemplate', $fields);
             $this->assertInstanceOf('modTemplateVarTemplate', $tvt);
         }
         /* elementPropertySet */
@@ -418,13 +425,13 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
 
         foreach ($eps as $k => $fields) {
             $name = $this->utHelpers->getNameAlias($fields['element_class']);
-            $element = $this->modx->getObject($fields['element_class'], array($name => $fields['element']));
+            $element = $this->modx->getObject($this->classPrefix .  $fields['element_class'], array($name => $fields['element']));
             $this->assertNotEmpty($element);
             $fields['element'] = $element->get('id');
-            $pSet = $this->modx->getObject('modPropertySet', array('name' => $fields['property_set']));
+            $pSet = $this->modx->getObject($this->classPrefix . 'modPropertySet', array('name' => $fields['property_set']));
             $this->assertNotEmpty($pSet);
             $fields['property_set'] = $pSet->get('id');
-            $ep = $this->modx->getObject('modElementPropertySet', $fields);
+            $ep = $this->modx->getObject($this->classPrefix . 'modElementPropertySet', $fields);
             $this->assertInstanceOf('modElementPropertySet', $ep);
         }
     }
@@ -444,13 +451,13 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
             }
 
             $this->assertNotEmpty($fields['template']);
-            $resource = $this->modx->getObject('modResource', array('pagetitle' => $fields['pagetitle']));
+            $resource = $this->modx->getObject($this->classPrefix . 'modResource', array('pagetitle' => $fields['pagetitle']));
             $this->assertInstanceOf('modResource', $resource);
 
             if ($fields['template'] == 'default') {
                 $fields['template'] = $this->modx->getOption('default_template');
             } else {
-                $templateObj = $this->modx->getObject('modTemplate',
+                $templateObj = $this->modx->getObject($this->classPrefix . 'modTemplate',
                     array('templatename' => $fields['template']));
                 $fields['template'] = $templateObj->get('id');
                 $this->assertInstanceOf('modTemplate', $templateObj);
@@ -459,7 +466,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
             if ($fields['parent'] == 'default') {
                 $fields['parent'] = 0;
             } else {
-                $parent = $this->modx->getObject('modResource', array('pagetitle' => $fields['parent']));
+                $parent = $this->modx->getObject($this->classPrefix . 'modResource', array('pagetitle' => $fields['parent']));
                 if ($fields['pagetitle'] != 'utResource1') {
                     $this->assertInstanceOf('modResource', $parent);
 
@@ -652,7 +659,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
             // $elementNames = empty($elementNames)? array() : explode(',', $elementNames);
             $this->assertNotEmpty($elementNames);
             foreach ($elementNames as $elementName => $fields) {
-                $obj = $this->modx->getObject($elementType, array($alias => $elementName));
+                $obj = $this->modx->getObject($this->classPrefix .  $elementType, array($alias => $elementName));
                 $this->assertNull($obj);
             }
         }
@@ -662,7 +669,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
         $resources = $this->mc->props['resources'];
         $this->assertNotEmpty($resources);
         foreach ($resources as $pagetitle => $fields) {
-            $r = $this->modx->getObject('modResource', array('pagetitle' => $pagetitle));
+            $r = $this->modx->getObject($this->classPrefix . 'modResource', array('pagetitle' => $pagetitle));
             $this->assertNull($r);
         }
 
