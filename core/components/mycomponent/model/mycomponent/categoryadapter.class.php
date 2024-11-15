@@ -1,6 +1,4 @@
 <?php
-
-
 class CategoryAdapter extends ObjectAdapter {
     /* These will never change. */
     protected $dbClass = 'modCategory';
@@ -14,14 +12,13 @@ class CategoryAdapter extends ObjectAdapter {
     protected $createProcessor = 'element/category/create';
     protected $updateProcessor = 'element/category/update';
 
-
     /* @var $modx modX */
     public $modx;
     /* @var $helpers Helpers */
     public $helpers;
 
 
-  
+
     final public function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP) {
         /* @var $modx modX */
         $this->modx =& $modx;
@@ -33,6 +30,7 @@ class CategoryAdapter extends ObjectAdapter {
             }
         }
         $this->myFields = $fields;
+
         ObjectAdapter::$myObjects['categories'][$fields['category']] = $fields;
 
         parent::__construct($modx, $helpers);
@@ -50,7 +48,7 @@ class CategoryAdapter extends ObjectAdapter {
         if (isset($fields['parent']) && !empty($fields['parent'])) {
             $pn = $fields['parent'];
             if (!is_numeric($fields['parent'])) {
-                $p = $this->modx->getObject('modCategory', array('category' => $pn));
+                $p = $this->modx->getObject($this->classPrefix . 'modCategory', array('category' => $pn));
                 if ($p) {
                     $fields['parent'] = $p->get('id');
                 }
@@ -123,14 +121,14 @@ class CategoryAdapter extends ObjectAdapter {
         foreach ($skips as $k => $v) {
             $error = false;
             if (! is_numeric($v)) {
-                $cat = $this->modx->getObject('modCategory', array('category' => $v));
+                $cat = $this->modx->getObject($this->classPrefix . 'modCategory', array('category' => $v));
                 if ($cat) {
                     $convertedArray[$cat->get('id')] = true;
                 } else {
                     $error = true;
                 }
             } else {
-                if (! $this->modx->getCount('modCategory', $v)) {
+                if (! $this->modx->getCount($this->classPrefix . 'modCategory', $v)) {
                     $error = true;
                 } else {
                     $convertedArray[$v] = true;
@@ -149,7 +147,7 @@ class CategoryAdapter extends ObjectAdapter {
     }
 
     public function exportElements($toProcess, $dryRun = false) {
-        $c = $this->modx->getObject('modCategory', array('category' => $this->myFields['category']));
+        $c = $this->modx->getObject($this->classPrefix . 'modCategory', array('category' => $this->myFields['category']));
         if ($c) {
             $this->myId = $c->get('id');
         }
@@ -162,7 +160,7 @@ class CategoryAdapter extends ObjectAdapter {
             $adapterName = ucFirst(substr($class, 3)) . 'Adapter';
 
             if (isset($this->helpers->props['allElements']) && $this->helpers->props['allElements']) {
-                $elements = $this->modx->getCollection($class);
+                $elements = $this->modx->getCollection($this->classPrefix . $class );
                 if (!empty($props['skipCategories'])) {
                     $skips = $props['skipCategories'];
                     $skips = $this->convertCategories($skips);
@@ -175,7 +173,7 @@ class CategoryAdapter extends ObjectAdapter {
                     }
                 }
             } else {
-                $elements = $this->modx->getCollection($class, array('category' => $this->myId));
+                $elements = $this->modx->getCollection($this->classPrefix . $class, array('category' => $this->myId));
             }
             if (!empty($elements)) {
                 $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
@@ -256,7 +254,7 @@ class CategoryAdapter extends ObjectAdapter {
 
     public function remove() {
         $name = $this->getName();
-        $obj = $this->modx->getObject('modCategory', array('category' => $name));
+        $obj = $this->modx->getObject($this->classPrefix . 'modCategory', array('category' => $name));
         if ($obj) {
             $temp = $this->modx->setLogLevel(modX::LOG_LEVEL_INFO);
             $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' .
@@ -266,5 +264,4 @@ class CategoryAdapter extends ObjectAdapter {
             $obj->remove();
         }
     }
-
 }

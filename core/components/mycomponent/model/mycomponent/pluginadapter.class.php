@@ -10,7 +10,7 @@ class PluginAdapter extends ElementAdapter
     protected $dbClassParentKey = 'category';
     protected $createProcessor = 'element/plugin/create';
     protected $updateProcessor = 'element/plugin/update';
-    
+
 // Database Fields for the XPDO Object
     protected $myParent;
     protected $myFields;
@@ -21,6 +21,11 @@ class PluginAdapter extends ElementAdapter
         /* @var $helpers Helpers */
         $this->helpers =& $helpers;
         $this->modx =& $modx;
+
+        $this->classPrefix = $modx->getVersionData()['version'] >= 3
+            ? 'MODX\Revolution\\'
+            : '';
+
         $this->name = $fields['name'];
         $this->setPluginResolver($fields, $mode);
         if (isset($fields['events'])) {
@@ -52,7 +57,7 @@ class PluginAdapter extends ElementAdapter
             }
 
         } elseif ($mode == MODE_EXPORT) {
-            $me = $this->modx->getObject('modPlugin', array('name' => $this->getName()));
+            $me = $this->modx->getObject($this->classPrefix . 'modPlugin', array('name' => $this->getName()));
             if (!$me) {
                 $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, '[Plugin Adapter] ' .
                 $this->modx->lexicon('mc_cannot_find_self'));
@@ -63,7 +68,7 @@ class PluginAdapter extends ElementAdapter
                         /* @var $pe modPluginEvent */
                         $fields = $pe->toArray();
                         if (!empty($fields['propertyset'])) {
-                            $ps = $this->modx->getObject('modPropertySet', $fields['propertyset']);
+                            $ps = $this->modx->getObject($this->classPrefix . 'modPropertySet', $fields['propertyset']);
                             $fields['propertySet'] = $ps->get('name');
                         }
 
@@ -85,13 +90,13 @@ class PluginAdapter extends ElementAdapter
         }
 
     }
-    
+
 /* *****************************************************************************
    Bootstrap and Support Functions (in ElementAdapter)
 ***************************************************************************** */
 
 /* *****************************************************************************
-   Import Objects and Support Functions (in ElementAdapter) 
+   Import Objects and Support Functions (in ElementAdapter)
 ***************************************************************************** */
 
     public function addToMODx($overwrite = false)

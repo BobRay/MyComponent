@@ -36,9 +36,9 @@ class SystemEventAdapter extends ObjectAdapter
     public function addToMODx($overwrite = false) {
         $name = $this->getName();
         $retVal = false;
-        $obj = $this->modx->getObject('modEvent', array('name'=> $name));
+        $obj = $this->modx->getObject($this->classPrefix . 'modEvent', array('name'=> $name));
         if (! $obj) {
-            $event = $this->modx->newObject('modEvent');
+            $event = $this->modx->newObject($this->classPrefix . 'modEvent');
             if ($event && $event instanceof modEvent) {
                 $event->fromArray($this->myFields, "", true, true);
                 if ($event->save()) {

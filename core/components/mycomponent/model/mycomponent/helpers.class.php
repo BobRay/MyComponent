@@ -45,11 +45,17 @@ class Helpers {
     protected $files = array();
 
     protected $output = '';
+    protected string $classPrefix;
 
 
     function  __construct(&$modx, &$props = array()) {
         $this->modx =& $modx;
         $this->props =& $props;
+
+        $this->classPrefix = $modx->getVersionData()['version'] >= 3
+            ? 'MODX\Revolution\\'
+            : '';
+
     }
 
     /**  Avoid PHP notices */
@@ -114,7 +120,7 @@ class Helpers {
         */
         $text = '';
         // $text = $this->modx->getChunk('my' . $name);
-        $obj = $this->modx->getObject('modChunk', array('name' => 'my' . $name));
+        $obj = $this->modx->getObject($this->classPrefix . 'modChunk', array('name' => 'my' . $name));
         if ($obj) {
             $text = $obj->getContent();
         }
@@ -125,7 +131,7 @@ class Helpers {
             }
         }
         if (empty($text)) {
-            $obj = $this->modx->getObject('modChunk', array('name' => $name));
+            $obj = $this->modx->getObject($this->classPrefix . 'modChunk', array('name' => $name));
             if ($obj) {
                 $text = $obj->getContent();
             }
@@ -462,7 +468,7 @@ class Helpers {
                     $subsidiaryObjectType = 'modTemplateVar';
                     $mainObjectName = $values['templateid'];
                     if ($mainObjectName == 'default') {
-                        $defaultTemplateObj = $this->modx->getObject('modTemplate', $this->modx->getOption('default_template'));
+                        $defaultTemplateObj = $this->modx->getObject($this->classPrefix . 'modTemplate', $this->modx->getOption('default_template'));
                         $mainObjectName = $defaultTemplateObj->get('templatename');
                     }
                     $subsidiaryObjectName = $values['tmplvarid'];
@@ -474,7 +480,7 @@ class Helpers {
                     $mainObjectName = $values['pluginid'];
                     $subsidiaryObjectName = $values['event'];
                     if (isset($values['propertyset']) && !empty($values['propertyset'])) {
-                        $ps = $this->modx->getObject('modPropertySet', array('name' => $values['propertyset']));
+                        $ps = $this->modx->getObject($this->classPrefix . 'modPropertySet', array('name' => $values['propertyset']));
                         if ($ps) {
                             $values['propertyset'] = $ps->get('id');
                         } else {
@@ -490,12 +496,12 @@ class Helpers {
                     $subsidiaryObjectType = 'modDashboard';
                     $mainObjectName = $values['widget'];
                     if ((int) $values['dashboard'] === 1 || strtolower($values['dashboard']) === 'default') {
-                        $d = $this->modx->getObject('modDashboard', 1);
+                        $d = $this->modx->getObject($this->classPrefix . 'modDashboard', 1);
                         if ($d) {
                             $values['dashboard'] = $d->get('name');
                         }
                     }
-                    // $this->modx->getObject('modDashboard', $values['dashboard']);
+                    // $this->modx->getObject($this->classPrefix . 'modDashboard', $values['dashboard']);
                     $subsidiaryObjectName = $values['dashboard'];
                     break;
                 case 'modElementPropertySet':
@@ -515,7 +521,7 @@ class Helpers {
             }
             $alias = $this->getNameAlias($mainObjectType);
             $searchFields = array($alias => $mainObjectName);
-            $mainObject = $this->modx->getObject($mainObjectType, $searchFields);
+            $mainObject = $this->modx->getObject($this->classPrefix . $mainObjectType, $searchFields);
 
             if (!$mainObject) {
                 $this->sendLog(modX::LOG_LEVEL_ERROR, '    [Helpers] ' .
@@ -529,7 +535,7 @@ class Helpers {
 
             $alias = $this->getNameAlias($subsidiaryObjectType);
             $searchFields = array($alias => $subsidiaryObjectName);
-            $subsidiaryObject = $this->modx->getObject($subsidiaryObjectType, $searchFields);
+            $subsidiaryObject = $this->modx->getObject($this->classPrefix . $subsidiaryObjectType, $searchFields);
             if (! $subsidiaryObject) {
                 $this->sendLog(modX::LOG_LEVEL_ERROR, '    [Helpers] ' .
                     $this->modx->lexicon('mc_error_creating_intersect')
@@ -576,7 +582,7 @@ class Helpers {
                     break;
             }
 
-            $intersectObj = $this->modx->getObject($intersectType, $searchFields);
+            $intersectObj = $this->modx->getObject($this->classPrefix . $intersectType, $searchFields);
 
             if ($intersectObj) {
                 $this->sendLog(modX::LOG_LEVEL_INFO, '    ' .
@@ -584,7 +590,7 @@ class Helpers {
                 . ' ' . $mainObjectName . ' => ' . $subsidiaryObjectName);
 
             } else {
-                $intersectObj = $this->modx->newObject($intersectType);
+                $intersectObj = $this->modx->newObject($this->classPrefix . $intersectType);
                 if ($intersectObj) {
                     /* add any extra fields */
                     if ($intersectType != 'modElementPropertySet') {

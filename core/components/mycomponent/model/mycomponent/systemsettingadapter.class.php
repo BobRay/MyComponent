@@ -11,7 +11,6 @@ class SystemSettingAdapter extends ObjectAdapter
     protected $createProcessor = 'system/settings/create';
     protected $updateProcessor = 'system/settings/update';
 
-
     /* Database Columns for the XPDO Object */
     protected $myFields;
 
@@ -20,6 +19,7 @@ class SystemSettingAdapter extends ObjectAdapter
         $this->modx =& $modx;
         $this->helpers =& $helpers;
         $this->myComponent =& $myComponent;
+
         if (!isset($fields['namespace'])) {
             $fields['namespace'] = $this->helpers->props['packageNameLower'];
         }
@@ -54,7 +54,7 @@ class SystemSettingAdapter extends ObjectAdapter
         } elseif ($mode == MODE_EXPORT) {
             if (false) {
                 $lexField = 'setting_' . $fields['key'];
-                $dbObject = $modx->getObject('modLexiconEntry', array('namespace' => $namespace, 'name' => $lexField));
+                $dbObject = $modx->getObject($this->classPrefix . 'modLexiconEntry', array('namespace' => $namespace, 'name' => $lexField));
                 $dbString = $dbObject ? $dbObject->get('value') : '';
                 // handle ~~, if any
                 if (strpos($dbString, '~~') !== false) {
@@ -80,7 +80,7 @@ class SystemSettingAdapter extends ObjectAdapter
 
                 // Do the same with description
                 $lexField = 'setting_' . $fields['key'] . '_desc';
-                $dbObject = $modx->getObject('modLexiconEntry', array('namespace' => $fields['namespace'], 'name' => $lexField));
+                $dbObject = $modx->getObject($this->classPrefix . 'modLexiconEntry', array('namespace' => $fields['namespace'], 'name' => $lexField));
                 $dbString = $dbObject ? $dbObject->get('value') : '';
                 // handle ~~, if any
                 if (strpos($dbString, '~~') !== false) {

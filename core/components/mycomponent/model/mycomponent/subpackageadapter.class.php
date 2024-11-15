@@ -1,7 +1,7 @@
 <?php
 
 
-class SubpackageAdapter {
+class XSubpackageAdapter {
     public $packageDir = '';
     public $transportDir = '';
     public $transportFile = 'transport.subpackages.php';
@@ -13,8 +13,6 @@ class SubpackageAdapter {
 
     /** @var $helpers Helpers */
     public $helpers = null;
-
-
 
     final function __construct() {
     }
@@ -130,7 +128,7 @@ if (\$transport && \$transport->xpdo) {
 
             /* add in the package as an object so it can be upgraded */
             /** @var modTransportPackage \$package */
-            \$package = \$modx->newObject('transport.modTransportPackage');
+            \$package = \$modx->newObject('modTransportPackage');
             \$package->set('signature',\$signature);
             \$package->fromArray(array(
                 'created' => date('Y-m-d h:i:s'),

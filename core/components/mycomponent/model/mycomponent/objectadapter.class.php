@@ -23,7 +23,7 @@ abstract class ObjectAdapter {
     protected $dbClassNameKey = '';
 
     /**
-     * @var $dbClassParentKey string - name of parent field (parent, category, etc)
+     * @var $dbClassParentKey string - name of parent field (parent, category, etc.)
      */
     protected $dbClassParentKey = '';
 
@@ -58,6 +58,11 @@ abstract class ObjectAdapter {
      */
     protected $myFields;
 
+    protected string $classPrefix;
+
+
+    protected string $transportPrefix;
+
     /**
      * @var $myObjects static array - Master array of all objects being processed
      * by MyComponent
@@ -72,6 +77,11 @@ abstract class ObjectAdapter {
     public function __construct(&$modx, &$helpers) {
         $this->modx =& $modx;
         $this->helpers =& $helpers;
+
+        $isMODX3 = $modx->getVersionData()['version'] >= 3;
+        $this->classPrefix = $isMODX3
+            ? 'MODX\Revolution\\'
+            : '';
     }
 
     /**
@@ -244,7 +254,7 @@ abstract class ObjectAdapter {
 
 
        /* See if the object exists */
-        $obj = $modx->getObject($objClass, array($nameKey => $name));
+        $obj = $modx->getObject($this->classPrefix . $objClass, array($nameKey => $name));
         if ($obj) {
             $id = $obj->get($idKey);
         }
@@ -335,7 +345,7 @@ abstract class ObjectAdapter {
                         $id = $o[$this->dbClassIDKey];
 
                         if ($this->dbClass == 'modResource' && isset($tvValues)) {
-                            $resource = $this->modx->getObject('modResource', $id);
+                            $resource = $this->modx->getObject($this->classPrefix . 'modResource', $id);
                             if ($resource) {
                                 foreach($tvValues as $k => $v) {
                                     $resource->setTVValue($k, $v);
@@ -379,7 +389,7 @@ abstract class ObjectAdapter {
 
 
         /* See if the object exists */
-        $obj = $modx->getObject($objClass, array($nameKey => $name));
+        $obj = $modx->getObject($this->classPrefix . $objClass, array($nameKey => $name));
         if ($obj) {
             $obj->remove();
             $temp = $this->modx->setLogLevel(modX::LOG_LEVEL_INFO);
@@ -636,8 +646,13 @@ abstract class ObjectAdapter {
      */
     public static function writeObject(&$helpers, $fields, $type, $fileName, $i) {
         $variableName = lcfirst(substr($type, 3) . 's');
+        $isMODX3 = $helpers->modx->getVersionData()['version'] >= 3;
+        $prefix = $isMODX3
+            ? 'MODX\Revolution\\'
+            : '';
+
         /* write generic stuff */
-        $tpl = '$' . $variableName . '[' . $i . '] = $modx->newObject(' . "'" . $type . "');" . "\n";
+        $tpl = '$' . $variableName . '[' . $i . '] = $modx->newObject(' . "'" . $prefix . $type . "');" . "\n";
         $tpl .= '$' . $variableName . '[' . $i . ']->fromArray(';
         // $tpl .= "    'id' => " . $i . ",\n";
 
@@ -646,7 +661,6 @@ abstract class ObjectAdapter {
             unset ($fields['id']);
             $fields = array_merge(array('id' => $i), $fields);
         }
-
 
         /* This may not be necessary */
         /* *********** */

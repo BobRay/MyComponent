@@ -1,6 +1,4 @@
 <?php
-
-
 class TemplateVarAdapter extends ElementAdapter
 {
     protected $dbClass = 'modTemplateVar';
@@ -9,7 +7,7 @@ class TemplateVarAdapter extends ElementAdapter
     protected $dbClassParentKey = 'category';
     protected $createProcessor = 'element/tv/create';
     protected $updateProcessor = 'element/tv/update';
-    
+
 
     protected $fields;
     protected $name;
@@ -20,6 +18,11 @@ class TemplateVarAdapter extends ElementAdapter
         $this->name = $fields['name'];
         $this->modx =& $modx;
         $this->helpers =& $helpers;
+
+        $this->classPrefix = $modx->getVersionData()['version'] >= 3
+            ? 'MODX\Revolution\\'
+            : '';
+
         /* make sure there's a caption */
         if (! isset($fields['caption']) || empty($fields['caption'])) {
             $fields['caption'] = $fields['name'];
@@ -49,7 +52,7 @@ class TemplateVarAdapter extends ElementAdapter
                 ObjectAdapter::$myObjects['tvResolver'][] = $resolverFields;
             }
         } elseif ($mode == MODE_EXPORT) {
-            $me = $this->modx->getObject('modTemplateVar', array('name' => $this->getName()));
+            $me = $this->modx->getObject($this->classPrefix . 'modTemplateVar', array('name' => $this->getName()));
             if (!$me) {
                 $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, '[TemplateVar Adapter] ' .
                 $this->modx->lexicon('mc_self_nf'));
@@ -62,7 +65,7 @@ class TemplateVarAdapter extends ElementAdapter
                         if ($fields['templateid'] == $this->modx->getOption('default_template')) {
                             $templateName = 'default';
                         } else {
-                            $templateObj = $this->modx->getObject('modTemplate',
+                            $templateObj = $this->modx->getObject($this->classPrefix . 'modTemplate',
                                 $fields['templateid']);
                             $templateName = $templateObj->get('templatename');
                         }

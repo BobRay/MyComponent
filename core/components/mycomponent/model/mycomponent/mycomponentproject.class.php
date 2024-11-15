@@ -53,7 +53,8 @@ class MyComponentProject {
     /**
      * @var $configPath string - path to config file
      */
-    protected $configPath;
+    protected string $configPath;
+    protected string $classPrefix;
 
     /** External: ObjectAdapter::$myObjects array - this is the master array
      *  containing all objects being processed and their fields.
@@ -88,6 +89,11 @@ class MyComponentProject {
             die("bootstrap not defined");
         }
         $this->modx =& $modx;
+
+        $this->classPrefix = $modx->getVersionData()['version'] >= 3
+            ? 'MODX\Revolution\\'
+            : '';
+
     }
 
 
@@ -529,7 +535,7 @@ class MyComponentProject {
 
             foreach ($nameSpaces as $nameSpace => $n_fields) {
                 $name = isset($n_fields['name']) ? $n_fields['name'] : $nameSpace;
-                $nameSpaceObj = $this->modx->getObject('modNamespace',
+                $nameSpaceObj = $this->modx->getObject($this->classPrefix . 'modNamespace',
                     array('name' => $name));
                 if ($nameSpaceObj) {
                     /* Get settings as namespace related objects */
@@ -638,7 +644,7 @@ class MyComponentProject {
 
             foreach ($nameSpaces as $nameSpace => $n_fields) {
                 $name = isset($n_fields['name']) ? $n_fields['name'] : $nameSpace;
-                $nameSpaceObj = $this->modx->getObject('modNamespace',
+                $nameSpaceObj = $this->modx->getObject($this->classPrefix . 'modNamespace',
                     array('name' => $name));
                 if ($nameSpaceObj) {
                     /* Get settings as namespace related objects */
@@ -733,7 +739,7 @@ class MyComponentProject {
         } elseif ($mode == MODE_EXPORT || $mode == MODE_REMOVE) {
             /* These come from the project config file */
             foreach ($newSystemEvents as $k => $fields) {
-                $obj = $this->modx->getObject('modEvent',
+                $obj = $this->modx->getObject($this->classPrefix . 'modEvent',
                     array('name' => $fields['name']));
                 if ($obj) {
                     $fields = $obj->toArray();
@@ -1935,7 +1941,7 @@ class MyComponentProject {
                         $this->helpers->getFileName($element, $class);
                 }
                 $alias = $this->helpers->getNameAlias($class);
-                $object = $this->modx->getObject($class,
+                $object = $this->modx->getObject($this->classPrefix . $class,
                     array($alias => $element));
                 if (! $object) {
                     $static = false;
@@ -2017,7 +2023,7 @@ class MyComponentProject {
                 $dir = $this->myPaths['targetResources'];
                 $content = file_get_contents($dir . $fileName);
                 if (!empty($content)) {
-                    $resource = $this->modx->getObject('modResource', array('pagetitle' => $pageTitle));
+                    $resource = $this->modx->getObject($this->classPrefix . 'modResource', array('pagetitle' => $pageTitle));
                     if ($resource) {
                         $resource->setContent($content);
                         if ($resource->save()) {

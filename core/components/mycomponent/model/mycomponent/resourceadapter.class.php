@@ -70,6 +70,7 @@ class ResourceAdapter extends ObjectAdapter {
         /* @var $modx modX */
         /* @var $object modResource */
         parent::__construct($modx, $helpers);
+
         $this->name = $fields['pagetitle'];
         if (! isset($fields['id'])) {
             $fields['id'] = '';
@@ -122,7 +123,7 @@ class ResourceAdapter extends ObjectAdapter {
         if ($mode == MODE_BOOTSTRAP && isset($fields['tvValues'])) {
             $resolverFields['tvValues'] = $fields['tvValues'];
         } elseif ($mode == MODE_EXPORT) {
-            $me = $this->modx->getObject('modResource', array('pagetitle' => $fields['pagetitle']));
+            $me = $this->modx->getObject($this->classPrefix . 'modResource', array('pagetitle' => $fields['pagetitle']));
             if (!$me) {
                 $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, '[ResourceAdapter] ' .
                     $this->modx->lexicon('mc_self_nf'));
@@ -135,11 +136,11 @@ class ResourceAdapter extends ObjectAdapter {
                 /* get Tvs in all our categories */
                 $tvObjects = array();
                 foreach($categories as $categoryName => $fields ) {
-                    $categoryObj = $this->modx->getObject('modCategory',
+                    $categoryObj = $this->modx->getObject($this->classPrefix . 'modCategory',
                         array('category' => $categoryName));
                     if ($categoryObj) {
                         $categoryId = $categoryObj->get('id');
-                        $tvObjects = array_merge($tvObjects, $this->modx->getCollection('modTemplateVar', array('category' => $categoryId)));
+                        $tvObjects = array_merge($tvObjects, $this->modx->getCollection($this->classPrefix . 'modTemplateVar', array('category' => $categoryId)));
                     }
                 }
                 /* get the TvValues */
@@ -165,7 +166,7 @@ class ResourceAdapter extends ObjectAdapter {
      */
     public function fieldsToNames(&$fields, $mode = MODE_BOOTSTRAP) {
         if (!empty($fields['parent'])) {
-            $parentObj = $this->modx->getObject('modResource', $fields['parent']);
+            $parentObj = $this->modx->getObject($this->classPrefix . 'modResource', $fields['parent']);
             if ($parentObj) {
                 $fields['parent'] =  $parentObj->get('pagetitle');
             } else {
@@ -181,7 +182,7 @@ class ResourceAdapter extends ObjectAdapter {
             if ($fields['template'] == $this->modx->getOption('default_template')) {
                 $fields['template'] = 'default';
             } else {
-                $templateObj = $this->modx->getObject('modTemplate', $fields['template']);
+                $templateObj = $this->modx->getObject($this->classPrefix . 'modTemplate', $fields['template']);
                 if ($templateObj) {
                     $fields['template'] = $templateObj->get('templatename');
                 }
@@ -199,7 +200,7 @@ class ResourceAdapter extends ObjectAdapter {
         if (!isset($fields['parent']) || $fields['parent'] == 'default') {
             $fields['parent'] = '0';
         } else {
-            $parentObj = $this->modx->getObject('modResource', array('pagetitle' => $fields['parent']));
+            $parentObj = $this->modx->getObject($this->classPrefix . 'modResource', array('pagetitle' => $fields['parent']));
             if ($parentObj) {
                 $fields['parent'] = $parentObj->get('id');
             } else {
@@ -211,7 +212,7 @@ class ResourceAdapter extends ObjectAdapter {
         if (!isset($fields['template']) || empty($fields['template']) || $fields['template'] == 'default') {
             $fields['template'] = $this->modx->getOption('default_template');
         } else {
-            $templateObj = $this->modx->getObject('modTemplate', array('templatename' => $fields['template']));
+            $templateObj = $this->modx->getObject($this->classPrefix . 'modTemplate', array('templatename' => $fields['template']));
             if ($templateObj) {
                 $fields['template'] = $templateObj->get('id');
             }
@@ -312,6 +313,10 @@ class ResourceAdapter extends ObjectAdapter {
         /* @var $modx modX */
         /* @var $helpers Helpers */
         $objects = array();
+        $classPrefix = $modx->getVersionData()['version'] >= 3
+            ? 'MODX\Revolution\\'
+            : '';
+
 
         /* Add resources from exportResources array in the project config file
           to $this->myObjects array */
@@ -320,7 +325,7 @@ class ResourceAdapter extends ObjectAdapter {
         $byId = $modx->getOption('getResourcesById', $props, false);
         $method = $byId? 'ID' : 'pagetitle';
         if (isset($props['allResources']) && $props['allResources'] ) {
-            $objects = $modx->getCollection('modResource');
+            $objects = $modx->getCollection($classPrefix . 'modResource');
 
         } else {
 
@@ -329,9 +334,9 @@ class ResourceAdapter extends ObjectAdapter {
             if (!empty($resources)) {
                 foreach ($resources as $resource) {
                     if ($byId) {
-                        $resObject = $modx->getObject('modResource', $resource);
+                        $resObject = $modx->getObject( $classPrefix . 'modResource', $resource);
                     } else {
-                        $resObject = $modx->getObject('modResource', array('pagetitle' => trim($resource)));
+                        $resObject = $modx->getObject($classPrefix . 'modResource', array('pagetitle' => trim($resource)));
                     }
                     if ($resObject) {
                         $objects[] = $resObject;
@@ -351,9 +356,9 @@ class ResourceAdapter extends ObjectAdapter {
             if (!empty($parents)) {
                 foreach ($parents as $parentResource) {
                     if ($byId) {
-                        $parentObj = $modx->getObject('modResource', $parentResource);
+                        $parentObj = $modx->getObject($classPrefix . 'modResource', $parentResource);
                     } else {
-                        $parentObj = $modx->getObject('modResource', array('pagetitle' => $parentResource));
+                        $parentObj = $modx->getObject($classPrefix . 'modResource', array('pagetitle' => $parentResource));
                     }
                     if ($parentObj) {
                         if ($includeParents) {

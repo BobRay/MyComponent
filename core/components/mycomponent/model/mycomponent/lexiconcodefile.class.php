@@ -807,6 +807,11 @@ class SettingsLexiconCodeFile extends LexiconCodeFile {
      */
     /* ToDo: Handle 'area' field lexicon strings */
     public function _setUsed() {
+
+        $prefix = $this->modx->getVersionData()['version'] >= 3
+            ? 'MODX\Revolution\\'
+            : '';
+
         $fullPath = $this->path . '/' . $this->fileName;
         if (file_exists($fullPath)) {
             $modx =& $this->modx;
@@ -824,12 +829,12 @@ class SettingsLexiconCodeFile extends LexiconCodeFile {
                     $description = '';
                 }
                 /* Get name and desc lex strings from database */
-                $dbNameObj = $this->modx->getObject('modLexiconEntry', array('name' =>'setting_' .
+                $dbNameObj = $this->modx->getObject($prefix . 'modLexiconEntry', array('name' =>'setting_' .
                     $key, 'namespace:IN' => $this->namespaces));
                 $dbName = $dbNameObj? $dbNameObj->get('value') : '';
                 $dbName = empty($dbName)? '' : $dbName;
 
-                $dbDescObj = $this->modx->getObject('modLexiconEntry', array('name' => 'setting_' .
+                $dbDescObj = $this->modx->getObject($prefix . 'modLexiconEntry', array('name' => 'setting_' .
                     $key .'_desc', 'namespace:IN' => $this->namespaces));
                 $dbDesc = $dbDescObj? $dbDescObj->get('value') : '';
                 $dbDesc = empty($dbDesc) ? '' : $dbDesc;

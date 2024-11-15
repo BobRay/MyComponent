@@ -10,6 +10,7 @@ class MenuAdapter extends ObjectAdapter {
     final public function __construct(&$modx, $helpers, $fields, $mode = MODE_BOOTSTRAP) {
         /* @var $modx modX */
         /* @var $helpers Helpers */
+
         parent::__construct($modx, $helpers);
         if (is_array($fields)) {
             if (!isset($fields['namespace'])) {
@@ -23,10 +24,10 @@ class MenuAdapter extends ObjectAdapter {
 
     public function addToMODx($overwrite = false) {
         $fields = $this->myFields;
-        $obj = $this->modx->getObject('modMenu', array('text' => $fields['text'], 'parent' => $fields['parent']));
+        $obj = $this->modx->getObject($this->classPrefix . 'modMenu', array('text' => $fields['text'], 'parent' => $fields['parent']));
         if (! $obj) {
             unset($fields['id']);
-            $menu = $this->modx->newObject('modMenu');
+            $menu = $this->modx->newObject($this->classPrefix . 'modMenu');
             $menu->fromArray($fields, '', true, true);
             // $menu->addOne($action);
             if ($menu->save()) {
@@ -45,6 +46,10 @@ class MenuAdapter extends ObjectAdapter {
         /* @var $helpers Helpers */
         $menuFields = array();
         $actionFields = array();
+        $prefix = $helpers->modx->getVersionData()['version'] >= 3
+            ? 'MODX\Revolution\\'
+            : '';
+
         $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
             $helpers->modx->lexicon('mc_processing_menus'));
         if ($mode == MODE_BOOTSTRAP) {
@@ -60,7 +65,7 @@ class MenuAdapter extends ObjectAdapter {
             foreach($nameSpaces as $namespace => $fields) {
                 $name = isset($fields['name']) ? $fields['name'] : $namespace;
                 $name = strtolower($name);
-                $menus = $helpers->modx->getCollection('modMenu', array('namespace' => $name));
+                $menus = $helpers->modx->getCollection($prefix . 'modMenu', array('namespace' => $name));
                 foreach($menus as $menu) {
                     /* @var $menu modMenu */
                         $m_fields = $menu->toArray();
@@ -89,7 +94,7 @@ class MenuAdapter extends ObjectAdapter {
                 $code .= "\n";
                 $code .= "\$";
                 $code .= "menus[";
-                $code .= $i+1 . '] = ' . "\$modx->newObject('modMenu');\n";
+                $code .= $i+1 . '] = ' . "\$modx->newObject(" . $prefix . "'modMenu');\n";
                 $code .= "\$";
                 $code .= "menus[";
                 $code .= $i + 1 . ']->fromArray( ';
@@ -116,7 +121,7 @@ class MenuAdapter extends ObjectAdapter {
         $fields = $this->myFields;
         /* @var $action modAction */
         /* @var $menu modMenu */
-        $menu = $this->modx->getObject('modMenu', array('text' => $fields['text'], 'parent' => $fields['parent']));
+        $menu = $this->modx->getObject($this->classPrefix . 'modMenu', array('text' => $fields['text'], 'parent' => $fields['parent']));
         if ($menu) {
             if ($menu->remove()) {
                 $temp = $this->modx->setLogLevel(modX::LOG_LEVEL_INFO);
@@ -127,5 +132,4 @@ class MenuAdapter extends ObjectAdapter {
             }
         }
     }
-
 }

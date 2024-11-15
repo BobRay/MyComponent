@@ -14,6 +14,7 @@ class DashboardWidgetAdapter extends ObjectAdapter {
         /* @var $helpers Helpers */
 
         parent::__construct($modx, $helpers);
+
         $this->name = $fields['name'];
 
         if (is_array($fields)) {
@@ -37,21 +38,21 @@ class DashboardWidgetAdapter extends ObjectAdapter {
         $rank = $this->modx->getOption('rank', $this->myFields['rank'], 0);
         unset($fields['rank'], $fields['dashboard']);
         $dashboard = $this->modx->getOption('dashboard', $this->myFields['dashboard'], 1);
-        $obj = $this->modx->getObject('modDashboardWidget', array('name' => $fields['name'], 'namespace' => $fields['namespace']));
+        $obj = $this->modx->getObject($this->classPrefix . 'modDashboardWidget', array('name' => $fields['name'], 'namespace' => $fields['namespace']));
         if (! $obj) {
-            $widget = $this->modx->newObject('modDashboardWidget');
+            $widget = $this->modx->newObject($this->classPrefix . 'modDashboardWidget');
             $widget->fromArray($fields, '', false, true);
 
             if ($widget->save()) {
                 $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                     $this->modx->lexicon('mc_created_widget')
                     . ': ' . $fields['name']);
-                /*$widget = $this->modx->getObject('modDashboardWidget', array('name' => $fields['name'], 'namespace' => $fields['namespace']));
+                /*$widget = $this->modx->getObject($this->classPrefix . 'modDashboardWidget', array('name' => $fields['name'], 'namespace' => $fields['namespace']));
                 if ($widget) {
                     $id = $widget->get('id');
-                    $widgetPlacement = $this->modx->getObject('modDashboardWidgetPlacement', array('dashboard'=> 1, 'widget' => $id));
+                    $widgetPlacement = $this->modx->getObject($this->classPrefix . 'modDashboardWidgetPlacement', array('dashboard'=> 1, 'widget' => $id));
                     if (! $widgetPlacement) {
-                        $widgetPlacement = $this->modx->newObject('modDashboardWidgetPlacement');
+                        $widgetPlacement = $this->modx->newObject($this->classPrefix . 'modDashboardWidgetPlacement');
                         $widgetPlacement->set('dashboard', $dashboard);
                         $widgetPlacement->set('widget', $id);
                         $widgetPlacement->set('rank', $rank);
@@ -81,7 +82,7 @@ class DashboardWidgetAdapter extends ObjectAdapter {
                 }
             // }
         } elseif ($mode == MODE_EXPORT) {
-            $me = $this->modx->getObject('modDashboardWidget', array('name' => $this->getName()));
+            $me = $this->modx->getObject($this->classPrefix . 'modDashboardWidget', array('name' => $this->getName()));
             if (!$me) {
                 $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, '[TemplateVar Adapter] ' .
                     $this->modx->lexicon('mc_self_nf'));
@@ -91,7 +92,7 @@ class DashboardWidgetAdapter extends ObjectAdapter {
                     foreach ($placements as $placement) {
                         /* @var $placement modDashboardWidgetPlacement */
                         $fields = $placement->toArray();
-                        $widgetObj = $this->modx->getObject('modDashboardWidget',
+                        $widgetObj = $this->modx->getObject($this->classPrefix . 'modDashboardWidget',
                                 $fields['widget']);
                         $widgetName = $widgetObj->get('name');
 
@@ -111,6 +112,10 @@ class DashboardWidgetAdapter extends ObjectAdapter {
 
     public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
         /* @var $helpers Helpers */
+        $prefix = $helpers->modx->getVersionData()['version'] >= 3
+            ? 'MODX\Revolution\\'
+            : '';
+
         $widgets = array();
         $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
             $helpers->modx->lexicon('mc_processing_widgets'));
@@ -125,7 +130,7 @@ class DashboardWidgetAdapter extends ObjectAdapter {
 
                 $name = isset($fields['name']) ? $fields['name'] : $namespace;
                 $name = strtolower($name);
-                $objects = $helpers->modx->getCollection('modDashboardWidget', array('namespace' => $name));
+                $objects = $helpers->modx->getCollection( $prefix . 'modDashboardWidget', array('namespace' => $name));
                 foreach($objects as $object) {
                     /** @var $object xPDOObject */
                     $fields = $object->toArray();
@@ -148,7 +153,7 @@ class DashboardWidgetAdapter extends ObjectAdapter {
             foreach($namespaces as $namespace => $fields) {
                 $name = isset($fields['name']) ? $fields['name'] : $namespace;
                 $name = strtolower($name);
-                $widgets = $helpers->modx->getCollection('modDashboardWidget', array('namespace' => $name));
+                $widgets = $helpers->modx->getCollection($prefix . 'modDashboardWidget', array('namespace' => $name));
             }
         }
         if (! empty($widgets)) {
@@ -165,7 +170,7 @@ class DashboardWidgetAdapter extends ObjectAdapter {
                 $widgetFields = $fields;
                 $code = '';
                 /*$actionFields[$i]['id'] = $i + 1;
-                $code .= "\$action = \$modx->newObject('modAction');\n";
+                $code .= "\$action = \$modx->newObject(" . $prefix . "'modAction');\n";
                 $code .= "\$action->fromArray( ";
                 $code .= var_export($actionFields[$i], true);
                 $code  .= ", '', true, true);\n";*/
@@ -175,7 +180,7 @@ class DashboardWidgetAdapter extends ObjectAdapter {
                 $code .= "\n";
                 $code .= "\$";
                 $code .= "widgets[";
-                $code .= $i+1 . '] = ' . "\$modx->newObject('modDashboardWidget');\n";
+                $code .= $i+1 . '] = ' . "\$modx->newObject(" . $prefix .  "'modDashboardWidget');\n";
                 $code .= "\$";
                 $code .= "widgets[";
                 $code .= $i + 1 . ']->fromArray( ';
@@ -237,7 +242,7 @@ class DashboardWidgetAdapter extends ObjectAdapter {
         $fields = $this->myFields;
         /* @var $action modAction */
         /* @var $widget modDashboardWidget */
-        $widget = $this->modx->getObject('modDashboardWidget', array('name' => $fields['name'], 'namespace' => $fields['namespace']));
+        $widget = $this->modx->getObject($this->classPrefix . 'modDashboardWidget', array('name' => $fields['name'], 'namespace' => $fields['namespace']));
         if ($widget) {
             /* Remove widget placements here if necessary  */
             /*$placements = $widget->getMany('Placements');

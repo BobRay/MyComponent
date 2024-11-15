@@ -28,15 +28,16 @@ abstract class ElementAdapter extends ObjectAdapter {
      */
     public $content = null;
 
-
-    /**
+     /**
      * Class constructor
      *
-     * @param modX $modx - $modx object referrence
+     * @param modX $modx - $modx object reference
      * @param Helpers $helpers - $helpers object
      * @param $fields array - Object fields
      * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT
      */
+
+
     public function __construct(&$modx, $helpers, $fields, $mode = MODE_BOOTSTRAP) {
 
         $this->modx =& $modx;
@@ -102,7 +103,7 @@ abstract class ElementAdapter extends ObjectAdapter {
                 return;
             }
             $alias = $this->helpers->getNameAlias($this->dbClass);
-            $me = $this->modx->getObject($this->dbClass, array($alias => $this->getName()));
+            $me = $this->modx->getObject($this->classPrefix . $this->dbClass, array($alias => $this->getName()));
             /* @var $me modElement */
             if (!$me) {
                 $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, "[ElementAdapter] " .
@@ -114,7 +115,7 @@ abstract class ElementAdapter extends ObjectAdapter {
                        /* @var $ep modElementPropertySet */
                        $fields = $ep->toArray();
                        /* @var $propertySetObj modPropertySet */
-                       $propertySetObj = $this->modx->getObject('modPropertySet',
+                       $propertySetObj = $this->modx->getObject($this->classPrefix . 'modPropertySet',
                            $fields['property_set']);
                        $propertySetName = $propertySetObj->get('name');
                        $resolverFields = array(
@@ -138,7 +139,7 @@ abstract class ElementAdapter extends ObjectAdapter {
      */
     public function fieldsToNames(&$fields) {
         /* @var $categoryObj modCategory */
-        $categoryObj = $this->modx->getObject('modCategory', $fields['category']);
+        $categoryObj = $this->modx->getObject($this->classPrefix . 'modCategory', $fields['category']);
         if ($categoryObj) {
             $fields['category'] = $categoryObj->get('category');
         } else {
@@ -157,7 +158,7 @@ abstract class ElementAdapter extends ObjectAdapter {
 
     public function fieldsToIds(&$fields){
         if (isset($fields['category'])) {
-            $categoryObj = $this->modx->getObject('modCategory', array('category' => $fields['category']));
+            $categoryObj = $this->modx->getObject($this->classPrefix . 'modCategory', array('category' => $fields['category']));
             if ($categoryObj) {
                 $fields['category'] = $categoryObj->get('id');
             } else {
