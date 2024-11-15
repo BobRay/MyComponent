@@ -14,7 +14,7 @@ $components = array(
     'authorUrl' => 'https://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
     'packageDocumentationUrl' => 'https://bobsguides.com/example-tutorial.html',
-    'copyright' => '2024',
+    'copyright' => '2014-2025',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
@@ -70,7 +70,7 @@ $components = array(
     /* ************************ NEW SYSTEM EVENTS ************************* */
 
     /* Array of your new System Events (not default
-     * MODX System Events). Listed here so they can be created during
+     * MODX System Events). Listed here, so they can be created during
      * install and removed during uninstall.
      *
      * Warning: Do *not* list regular MODX System Events here !!! */
@@ -180,8 +180,8 @@ $components = array(
             'params' => '',
             'handler' => '',
             'permissions' => '',
+            'action' => 'index',
             'namespace' => 'example',
-            'controller' => 'index',
         ),
     ),
 

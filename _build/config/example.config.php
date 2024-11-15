@@ -14,7 +14,7 @@ $components = array(
     'authorUrl' => 'https://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
     'packageDocumentationUrl' => 'https://bobsguides.com/example-tutorial.html',
-    'copyright' => '2014-2017',
+    'copyright' => '2014-2025',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
@@ -180,15 +180,8 @@ $components = array(
             'params' => '',
             'handler' => '',
             'permissions' => '',
-
-            'action' => array(
-                'id' => '',
-                'namespace' => 'example',
-                'controller' => 'index',
-                'haslayout' => true,
-                'lang_topics' => 'example:default',
-                'assets' => '',
-            ),
+            'action' => 'index',
+            'namespace' => 'example',
         ),
     ),
 
@@ -410,7 +403,7 @@ $components = array(
     /* These will automatically go under assets/components/yourcomponent/js/
        Format: directory:filename
        (no trailing slash on directory)
-       if 'createCmpFiles is true, these will be ignored.
+       if 'createCmpFiles' is true, these will be ignored.
     */
     'jsFiles' => array(
         'example.js',
@@ -448,6 +441,11 @@ $components = array(
     'resolvers' => array(
         'default',
         'addUsers'
+    ),
+
+    /* Dependencies */
+    'requires' => array(
+      // 'Wayfinder' => '>=2.3.3',
     ),
 
     /* (optional) Validators can abort the install after checking
