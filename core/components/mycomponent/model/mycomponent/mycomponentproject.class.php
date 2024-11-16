@@ -776,7 +776,7 @@ class MyComponentProject {
                     foreach ($elementObjects as $elementName => $fields) {
                         /* @var $adapter elementAdapter */
                         /* @var $o ObjectAdapter */
-                        $adapterName = ucFirst(substr($element, 0, -1)) . 'Adapter';
+                        $adapterName = ucfirst(substr($element, 0, -1)) . 'Adapter';
                         $fields['name'] = isset($fields['name'])
                             ? $fields['name']
                             : $elementName;
