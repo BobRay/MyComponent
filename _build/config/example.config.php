@@ -185,6 +185,25 @@ $components = array(
         ),
     ),
 
+    /* Widgets */
+    'widgets' => array(
+        'Example' => array(
+            'name' => 'Example',
+            'description' => 'Example',
+            'namespace' => 'Example',
+            'type' => 'snippet',
+            'content' => 'ExampleWidget',
+            'size' => 'half',
+            'lexicon' => 'example:default',
+
+            'dashboards' => array(
+                /* dashboard ID => rank (default dashboard is 1)*/
+                1 => 0,
+            ),
+        ),
+
+    ),
+
 
     /* ************************* ELEMENTS **************************** */
 
@@ -235,7 +254,15 @@ $components = array(
                 ),
             ),
 
+            'ExampleWidget' => array( /* Example widget snippet */
+                'category' => 'Category2',
+                'description' => 'Example Widget',
+                'static' => false,
+                'snippet' => '<?php  
+                    return "Example Widget Snippet Output";',
+            ),
         ),
+
         'plugins' => array(
             'Plugin1' => array( /* minimal example */
                 'category' => 'Example',
