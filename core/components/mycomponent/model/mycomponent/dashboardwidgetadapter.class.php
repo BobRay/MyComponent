@@ -26,10 +26,8 @@ class DashboardWidgetAdapter extends ObjectAdapter {
                 unset($fields['dashboards']);
             }
 
-            $this->myFields = $fields;
             ObjectAdapter::$myObjects['widgets'][] = $fields;
             $this->myFields = $fields;
-
         }
     }
 
