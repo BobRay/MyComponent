@@ -56,9 +56,11 @@ abstract class ObjectAdapter {
     /**
      * @var $myFields array - associative array of field names/values for current object
      */
-    protected $myFields;
+    protected $myFields ;
 
     protected string $classPrefix;
+
+    protected bool $isMODX3;
 
 
     protected string $transportPrefix;
@@ -78,8 +80,8 @@ abstract class ObjectAdapter {
         $this->modx =& $modx;
         $this->helpers =& $helpers;
 
-        $isMODX3 = $modx->getVersionData()['version'] >= 3;
-        $this->classPrefix = $isMODX3
+        $this->isMODX3 = $modx->getVersionData()['version'] >= 3;
+        $this->classPrefix = $this->isMODX3
             ? 'MODX\Revolution\\'
             : '';
     }
@@ -615,6 +617,7 @@ abstract class ObjectAdapter {
                 $fileName = $fields['filename'];
                 unset($fields['filename']);
             } else {
+                $fields[$alias] = $fields[$alias] ?? $k;
                 $fileName = $helpers->getFileName($fields[$alias], $type);
             }
             $tpl .= self::writeObject($helpers, $fields, $type, $fileName, $i);
