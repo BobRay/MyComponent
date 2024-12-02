@@ -157,7 +157,7 @@ class CategoryAdapter extends ObjectAdapter {
             /* @var $element modElement */
 
             $class = 'mod' . ucfirst(substr($elementType, 0, -1));
-            $adapterName = ucFirst(substr($class, 3)) . 'Adapter';
+            $adapterName = ucfirst(substr($class, 3)) . 'Adapter';
 
             if (isset($this->helpers->props['allElements']) && $this->helpers->props['allElements']) {
                 $elements = $this->modx->getCollection($this->classPrefix . $class );
@@ -210,6 +210,7 @@ class CategoryAdapter extends ObjectAdapter {
                 }
                 /* These are here for LexiconHelper */
                 // include 'chunkadapter.class.php';
+                // include 'pluginadapter.class.php';
                 // include 'propertyset.adapter.class.php';
                 // include 'snippetadapter.class.php';
                 // include 'template.adapter.class.php';
