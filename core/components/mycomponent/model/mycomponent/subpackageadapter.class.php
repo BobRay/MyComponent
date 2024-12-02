@@ -12,7 +12,7 @@ class XSubpackageAdapter {
     public $modx;
 
     /** @var $helpers Helpers */
-    public $helpers = null;
+    public $helpers;
 
     final function __construct() {
     }
