@@ -102,6 +102,7 @@ class MyComponentProject {
      * @param string $currentProject - Usually read from file, but set for unit tests
      */
     public function init($scriptProperties = array(), $currentProject = '') {
+        $modx = $this->modx;
         require dirname(__FILE__) . '/mcautoload.php';
         spl_autoload_register('mc_auto_load');
 
@@ -345,6 +346,9 @@ class MyComponentProject {
         /* Create menus */
         $this->createMenus($mode);
 
+        /* Create Dashboards */
+        $this->createDashboards($mode);
+
         /* Create Widgets */
         $this->createWidgets($mode);
 
@@ -436,7 +440,7 @@ class MyComponentProject {
             $packageName = $this->packageName;
             if (empty($packageName)) {
                 session_write_close();
-                die('PackageName nor categories found in project config');
+                die('PackageName or categories found in project config');
             }
             /* If no categories, create one based on packageName */
             $categories = array(
@@ -513,7 +517,7 @@ class MyComponentProject {
             $settings = $this->helpers->getProp('newSystemSettings', array());
             foreach ($settings as $key => $fields) {
                 if (!isset($fields['key'])) {
-                    $fields['key'] = $key;
+                    $fields['name'] = $key;
                 }
 
                 $fields['name'] = $this->helpers->handleTilde($fields['name']);
@@ -887,6 +891,30 @@ class MyComponentProject {
         }
     }
 
+    public function createDashboards($mode = MODE_BOOTSTRAP) {
+        $dashboards = $this->helpers->getProp('newDashboards', array());
+        if (!empty($dashboards)) {
+            if ($mode != MODE_EXPORT) {
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
+                    $this->modx->lexicon('mc_processing_dashboards'));
+            }
+           // require 'dashboardadapter.class.php';
+            foreach ($dashboards as $k => $fields) {
+                if ($mode == MODE_BOOTSTRAP) {
+
+                    $this->addToModx('DashboardAdapter', $fields);
+                } elseif ($mode == MODE_EXPORT || $mode == MODE_REMOVE) {
+                    $a = new DashboardAdapter($this->modx, $this->helpers, $fields, $mode);
+                    if ($mode == MODE_EXPORT) {
+                        $a::createTransportFiles($this->helpers, MODE_EXPORT);
+                    } elseif ($mode == MODE_REMOVE) {
+                        $a->remove();
+                    }
+                }
+            }
+        }
+    }
+
 
     /**
      * Called on Bootstrap to add items to MODX
@@ -896,7 +924,7 @@ class MyComponentProject {
      * @param $overwrite bool - overwrite existing code files
      * @return ObjectAdapter ObjectAdapter - returns the appropriate object adapter
      */
-    protected function addToModx($adapter, $fields, $overwrite = false) {
+    public function addToModx($adapter, $fields, $overwrite = false) {
         /* These are here for LexiconHelper */
         // include 'pluginadapter.class.php';
         // include 'chunkadapter.class.php';
@@ -904,6 +932,7 @@ class MyComponentProject {
         // include 'snippetadapter.class.php';
         // include 'templateadapter.class.php';
         // include 'templatevaradapter.class.php'
+        // include 'dashboardadapter.class.php'
         // include 'dashboardwidgetadapter.class.php';
         // include 'menuadapter.class.php
 
@@ -1059,6 +1088,7 @@ class MyComponentProject {
         SystemEventAdapter::createTransportFiles($this->helpers, $mode);
         MenuAdapter::createTransportFiles($this->helpers, $mode);
         ContextAdapter::createTransportFiles($this->helpers, $mode);
+        DashboardAdapter::createTransportFiles($this->helpers, $mode);
         ContextSettingAdapter::createTransportFiles($this->helpers, $mode);
         DashboardWidgetAdapter::CreateTransportFiles($this->helpers, $mode);
 
@@ -1887,6 +1917,10 @@ class MyComponentProject {
         if (in_array('resources', $toProcess)) {
             $this->createResources($mode);
         }
+
+        if (in_array('dashboards', $toProcess)) {
+            $this->createDashboards($mode);
+        }
         if (in_array('widgets', $toProcess)) {
             $this->createWidgets($mode);
         }
@@ -1915,7 +1949,7 @@ class MyComponentProject {
      * in the 'elements' member of the Project config
      *
      *
-     * @param string $toProcess - array of object to import
+     * @param string $toProcess - comma-separated list of objects to import
      * @param string $directory - directory to place objects in
      * @param bool $dryRun -- if set, will just report what it would have done
      */
