@@ -37,7 +37,8 @@ $components = array(
     /* Define source and target directories */
 
     /* path to MyComponent source files */
-    'mycomponentRoot' => $this->modx->getOption('mc.root', null,
+    /** @var modX $modx */
+    'mycomponentRoot' => $modx->getOption('mc.root', null,
         MODX_CORE_PATH . 'components/mycomponent/'),
 
     /* path to new project root */
@@ -52,12 +53,16 @@ $components = array(
     'newSystemSettings' => array(
         'ut_system_setting1' => array(
             'key' => 'ut_system_setting1',
+            'description' => 'Description of Setting one',
+            'name' => 'UnitTest Setting One',
             'xtype' => 'textfield',
             'value' => 'value1',
             'namespace' => 'unittest',
         ),
         'ut_system_setting2' => array(
             'key' => 'ut_system_setting2',
+            'name' => 'UnitTest Setting One',
+            'description' => 'Description of Setting two',
             'xtype' => 'combo-boolean',
             'value' => true,
         ),
@@ -119,6 +124,132 @@ $components = array(
      * to set their namespace to the lowercase package name of your extra */
     'menus' => false,
 
+    /* ************************ NEW Dashboards ************************* */
+
+    'newDashboards' => array(
+        'UnitTestDashboard' => array(
+            'name' => 'UnitTestDashboard',
+            'description' => 'Description of UnitTest Dashboard',
+            'hide_trees' => '0',
+            'customizable' => '1',
+        ),
+    ),
+
+    /* *************************** Widgets ****************************** */
+    /* Examples here are for the 4 types of widgets:
+        snippet, php, file, html */
+    'widgets' => array(
+        'UnittestSnippetWidget' => array(
+            'name' => 'UnittestSnippetWidget',
+            'description' => 'UnittestSnippetWidget',
+            'namespace' => 'unittest',
+            /* Type options: 'file' 'snippet' 'html' 'php' */
+            'type' => 'snippet',
+
+            /* content: snippet name */
+            'content' => 'UnittestWidgetSnippet',
+
+            'lexicon' => 'unittest:default',
+            'properties' => array(), /* array of widget properties */
+            'permission' => '', /* permission required to see widget */
+
+            /* Dashboards to attach this widget to (optional) */
+            'placements' => array(
+                '1' => array(
+                    /* dashboard name */
+                    'dashboard' => 'Default',
+
+                    /* This widget's name */
+                    'widget' => 'UnittestSnippetWidget',
+
+                    'rank' => '0',
+                    /* Size options: half, full, one-third, two-thirds. */
+                    'size' => 'half',
+                ),
+
+                '2' => array(
+                    /* dashboard name */
+                    'dashboard' => 'UnittestDashboard',
+
+                    /* This widget's name */
+                    'widget' => 'UnittestSnippetWidget',
+
+                    'rank' => '0',
+                    /* Size options: half, full, one-third, two-thirds. */
+                    'size' => 'half',
+                ),
+            ),
+        ), /* End of this widget */
+
+        'UnittestPhpWidget' => array(
+            'name' => 'UnittestPhpWidget',
+            'description' => 'UnittestPhpWidget description',
+            'namespace' => 'Unittest',
+            /* Type options: 'file' 'snippet' 'html' 'php' */
+            'type' => 'php',
+
+            /* content: inline php code */
+            'content' => '
+                <?php
+                    return "Hello World;"
+                    ',
+
+            'lexicon' => 'unittest:default',
+            'properties' => array(), /* array of widget properties */
+            'permission' => '', /* permission required to see widget */
+
+            /* Dashboards to attach snippet to (optional) */
+            'placements' => array(
+                /* dashboard name or ID */
+                'dashboard' => 'Default',
+
+                /* This widget's name or ID */
+                'widget' => 'UnittestSnippetWidget',
+
+                'rank' => '0',
+                /* Size options: half, full, one-third, two-thirds. */
+                'size' => 'half',
+            ),
+        ), /* End of this widget */
+
+        'UnittestFileWidget' => array(
+            'name' => 'UnittestFileWidget',
+            'description' => 'UnittestFileWidget description',
+            'namespace' => 'Unittest',
+            /* Type options: 'file' 'snippet' 'html' 'php' */
+            'type' => 'file',
+
+            /* content: path to php file */
+            'content' => '[[++core_path]]components/unittest/files/UnittestFileWidget.php',
+
+            'lexicon' => 'unittest:default',
+            'properties' => array(), /* array of widget properties */
+            'permission' => '', /* permission required to see widget */
+
+            /* Dashboards to attach snippet to (optional) */
+            'placements' => array(), /* unattached */
+        ), /* End of this widget */
+
+        'UnittestHTMLWidget' => array(
+            'name' => 'UnittestHTMLWidget',
+            'description' => 'UnittestHTMLWidget description',
+            'namespace' => 'Unittest',
+            /* Type options: 'file' 'snippet' 'html' 'php' */
+            'type' => 'html',
+
+            /* content: HTML code (snippet and chunk tags allowed) */
+            'content' => '<h3>Hello World</h3>',
+
+            'lexicon' => 'unittest:default',
+            'properties' => array(), /* array of widget properties */
+            'permission' => '', /* permission required to see widget */
+
+            /* Dashboards to attach snippet to (optional) */
+            'placements' => array(), /* unattached */
+        ), /* End of this widget */
+
+    ), /* End of widgets array */
+
     /* ************************* ELEMENTS **************************** */
 
     /* Array containing elements for your extra. 'category' is required
@@ -142,6 +273,15 @@ $components = array(
         ),
 
         'snippets' => array(
+            /* See snippet widget above */
+            'ExampleSnippetWidget' => array( /* Example widget snippet */
+                'category' => 'Category2',
+                'description' => 'Example Widget',
+                'static' => false,
+                'snippet' => '<?php  
+                    return "Example Widget Snippet Output";',
+            ),
+
             'utSnippet1' => array( /* minimal example */
                 'category' => 'UnitTest',
                 'static' => true,
@@ -485,7 +625,9 @@ $components = array(
         'resources',
         'propertySets',
         'systemSettings',
-        'menus'
+        'menus',
+        'dashboards',
+        'widgets',
     ),
     /*  Array  of resources to process. You can specify specific resources
         or parent (container) resources, or both.
