@@ -212,7 +212,7 @@ class Helpers {
 
         } elseif ($fileType == 'transport') {
             $output = 'transport.' . $suffix . 's.php';
-        } elseif ($fileType = 'properties') {
+        } elseif ($fileType == 'properties') {
             $output = 'properties.' . $name . '.' . $suffix . '.php';
         }
 
@@ -806,7 +806,7 @@ class Helpers {
     }
 
    /* For possible future use */
-   public function serialize_array(&$array, $root = '$root', $depth = 0) {
+    public function serialize_array(&$array, $root = '$root', $depth = 0) {
         $items = array();
 
         foreach ($array as $key => &$value) {
