@@ -16,7 +16,6 @@ class MenuAdapter extends ObjectAdapter {
             if (!isset($fields['namespace'])) {
                 $fields['namespace'] = $this->helpers->getProp('packageNameLower');
             }
-            $this->myFields = $fields;
             ObjectAdapter::$myObjects['menus'][] = $fields;
             $this->myFields = $fields;
         }
