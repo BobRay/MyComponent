@@ -5,7 +5,7 @@
             $events = empty($events)? array() : explode(',', $events);
             /* @var $e modEvent */
             foreach ($events as $event) {
-                $e = $modx->getObject('modEvent', array('name' => $event));
+                $e = $this->modx->getObject('modEvent', array('name' => $event));
                 if ($e) {
                     $e->remove();
                 }
