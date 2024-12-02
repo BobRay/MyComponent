@@ -8,6 +8,7 @@ class DashboardWidgetAdapter extends ObjectAdapter {
     protected $dbClassNameKey = 'name';
     protected $dbClassParentKey = 'namespace';
     protected $myFields;
+    protected $mode;
 
     final public function __construct(&$modx, $helpers, $fields, $mode = MODE_BOOTSTRAP) {
         /* @var $modx modX */
@@ -16,6 +17,7 @@ class DashboardWidgetAdapter extends ObjectAdapter {
         parent::__construct($modx, $helpers);
 
         $this->name = $fields['name'];
+        $this->mode = $mode;
 
         if (is_array($fields)) {
             if (!isset($fields['namespace'])) {
@@ -31,38 +33,53 @@ class DashboardWidgetAdapter extends ObjectAdapter {
         }
     }
 
+    /* Adds one widget to MODX */
     public function addToMODx($overwrite = false) {
         $fields = $this->myFields;
-        $rank = $this->modx->getOption('rank', $this->myFields['rank'], 0);
-        unset($fields['rank'], $fields['dashboard']);
-        $dashboard = $this->modx->getOption('dashboard', $this->myFields['dashboard'], 1);
-        $obj = $this->modx->getObject($this->classPrefix . 'modDashboardWidget', array('name' => $fields['name'], 'namespace' => $fields['namespace']));
-        if (! $obj) {
+        $widgetId = null;
+        $placements = $fields['placements'];
+        unset($fields['placements']);
+
+        $obj = $this->modx->getObject($this->classPrefix . 'modDashboardWidget', array('name' => $fields['name'], 'namespace' => $fields['namespace'], 'type' => $fields['type']));
+        if (!$obj) {
+            /** @var modDashboardWidget $widget */
             $widget = $this->modx->newObject($this->classPrefix . 'modDashboardWidget');
             $widget->fromArray($fields, '', false, true);
 
             if ($widget->save()) {
+                $widgetId = $widget->get('id');
+
                 $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                     $this->modx->lexicon('mc_created_widget')
                     . ': ' . $fields['name']);
-                /*$widget = $this->modx->getObject($this->classPrefix . 'modDashboardWidget', array('name' => $fields['name'], 'namespace' => $fields['namespace']));
-                if ($widget) {
-                    $id = $widget->get('id');
-                    $widgetPlacement = $this->modx->getObject($this->classPrefix . 'modDashboardWidgetPlacement', array('dashboard'=> 1, 'widget' => $id));
-                    if (! $widgetPlacement) {
-                        $widgetPlacement = $this->modx->newObject($this->classPrefix . 'modDashboardWidgetPlacement');
-                        $widgetPlacement->set('dashboard', $dashboard);
-                        $widgetPlacement->set('widget', $id);
-                        $widgetPlacement->set('rank', $rank);
-                        $widgetPlacement->save();
-                    }
-
-                }*/
             }
         } else {
             $this->helpers->sendLog(MODX_LOG_LEVEL_INFO,
                 $this->modx->lexicon('mc_widget_already_exists')
-                    . ' ' . $fields['text']);
+                . ' ' . $fields['name']);
+        }
+
+        if ($fields['type'] === 'file') {
+            /* Other types handled elsewhere */
+            $filePath = $fields['content'];
+            $parsedFilePath = $this->helpers->getWidgetFilePath($filePath);
+            $dir = $parsedFilePath['dir'];
+            if (! is_dir($dir)) {
+                mkdir($dir, $this->helpers->props['dirPermission'], true);
+            }
+            $fileName = $parsedFilePath['filename'];
+            $fullPath = $dir . $fileName;
+            if (! file_exists($fullPath)) {
+                $tpl = $this->modx->getChunk('phpfile.php');
+                if ($tpl) {
+                    $tpl = $this->helpers->replaceTags($tpl);
+                    file_put_contents($fullPath, $tpl);
+                }
+            } else {
+                $this->helpers->sendLog(MODX_LOG_LEVEL_INFO,
+                    $this->modx->lexicon('mc_file_already_exists')
+                    . ' ' . $fullPath);
+            }
         }
     }
 
