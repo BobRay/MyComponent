@@ -185,25 +185,131 @@ $components = array(
         ),
     ),
 
-    /* Widgets */
-    'widgets' => array(
-        'Example' => array(
-            'name' => 'Example',
-            'description' => 'Example',
-            'namespace' => 'Example',
-            'type' => 'snippet',
-            'content' => 'ExampleWidget',
-            'size' => 'half',
-            'lexicon' => 'example:default',
+    /* ************************ NEW Dashboards ************************* */
 
-            'dashboards' => array(
-                /* dashboard ID => rank (default dashboard is 1)*/
-                1 => 0,
-            ),
+    'newDashboards' => array(
+        'ExampleDashboard' => array(
+            'name' => 'ExampleDashboard',
+            'description' => 'Description of Example Dashboard',
+            'hide_trees' => '0',
+            'customizable' => '1',
         ),
-
     ),
 
+    /* *************************** Widgets ****************************** */
+    /* Examples here are for the 4 types of widgets:
+        snippet, php, file, html */
+    'widgets' => array(
+        'ExampleSnippetWidget' => array(
+            'name' => 'ExampleSnippetWidget',
+            'description' => 'ExampleSnippetWidget',
+            'namespace' => 'Example',
+            /* Type options: 'file' 'snippet' 'html' 'php' */
+            'type' => 'snippet',
+
+            /* content: snippet name */
+            'content' => 'ExampleWidgetSnippet',
+
+            'lexicon' => 'example:default',
+            'properties' => array(), /* array of widget properties */
+            'permission' => '', /* permission required to see widget */
+
+            /* Dashboards to attach this widget to (optional) */
+            'placements' => array(
+                '1' => array(
+                    /* dashboard name */
+                    'dashboard' => 'Default',
+
+                    /* This widget's name */
+                    'widget' => 'ExampleSnippetWidget',
+
+                    'rank' => '0',
+                    /* Size options: half, full, one-third, two-thirds. */
+                    'size' => 'half',
+                ),
+
+                '2' => array(
+                    /* dashboard name */
+                    'dashboard' => 'ExampleDashboard',
+
+                    /* This widget's name or ID */
+                    'widget' => 'ExampleSnippetWidget',
+
+                    'rank' => '0',
+                    /* Size options: half, full, one-third, two-thirds. */
+                    'size' => 'half',
+                ),
+            ),
+        ), /* End of this widget */
+
+        'ExamplePhpWidget' => array(
+            'name' => 'ExamplePhpWidget',
+            'description' => 'ExamplePhpWidget description',
+            'namespace' => 'Example',
+            /* Type options: 'file' 'snippet' 'html' 'php' */
+            'type' => 'php',
+
+            /* content: inline php code */
+            'content' => '
+                <?php
+                    return "Hello World;"
+                    ',
+
+            'lexicon' => 'example:default',
+            'properties' => array(), /* array of widget properties */
+            'permission' => '', /* permission required to see widget */
+
+            /* Dashboards to attach snippet to (optional) */
+            'placements' => array(
+                /* dashboard name or ID */
+                'dashboard' => 'Default',
+
+                /* This widget's name or ID */
+                'widget' => 'ExampleSnippetWidget',
+
+                'rank' => '0',
+                /* Size options: half, full, one-third, two-thirds. */
+                'size' => 'half',
+            ),
+        ), /* End of this widget */
+
+        'ExampleFileWidget' => array(
+            'name' => 'ExampleFileWidget',
+            'description' => 'ExampleFileWidget description',
+            'namespace' => 'Example',
+            /* Type options: 'file' 'snippet' 'html' 'php' */
+            'type' => 'file',
+
+            /* content: path to php file */
+            'content' => '[[++core_path]]components/example/filename.php',
+
+            'lexicon' => 'example:default',
+            'properties' => array(), /* array of widget properties */
+            'permission' => '', /* permission required to see widget */
+
+            /* Dashboards to attach snippet to (optional) */
+            'placements' => array(), /* unattached */
+        ), /* End of this widget */
+
+        'ExampleHTMLWidget' => array(
+            'name' => 'ExampleFileSnippetWidget',
+            'description' => 'ExampleFile description',
+            'namespace' => 'Example',
+            /* Type options: 'file' 'snippet' 'html' 'php' */
+            'type' => 'html',
+
+            /* content: HTML code (snippet and chunk tags allowed) */
+            'content' => '<h3>Hello World</h3>',
+
+            'lexicon' => 'example:default',
+            'properties' => array(), /* array of widget properties */
+            'permission' => '', /* permission required to see widget */
+
+            /* Dashboards to attach snippet to (optional) */
+            'placements' => array(), /* unattached */
+        ), /* End of this widget */
+
+    ), /* End of widgets array */
 
     /* ************************* ELEMENTS **************************** */
 
@@ -254,7 +360,8 @@ $components = array(
                 ),
             ),
 
-            'ExampleWidget' => array( /* Example widget snippet */
+            /* See snippet widget above */
+            'ExampleSnippetWidget' => array( /* Example widget snippet */
                 'category' => 'Category2',
                 'description' => 'Example Widget',
                 'static' => false,
@@ -641,7 +748,8 @@ $components = array(
         'systemSettings',
         'contextSettings',
         'systemEvents',
-        'menus'
+        'menus',
+        'widgets',
     ),
     /*  Array  of resources to process. You can specify specific resources
         or parent (container) resources, or both.

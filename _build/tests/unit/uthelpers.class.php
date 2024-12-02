@@ -172,6 +172,22 @@ class UtHelpers {
 
     }
 
+    public function createDashboards(&$modx, &$mc) {
+        foreach ($mc->props['newDashboards'] as $name => $fields) {
+            $dashboard = $modx->getObject('modDashboard', array('name' => $fields['name']));
+
+            if (! $dashboard) {
+                /** @var modDashboard $dashboard */
+                $dashboard = $modx->newObject('modDashboard');
+                unset ($fields['customizable']);
+                $dashboard->fromArray($fields, '',true, true);
+                $dashboard->save();
+
+            }
+        }
+
+}
+
     public function removeSystemSettings(&$modx, &$mc) {
         /* @var $modx modX */
         /* @var $setting modSystemSetting */
@@ -200,6 +216,15 @@ class UtHelpers {
             $ct = $modx->getObject('modCategory', array('category' => $category));
             if ($ct) {
                 $ct->remove();
+            }
+        }
+    }
+
+    public function removeDashboards(&$modx, &$mc) {
+        foreach ($mc->props['newDashboards'] as $name => $fields) {
+            $dashboard = $modx->getObject('modDashboard', array('name' => $fields['name']));
+            if ($dashboard) {
+                $dashboard->remove();
             }
         }
     }

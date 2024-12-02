@@ -38,9 +38,9 @@ class Helpers {
     /* @var $source string - path to root of MyComponent */
     protected $source;
     /* @var $dirPermission - permission for new directories (from config file) */
-    protected $dirPermission;
+    public $dirPermission;
     /* @var $filePermission - permission for new files (from config file) */
-    protected $filePermission;
+    public $filePermission;
     /* @var $files array - files collected by dirWalk() */
     protected $files = array();
 
@@ -875,4 +875,45 @@ class Helpers {
 
         return ($string);
     }
+
+    /* Return file path and filename as array based on content of
+       file widget */
+
+    /** @param string $string
+     *  @return array array dir => $dir, 'filename' => $fileName
+     * */
+
+    public function getWidgetFilePath($string):array {
+        $targetRoot = $this->props['targetRoot'];
+        $pattern = '/^\[\[\++(.*)]](.*)$/';
+        $fileName = basename($string);
+        $path = str_replace($fileName, '', $string);
+        $path = str_replace('[[++manager_theme]]', 'default', $path);
+
+        preg_match($pattern, $path, $matches);
+        if (empty($matches)) {
+            $finalPath = $string;
+        } else {
+            $suffix = $matches[2] ?? '';
+            switch ($matches[1]) {
+                case 'core_path':
+                    $finalDir = $targetRoot . 'core/' . $suffix;
+                    break;
+                case 'assets_path':
+                    $finalDir = $targetRoot . 'assets/' . $suffix;
+                    break;
+                case 'manager_path':
+                    $finalDir = $targetRoot . 'manager/' . $suffix;
+                    break;
+                default:
+                    $finalDir = $string;
+
+            }
+        }
+
+        return array(
+            'dir' => $finalDir,
+            'filename' => $fileName,
+        );
+   }
 }
