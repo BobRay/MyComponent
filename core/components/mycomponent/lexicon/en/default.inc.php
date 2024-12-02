@@ -179,14 +179,18 @@ $_lang['mc_total_time'] = 'Total time';
 $_lang['mc_invalid_category'] = 'Invalid Category';
 $_lang['mc_invalid_template'] = 'Invalid Template';
 $_lang['mc_processing_static_element'] = 'Processing static element';
-$_lang['mc_created_widget'] = 'Created Widget';
-$_lang['mc_widget_already_exists'] = 'Widget already exists';
+$_lang['mc_widgets'] = 'widget(s)';
 $_lang['mc_processing_widgets'] = 'Processing Widgets';
+$_lang['mc_no_fields'] = 'No Fields Supplied';
 $_lang['mc_creating_widget_resolver'] = 'Creating widget resolver';
 $_lang['mc_widgetresolvertpl_empty'] = 'Widget resolver Tpl is empty';
+$_lang['mc_created_widget'] = 'Created Widget';
+$_lang['mc_widget_already_exists'] = 'Widget already exists';
+$_lang['mc_processing_dashboards'] = 'Processing Dashboards';
+$_lang['mc_created_dashboard'] = 'Created Dashboard';
+$_lang['mc_dashboard_already_exists'] = 'Dashboard already exists';
 $_lang['mc_removed_widget_placement'] = 'Remove modWidgetPlacement';
 $_lang['mc_removed_widget'] = 'Removed widget';
-$_lang['mc_widgets'] = 'widget(s)';
 
 /* used in LexiconHelper or its included classes  */
 $_lang['mc_lexicon_helper'] = 'Lexicon Helper';
