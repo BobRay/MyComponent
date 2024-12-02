@@ -127,10 +127,10 @@ abstract class AbstractLexiconCodeFile {
     public $updateCount = 0;
     /** @var $modx modX */
 
-    public $modx = null;
+    public $modx;
     /** @var helpers Helpers */
 
-    public $helpers = null;
+    public $helpers;
     /** @var $language string - */
     public $language = '';
 
