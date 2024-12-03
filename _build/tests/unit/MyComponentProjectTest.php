@@ -126,8 +126,8 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
         $this->utHelpers->removeSystemSettings($this->modx, $this->mc);
         $this->utHelpers->removeNamespaces($this->modx, $this->mc);
         $this->utHelpers->removeCategories($this->modx, $this->mc);
-        $this->mc = null;
-        $this->modx = null;
+       // $this->mc = null;
+       // $this->modx = null;
     }
 
     /**
