@@ -278,7 +278,7 @@ $components = array(
         'snippets' => array(
             /* See snippet widget above */
             'ExampleSnippetWidget' => array( /* Example widget snippet */
-                'category' => 'Category2',
+                'category' => 'UtCategory2',
                 'description' => 'Example Widget',
                 'static' => false,
                 'snippet' => '<?php  
