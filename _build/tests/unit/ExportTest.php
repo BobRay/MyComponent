@@ -75,7 +75,7 @@ class ExportTest extends PHPUnit_Framework_TestCase {
         $this->utHelpers->removeElements($this->modx, $this->mc);
         $this->utHelpers->removeResources($this->modx, $this->mc);
         $this->utHelpers->removeSystemSettings($this->modx, $this->mc);
-        $this->utHelpers->removenameSpaces($this->modx, $this->mc);
+        $this->utHelpers->removeNamespaces($this->modx, $this->mc);
         $this->utHelpers->removeCategories($this->modx, $this->mc);
 
         if (strstr($this->mc->targetRoot, 'unittest')) {
