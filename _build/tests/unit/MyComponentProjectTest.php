@@ -45,6 +45,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
      * This method is called before each test is executed.
      */
     protected function setUp():void {
+ //       $this::markTestSkipped("PHP option `assert.exception` must be enabled for this test");
         // echo "\n---------------- SETUP --------------------";
         require_once dirname(__FILE__) . '/build.config.php';
         require_once dirname(__FILE__) . '/uthelpers.class.php';
@@ -53,7 +54,8 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
 
         $modx = new modX();
 
-        $this->classPrefix = $modx->getVersionData()['version'] >= 3
+        $v = include MODX_CORE_PATH . "docs/version.inc.php";
+        $this->classPrefix = $v['version'] >= 3
             ? 'MODX\Revolution\\'
             : '';
 
