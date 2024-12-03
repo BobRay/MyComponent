@@ -83,6 +83,7 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
 
 
     protected function setUp(): void {
+       //  $this::markTestSkipped("PHP option `assert.exception` must be enabled for this test");
         require_once 'build.config.php';
         require_once 'uthelpers.class.php';
         require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
