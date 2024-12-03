@@ -257,7 +257,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
             }
         }
 
-        $this->utHelpers->RemoveElements($this->modx, $this->mc);
+        $this->utHelpers->removeElements($this->modx, $this->mc);
     }
 
     public function testCreateResources() {
