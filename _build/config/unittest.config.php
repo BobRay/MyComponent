@@ -38,8 +38,11 @@ $components = array(
 
     /* path to MyComponent source files */
     /** @var modX $modx */
-    'mycomponentRoot' => $modx->getOption('mc.root', null,
-        MODX_CORE_PATH . 'components/mycomponent/'),
+   /* 'mycomponentRoot' => $this->modx->getOption('mc.root', null,
+        MODX_CORE_PATH . 'components/mycomponent/'),*/
+
+    'mycomponentRoot' => MODX_CORE_PATH . 'components/mycomponent/',
+
 
     /* path to new project root */
     'targetRoot' => MODX_ASSETS_PATH . 'mycomponents/' . $packageNameLower . '/',
