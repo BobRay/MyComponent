@@ -277,12 +277,12 @@ $components = array(
 
         'snippets' => array(
             /* See snippet widget above */
-            'ExampleSnippetWidget' => array( /* Example widget snippet */
-                'category' => 'UtCategory2',
-                'description' => 'Example Widget',
+            'UnittestWidgetSnippet' => array( /* Example widget snippet */
+                'category' => 'utCategory2',
+                'description' => 'Snippet for snippet Widget',
                 'static' => false,
                 'snippet' => '<?php  
-                    return "Example Widget Snippet Output";',
+                    return "UnitTest Widget Snippet Output goes here";',
             ),
 
             'utSnippet1' => array( /* minimal example */
@@ -291,7 +291,7 @@ $components = array(
             ),
 
             'utSnippet2' => array( /* example with static and property set(s)  */
-                'category' => 'UtCategory2',
+                'category' => 'utCategory2',
                 'static' => false,
                 'propertySets' => array(
                     'utPropertySet1',
