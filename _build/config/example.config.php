@@ -577,12 +577,12 @@ $components = array(
         'addUsers'
     ),
 
-    /* Dependencies */
+    /* Dependencies (package name must be lowercase) */
     'requires' => array(
-      // 'Wayfinder' => '>=2.3.3',
+      // 'wayfinder' => '>=2.3.3',
     ),
 
-    /* (optional) Validators can abort the install after checking
+    /* (optional) Validators can abort the installation after checking
      * conditions. Array of validator names (no
      * prefix of suffix) or '' 'default' creates a default resolver
      *  named after the package suffix 'validator.php' will be added */
