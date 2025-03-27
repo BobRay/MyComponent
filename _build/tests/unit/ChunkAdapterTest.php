@@ -74,13 +74,13 @@ class ChunkAdapterTest extends \Codeception\Test\Unit {
 
         if (!empty($codeFiles)) {
             foreach ($codeFiles as $codeFile) {
-                unlink($codeFile);
+                unlink(strtolower($codeFile));
             }
         }
 
         if (!empty($transportFiles)) {
             foreach ($transportFiles as $transportFile) {
-                unlink($transportFile);
+                unlink(strtolower($transportFile));
             }
         }
         $catClass = $this->classPrefix . 'modCategory';
@@ -170,11 +170,11 @@ class ChunkAdapterTest extends \Codeception\Test\Unit {
             }
         }
         foreach ($codeFiles as $codeFile) {
-            assertTrue(unlink($codeFile));
+            assertTrue(unlink(strtolower($codeFile)));
         }
 
         foreach ($transportFiles as $transportFile) {
-            assertTrue(unlink($transportFile));
+            assertTrue(unlink(strtolower($transportFile)));
         }
     }
 
@@ -225,7 +225,7 @@ class ChunkAdapterTest extends \Codeception\Test\Unit {
         }
 
         foreach ($codeFiles as $codeFile) {
-            assertTrue(unlink($codeFile));
+            assertTrue(unlink(strtolower($codeFile)));
         }
 
     }
