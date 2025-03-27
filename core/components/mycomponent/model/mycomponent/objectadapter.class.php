@@ -589,7 +589,7 @@ abstract class ObjectAdapter {
         // Get the Transport File Name
         $transportFile = $helpers->getFileName('', $type, 'transport');
         $fileExists = file_exists($path . $transportFile);
-        if (stristr($variableName, 'menus')) { /* note: may change in Revo 2.3 */
+        if (stristr($variableName, 'menus')) {
             $variableName = 'actions';
         }
 
@@ -620,6 +620,11 @@ abstract class ObjectAdapter {
                 $fields[$alias] = $fields[$alias] ?? $k;
                 $fileName = $helpers->getFileName($fields[$alias], $type);
             }
+            if ($type == 'modSystemSetting') {
+                $fields['name'] = 'setting_' . $fields['key'];
+                $fields['description'] = 'setting_' . $fields['key'] . '_desc';
+            }
+
             $tpl .= self::writeObject($helpers, $fields, $type, $fileName, $i);
             $i++;
         }
