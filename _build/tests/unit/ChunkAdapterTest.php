@@ -5,6 +5,8 @@ use Codeception\Util\Fixtures;
 class ChunkAdapterTest extends \Codeception\Test\Unit {
     public string $objectName = 'chunks';
     public string $baseClass = 'modChunk';
+    public string $adapter = 'ChunkAdapter';
+    public string $codeFileSuffix = '.html';
     public modX $modx;
     public Helpers $helpers;
     public MyComponentProject $mc;
@@ -146,7 +148,7 @@ class ChunkAdapterTest extends \Codeception\Test\Unit {
                 foreach ($objs as $obj) {
                     $alias = $this->helpers->getNameAlias($this->baseClass);
                     $type = rtrim($this->objectName, 's');
-                    $codeFile = $this->elementCodeBase . $this->objectName . '/' . $obj->get($alias) . '.' . $type . '.html';
+                    $codeFile = $this->elementCodeBase . $this->objectName . '/' . $obj->get($alias) . '.' . $type . $this->codeFileSuffix;
                     $codeFiles[] = $codeFile;
                     assertFileExists($codeFile, 'missing code file: ' . $codeFile);
                     $code = file_get_contents($codeFile);
@@ -199,7 +201,7 @@ class ChunkAdapterTest extends \Codeception\Test\Unit {
                     $objectNames[] = $obj->get('name');
                     $alias = $this->helpers->getNameAlias($this->baseClass);
                     $type = rtrim($this->objectName, 's');
-                    $codeFile = $this->elementCodeBase . $this->objectName . '/' . $obj->get($alias) . '.' . $type . '.html';
+                    $codeFile = $this->elementCodeBase . $this->objectName . '/' . $obj->get($alias) . '.' . $type . $this->codeFileSuffix;
                     $codeFiles[] = $codeFile;
                     assertFileExists($codeFile, 'missing code file: ' . $codeFile);
                     $code = file_get_contents($codeFile);
