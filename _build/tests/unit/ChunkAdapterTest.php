@@ -10,7 +10,6 @@ class ChunkAdapterTest extends \Codeception\Test\Unit {
     public modX $modx;
     public Helpers $helpers;
     public MyComponentProject $mc;
-    public string $adapter = 'ChunkAdapter';
     public array $components;
     public array $objects;
     public string $class;
@@ -44,7 +43,7 @@ class ChunkAdapterTest extends \Codeception\Test\Unit {
             $c = $modx->getObject($this->classPrefix . 'modCategory', array('category' => $cat));
             assertNotEmpty($c);
         }
-        /* Delete Chunks */
+        /* Delete Objects from MODX */
         $objects = $this->components['elements'][$this->objectName];
         foreach ($objects as $key => $fields) {
             $name = $fields['name'] ?? $key;
@@ -55,13 +54,8 @@ class ChunkAdapterTest extends \Codeception\Test\Unit {
         }
     }
 
-    /*protected function passVariables($codeFiles, $transportFiles) {
-        $this->codeFiles = $codeFiles;
-        $this->transportFiles = $transportFiles;
-    }*/
-
     protected function _after(): void {
-        /* Delete Chunks */
+        /* Delete Objects from MODX */
 
         $objects = $this->components['elements'][$this->objectName];
         foreach ($objects as $key => $fields) {
@@ -131,7 +125,7 @@ class ChunkAdapterTest extends \Codeception\Test\Unit {
             $c = new CategoryAdapter($this->modx,$this->helpers, $fields, MODE_EXPORT);
             $c->exportElements(array($this->objectName));
 
-            /* Store chunks */
+            /* Store transport and code file names */
             $objs = $catObject->getMany(ucfirst($this->objectName));
             if (!empty($objs)) {
                 $c::createTransportFile($this->helpers, $this->objects, $catName, $this->class, MODE_EXPORT);
