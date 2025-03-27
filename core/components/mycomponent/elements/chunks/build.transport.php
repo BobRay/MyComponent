@@ -305,8 +305,6 @@ $sources = array(
     'data' => $root . '_build/data/',
     'docs' => $root . 'core/components/' . PKG_NAME_LOWER . '/docs/',
     'install_options' => $root . '_build/install.options/',
-    'subpackages' => $root . '_build/subpackages/',
-
 );
 unset($root);
 
@@ -334,7 +332,7 @@ $hasMenu = file_exists($sources['data'] . 'transport.menus.php'); /* Add items t
 $hasWidgets = file_exists($sources['data'] . 'transport.dashboardwidgets.php'); /* Add widgets to package */
 $hasSettings = file_exists($sources['data'] . 'transport.settings.php'); /* Add new MODX System Settings */
 $hasContextSettings = file_exists($sources['data'] . 'transport.contextsettings.php');
-// $hasSubPackages = is_dir($sources['subpackages']);
+
 $minifyJS = $modx->getOption('minifyJS', $props, false);
 $hasDependencies = $modx->getOption('requires', $props, false, true);
 
@@ -659,7 +657,6 @@ foreach ($categories as $k => $categoryName) {
     );
 
     /* Only add this on first pass */
-    // if ($hasValidators && ($i == 1) && (!$hasSubPackages)) {
     if ($hasValidators && ($i == 1)) {
         $attr[xPDOTransport::ABORT_INSTALL_ON_VEHICLE_FAIL] = true;
     }
@@ -874,15 +871,6 @@ if ($hasDependencies) {
 }
 
 $builder->setPackageAttributes($attr);
-
-/* Add subpackages */
-
-if ($hasSubPackages) {
-    $helper->sendLog(modX::LOG_LEVEL_INFO,
-        $modx->lexicon('mc_packaging_subpackages'));
-    include $sources['data'] . 'transport.subpackages.php';
-}
-
 
 /* Last step - zip up the package */
 $builder->pack();
