@@ -13,7 +13,33 @@
 
 /* @var $modx modX */
 $modx->lexicon->load('mycomponent:default');
+if (!defined('MODX_CORE_PATH')) {
+    include dirname(__FILE__, 5) . '/config.core.php';
+    if (empty(MODX_CORE_PATH)) {
+        /* For dev. environment */
+        include dirname(__FILE__, 8) . '/config.core.php';
+    }
 
+}
+
+if (empty(MODX_CORE_PATH)) {
+    die('Could not find config.core.php');
+}
+
+$v = include MODX_CORE_PATH . 'docs/version.inc.php';
+$isMODX3 = $v['version'] >= 3;
+
+if ($isMODX3) {
+    abstract class DynamicGetListProcessorParent extends MODX\Revolution\Processors\Model\GetListProcessor {
+    }
+} else {
+    if (!class_exists('modProcessor')) {
+        include MODX_CORE_PATH . 'model\modx\modprocessor.class.php';
+    }
+
+    abstract class DynamicGetListProcessorParent extends modProcessor {
+    }
+}
 class mc_ProcessorTypeProcessor extends modObjectGetListProcessor {
     public $classKey = 'modmc_Element';
     public $languageTopics = array('mc_packageNameLower:default');
