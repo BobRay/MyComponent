@@ -22,3 +22,5 @@
  *
  * @package [[+packageNameLower]]
  **/
+
+/* Code goes here */
