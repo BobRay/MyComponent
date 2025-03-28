@@ -133,7 +133,7 @@ if (\$transport && \$transport->xpdo) {
             \$package->fromArray(array(
                 'created' => date('Y-m-d h:i:s'),
                 'updated' => date('Y-m-d h:i:s'),
-                'installed' => strftime('%Y-%m-%d %H:%M:%S'),
+                'installed' => date("Y-m-d H:i:s"),
                 'state' => 1,
                 'workspace' => 1,
                 'provider' => 1,

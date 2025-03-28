@@ -29,7 +29,7 @@ $removeBy = true;
 $addBy = false;
 $upperCase = true; // Capitalize the C in Copyright
 
-$currentYear = strftime("%Y");
+$currentYear = date("Y");
 
 /* Optional -- sets copyright to current year + 1 */
 // $currentYear = (int) strftime("%Y") + 1 ;
@@ -441,5 +441,3 @@ foreach($projects as $project) {
 
 
 }
-
-

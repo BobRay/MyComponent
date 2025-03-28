@@ -17,8 +17,7 @@ $components = array(
     'packageDocumentationUrl' => 'https://bobsguides.com/mycomponent-tutorial.html',
     'copyright' => '2012-2014',
     /* no need to edit this except to change format */
-    'createdon' => strftime('%m-%d-%Y'),
-
+    'createdon' => date("m-d-Y"),
     'gitHubUsername' => 'BobRay',
     'gitHubRepository' => 'MyComponent',
 

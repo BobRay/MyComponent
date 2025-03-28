@@ -17,7 +17,7 @@ $components = array(
     'copyright' => '2014-2025',
 
     /* no need to edit this except to change format */
-    'createdon' => strftime('%m-%d-%Y'),
+    'createdon' => date("m-d-Y"),
 
     'gitHubUsername' => 'BobRay',
     'gitHubRepository' => 'Example',
