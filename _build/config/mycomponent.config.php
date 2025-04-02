@@ -15,7 +15,7 @@ $components = array(
     'authorUrl' => 'https://bobsguides.com',
     'authorSiteName' => "Bob's Guides",
     'packageDocumentationUrl' => 'https://bobsguides.com/mycomponent-tutorial.html',
-    'copyright' => '2012-2014',
+    'copyright' => '2012-2025',
     /* no need to edit this except to change format */
     'createdon' => date("m-d-Y"),
     'gitHubUsername' => 'BobRay',
