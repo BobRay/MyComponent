@@ -460,7 +460,7 @@ $components = array(
      *
      * Set to array() if there are no classes. */
     'classes' => array(
-        'ActionAdapter' => 'actionadapter',
+        // 'ActionAdapter' => 'actionadapter',
         'CategoryAdapter' => 'categoryadapter',
         'CheckProperties' => 'checkproperties',
         'ChunkAdapter' => 'chunkadapter',
