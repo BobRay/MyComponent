@@ -674,7 +674,7 @@ $components = array(
        '.class.php' will be appended to the filename
 
        Built-in processor classes include getlist, create, update, duplicate,
-       import, and export. */
+       remove, import, and export. */
 
     'processors' => array(
         'mgr/snippet:getlist',
