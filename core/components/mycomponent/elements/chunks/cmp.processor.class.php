@@ -12,7 +12,6 @@
  */
 
 /* @var $modx modX */
-/* @var $modx modX */
 if (!defined('MODX_CORE_PATH')) {
     include dirname(__FILE__, 5) . '/config.core.php';
     if (empty(MODX_CORE_PATH)) {
