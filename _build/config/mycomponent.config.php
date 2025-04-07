@@ -35,7 +35,7 @@ $components = array(
         MODX_CORE_PATH . 'components/mycomponent/'),
 
     /* path to new project root */
-    'targetRoot' => MODX_ASSETS_PATH . 'mycomponents/mycomponent2/',
+    'targetRoot' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/',
 
 
     /* *********************** NEW SYSTEM SETTINGS ************************ */
@@ -164,6 +164,10 @@ $components = array(
 
         ),
         'chunks' => array(
+            'processortpl.php' => array(
+                'category' => 'MyComponent',
+                'filename' => 'processortpl.php',
+            ),
             'build.config.php' => array(
                 'category' => 'MyComponent',
                 'filename' => 'build.config.php',
