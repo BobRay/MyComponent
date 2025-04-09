@@ -64,7 +64,11 @@ class Helpers {
     }
 
     public function init() {
-        $this->tplPath = $this->getProp('mycomponentRoot') . 'elements/chunks/';
+        if (!empty ($this->getProp('mc.core_path'))) {
+            $this->tplPath = $this->getProp('mc.core_path') . 'elements/chunks/';
+        } else {
+            $this->tplPath = MODX_CORE_PATH . 'components/mycomponent/elements/chunks/';
+        }
         if (substr($this->tplPath, -1) != "/") {
             $this->tplPath .= "/";
         }
