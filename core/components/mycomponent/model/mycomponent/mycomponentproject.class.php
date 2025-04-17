@@ -56,6 +56,8 @@ class MyComponentProject {
     protected string $configPath;
     protected string $classPrefix;
 
+    public bool $isMODX3 = true;
+
     /** External: ObjectAdapter::$myObjects array - this is the master array
      *  containing all objects being processed and their fields.
      */
@@ -103,6 +105,11 @@ class MyComponentProject {
      */
     public function init($scriptProperties = array(), $currentProject = '') {
         $modx = $this->modx;
+        $this->isMODX3 = $modx->getVersionData()['version'] >=3;
+        $this->classPrefix = $this->isMODX3
+            ? 'MODX\Revolution\\'
+            : '';
+
         require dirname(__FILE__) . '/mcautoload.php';
         spl_autoload_register('mc_auto_load');
 
