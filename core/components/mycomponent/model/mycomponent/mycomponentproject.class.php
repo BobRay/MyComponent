@@ -1513,17 +1513,25 @@ class MyComponentProject {
         $processorDir = $this->myPaths['targetProcessors'];
 
         foreach ($processors as $processor) {
-            if (strpos($processor, ':') !== false) {
-                $couple = explode(':', $processor);
-                $dir = $processorDir . $couple[0];
-                $file = $couple[1] . '.class.php';
-            } else {
-                $dir = $processorDir;
-                $file = $processor . '.class.php';
+            /* Replace backslashes with forward slashes */
+            $processor = str_replace('\\', '/', $processor);
+
+            if (strpos($processor, ':') === false) {
+                $this->modx->log(modX::LOG_LEVEL_ERROR, 'Processor must contain a colon (:)');
+                continue;
             }
-            if (!file_exists(rtrim($dir, '/') . '/' . $file)) {
-                $tpl = $this->getProcessorTpl($dir, $file);
-                $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
+
+            $couple = explode(':', $processor);
+
+            $object = basename($couple[0]);
+            $action = $couple[1];
+            $dir = $processorDir . $couple[0] . '/';
+            $file = $processorDir . $object . '/' . $action . '.class.php';
+            $actualFile = basename($file);
+            if (!file_exists(rtrim($dir, '/') . '/' . $actualFile)) {
+
+                $tpl = $this->getProcessorTpl( 'processor.php', $object, $action, $dir);
+                $this->helpers->writeFile(rtrim(strtolower($dir), '/'), strtolower($actualFile), $tpl);
             } else {
                 $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
                     $this->modx->lexicon('mc_already_exists'));
@@ -1531,84 +1539,75 @@ class MyComponentProject {
         }
     }
 
+    /* Get directory for processor files between "processor" and "elementType", e.g., "Element" in Processors/Element/plugin/update.class.php */
+    /* ToDo: make this work for other cases beyond elements */
+    public function getInfix($object) {
+        $elements = array('resource', 'chunk', 'snippet', 'plugin', 'template', 'tv', 'article', 'templateVar', 'propertyset');
+
+        if (in_array(strtolower($object),$elements)) {
+            return 'Element\\';
+        }
+
+        return '';
+    }
+
     /**
      * Get and customize a processor's content
      *
      * @param $dir
      * @param $file
+     * @param $object
+     * @param $action
      * @return mixed|string
      */
-    public function getProcessorTpl($dir, $file) {
+    public function getProcessorTpl( string $file, string $object, string $action, string $dir) {
 
-        $processorName = '';
-        $matches = array();
-        $processorClass = '';
-        $elementName = '';
-
-
-        $tpl = $this->helpers->getTpl('cmp.' . $file);
+        $tpl = $this->helpers->getTpl($file);
         if (empty($tpl)) {
             $tpl = $this->helpers->getTpl('cmp.processor.class.php');
         }
 
-        /* extract the actual processor name from the filename */
-        $pattern = '/^([a-z]+)/';
-
-        preg_match($pattern, $file, $matches);
-        if (isset($matches[1])) {
-            $processorName = $matches[1];
-        }
-
         /* set up arrays of possible processors and elements */
-        $processors = array('GetList','Create','Update','Duplicate','Remove','Import','Export');
-        $elements = array('resource', 'chunk', 'snippet', 'plugin', 'template', 'tv', 'article', 'templateVar');
 
-        /* look for them */
+        $elements = array('Chunk', 'Snippet', 'Plugin', 'Template', 'TV', 'TemplateVar', 'PropertySet');
 
-        foreach($processors as $processor) {
-            if (stripos($processorName, $processor) !== false) {
-                $processorClass = 'modObject' . $processor . 'Processor';
-                break;
-            }
+        $inFix = $this->getInfix($object)
+            ? 'element'
+            : '';
+
+        if (!empty($inFix)) {
+            $mod2InFix = $inFix . '/';
+            $mod3InFix = ucfirst($inFix) . '\\';
         }
-        foreach ($elements as $element) {
-            if ($element == 'tv') {
-                $element = 'templateVar';
-            }
-            if (stripos($dir, $element) !== false) {
-                $elementName = $element;
-                break;
-            }
-        }
+
         $replaceFields = array(
-            'mc_element' => $elementName,
-            'mc_Element' => ucfirst($elementName),
-            'mc_ProcessorType' => $this->packageName . ucfirst($elementName)
-                . ucfirst($processorName),
+            'mc_processor_parent' => $this->packageName . 'DynamicParent' . $object . $action,
+            'mc_modx2_extends' => 'mod' . ucfirst($object) . $action . 'Processor',
+            'mc_modx3_extends' => 'MODX\Revolution\Processors\\'. $mod3InFix .  $object . '\\' . $action,
+            'mc_name_field' => $this->helpers->getNameAlias('mod' . $object),
+            'mc_package_name_lower' => $this->packageNameLower,
+            'mc_modx2_include' => MODX_CORE_PATH . 'model/modx/processors/' . $inFix . '/' .
+                strtolower($object) .  '/' . strtolower($action) . '.class.php',
+            'mc_processor_name' => $this->packageName . $object
+                . $action . 'Processor',
         );
+        /* If parent processor file doesn't exist, set extends to basic processor */
+        if (! file_exists($replaceFields['mc_modx2_include'])) {
+            $replaceFields['mc_modx2_include'] = MODX_CORE_PATH . 'model/modx/modProcessor.class.php';
+            $replaceFields['mc_modx2_extends'] = 'modProcessor';
+
+            /* If MODX 2 processor doesn't exist, MODX 3 processor probably doesn't either */
+            $replaceFields['mc_modx3_extends'] = 'MODX\Revolution\Processors\ModelProcessor';
+        }
+
+
         $tpl = $this->helpers->replaceTags($tpl, $replaceFields);
         $tpl = $this->helpers->replaceTags($tpl);
 
-        if (!empty($processorClass)) {
-            $tpl = str_replace('modProcessor', $processorClass, $tpl);
-        }
-
-        /* adjust for 'name' field of templates, categories, articles, and resources */
-        if (stripos($elementName, 'template') !== false) {
-            $tpl = str_replace("'name'", "'templatename'", $tpl);
-        }
-        if (stripos($elementName, 'category') !== false) {
-            $tpl = str_replace("'name'", "'category'", $tpl);
-        }
-        if (stripos($elementName, 'resource') !== false) {
-            $tpl = str_replace("'name'", "'pagetitle'", $tpl);
-        }
-        if (stripos($elementName, 'article') !== false) {
-            $tpl = str_replace("'name'", "'pagetitle'", $tpl);
-            $tpl = str_replace("'modArticle'", "'Article'", $tpl);
-        }
         return $tpl;
     }
+
+
 
     /**
      * Create CMP controllers specified in the project config file
