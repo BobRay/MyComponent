@@ -493,7 +493,7 @@ class MyComponentProject {
                 if ($mode == MODE_EXPORT) {
                     $dryRun = $this->helpers->getProp('dryRun');
                     $o->exportElements($toProcess, !empty($dryRun));
-                } elseif ($mode = MODE_REMOVE) {
+                } elseif ($mode == MODE_REMOVE) {
                     $o->remove($toProcess);
                 }
             }
