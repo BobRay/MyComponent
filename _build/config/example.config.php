@@ -669,21 +669,23 @@ $components = array(
 
     'cssFile' => 'mgr.css',
 
-    /* These will automatically go to core/components/yourcomponent/processors/
-       format directory:filename
-       '.class.php' will be appended to the filename
+    /* Processor files will automatically go in or under
+       core/components/yourcomponent/processors/
+       format is directory/object:action (colon is required).
+       '.class.php' (modx 2) or just .php (modx 3) will be appended to the filename
 
        Built-in processor classes include getlist, create, update, duplicate,
-       remove, import, and export. */
+       remove, import, and export, or a custom action*/
 
     'processors' => array(
-        'mgr/snippet:getlist',
+        'mgr/snippet:getlist', // will go to processors/mgr/snippet/ dir
         'mgr/snippet:changecategory',
         'mgr/snippet:remove',
 
         'mgr/chunk:getlist',
         'mgr/chunk:changecategory',
         'mgr/chunk:remove',
+        'plugin:remove', // will go to processors/plugin/ dir
     ),
 
     /* These will automatically go to core/components/yourcomponent/controllers[/directory]/filename
