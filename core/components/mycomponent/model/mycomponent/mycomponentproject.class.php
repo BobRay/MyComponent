@@ -91,11 +91,6 @@ class MyComponentProject {
             die("bootstrap not defined");
         }
         $this->modx =& $modx;
-
-        $this->classPrefix = $modx->getVersionData()['version'] >= 3
-            ? 'MODX\Revolution\\'
-            : '';
-
     }
 
 
