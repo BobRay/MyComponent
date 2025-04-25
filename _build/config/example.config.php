@@ -262,6 +262,7 @@ $components = array(
             /* Dashboards to attach snippet to (optional) */
             'placements' => array(
                 /* dashboard name or ID */
+                1 => array(
                 'dashboard' => 'Default',
 
                 /* This widget's name or ID */
@@ -270,6 +271,7 @@ $components = array(
                 'rank' => '0',
                 /* Size options: half, full, one-third, two-thirds. */
                 'size' => 'half',
+                ),
             ),
         ), /* End of this widget */
 
