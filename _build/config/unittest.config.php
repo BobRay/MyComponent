@@ -174,7 +174,7 @@ $components = array(
                     /* dashboard name */
                     'dashboard' => 'UnittestDashboard',
 
-                    /* This widget's name */
+                    /* This widget's name or ID */
                     'widget' => 'UnittestSnippetWidget',
 
                     'rank' => '0',
@@ -187,7 +187,7 @@ $components = array(
         'UnittestPhpWidget' => array(
             'name' => 'UnittestPhpWidget',
             'description' => 'UnittestPhpWidget description',
-            'namespace' => 'Unittest',
+            'namespace' => 'unittest',
             /* Type options: 'file' 'snippet' 'html' 'php' */
             'type' => 'php',
 
@@ -204,21 +204,23 @@ $components = array(
             /* Dashboards to attach snippet to (optional) */
             'placements' => array(
                 /* dashboard name or ID */
-                'dashboard' => 'Default',
+                1 => array(
+                    'dashboard' => 'Default',
 
-                /* This widget's name or ID */
-                'widget' => 'UnittestSnippetWidget',
+                    /* This widget's name or ID */
+                    'widget' => 'UnittestSnippetWidget',
 
-                'rank' => '0',
-                /* Size options: half, full, one-third, two-thirds. */
-                'size' => 'half',
+                    'rank' => '0',
+                    /* Size options: half, full, one-third, two-thirds. */
+                    'size' => 'half',
+                ),
             ),
         ), /* End of this widget */
 
         'UnittestFileWidget' => array(
             'name' => 'UnittestFileWidget',
             'description' => 'UnittestFileWidget description',
-            'namespace' => 'Unittest',
+            'namespace' => 'unittest',
             /* Type options: 'file' 'snippet' 'html' 'php' */
             'type' => 'file',
 
@@ -236,7 +238,7 @@ $components = array(
         'UnittestHTMLWidget' => array(
             'name' => 'UnittestHTMLWidget',
             'description' => 'UnittestHTMLWidget description',
-            'namespace' => 'Unittest',
+            'namespace' => 'unittest',
             /* Type options: 'file' 'snippet' 'html' 'php' */
             'type' => 'html',
 
