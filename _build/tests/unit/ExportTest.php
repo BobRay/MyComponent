@@ -84,8 +84,10 @@ class ExportTest extends \Codeception\Test\Unit {
         $this->utHelpers->removeElements($this->modx, $this->mc);
         $this->utHelpers->removeResources($this->modx, $this->mc);
         $this->utHelpers->removeSystemSettings($this->modx, $this->mc);
-        $this->utHelpers->removeNamespaces($this->modx, $this->mc);
         $this->utHelpers->removeCategories($this->modx, $this->mc);
+        $this->utHelpers->removeWidgets($this->modx, $this->mc);
+        $this->utHelpers->removeDashboards($this->modx, $this->mc);
+        $this->utHelpers->removeNamespaces($this->modx, $this->mc);
 
         if (strstr($this->mc->targetRoot, 'unittest')) {
             $this->utHelpers->rrmdir($this->mc->targetRoot);
@@ -150,6 +152,29 @@ class ExportTest extends \Codeception\Test\Unit {
             $this->assertNotEmpty($content);
             $this->assertNotEmpty(strstr($content, 'Content goes here'));
         }
+    }
+
+    public function testProcessDashboards() {
+        $this->mc->createDashboards(MODE_EXPORT);
+
+        $this->mc->createWidgets(MODE_EXPORT);
+        $this->mc->createIntersects();
+        $this->mc->createResolvers(MODE_EXPORT);
+
+        assertFileExists(MODX_ASSETS_PATH . 'mycomponents/unittest/_build/resolvers/widget.resolver.php');
+
+        $content = file_get_contents(MODX_ASSETS_PATH . 'mycomponents/unittest/_build/resolvers/widget.resolver.php');
+
+        assertStringNotContainsString('[[+intersects]]',$content, '[[+intersects]] not replaced');
+        $pattern = '/intersects[^;]+;/';
+        preg_match($pattern, $content, $matches);
+        $match = $matches[0];
+        assertStringContainsString('UnittestSnippetWidget', $match);
+        assertStringContainsString('half', $match);
+        assertStringContainsString('UnittestDashboard', $match);
+        assertStringContainsString('Default', $match);
+        assertStringContainsString('UnittestPhpWidget', $match);
+        $x=1;
     }
 
     /**

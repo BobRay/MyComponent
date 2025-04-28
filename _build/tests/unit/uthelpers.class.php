@@ -48,7 +48,7 @@ class UtHelpers {
         $props = $mc->props;
         $elements = $props['elements'];
         foreach ($elements as $elementType => $objectList) {
-            $elementType = 'mod' . ucFirst(substr($elementType, 0, -1));
+            $elementType = 'mod' . ucfirst(substr($elementType, 0, -1));
             foreach ($objectList as $elementName => $fields) {
                 /* @var $obj modElement */
                 $alias = $mc->helpers->getNameAlias($elementType);
@@ -225,6 +225,23 @@ class UtHelpers {
             $dashboard = $modx->getObject('modDashboard', array('name' => $fields['name']));
             if ($dashboard) {
                 $dashboard->remove();
+            }
+        }
+    }
+
+    public function removeWidgets(&$modx, &$mc) {
+        /* @var $dashboardObj modDashboardWidget */
+        $widgets = $mc->props['widgets'];
+
+        foreach ($widgets as $widget => $fields) {
+            $widgetObj = $modx->getObject('modDashboardWidget', array('name' => $fields['name']));
+            if ($widgetObj) {
+                $id = $widgetObj->get('id');
+                $widgetObj->remove();
+                $placement = $modx->getObject('modDashboardWidgetPlacement', $id);
+                if ($placement) {
+                    $placement->remove();
+                }
             }
         }
     }
