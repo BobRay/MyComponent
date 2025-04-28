@@ -184,11 +184,6 @@ class DashboardWidgetAdapter extends ObjectAdapter {
                 /** @var $widget modDashboardWidget */
                 $widgetFields = $fields;
                 $code = '';
-                /*$actionFields[$i]['id'] = $i + 1;
-                $code .= "\$action = \$modx->newObject(" . $prefix . "'modAction');\n";
-                $code .= "\$action->fromArray( ";
-                $code .= var_export($actionFields[$i], true);
-                $code  .= ", '', true, true);\n";*/
 
                 /* do Widget  */
                 $widgetFields['id'] = $i + 1;
