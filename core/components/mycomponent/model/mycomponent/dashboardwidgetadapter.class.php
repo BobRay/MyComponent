@@ -23,8 +23,8 @@ class DashboardWidgetAdapter extends ObjectAdapter {
             if (!isset($fields['namespace'])) {
                 $fields['namespace'] = $this->helpers->getProp('packageNameLower');
             }
-            if (isset($fields['dashboards'])) {
-                $this->setWidgetResolver($fields, $mode);
+            if (isset($fields['placements'])) {
+                $this->setWidgetResolver($fields['placements'], $mode);
                 unset($fields['dashboards']);
             }
 
@@ -83,46 +83,28 @@ class DashboardWidgetAdapter extends ObjectAdapter {
         }
     }
 
-    public function setWidgetResolver($fields, $mode)
+    public function setWidgetResolver($placements, $mode)
     {
-        if ($mode == MODE_BOOTSTRAP) {
-            // foreach($fields as $placement) {
-              //   $this->modx->log(modX::LOG_LEVEL_ERROR, print_r($fields, true) . ' --- ' . print_r($placement, true));
-                foreach ($fields as $dashboard => $rank) {
-                    $resolverFields = array();
-                    $resolverFields['dashboard'] = $dashboard;
-                    $resolverFields['widget'] = $this->getName();
-                    $resolverFields['rank'] = isset($rank) && !empty($rank) ? $rank : '0';
-                    ObjectAdapter::$myObjects['widgetResolver'][] = $resolverFields;
-                }
-            // }
-        } elseif ($mode == MODE_EXPORT) {
-            $me = $this->modx->getObject($this->classPrefix . 'modDashboardWidget', array('name' => $this->getName()));
-            if (!$me) {
-                $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, '[TemplateVar Adapter] ' .
-                    $this->modx->lexicon('mc_self_nf'));
-            } else {
-                $placements = $me->getMany('Placements');
-                if (!empty($placements)) {
-                    foreach ($placements as $placement) {
-                        /* @var $placement modDashboardWidgetPlacement */
-                        $fields = $placement->toArray();
-                        $widgetObj = $this->modx->getObject($this->classPrefix . 'modDashboardWidget',
-                                $fields['widget']);
-                        $widgetName = $widgetObj->get('name');
+        if (($mode == MODE_BOOTSTRAP) || ($mode == MODE_EXPORT)) {
+            foreach ($placements as $placement) {
+                $rank = isset($placement['rank'])
+                    ? $placement['rank']
+                    : '0';
 
-                        $resolverFields = array(
-                            'widget' => $widgetName,
-                            'dashboard' => $fields['dashboard'],
-                            'rank' => $fields['rank'],
-                            'size' => $fields['size'],
-                        );
-                        ObjectAdapter::$myObjects['widgetResolver'][] = $resolverFields;
-                    }
-                }
+                $size = isset($placement['size'])
+                    ? $placement['size']
+                    : 'half';
+
+                $resolverFields = array();
+                $resolverFields['dashboard'] = $placement['dashboard'];
+                $resolverFields['widget'] = $this->getName();
+
+                $resolverFields['rank'] = $rank;
+                $resolverFields['size'] = $size;
+
+                ObjectAdapter::$myObjects['widgetResolver'][] = $resolverFields;
             }
         }
-
     }
 
     public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
