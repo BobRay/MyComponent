@@ -1286,7 +1286,9 @@ class MyComponentProject {
             if (file_exists($mcConfigDir . $fileName)) {
                 $tpl = file_get_contents($mcConfigDir . $fileName);
                 if (!empty ($tpl)) {
-                    $tpl = str_replace($search, $search . $msg, $tpl);
+                    if (strpos($tpl, 'DO NOT EDIT') === false) {
+                        $tpl = str_replace($search, $search . $msg, $tpl);
+                    }
                     $this->helpers->writeFile($dir, $fileName, $tpl);
                 }
             } else {
