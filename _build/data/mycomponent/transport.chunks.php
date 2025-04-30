@@ -2,7 +2,7 @@
 /**
  * chunks transport file for MyComponent extra
  *
- * Copyright 2012-2017 Bob Ray <https://bobsguides.com>
+ * Copyright 2012-2025 Bob Ray <https://bobsguides.com>
  * Created on 06-26-2013
  *
  * @package mycomponent
@@ -31,7 +31,9 @@ $chunks[1]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'user.input.php',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $chunks[1]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/user.input.php'));
 
@@ -41,7 +43,9 @@ $chunks[2]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'tvresolver.php',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $chunks[2]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/tvresolver.php'));
 
@@ -51,7 +55,9 @@ $chunks[3]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'transportfile.php',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $chunks[3]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/transportfile.php'));
 
@@ -71,7 +77,9 @@ $chunks[5]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'resourceresolver.php',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $chunks[5]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/resourceresolver.php'));
 
@@ -111,7 +119,9 @@ $chunks[9]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'propertiesfile.php',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $chunks[9]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/propertiesfile.php'));
 
@@ -121,7 +131,9 @@ $chunks[10]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'propertysetresolver.php',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $chunks[10]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/propertysetresolver.php'));
 
@@ -131,7 +143,9 @@ $chunks[11]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'genericresolver.php',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $chunks[11]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/genericresolver.php'));
 
@@ -141,7 +155,9 @@ $chunks[12]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'genericvalidator.php',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $chunks[12]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/genericvalidator.php'));
 
@@ -151,7 +167,9 @@ $chunks[13]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'js.tpl',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $chunks[13]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/js.tpl'));
 
@@ -211,7 +229,9 @@ $chunks[19]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'phpfile.php',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $chunks[19]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/phpfile.php'));
 
@@ -221,7 +241,9 @@ $chunks[20]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'pluginresolver.php',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $chunks[20]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/pluginresolver.php'));
 
@@ -253,7 +275,9 @@ $chunks[23]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'categoryresolver.php',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $chunks[23]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/categoryresolver.php'));
 
@@ -285,7 +309,9 @@ $chunks[26]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'css.tpl',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $chunks[26]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/css.tpl'));
 
@@ -295,7 +321,9 @@ $chunks[27]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'example.config.php',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $chunks[27]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/example.config.php'));
 
@@ -315,7 +343,9 @@ $chunks[29]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'cmp.actionfile.php',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $chunks[29]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.actionfile.php'));
 
@@ -325,7 +355,9 @@ $chunks[30]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'cmp.changecategory.class.php',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $chunks[30]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.changecategory.class.php'));
 
@@ -335,7 +367,9 @@ $chunks[31]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'cmp.classfile.php',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $chunks[31]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.classfile.php'));
 
@@ -345,7 +379,9 @@ $chunks[32]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'cmp.connectorfile.tpl',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $chunks[32]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.connectorfile.tpl'));
 
@@ -353,110 +389,106 @@ $chunks[33] = $modx->newObject('modChunk');
 $chunks[33]->fromArray(array (
   'id' => 33,
   'property_preprocess' => false,
-  'name' => 'cmp.controllerheader.tpl',
+  'name' => 'cmp.controllerhome.tpl',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
-$chunks[33]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.controllerheader.tpl'));
+$chunks[33]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.controllerhome.tpl'));
 
 $chunks[34] = $modx->newObject('modChunk');
 $chunks[34]->fromArray(array (
   'id' => 34,
   'property_preprocess' => false,
-  'name' => 'cmp.controllerhome.tpl',
+  'name' => 'cmp.defaultjs.tpl',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
-$chunks[34]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.controllerhome.tpl'));
+$chunks[34]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.defaultjs.tpl'));
 
 $chunks[35] = $modx->newObject('modChunk');
 $chunks[35]->fromArray(array (
   'id' => 35,
   'property_preprocess' => false,
-  'name' => 'cmp.controllerindex.tpl',
+  'name' => 'cmp.getlist.class.php',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
-$chunks[35]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.controllerindex.tpl'));
+$chunks[35]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.getlist.class.php'));
 
 $chunks[36] = $modx->newObject('modChunk');
 $chunks[36]->fromArray(array (
   'id' => 36,
   'property_preprocess' => false,
-  'name' => 'cmp.controllerrequest.class.php',
+  'name' => 'cmp.grid.tpl',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
-$chunks[36]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.controllerrequest.class.php'));
+$chunks[36]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.grid.tpl'));
 
 $chunks[37] = $modx->newObject('modChunk');
 $chunks[37]->fromArray(array (
   'id' => 37,
   'property_preprocess' => false,
-  'name' => 'cmp.defaultjs.tpl',
+  'name' => 'cmp.home.js.tpl',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
-$chunks[37]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.defaultjs.tpl'));
+$chunks[37]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.home.js.tpl'));
 
 $chunks[38] = $modx->newObject('modChunk');
 $chunks[38]->fromArray(array (
   'id' => 38,
   'property_preprocess' => false,
-  'name' => 'cmp.getlist.class.php',
+  'name' => 'cmp.home.panel.js.tpl',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
-$chunks[38]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.getlist.class.php'));
+$chunks[38]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.home.panel.js.tpl'));
 
 $chunks[39] = $modx->newObject('modChunk');
 $chunks[39]->fromArray(array (
   'id' => 39,
   'property_preprocess' => false,
-  'name' => 'cmp.grid.tpl',
+  'name' => 'cmp.mgr.css.tpl',
   'description' => 'Chunk',
   'properties' => NULL,
 ), '', true, true);
-$chunks[39]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.grid.tpl'));
+$chunks[39]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.mgr.css.tpl'));
 
 $chunks[40] = $modx->newObject('modChunk');
 $chunks[40]->fromArray(array (
   'id' => 40,
   'property_preprocess' => false,
-  'name' => 'cmp.home.js.tpl',
+  'name' => 'cmp.processor.class.php',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
-$chunks[40]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.home.js.tpl'));
+$chunks[40]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.processor.class.php'));
 
 $chunks[41] = $modx->newObject('modChunk');
 $chunks[41]->fromArray(array (
   'id' => 41,
   'property_preprocess' => false,
-  'name' => 'cmp.home.panel.js.tpl',
-  'description' => 'Chunk',
-  'properties' => NULL,
+  'name' => 'widgetresolver.php',
+  'description' => 'Resolver to connect widgets with dashboards',
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
-$chunks[41]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.home.panel.js.tpl'));
-
-$chunks[42] = $modx->newObject('modChunk');
-$chunks[42]->fromArray(array (
-  'id' => 42,
-  'property_preprocess' => false,
-  'name' => 'cmp.mgr.css.tpl',
-  'description' => 'Chunk',
-  'properties' => NULL,
-), '', true, true);
-$chunks[42]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.mgr.css.tpl'));
-
-$chunks[43] = $modx->newObject('modChunk');
-$chunks[43]->fromArray(array (
-  'id' => 43,
-  'property_preprocess' => false,
-  'name' => 'cmp.processor.class.php',
-  'description' => 'Chunk',
-  'properties' => NULL,
-), '', true, true);
-$chunks[43]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/cmp.processor.class.php'));
+$chunks[41]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/widgetresolver.php'));
 
 return $chunks;

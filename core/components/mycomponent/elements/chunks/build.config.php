@@ -31,4 +31,3 @@ if (!defined('MODX_BASE_URL')) {
     define('MODX_ASSETS_URL', 'http://localhost/addons/assets/');
     define('MODX_CONNECTORS_URL', 'http://localhost/addons/connectors/');
 }
-

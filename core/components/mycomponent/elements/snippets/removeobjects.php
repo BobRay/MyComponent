@@ -1,5 +1,4 @@
 <?php
-
 /* set start time */
 $mtime = microtime();
 $mtime = explode(" ", $mtime);

@@ -68,5 +68,3 @@
         <input type="submit" value="Submit" onclick="return confirmSubmit();">
     </form>
 <br /><br/>
-
-

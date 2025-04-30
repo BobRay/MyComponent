@@ -8,5 +8,3 @@
  * @package [[+packageNameLower]]
  * @subpackage build
  */
-
-

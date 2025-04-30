@@ -125,4 +125,3 @@ if ($cliMode) {
 } else {
     return $output;
 }
-

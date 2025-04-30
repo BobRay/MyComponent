@@ -62,4 +62,3 @@
 };
 Ext.extend([[+packageName]].panel.Home,MODx.Panel);
 Ext.reg('[[+packageNameLower]]-panel-home',[[+packageName]].panel.Home);
-        

@@ -2,7 +2,7 @@
 /**
  * snippets transport file for MyComponent extra
  *
- * Copyright 2012-2017 Bob Ray <https://bobsguides.com>
+ * Copyright 2012-2025 Bob Ray <https://bobsguides.com>
  * Created on 06-26-2013
  *
  * @package mycomponent
@@ -41,7 +41,9 @@ $snippets[2]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'ExportObjects',
   'description' => '',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $snippets[2]->setContent(file_get_contents($sources['source_core'] . '/elements/snippets/exportobjects.php'));
 
@@ -93,7 +95,9 @@ $snippets[7]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'Build',
   'description' => '',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $snippets[7]->setContent(file_get_contents($sources['source_core'] . '/elements/snippets/build.php'));
 
