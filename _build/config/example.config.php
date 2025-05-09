@@ -87,7 +87,7 @@ $components = array(
     ),
 
     /* ************************ NAMESPACE(S) ************************* */
-    /* (optional) Typically, there's only one namespace which is set
+    /* (optional) Typically, there's only one namespace, which is set
      * to the $packageNameLower value. Paths should end in a slash
     */
 
@@ -192,7 +192,7 @@ $components = array(
             'name' => 'ExampleDashboard',
             'description' => 'Description of Example Dashboard',
             'hide_trees' => '0',
-            'customizable' => '1',
+            // 'customizable' => '1', /* MODX 3 only ignored in MODX 2 */
         ),
     ),
 
@@ -203,16 +203,16 @@ $components = array(
         'ExampleSnippetWidget' => array(
             'name' => 'ExampleSnippetWidget',
             'description' => 'ExampleSnippetWidget',
-            'namespace' => 'Example',
             /* Type options: 'file' 'snippet' 'html' 'php' */
             'type' => 'snippet',
 
             /* content: snippet name */
-            'content' => 'ExampleWidgetSnippet',
-
+            'content' => 'ExampleSnippetWidget',
+            'properties' => '', // MODX 3 only; ignored in MODX 2
+            'namespace' => 'example',
             'lexicon' => 'example:default',
-            'properties' => array(), /* array of widget properties */
-            'permission' => '', /* permission required to see widget */
+            'permission' => '', // MODX 3 only; ignored in MODX 2;
+            'size' => '', // MODX 3 only. Set when user customizes widget
 
             /* Dashboards to attach this widget to (optional) */
             'placements' => array(
@@ -245,19 +245,18 @@ $components = array(
         'ExamplePhpWidget' => array(
             'name' => 'ExamplePhpWidget',
             'description' => 'ExamplePhpWidget description',
-            'namespace' => 'Example',
             /* Type options: 'file' 'snippet' 'html' 'php' */
             'type' => 'php',
 
             /* content: inline php code */
             'content' => '
                 <?php
-                    return "Hello World;"
+                    return "Hello World";
                     ',
-
+            'namespace' => 'example',
             'lexicon' => 'example:default',
             'properties' => array(), /* array of widget properties */
-            'permission' => '', /* permission required to see widget */
+            'permission' => '', // Ignored in MODX 3
 
             /* Dashboards to attach snippet to (optional) */
             'placements' => array(
@@ -266,7 +265,7 @@ $components = array(
                 'dashboard' => 'Default',
 
                 /* This widget's name or ID */
-                'widget' => 'ExampleSnippetWidget',
+                'widget' => 'ExamplePhpWidget',
 
                 'rank' => '0',
                 /* Size options: half, full, one-third, two-thirds. */
@@ -278,34 +277,35 @@ $components = array(
         'ExampleFileWidget' => array(
             'name' => 'ExampleFileWidget',
             'description' => 'ExampleFileWidget description',
-            'namespace' => 'Example',
+
             /* Type options: 'file' 'snippet' 'html' 'php' */
             'type' => 'file',
 
             /* content: path to php file */
             'content' => '[[++core_path]]components/example/filename.php',
-
+            'namespace' => 'example',
             'lexicon' => 'example:default',
-            'properties' => array(), /* array of widget properties */
-            'permission' => '', /* permission required to see widget */
+            'properties' => array(), /* Ignored in MODX 2*/
+            'permission' => '', /* Ignored in MODX 2 */
 
             /* Dashboards to attach snippet to (optional) */
             'placements' => array(), /* unattached */
         ), /* End of this widget */
 
         'ExampleHTMLWidget' => array(
-            'name' => 'ExampleFileSnippetWidget',
-            'description' => 'ExampleFile description',
-            'namespace' => 'Example',
+            'name' => 'ExampleHtmlWidget',
+            'description' => 'ExampleHtmlWidget description',
+
             /* Type options: 'file' 'snippet' 'html' 'php' */
             'type' => 'html',
 
             /* content: HTML code (snippet and chunk tags allowed) */
             'content' => '<h3>Hello World</h3>',
 
+            'namespace' => 'example',
             'lexicon' => 'example:default',
-            'properties' => array(), /* array of widget properties */
-            'permission' => '', /* permission required to see widget */
+            'properties' => array(), /* Ignored in MODX 2 */
+            'permission' => '', /* Ignored in MODX 2 */
 
             /* Dashboards to attach snippet to (optional) */
             'placements' => array(), /* unattached */
