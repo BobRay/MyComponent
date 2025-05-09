@@ -11,7 +11,7 @@
  *
  * Build Script for MyComponent extra
  *
- * Copyright 2012-2019 Bob Ray <https://bobsguides.com>
+ * Copyright 2012-2025 Bob Ray <https://bobsguides.com>
  * Created on 10-23-2012
  *
  * MyComponent is free software; you can redistribute it and/or modify it under the
@@ -329,6 +329,7 @@ $hasValidators = is_dir($sources['build'] . 'validators'); /* Run a validators b
 $hasResolvers = is_dir($sources['build'] . 'resolvers');
 $hasSetupOptions = is_dir($sources['install_options']); /* HTML/PHP script to interact with user */
 $hasMenu = file_exists($sources['data'] . 'transport.menus.php'); /* Add items to the MODX Top Menu */
+$hasDashboards = file_exists($sources['data'] . 'transport.dashboards.php'); /* Add dashboards to package */
 $hasWidgets = file_exists($sources['data'] . 'transport.dashboardwidgets.php'); /* Add widgets to package */
 $hasSettings = file_exists($sources['data'] . 'transport.settings.php'); /* Add new MODX System Settings */
 $hasContextSettings = file_exists($sources['data'] . 'transport.contextsettings.php');
@@ -454,6 +455,29 @@ if ($hasContextSettings) {
         unset($settings, $setting, $attributes);
     }
 }
+
+/* load dashboards */
+if ($hasDashboards) {
+    $dashboards = include $sources['data'] . 'transport.dashboards.php';
+    if (!is_array($dashboards)) {
+        $helper->sendLog(modX::LOG_LEVEL_ERROR, $modx->lexicon('mc_context_dashboards_not_an_array'));
+    } else {
+        $attributes = array(
+            xPDOTransport::UNIQUE_KEY => 'name',
+            xPDOTransport::PRESERVE_KEYS => true,
+            xPDOTransport::UPDATE_OBJECT => true,
+        );
+        foreach ($dashboards as $dashboard) {
+            $vehicle = $builder->createVehicle($dashboard, $attributes);
+            $builder->putVehicle($vehicle);
+        }
+        $helper->sendLog(modX::LOG_LEVEL_INFO, $modx->lexicon('mc_packaged')
+            . ' ' . count($dashboards) .
+            ' ' . $modx->lexicon('mc_dashboards'));
+        unset($dashboards, $dashboard, $attributes);
+    }
+}
+
 
 /* load widgets */
 if ($hasWidgets) {
