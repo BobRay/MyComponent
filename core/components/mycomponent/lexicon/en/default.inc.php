@@ -191,7 +191,8 @@ $_lang['mc_created_dashboard'] = 'Created Dashboard';
 $_lang['mc_dashboard_already_exists'] = 'Dashboard already exists';
 $_lang['mc_removed_widget_placement'] = 'Remove modWidgetPlacement';
 $_lang['mc_removed_widget'] = 'Removed widget';
-
+$_lang['mc_context_dashboards_not_an_array'] = 'Dashboards not an array';
+$_lang['mc_dashboards'] = 'Dashboard(s)';
 /* used in LexiconHelper or its included classes  */
 $_lang['mc_lexicon_helper'] = 'Lexicon Helper';
 $_lang['mc_lex_files'] = 'Lexicon file(s)';
