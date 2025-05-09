@@ -721,6 +721,7 @@ abstract class ObjectAdapter {
             $fields['uri_override'],
             $fields['editedon'],
             $fields['desc_trans'],
+            $fields['name_trans'],
             $fields['text'],
             $fields['menu'],
         );
