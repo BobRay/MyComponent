@@ -153,6 +153,73 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue(method_exists($this->mc->helpers, 'replaceTags'));
     }
 
+    public function testGetProcessorInfo() {
+        $processors = array(
+            'mgr/CustomObject:CustomAction' => array(
+                'hasError' => false,
+                'errorMessage' => '',
+                'dir' => 'mgr/customobject',
+                'object' => 'CustomObject',
+                'action' => 'CustomAction',
+                'fullPath' => 'core/components/unittest/processors/mgr/customobject/customaction.class.php',
+            ),
+            'SomeObject:Create' => array(
+                'hasError' => false,
+                'errorMessage' => '',
+                'dir' => 'someobject',
+                'object' => 'SomeObject',
+                'action' => 'Create',
+                'fullPath' => 'core/components/unittest/processors/someobject/create.class.php',
+            ),
+           'mgr/Resource:Create' => array(
+               'hasError' => false,
+               'errorMessage' => '',
+               'dir' => 'mgr/resource',
+               'object' => 'Resource',
+               'action' => 'Create',
+               'fullPath' => 'core/components/unittest/processors/mgr/resource/create.class.php',
+           ),
+
+            'No colon' => array (
+                'hasError' => true,
+                'errorMessage' => 'Processor must contain a colon (:)',
+            ),
+
+
+
+            'Snippet/:Create' => array(
+               'hasError' => false,
+               'errorMessage' => '',
+               'dir' => 'snippet',
+               'object' => 'Snippet',
+               'action' => 'Create',
+                'fullPath' => '',
+            ),
+
+            'mgr/Plugin:' => array(
+                'hasError' => true,
+                'errorMessage' => 'No action specified',
+            ),
+        );
+
+        $processorDir = $this->mc->myPaths['targetProcessors'];
+
+        foreach($processors as $processor => $results) {
+            $info = $this->mc->getProcessorInfo($processor, $processorDir);
+
+            $x = $info;
+            foreach ($results as $key => $value) {
+                if ($key == 'fullPath') {
+                    assertStringContainsString($value, $info[$key] . ' -- ' . $processor, $key . ' -- ' . $processor);
+                } elseif ($key == 'errorMessage' && !empty($info[$key])) {
+                    assertStringContainsString($value, $info[$key] . ' -- ' . $processor, $key . ' -- ' . $processor);
+                } else {
+                    assertEquals($results[$key], $info[$key], $key);
+                }
+            }
+        }
+    }
+
     public function testCreateCategories() {
         /* @var $category modCategory */
         $this->mc->createBasics();
@@ -538,7 +605,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
             $fullPath = $processorsDir . $dir . '/' . $fileName . '.class.php';
             $this->assertFileExists($fullPath);
             $content = file_get_contents($fullPath);
-            $this->assertStringContainsString('License', $content);
+            $this->assertStringContainsString('License', $content, $fullPath);
             $this->assertStringContainsString('Processor', $content);
             $this->assertStringNotContainsString('[[+', $content, 'Unprocessed tag');
             $this->assertStringNotContainsString('mc_element', $content, 'Unprocessed tag', true);
