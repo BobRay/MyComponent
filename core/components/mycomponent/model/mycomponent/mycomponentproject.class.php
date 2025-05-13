@@ -1488,30 +1488,77 @@ class MyComponentProject {
         $processorDir = $this->myPaths['targetProcessors'];
 
         foreach ($processors as $processor) {
-            /* Replace backslashes with forward slashes */
-            $processor = str_replace('\\', '/', $processor);
+            $processorInfo = $this->getProcessorInfo($processor, $processorDir);
 
-            if (strpos($processor, ':') === false) {
-                $this->modx->log(modX::LOG_LEVEL_ERROR, 'Processor must contain a colon (:)');
+            if ($processorInfo['hasError']) {
+                $this->modx->log(modX::LOG_LEVEL_INFO, $processorInfo['errorMessage']);
                 continue;
             }
 
-            $couple = explode(':', $processor);
+            if (!file_exists($processorInfo['fullPath'])) {
 
-            $object = basename($couple[0]);
-            $action = $couple[1];
-            $dir = $processorDir . $couple[0] . '/';
-            $file = $processorDir . $object . '/' . $action . '.class.php';
-            $actualFile = basename($file);
-            if (!file_exists(rtrim($dir, '/') . '/' . $actualFile)) {
+                $tpl = $this->getProcessorTpl(
+                    'processor.php',
+                    $processorInfo['object'],
+                    $processorInfo['action'],
+                    $processorInfo['dir']
+                );
 
-                $tpl = $this->getProcessorTpl( 'processor.php', $object, $action, $dir);
-                $this->helpers->writeFile(rtrim(strtolower($dir), '/'), strtolower($actualFile), $tpl);
+               $dir = $processorDir . $processorInfo['dir'];
+               $actualFile = $processorInfo['actualFile'];
+               $this->helpers->writeFile($dir, $actualFile, $tpl);
             } else {
-                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' . $processorInfo['fullPath'] . ' ' .
                     $this->modx->lexicon('mc_already_exists'));
             }
         }
+    }
+
+    public function getProcessorInfo($processor, $processorDir) {
+        $processorInfo = array();
+        $processorInfo['hasError'] = false;
+        $processorInfo['errorMessage'] = '';
+        /* Replace backslashes with forward slashes */
+        $processor = str_replace('\\', '/', $processor);
+
+        if (strpos($processor, ':') === false) {
+            $processorInfo['hasError'] = true;
+            $processorInfo['errorMessage'] = 'Processor must contain a colon (:) -- Processor: ' . $processor;
+            return $processorInfo;
+        }
+
+        $couple = explode(':', $processor);
+        if (empty($couple[0])) {
+            $processorInfo['hasError'] = true;
+            $processorInfo['errorMessage'] = 'No directory specified -- Processor: ' . $processor;
+            return $processorInfo;
+        }
+
+        $dir = ($couple[0]);
+        $processorInfo['dir'] = rtrim(strtolower($dir), '/');
+        $object = basename($dir);
+        /* in case dir is also object */
+        $dir = str_replace($object, '', $dir);
+        $dir = rtrim($dir, '/');
+
+        $processorInfo['object'] = $object;
+
+        $action = $couple[1];
+        $processorInfo['action'] = $action;
+        if (empty($action)) {
+            $processorInfo['hasError'] = true;
+            $processorInfo['errorMessage'] = 'No action specified -- Processor: ' . $processor;
+            return $processorInfo;
+        } else {
+            $dir = empty($dir) ? $dir : $dir . '/';
+            $file = $processorDir . $dir . $object . '/' . $action . '.class.php';
+            $file = strtolower($file);
+            $actualFile = basename($file);
+            $processorInfo['actualFile'] = strtolower($actualFile);
+            $processorInfo ['fullPath'] = $file;
+
+        }
+        return $processorInfo;
     }
 
     /* Get directory for processor files between "processor" and "elementType", e.g., "Element" in Processors/Element/plugin/update.class.php */
