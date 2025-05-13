@@ -673,26 +673,33 @@ $components = array(
 
     /* Processor files will automatically go in or under
        core/components/yourcomponent/processors/
-       format is directory/object:action (colon is required).
-       '.class.php' (modx 2) or just .php (modx 3) will be appended to the filename
+       format is [directory/]object:action (colon is required).
+
+       '.class.php' will be appended to the filename (works in both MODX 2 and 3)
 
        Built-in processor classes include getlist, create, update, duplicate,
-       remove, import, and export, or a custom action*/
+       remove, import, and export, or a custom action */
 
     'processors' => array(
-        'mgr/snippet:getlist', // will go to processors/mgr/snippet/ dir
+         /* By default, getlist file will be at MODX_CORE_PATH .
+         'components/yourcomponent/processors/mgr/snippet/getlist.class.php */
+        'mgr/snippet:getlist',
         'mgr/snippet:changecategory',
         'mgr/snippet:remove',
 
         'mgr/chunk:getlist',
         'mgr/chunk:changecategory',
         'mgr/chunk:remove',
-        'plugin:remove', // will go to processors/plugin/ dir
+        /* File below would go to MODX_CORE_PATH .
+           components/yourcomponent/processors/chunk/remove.class.php */
+
+        // 'plugin:remove', // will go to processors/plugin/ dir
     ),
 
-    /* These will automatically go to core/components/yourcomponent/controllers[/directory]/filename
-       Format: directory:filename */
+    /* Controllers -- Format: [directory]:filename
 
+    This will  go to core/components/yourcomponent/controllers[/directory]/filename
+    */
     'controllers' => array(
         ':home.class.php',
     ),
