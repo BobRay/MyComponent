@@ -7,7 +7,6 @@ if (!defined('MODE_BOOTSTRAP')) {
     define('MODE_REMOVE', 3);
 }
 
-
 class MyComponentProject {
     /** @var $modx modX */
     public $modx;
@@ -65,8 +64,6 @@ class MyComponentProject {
     // for LexiconHelper:
     // $modx->lexicon->load('mycomponent:default');
 
-
-
     /**
      * Convenience method for determining if MyComponent is installed.
      *
@@ -85,14 +82,12 @@ class MyComponentProject {
      * @param $modx modX
      */
     public function __construct(&$modx) {
-
         if (!defined('MODE_BOOTSTRAP')) {
             session_write_close();
             die("bootstrap not defined");
         }
         $this->modx =& $modx;
     }
-
 
     /**
      * @param array $scriptProperties
@@ -184,7 +179,6 @@ class MyComponentProject {
         ObjectAdapter::$myObjects = array();
     }
 
-
     /**
      * Update the projects.php file with the names and project config
      * paths of each project; for use by the UI
@@ -210,7 +204,6 @@ class MyComponentProject {
                 $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                     $this->modx->lexicon('mc_updated_projects_file'));
             }
-
         } else {
             $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
                 $this->modx->lexicon('mc_created_projects_file'));
@@ -221,7 +214,6 @@ class MyComponentProject {
 
         }
     }
-
 
     /**
      * Set up the Path variables for the Project. Called in __construct.
@@ -257,7 +249,6 @@ class MyComponentProject {
 
         /* Set myPaths class member */
         $this->myPaths = $paths;
-
     }
 
     /* *****************************************************************************
@@ -268,8 +259,6 @@ class MyComponentProject {
      * All bootstrap processes
      */
     public function bootstrap() {
-        /* enable garbage collection() */
-        // gc_enable();
         $mode = MODE_BOOTSTRAP;
         ObjectAdapter::$myObjects = array();
         if (!$this->isMCInstalled()) { /* Only run if MC is installed */
@@ -319,7 +308,6 @@ class MyComponentProject {
     public function createObjects($mode = MODE_BOOTSTRAP) {
         if ($mode != MODE_REMOVE) {
             /* create contexts */
-
             $this->createContexts($mode);
 
             /*  Create namespace */
@@ -327,8 +315,6 @@ class MyComponentProject {
 
             /* create category or categories*/
             $this->createCategories($mode);
-
-
         }
 
         /* create system settings */
@@ -420,9 +406,7 @@ class MyComponentProject {
                     if ($mode == MODE_REMOVE) {
                         $a->remove();
                     }
-
                 }
-
             }
         }
     }
@@ -497,7 +481,6 @@ class MyComponentProject {
         /* Update the category.php file if necessary */
         $dir = $this->targetRoot . '_build/config';
         CategoryAdapter::writeCategoryFile($dir, $this->helpers);
-
     }
 
     /**
@@ -718,7 +701,6 @@ class MyComponentProject {
         }
     }
 
-
     /** Create, export, or remove any new System Events specified
      * in the project config file
      *
@@ -757,7 +739,6 @@ class MyComponentProject {
                 }
             }
         }
-
     }
 
     /**
@@ -856,9 +837,7 @@ class MyComponentProject {
                     } elseif ($mode == MODE_REMOVE) {
                         $a->remove();
                     }
-
                 }
-
             }
         }
     }
@@ -917,7 +896,6 @@ class MyComponentProject {
         }
     }
 
-
     /**
      * Called on Bootstrap to add items to MODX
      * Separating this allows more frequent garbage collection
@@ -969,7 +947,6 @@ class MyComponentProject {
         $this->helpers->createIntersects('modDashboardWidgetPlacement', $intersects);
 
     }
-
 
     /**
      * Create the various resolver files needed to build the extra.
@@ -1077,7 +1054,6 @@ class MyComponentProject {
         }
     }
 
-
     /**
      * Create all transport files necessary for the build
      *
@@ -1100,7 +1076,6 @@ class MyComponentProject {
             $o = new SubpackageAdapter();
             $o->createSubpackages($this->modx, $this->helpers, $this->myPaths['targetBuild'], $mode);
         }
-
     }
 
     /** Create main build.transport.php, build.config.php and
@@ -1149,6 +1124,7 @@ class MyComponentProject {
 
         $fileName = 'current.project.php';
         $tpl = "<?php
+
    /** MyComponent Current Project
     *  Change this file whenever you work on another project
     *
@@ -1188,7 +1164,6 @@ class MyComponentProject {
                         $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' . $language . '/' . $fileName . ' ' . $this->modx->lexicon('mc_file')
                          . ' ' . $this->modx->lexicon('mc_already_exists'));
                     }
-
                 }
             }
         }
@@ -1226,7 +1201,6 @@ class MyComponentProject {
                 $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    readme.md file ' .
                     $this->modx->lexicon('mc_already_exists'));
             }
-
         }
 
         $hasAssets = $this->modx->getOption('hasAssets', $this->props, false);
@@ -1300,7 +1274,6 @@ class MyComponentProject {
             $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' . $fileName . ' '.
                 $this->modx->lexicon('mc_already_exists'));
         }
-
     }
 
     /** Create assets directories and (optionally) empty css file, and js files
@@ -1507,7 +1480,7 @@ class MyComponentProject {
     /**
      * Create the CMP processor files
      *
-     * @param $processors
+     * @param array $processors //
      */
     public function createProcessorFiles($processors) {
         $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    '
@@ -1542,7 +1515,7 @@ class MyComponentProject {
     }
 
     /* Get directory for processor files between "processor" and "elementType", e.g., "Element" in Processors/Element/plugin/update.class.php */
-    /* ToDo: make this work for other cases beyond elements */
+    /* ToDo: make this work for other cases beyond elements and resources */
     public function getInfix($object) {
         $elements = array('resource', 'chunk', 'snippet', 'plugin', 'template', 'tv', 'article', 'templateVar', 'propertyset');
 
@@ -1602,14 +1575,11 @@ class MyComponentProject {
             $replaceFields['mc_modx3_extends'] = 'MODX\Revolution\Processors\ModelProcessor';
         }
 
-
         $tpl = $this->helpers->replaceTags($tpl, $replaceFields);
         $tpl = $this->helpers->replaceTags($tpl);
 
         return $tpl;
     }
-
-
 
     /**
      * Create CMP controllers specified in the project config file
@@ -1716,7 +1686,6 @@ class MyComponentProject {
         $tpl = str_replace('[[+element]]', $name, $tpl);
         $tpl = str_replace('[[+Element]]', ucfirst($name), $tpl);
 
-
         return $tpl;
     }
 
@@ -1804,7 +1773,6 @@ class MyComponentProject {
             }
         }
     }
-
 
     /** Create "starter" class files specified in project config
      *  file unless we're doing a CMP */
@@ -1941,14 +1909,12 @@ class MyComponentProject {
         $this->updateProjectConfig(MODE_EXPORT);
     }
 
-
     /* *****************************************************************************
         Import Objects
      ***************************************************************************** */
 
-
     /**
-     * Create and overwrites MODX Objects based on the elements
+     * Create and overwrite MODX Objects based on the elements
      * in the 'elements' member of the Project config
      *
      *
@@ -1994,7 +1960,7 @@ class MyComponentProject {
                 } else {
                     $path = $directory . $elementType . '/' . $fileName;
                 }
-                // $dir = $directory . $elementType . '/';
+
                 if (file_exists($path)) {
                     if ($object) {
                         $content = file_get_contents($path);
@@ -2038,7 +2004,6 @@ class MyComponentProject {
                         . ': ' . $fileName);
                 }
             }
-
         }
 
         /* Do Resources - use exportResources array member for pagetitles */
@@ -2071,9 +2036,7 @@ class MyComponentProject {
                     }
                 }
             }
-
         }
-
     }
 
     /* *****************************************************************************
