@@ -654,7 +654,9 @@ $components = array(
      *  Set any of these to an empty array if you don't need them.
      *  **********************************/
 
-    /* If this is false, the rest of this section will be ignored */
+    /* If this is false, the following items will be ignored *EXCEPT*
+       processors, connectors, and controllers, which will be created
+       if they are not empty regardless of the createCmpFiles value */
 
     'createCmpFiles' => true,
 
@@ -731,6 +733,7 @@ $components = array(
          'mgr:<div id="example-panel-home-div"></div>',
     ),
 
+    /* End of CMP section */
 
     /* *******************************************
      * These settings control exportObjects.php  *
