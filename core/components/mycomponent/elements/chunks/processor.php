@@ -37,7 +37,7 @@ if (empty(MODX_CORE_PATH)) {
 $v = include MODX_CORE_PATH . 'docs/version.inc.php';
 $isMODX3 = $v['version'] >= 3;
 
-/* Note: mc_processor parent is *not* the processor's parent.
+/* Note: mc_processor_parent is *not* the processor's parent.
    It's a local processor name used only once to extend
    this processor */
 if ($isMODX3) {
