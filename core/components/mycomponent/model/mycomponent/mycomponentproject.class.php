@@ -271,11 +271,24 @@ class MyComponentProject {
 
         /* Create basic files (no resolvers, transport files, or code files) */
         $this->createBasics();
+
         /* Create all MODX objects */
         $this->createObjects($mode);
 
         /* Create Validators */
         $this->createValidators();
+
+        /* Create Processors */
+        $processors = $this->modx->getOption('processors',$this->props, array(), true);
+        $this->createProcessorFiles($processors);
+
+        /* Create Connectors */
+        $connectors = $this->modx->getOption('connectors', $this->props, array(), true);
+        $this->createConnectorFiles($connectors);
+
+        /* Create Controllers */
+        $contollers = $this->modx->getOption('controllers', $this->props, array(), true);
+        $this->createControllerFiles($contollers);
 
         /* Create all Resolvers */
         $this->createResolvers($mode);
@@ -1366,26 +1379,12 @@ class MyComponentProject {
             $this->createCmpCssFile($cssFile);
         }
 
-        /* Create controllerrequest file */
+        /* Create template files */
         $this->createTemplateFiles($cmpTemplateFiles);
 
         /* Create main action file (index.php) */
         if (!empty($actionFile)) {
             $this->createActionFile($actionFile);
-        }
-        /* Create processor files */
-        if (!empty($processors)) {
-            $this->createProcessorFiles($processors);
-
-        }
-        /* Create controller files */
-        if (!empty($controllers)) {
-            $this->createControllerFiles($controllers);
-        }
-
-        /* Create connector files */
-        if (!empty($connectors)) {
-            $this->createConnectorFiles($connectors);
         }
 
         /* Create CMP JS Files */
@@ -1642,9 +1641,13 @@ class MyComponentProject {
             $couple = explode(':', $controller);
             $dir = $controllerDir . $couple[0];
             $file = $couple[1];
+            $controllerName = strtok($file, '.');
+            $file = strtolower($file);
+
             if (!file_exists(rtrim($dir, '/') . '/' . $file)) {
                 $tpl = $this->helpers->getTpl('cmp.controllerhome');
                 $tpl = $this->helpers->replaceTags($tpl);
+                $tpl = str_replace('mc_controller_name', $controllerName, $tpl);
                 $this->helpers->writeFile(rtrim($dir, '/'), $file, $tpl);
             } else {
                 $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
@@ -1710,7 +1713,6 @@ class MyComponentProject {
                 $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' . $file . ' ' .
                     $this->modx->lexicon('mc_already_exists'));
             }
-
         }
     }
 
