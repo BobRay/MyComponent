@@ -416,7 +416,7 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
         $this->mc->props['createCmpFiles'] = false;
         $this->mc->createAssetsDirs();
         $this->assertFileExists($this->mc->myPaths['targetAssets'] . 'css/' . $this->mc->packageNameLower . '.css');
-        $this->assertnotEmpty(file_get_contents($this->mc->myPaths['targetAssets'] . 'css/' . $this->mc->packageNameLower . '.css'));
+        $this->assertNotEmpty(file_get_contents($this->mc->myPaths['targetAssets'] . 'css/' . $this->mc->packageNameLower . '.css'));
         $this->assertTrue(is_dir($this->mc->myPaths['targetAssets'] . 'js/'));
     }
 
@@ -571,33 +571,13 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
         $this->assertNotEmpty(file_get_contents($this->mc->myPaths['targetRoot'] . '_build/install.options/user.input.php'));
     }
 
-    public function testCreateCmpFiles() {
+    public function testCreateProcessors() {
         $baseDir = $this->mc->myPaths['targetCore'];
-        $modelDir = $baseDir . 'model';
         $processorsDir = $baseDir . 'processors/';
-        $controllersDir = $baseDir . 'controllers/';
-        $connectorsDir = $this->mc->myPaths['targetAssets'];
-        $jsDir = $this->mc->myPaths['targetJs'];
-
-        $this->utHelpers->rrmdir($modelDir);
-        $modelDir = $modelDir . '/';
-        $packageNameLower = $this->mc->packageNameLower;
-        $this->assertNotEmpty($packageNameLower);
-        // $this->mc->createBasics();
-        $this->mc->createCmpFiles();
-        $actionFile = $this->mc->props['actionFile'];
-        $this->assertNotEmpty($actionFile);
-        $file = $baseDir . $actionFile;
-        $this->assertFileExists($file);
-        $content = file_get_contents($file);
-        $this->assertNotEmpty($content);
-        $this->assertStringContainsString('License', $content);
-        $this->assertStringContainsString('controller', $content);
-
-        /* Processors */
-        $this->assertTrue(is_dir($processorsDir));
         $processors = $this->mc->props['processors'];
         $this->assertNotEmpty($processors);
+        $this->mc->createProcessorFiles($processors);
+        $this->assertTrue(is_dir($processorsDir));
         foreach ($processors as $processor) {
             $p = explode(':', $processor);
             $dir = $p[0];
@@ -610,12 +590,38 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
             $this->assertStringNotContainsString('[[+', $content, 'Unprocessed tag');
             $this->assertStringNotContainsString('mc_element', $content, 'Unprocessed tag', true);
         }
+    }
 
+    public function testCreateConnectors() {
+        /* Connectors */
+        $connectorsDir = $this->mc->myPaths['targetAssets'];
+        $this->assertNotEmpty($connectorsDir);
+        $connectors = $this->mc->props['connectors'];
+        $this->assertNotEmpty($connectors);
+        $this->mc->createConnectorFiles($connectors);
+        $this->assertTrue(is_dir($connectorsDir));
+        foreach ($connectors as $connector) {
+            $fileName = $connector;
+            $fullPath = $connectorsDir . $fileName;
+            $this->assertFileExists($fullPath);
+            $content = file_get_contents($fullPath);
+            $this->assertStringContainsString('License', $content);
+            $this->assertStringContainsString('Connector', $content);
+            $this->assertStringContainsString('core_path', $content);
+            $this->assertStringNotContainsString('[[+', $content, 'Unprocessed tag');
+            $this->assertStringNotContainsString('mc_element', $content, 'Unprocessed tag', true);
+        }
+    }
+
+    public function testCreateControllers() {
         /* Controllers */
+        $baseDir = $this->mc->myPaths['targetCore'];
+        $controllersDir = $baseDir . 'controllers/';
         $this->assertNotEmpty($controllersDir);
-        $this->assertTrue(is_dir($controllersDir));
         $controllers = $this->mc->props['controllers'];
         $this->assertNotEmpty($controllers);
+        $this->mc->createControllerFiles($controllers);
+        $this->assertTrue(is_dir($controllersDir));
         foreach ($controllers as $controller) {
             $p = explode(':', $controller);
             $dir = $p[0];
@@ -629,23 +635,30 @@ class MyComponentProjectTest extends PHPUnit_Framework_TestCase {
             $this->assertStringNotContainsString('[[+', $content, 'Unprocessed tag');
             $this->assertStringNotContainsString('mc_element', $content, 'Unprocessed tag', true);
         }
+    }
 
-        /* Connectors */
-        $this->assertNotEmpty($connectorsDir);
-        $this->assertTrue(is_dir($connectorsDir));
-        $connectors = $this->mc->props['connectors'];
-        $this->assertNotEmpty($connectors);
-        foreach ($connectors as $connector) {
-            $fileName = $connector;
-            $fullPath = $connectorsDir . $fileName;
-            $this->assertFileExists($fullPath);
-            $content = file_get_contents($fullPath);
-            $this->assertStringContainsString('License', $content);
-            $this->assertStringContainsString('Connector', $content);
-            $this->assertStringContainsString('core_path', $content);
-            $this->assertStringNotContainsString('[[+', $content, 'Unprocessed tag');
-            $this->assertStringNotContainsString('mc_element', $content, 'Unprocessed tag', true);
-        }
+    public function testCreateCmpFiles() {
+        $baseDir = $this->mc->myPaths['targetCore'];
+        $modelDir = $baseDir . 'model';
+       // $processorsDir = $baseDir . 'processors/';
+        // $controllersDir = $baseDir . 'controllers/';
+        // $connectorsDir = $this->mc->myPaths['targetAssets'];
+        $jsDir = $this->mc->myPaths['targetJs'];
+
+        $this->utHelpers->rrmdir($modelDir);
+        $modelDir = $modelDir . '/';
+        $packageNameLower = $this->mc->packageNameLower;
+        $this->assertNotEmpty($packageNameLower);
+        $this->mc->createBasics();
+        $this->mc->createCmpFiles();
+        $actionFile = $this->mc->props['actionFile'];
+        $this->assertNotEmpty($actionFile);
+        $file = $baseDir . $actionFile;
+        $this->assertFileExists($file);
+        $content = file_get_contents($file);
+        $this->assertNotEmpty($content);
+        $this->assertStringContainsString('License', $content);
+        $this->assertStringContainsString('controller', $content);
 
         /* JS Files */
         $this->assertNotEmpty($jsDir);
