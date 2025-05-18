@@ -236,19 +236,6 @@ class DashboardWidgetAdapter extends ObjectAdapter {
         /* @var $widget modDashboardWidget */
         $widget = $this->modx->getObject($this->classPrefix . 'modDashboardWidget', array('name' => $fields['name'], 'namespace' => $fields['namespace']));
         if ($widget) {
-            /* Remove widget placements here if necessary  */
-            /*$placements = $widget->getMany('Placements');
-            if (!empty $placements) {
-                foreach($placements as $placement) {
-                    if ($placement->remove()) {
-                        $temp = $this->modx->setLogLevel(modX::LOG_LEVEL_INFO);
-                        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
-                            $this->modx->lexicon('mc_removed_widget_placement')
-                            . ': ' . $fields['name']);
-                        $this->modx->setLogLevel($temp);
-                    }
-                }
-            }*/
             if ($widget->remove()) {
                 $temp = $this->modx->setLogLevel(modX::LOG_LEVEL_INFO);
                 $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
