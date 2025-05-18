@@ -37,56 +37,8 @@ $components = array(
     /* path to new project root */
     'targetRoot' => MODX_ASSETS_PATH . 'mycomponents/mycomponent/',
 
-
-    /* *********************** NEW SYSTEM SETTINGS ************************ */
-
-    /* If your extra needs new System Settings, set their field values here.
-     * You can also create or edit them in the Manager (System -> System Settings),
-     * and export them with exportObjects. If you do that, be sure to set
-     * their namespace and area to the lowercase package name of your extra */
-
-    /*'newSystemSettings' => array(
-        'example_system_setting1' => array( // key
-            'key' => 'example_system_setting1',
-            'name' => 'Example Setting One',
-            'description' => 'Description for setting one',
-            'namespace' => 'example',
-            'xtype' => 'textfield',
-            'value' => 'value1',
-            'area' => 'area1',
-        ),
-        'example_system_setting2' => array( // key
-            'key' => 'example_system_setting2',
-            'name' => 'Example Setting Two',
-            'description' => 'Description for setting two',
-            'namespace' => 'example',
-            'xtype' => 'combo-boolean',
-            'value' => true,
-            'area' => 'area2',
-        ),
-    ),*/
-
-    /* ************************ NEW SYSTEM EVENTS ************************* */
-
-    /* Array of your new System Events (not default
-     * MODX System Events). Listed here so they can be created during
-     * install and removed during uninstall.
-     *
-     * Warning: Do *not* list regular MODX System Events here !!! */
-
-    /*'newSystemEvents' => array(
-        'OnMyEvent1' => array(
-            'name' => 'OnMyEvent1',
-        ),
-        'OnMyEvent2' => array(
-            'name' => 'OnMyEvent2',
-            'groupname' => 'Example',
-            'service' => 1,
-        ),
-    ),*/
-
     /* ************************ NAMESPACE(S) ************************* */
-    /* (optional) Typically, there's only one namespace which is set
+    /* (optional) Typically, there's only one namespace, which is set
      * to the $packageNameLower value. Paths should end in a slash
     */
 
@@ -101,7 +53,7 @@ $components = array(
 
     /* ************************* CATEGORIES *************************** */
     /* (optional) List of categories. This is only necessary if you
-     * need to categories other than the one named for packageName
+     * need categories other than the one named for packageName
      * or want to nest categories.
     */
 
@@ -161,13 +113,9 @@ $components = array(
                 'category' => 'MyComponent',
                 'filename' => 'removeobjects.php',
             ),
-
         ),
+
         'chunks' => array(
-            'processortpl.php' => array(
-                'category' => 'MyComponent',
-                'filename' => 'processortpl.php',
-            ),
             'build.config.php' => array(
                 'category' => 'MyComponent',
                 'filename' => 'build.config.php',
@@ -288,6 +236,10 @@ $components = array(
                 'category' => 'MyComponent',
                 'filename' => 'pluginresolver.php',
             ),
+            'processortpl.php' => array(
+                'category' => 'MyComponent',
+                'filename' => 'processortpl.php',
+            ),
             'propertiesfile.php' => array(
                 'category' => 'MyComponent',
                 'filename' => 'propertiesfile.php',
@@ -340,12 +292,10 @@ $components = array(
                 'filename' => 'mycomponenttemplate.html',
             ),
         )
-
     ),
 
     /* (optional) will make all element objects static - 'static' field above will be ignored */
     'allStatic' => false,
-
 
     /* ************************* RESOURCES ****************************
      Important: This list only affects Bootstrap. There is another
@@ -426,7 +376,7 @@ $components = array(
     ),
 
     /* (optional) install.options is needed if you will interact
-     * with user during the install.
+     * with user during the installation.
      * See the user.input.php file for more information.
      * Set this to 'install.options' or ''
      * The file will be created as _build/install.options/user.input.php
@@ -464,7 +414,6 @@ $components = array(
      *
      * Set to array() if there are no classes. */
     'classes' => array(
-        // 'ActionAdapter' => 'actionadapter',
         'CategoryAdapter' => 'categoryadapter',
         'CheckProperties' => 'checkproperties',
         'ChunkAdapter' => 'chunkadapter',
@@ -493,7 +442,6 @@ $components = array(
         'UserGroupAdapter' => 'usergroupadapter',
         'UserGroupRoleAdapter' => 'usergrouproleadapter',
         'UserSettingAdapter' => 'usersettingadapter',
-
     ),
 
     /* *******************************************
@@ -502,7 +450,7 @@ $components = array(
     /* ExportObjects will update existing files. If you set dryRun
        to '1', ExportObjects will report what it would have done
        without changing anything. Note: On some platforms,
-       dryRun is *very* slow  */
+       dryRun can be slow  */
 
     'dryRun' => '0',
 
