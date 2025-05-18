@@ -1497,7 +1497,7 @@ class MyComponentProject {
             if (!file_exists($processorInfo['fullPath'])) {
 
                 $tpl = $this->getProcessorTpl(
-                    'processor.php',
+                    'processortpl.php',
                     $processorInfo['object'],
                     $processorInfo['action'],
                     $processorInfo['dir']

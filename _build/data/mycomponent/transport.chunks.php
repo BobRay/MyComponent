@@ -491,4 +491,26 @@ $chunks[41]->fromArray(array (
 ), '', true, true);
 $chunks[41]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/widgetresolver.php'));
 
+$chunks[42] = $modx->newObject('modChunk');
+$chunks[42]->fromArray(array (
+  'id' => 42,
+  'property_preprocess' => false,
+  'name' => 'processortpl.php',
+  'description' => 'Chunk',
+  'properties' => NULL,
+), '', true, true);
+$chunks[42]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/processortpl.php'));
+
+$chunks[43] = $modx->newObject('modChunk');
+$chunks[43]->fromArray(array (
+  'id' => 43,
+  'property_preprocess' => false,
+  'name' => 'dashboardresolver.php',
+  'description' => 'Chunk',
+  'properties' => 
+  array (
+  ),
+), '', true, true);
+$chunks[43]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/dashboardresolver.php.chunk.html'));
+
 return $chunks;
