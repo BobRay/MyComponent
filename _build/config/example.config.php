@@ -78,11 +78,12 @@ $components = array(
     'newSystemEvents' => array(
         'OnMyEvent1' => array(
             'name' => 'OnMyEvent1',
+            'service' => 6, // Value for user-created events
         ),
         'OnMyEvent2' => array(
             'name' => 'OnMyEvent2',
             'groupname' => 'Example',
-            'service' => 1,
+            'service' => 6, // Value for user-created events
         ),
     ),
 
