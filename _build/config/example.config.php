@@ -146,14 +146,14 @@ $components = array(
 
     /* ************************* CATEGORIES *************************** */
     /* (optional) List of categories. This is only necessary if you
-     * need to categories other than the one named for packageName
+     * need categories other than the one named for packageName
      * or want to nest categories.
     */
 
     'categories' => array(
         'Example' => array(
             'category' => 'Example',
-            'parent' => '',  /* top level category */
+            'parent' => 0,  /* top level category */
         ),
         'category2' => array(
             'category' => 'Category2',
