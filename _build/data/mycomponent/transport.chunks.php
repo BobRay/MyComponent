@@ -31,7 +31,7 @@ $chunks[1]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'user.input.php',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -43,7 +43,7 @@ $chunks[2]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'tvresolver.php',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -55,7 +55,7 @@ $chunks[3]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'transportfile.php',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -77,7 +77,7 @@ $chunks[5]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'resourceresolver.php',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -119,7 +119,7 @@ $chunks[9]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'propertiesfile.php',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -131,7 +131,7 @@ $chunks[10]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'propertysetresolver.php',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -143,7 +143,7 @@ $chunks[11]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'genericresolver.php',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -155,7 +155,7 @@ $chunks[12]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'genericvalidator.php',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -167,7 +167,7 @@ $chunks[13]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'js.tpl',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -229,7 +229,7 @@ $chunks[19]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'phpfile.php',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -241,7 +241,7 @@ $chunks[20]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'pluginresolver.php',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -263,7 +263,7 @@ $chunks[22]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'build.transport.php',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -275,7 +275,7 @@ $chunks[23]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'categoryresolver.php',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -297,7 +297,7 @@ $chunks[25]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'classfile.php',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -309,7 +309,7 @@ $chunks[26]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'css.tpl',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -321,7 +321,7 @@ $chunks[27]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'example.config.php',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -343,7 +343,7 @@ $chunks[29]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'cmp.actionfile.php',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -355,7 +355,7 @@ $chunks[30]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'cmp.changecategory.class.php',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -367,7 +367,7 @@ $chunks[31]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'cmp.classfile.php',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -379,7 +379,7 @@ $chunks[32]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'cmp.connectorfile.tpl',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -391,7 +391,7 @@ $chunks[33]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'cmp.controllerhome.tpl',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -403,7 +403,7 @@ $chunks[34]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'cmp.defaultjs.tpl',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -415,7 +415,7 @@ $chunks[35]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'cmp.getlist.class.php',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -427,7 +427,7 @@ $chunks[36]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'cmp.grid.tpl',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -439,7 +439,7 @@ $chunks[37]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'cmp.home.js.tpl',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -451,7 +451,7 @@ $chunks[38]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'cmp.home.panel.js.tpl',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -473,7 +473,7 @@ $chunks[40]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'cmp.processor.class.php',
   'description' => 'Chunk',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -485,7 +485,7 @@ $chunks[41]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'widgetresolver.php',
   'description' => 'Resolver to connect widgets with dashboards',
-  'properties' =>
+  'properties' => 
   array (
   ),
 ), '', true, true);
@@ -497,7 +497,9 @@ $chunks[42]->fromArray(array (
   'property_preprocess' => false,
   'name' => 'processortpl.php',
   'description' => 'Chunk',
-  'properties' => NULL,
+  'properties' => 
+  array (
+  ),
 ), '', true, true);
 $chunks[42]->setContent(file_get_contents($sources['source_core'] . '/elements/chunks/processortpl.php'));
 
