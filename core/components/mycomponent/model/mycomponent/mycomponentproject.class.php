@@ -2045,12 +2045,12 @@ class MyComponentProject {
                     } else {
                         $this->helpers->sendLog(modX::LOG_LEVEL_ERROR,
                             $this->modx->lexicon('mc_element_nf')
-                            . ': ' . $element);
+                            . ': ' . $element . ' ' . $this->modx->lexicon('mc_run_bootstrap'));
                     }
                 } else {
                     $this->helpers->sendLog(modX::LOG_LEVEL_ERROR,
                         $this->modx->lexicon('mc_file_nf')
-                        . ': ' . $fileName);
+                        . ': ' . $fileName . ' '   . $this->modx->lexicon('mc_run_bootstrap'));
                 }
             }
         }
@@ -2082,6 +2082,10 @@ class MyComponentProject {
                                 '    ' . $this->modx->lexicon('mc_updated')
                                 . ': ' . $pageTitle);
                         }
+                    } else {
+                        $this->helpers->sendLog(modX::LOG_LEVEL_INFO,
+                            '    ' . $this->modx->lexicon('mc_updated')
+                            . ': ' . $pageTitle);
                     }
                 }
             }
