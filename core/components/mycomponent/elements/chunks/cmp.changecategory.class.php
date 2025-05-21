@@ -13,15 +13,11 @@
 
 /* @var $modx modX */
 
-// comment out the next line to make processor functional
 class mc_ElementChangeCategoryProcessor extends modProcessor {
     public $classKey = 'modmc_Element';
     public $languageTopics = array('[[+packageNameLower]]:default');
-    
-    public function process() {
 
-/* !!! Remove this line to make processor functional */
-return $this->modx->error->success();
+    public function process() {
 
         if (!$this->modx->hasPermission('save_mc_element')) {
             return $this->modx->error->failure($this->modx->lexicon('access_denied'));
@@ -44,7 +40,7 @@ return $this->modx->error->success();
         foreach ($mc_elementIds as $mc_elementId) {
             $mc_element = $this->modx->getObject($this->classKey,$mc_elementId);
             if ($mc_element == null) continue;
-        
+
             $mc_element->set('category',$scriptProperties['category']);
             $mc_element->save(3600);
         }
