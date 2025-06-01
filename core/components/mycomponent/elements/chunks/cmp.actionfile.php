@@ -1,6 +1,7 @@
 <?php
 /**
-* Action file for [[+packageName]] extra
+* Action file for [[+packageName]] extra.
+* Tpl for index.php controller file.
 *
 * Copyright [[+copyright]] [[+author]] [[+email]]
 * Created on [[+createdon]]
