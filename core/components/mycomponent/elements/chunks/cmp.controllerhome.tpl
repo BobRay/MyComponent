@@ -22,40 +22,73 @@ if ($isMODX3) {
     abstract class controller_parent extends MODX\Revolution\modManagerController {
     }
 } else {
-    $includeFile = MODX_CORE_PATH . 'model/modx/modmanagercontroller.class.php';
-    if (file_exists($includeFile)) {
-        include $includeFile;
-    } else {
-        return "Include File does not exist";
+    if (! class_exists('modManagerController')) {
+        $includeFile = MODX_CORE_PATH . 'model/modx/modmanagercontroller.class.php';
+
+        if (file_exists($includeFile)) {
+            include $includeFile;
+        } else {
+            die('Could not find parent class file: ' . $includeFile);
+        }
     }
+
     abstract class controller_parent extends modManagerController {
     }
 }
 
-class mc_controller_name extends controller_parent {
+class ExampleHomeManagerController extends controller_parent {
     /**
      * The pagetitle to put in the <title> attribute.
      *
      * @return null|string
      */
+
     public function getPageTitle() {
-        return $this->modx->lexicon('mc_packageNameLower');
+        return $this->modx->lexicon('mc_packageName');
     }
 
-    /* The next three methods are required,
-       even if you dont use them.
-    */
+    /* Must Return true */
+    public function initialize() {
+        /* Instantiate the Example class in the controller */
+        $path = $this->modx->getOption('example.core_path',
+                NULL, $this->modx->getOption('core_path') .
+                'components/example/') . 'model/example/';
+        require_once $path . 'example.class.php';
+        $this->example = new Example($this->modx);
+
+        /* Optional alternative  - install PHP class as a service */
+
+        /* $this->example = $this->modx->getService('example',
+             'Example', $path);*/
+
+        /* Add the main javascript class and our configuration */
+        $this->addJavascript($this->example->config['jsUrl'] .
+            'example.class.js');
+        $this->addHtml('<script type="text/javascript">
+        Ext.onReady(function() {
+            Example.config = ' . $this->modx->toJSON($this->example->config) . ';
+        });
+        </script>');
+        return true;
+    }
+
+    /* The next three methods are required */
+
     public function checkPermissions() {
+        return true;
     }
     public function getTemplateFile() {
+        return ('../../templates/mgr.tpl');
     }
-    public function process() {
+
+    /* Argument is required in PHP 8 */
+    public function process($scriptProperties = array()) {
+
     }
 
     /**
      * Register all the needed javascript files.
      */
-
 
     public function loadCustomCssJs() {
         $this->addJavascript($this->mc_packageNameLower->config['jsUrl'] . 'widgets/chunk.grid.js');
