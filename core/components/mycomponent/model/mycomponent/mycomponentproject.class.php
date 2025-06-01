@@ -287,8 +287,8 @@ class MyComponentProject {
         $this->createConnectorFiles($connectors);
 
         /* Create Controllers */
-        $contollers = $this->modx->getOption('controllers', $this->props, array(), true);
-        $this->createControllerFiles($contollers);
+        $controllers = $this->modx->getOption('controllers', $this->props, array(), true);
+        $this->createControllerFiles($controllers);
 
         /* Create all Resolvers */
         $this->createResolvers($mode);
