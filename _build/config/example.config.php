@@ -181,7 +181,7 @@ $components = array(
             'params' => '',
             'handler' => '',
             'permissions' => '',
-            'action' => 'index',
+            'action' => 'home',
             'namespace' => 'example',
         ),
     ),
