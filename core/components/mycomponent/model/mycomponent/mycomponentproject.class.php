@@ -1494,10 +1494,15 @@ class MyComponentProject {
                 continue;
             }
 
+            if ($processorInfo['action'] == 'getlist') {
+                $processorTpl = 'getlist.class.php';
+            } else {
+                $processorTpl = 'processortpl.php';
+            }
             if (!file_exists($processorInfo['fullPath'])) {
 
                 $tpl = $this->getProcessorTpl(
-                    'processortpl.php',
+                    $processorTpl,
                     $processorInfo['object'],
                     $processorInfo['action'],
                     $processorInfo['dir']
