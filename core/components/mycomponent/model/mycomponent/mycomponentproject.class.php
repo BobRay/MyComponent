@@ -1607,14 +1607,14 @@ class MyComponentProject {
             'mc_modx3_extends' => 'MODX\Revolution\Processors\\'. $mod3InFix .  $object . '\\' . $action,
             'mc_name_field' => $this->helpers->getNameAlias('mod' . $object),
             'mc_package_name_lower' => $this->packageNameLower,
-            'mc_modx2_include' => MODX_CORE_PATH . 'model/modx/processors/' . $inFix . '/' .
+            'mc_modx2_include' => 'MODX_CORE_PATH .' . 'model/modx/processors/' . $inFix . '/' .
                 strtolower($object) .  '/' . strtolower($action) . '.class.php',
             'mc_processor_name' => $this->packageName . $object
                 . $action . 'Processor',
         );
         /* If parent processor file doesn't exist, set extends to basic processor */
         if (! file_exists($replaceFields['mc_modx2_include'])) {
-            $replaceFields['mc_modx2_include'] = MODX_CORE_PATH . 'model/modx/modProcessor.class.php';
+            $replaceFields['mc_modx2_include'] = 'MODX_CORE_PATH . ' . 'model/modx/modProcessor.class.php';
             $replaceFields['mc_modx2_extends'] = 'modProcessor';
 
             /* If MODX 2 processor doesn't exist, MODX 3 processor probably doesn't either */
