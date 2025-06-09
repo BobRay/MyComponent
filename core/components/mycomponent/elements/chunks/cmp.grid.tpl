@@ -18,7 +18,8 @@
     this.sm = new Ext.grid.CheckboxSelectionModel();
 
     Ext.applyIf(config, {
-        url: [[+packageName]].config.connector_url
+        id: "my-mc_element-window"
+        ,url: [[+packageName]].config.connector_url
         , baseParams: {
            action: 'mgr/[[+element]]/getlist'
            ,thread: config.thread
@@ -222,6 +223,9 @@ Ext.reg('[[+packageNameLower]]-grid-[[+element]]', [[+packageName]].grid.[[+Elem
 
 
 [[+packageName]].window.ChangeCategory = function (config) {
+    var grid = Ext.getCmp('my-mc_element-window');
+    var selectionModel = grid.getSelectionModel();
+    var selectedRecords = grid.getSelectedAsList();
     config = config || {};
     Ext.applyIf(config, {
         title: _('new_category')
@@ -233,6 +237,7 @@ Ext.reg('[[+packageNameLower]]-grid-[[+element]]', [[+packageName]].grid.[[+Elem
         ,fields: [{
             xtype: 'hidden'
             ,name: '[[+element]]s'
+            ,value: selectedRecords
         },{
             xtype: 'modx-combo-category'
             ,id: '[[+packageNameLower]]-[[+element]]-category-combo'
