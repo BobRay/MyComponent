@@ -1495,7 +1495,7 @@ class MyComponentProject {
             }
 
             if ($processorInfo['action'] == 'getlist') {
-                $processorTpl = 'getlist.class.php';
+                $processorTpl = 'cmp.getlist.class.php';
             } else {
                 $processorTpl = 'processortpl.php';
             }
@@ -1608,19 +1608,20 @@ class MyComponentProject {
 
         $replaceFields = array(
             'mc_processor_parent' => $this->packageName . 'DynamicParent' . $object . $action,
-            'mc_modx2_extends' => 'mod' . ucfirst($object) . $action . 'Processor',
-            'mc_modx3_extends' => 'MODX\Revolution\Processors\\'. $mod3InFix .  $object . '\\' . $action,
+            'mc_modx2_extends' => 'mod' . ucfirst($object) . ucfirst($action) . 'Processor',
+            'mc_modx3_extends' => 'MODX\Revolution\Processors\\'. $mod3InFix . ucfirst( $object) . '\\' . ucfirst($action),
             'mc_name_field' => $this->helpers->getNameAlias('mod' . $object),
             'mc_package_name_lower' => $this->packageNameLower,
             'mc_modx2_include' => 'MODX_CORE_PATH .' . 'model/modx/processors/' . $inFix . '/' .
                 strtolower($object) .  '/' . strtolower($action) . '.class.php',
-            'mc_processor_name' => $this->packageName . $object
-                . $action . 'Processor',
-            'mc_element' => ucfirst($object),
+            'mc_processor_name' => $this->packageName . ucfirst($object)
+                . ucfirst($action) . 'Processor',
+            'mc_Element' => ucfirst($object),
+            'mc_element' => $object,
         );
         /* If parent processor file doesn't exist, set extends to basic processor */
         if (! file_exists($replaceFields['mc_modx2_include'])) {
-            $replaceFields['mc_modx2_include'] = 'MODX_CORE_PATH . ' . 'model/modx/modProcessor.class.php';
+            $replaceFields['mc_modx2_include'] = 'MODX_CORE_PATH . ' . 'model/modx/modprocessor.class.php';
             $replaceFields['mc_modx2_extends'] = 'modProcessor';
 
             /* If MODX 2 processor doesn't exist, MODX 3 processor probably doesn't either */

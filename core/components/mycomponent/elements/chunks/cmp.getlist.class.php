@@ -12,7 +12,9 @@
  */
 
 /* @var $modx modX */
-$modx->lexicon->load('mycomponent:default');
+/* This is for Lexicon Helper
+ * $modx->lexicon->load('mycomponent:default');
+ */
 if (!defined('MODX_CORE_PATH')) {
     include dirname(__FILE__, 5) . '/config.core.php';
     if (empty(MODX_CORE_PATH)) {
@@ -28,24 +30,26 @@ if (empty(MODX_CORE_PATH)) {
 
 $v = include MODX_CORE_PATH . 'docs/version.inc.php';
 $isMODX3 = $v['version'] >= 3;
+$prefix = $isMODX3? 'MODX\Revolution\\' : '';
 
 if ($isMODX3) {
-    abstract class DynamicGetListProcessorParent extends MODX\Revolution\Processors\Model\GetListProcessor {
+    abstract class mc_processor_parent extends MODX\Revolution\Processors\Element\mc_Element\GetList {
     }
 } else {
-    if (!class_exists('modProcessor')) {
-        include MODX_CORE_PATH . 'model\modx\modprocessor.class.php';
+
+        $includeFile = MODX_CORE_PATH . 'model/modx/processors/element/mc_element/getlist.class.php';
+    if (!class_exists($prefix . 'modmc_ElementGetListProcessor')) {
+        require $includeFile;
     }
 
-    abstract class DynamicGetListProcessorParent extends modProcessor {
+    abstract class mc_processor_parent extends modmc_ElementGetlistProcessor {
     }
 }
-class mc_ProcessorTypeProcessor extends modObjectGetListProcessor {
+class mc_processor_name extends mc_processor_parent {
     public $classKey = 'modmc_Element';
     public $languageTopics = array('mc_packageNameLower:default');
     public $defaultSortField = 'name';
     public $defaultSortDirection = 'ASC';
-
 
     /**
      * Convert category ID to category name for objects with a category.
@@ -58,6 +62,7 @@ class mc_ProcessorTypeProcessor extends modObjectGetListProcessor {
      * @param xPDOObject $object
      * @return array
      */
+
     public function prepareRow(xPDOObject $object) {
         $fields = $object->toArray();
         if (array_key_exists('category', $fields)) {
@@ -85,8 +90,20 @@ class mc_ProcessorTypeProcessor extends modObjectGetListProcessor {
             }
         }
 
-
         return $fields;
     }
+
+    /* Use this if you want to perform custom actions
+       and ignore the parent's process() method. The Parent's
+       process will be called automatically if this is left
+       commented out
+    */
+
+     public function process() {
+        /* Perform action here */
+
+         return parent::process();
+        // return $this->success();
+    }
 }
-return 'mc_ProcessorTypeProcessor';
+return 'mc_processor_name';
