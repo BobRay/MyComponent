@@ -175,7 +175,7 @@ $components = array(
         'Example' => array(
             'text' => 'Example',
             'parent' => 'components',
-            'description' => 'ex_menu_desc',
+            'description' => 'Example CMP',
             'icon' => '',
             'menuindex' => 0,
             'params' => '',
@@ -764,6 +764,7 @@ $components = array(
         'contextSettings',
         'systemEvents',
         'menus',
+        'dashboards',
         'widgets',
     ),
     /*  Array  of resources to process. You can specify specific resources

@@ -78,16 +78,17 @@ $components = array(
     'newSystemEvents' => array(
         'OnMyEvent1' => array(
             'name' => 'OnMyEvent1',
+            'service' => 6, // Value for user-created events
         ),
         'OnMyEvent2' => array(
             'name' => 'OnMyEvent2',
             'groupname' => 'Example',
-            'service' => 1,
+            'service' => 6, // Value for user-created events
         ),
     ),
 
     /* ************************ NAMESPACE(S) ************************* */
-    /* (optional) Typically, there's only one namespace which is set
+    /* (optional) Typically, there's only one namespace, which is set
      * to the $packageNameLower value. Paths should end in a slash
     */
 
@@ -146,14 +147,14 @@ $components = array(
 
     /* ************************* CATEGORIES *************************** */
     /* (optional) List of categories. This is only necessary if you
-     * need to categories other than the one named for packageName
+     * need categories other than the one named for packageName
      * or want to nest categories.
     */
 
     'categories' => array(
         'Example' => array(
             'category' => 'Example',
-            'parent' => '',  /* top level category */
+            'parent' => 0,  /* top level category */
         ),
         'category2' => array(
             'category' => 'Category2',
@@ -174,17 +175,144 @@ $components = array(
         'Example' => array(
             'text' => 'Example',
             'parent' => 'components',
-            'description' => 'ex_menu_desc',
+            'description' => 'Example CMP',
             'icon' => '',
             'menuindex' => 0,
             'params' => '',
             'handler' => '',
             'permissions' => '',
-            'action' => 'index',
+            'action' => 'home',
             'namespace' => 'example',
         ),
     ),
 
+    /* ************************ NEW Dashboards ************************* */
+
+    'newDashboards' => array(
+        'ExampleDashboard' => array(
+            'name' => 'ExampleDashboard',
+            'description' => 'Description of Example Dashboard',
+            'hide_trees' => '0',
+            // 'customizable' => '1', /* MODX 3 only ignored in MODX 2 */
+        ),
+    ),
+
+    /* *************************** Widgets ****************************** */
+    /* Examples here are for the 4 types of widgets:
+        snippet, php, file, html */
+    'widgets' => array(
+        'ExampleSnippetWidget' => array(
+            'name' => 'ExampleSnippetWidget',
+            'description' => 'ExampleSnippetWidget',
+            /* Type options: 'file' 'snippet' 'html' 'php' */
+            'type' => 'snippet',
+
+            /* content: snippet name */
+            'content' => 'ExampleSnippetWidget',
+            'properties' => '', // MODX 3 only; ignored in MODX 2
+            'namespace' => 'example',
+            'lexicon' => 'example:default',
+            'permission' => '', // MODX 3 only; ignored in MODX 2;
+            'size' => '', // MODX 3 only. Set when user customizes widget
+
+            /* Dashboards to attach this widget to (optional) */
+            'placements' => array(
+                '1' => array(
+                    /* dashboard name */
+                    'dashboard' => 'Default',
+
+                    /* This widget's name */
+                    'widget' => 'ExampleSnippetWidget',
+
+                    'rank' => '0',
+                    /* Size options: half, full, one-third, two-thirds. */
+                    'size' => 'half',
+                ),
+
+                '2' => array(
+                    /* dashboard name */
+                    'dashboard' => 'ExampleDashboard',
+
+                    /* This widget's name or ID */
+                    'widget' => 'ExampleSnippetWidget',
+
+                    'rank' => '0',
+                    /* Size options: half, full, one-third, two-thirds. */
+                    'size' => 'half',
+                ),
+            ),
+        ), /* End of this widget */
+
+        'ExamplePhpWidget' => array(
+            'name' => 'ExamplePhpWidget',
+            'description' => 'ExamplePhpWidget description',
+            /* Type options: 'file' 'snippet' 'html' 'php' */
+            'type' => 'php',
+
+            /* content: inline php code */
+            'content' => '
+                <?php
+                    return "Hello World";
+                    ',
+            'namespace' => 'example',
+            'lexicon' => 'example:default',
+            'properties' => array(), /* array of widget properties */
+            'permission' => '', // Ignored in MODX 3
+
+            /* Dashboards to attach snippet to (optional) */
+            'placements' => array(
+                /* dashboard name or ID */
+                1 => array(
+                'dashboard' => 'Default',
+
+                /* This widget's name or ID */
+                'widget' => 'ExamplePhpWidget',
+
+                'rank' => '0',
+                /* Size options: half, full, one-third, two-thirds. */
+                'size' => 'half',
+                ),
+            ),
+        ), /* End of this widget */
+
+        'ExampleFileWidget' => array(
+            'name' => 'ExampleFileWidget',
+            'description' => 'ExampleFileWidget description',
+
+            /* Type options: 'file' 'snippet' 'html' 'php' */
+            'type' => 'file',
+
+            /* content: path to php file */
+            'content' => '[[++core_path]]components/example/filename.php',
+            'namespace' => 'example',
+            'lexicon' => 'example:default',
+            'properties' => array(), /* Ignored in MODX 2*/
+            'permission' => '', /* Ignored in MODX 2 */
+
+            /* Dashboards to attach snippet to (optional) */
+            'placements' => array(), /* unattached */
+        ), /* End of this widget */
+
+        'ExampleHTMLWidget' => array(
+            'name' => 'ExampleHtmlWidget',
+            'description' => 'ExampleHtmlWidget description',
+
+            /* Type options: 'file' 'snippet' 'html' 'php' */
+            'type' => 'html',
+
+            /* content: HTML code (snippet and chunk tags allowed) */
+            'content' => '<h3>Hello World</h3>',
+
+            'namespace' => 'example',
+            'lexicon' => 'example:default',
+            'properties' => array(), /* Ignored in MODX 2 */
+            'permission' => '', /* Ignored in MODX 2 */
+
+            /* Dashboards to attach snippet to (optional) */
+            'placements' => array(), /* unattached */
+        ), /* End of this widget */
+
+    ), /* End of widgets array */
 
     /* ************************* ELEMENTS **************************** */
 
@@ -235,7 +363,16 @@ $components = array(
                 ),
             ),
 
+            /* See snippet widget above */
+            'ExampleSnippetWidget' => array( /* Example widget snippet */
+                'category' => 'Category2',
+                'description' => 'Example Widget',
+                'static' => false,
+                'snippet' => '<?php  
+                    return "Example Widget Snippet Output";',
+            ),
         ),
+
         'plugins' => array(
             'Plugin1' => array( /* minimal example */
                 'category' => 'Example',
@@ -443,12 +580,12 @@ $components = array(
         'addUsers'
     ),
 
-    /* Dependencies */
+    /* Dependencies (package name must be lowercase) */
     'requires' => array(
-      // 'Wayfinder' => '>=2.3.3',
+      // 'wayfinder' => '>=2.3.3',
     ),
 
-    /* (optional) Validators can abort the install after checking
+    /* (optional) Validators can abort the installation after checking
      * conditions. Array of validator names (no
      * prefix of suffix) or '' 'default' creates a default resolver
      *  named after the package suffix 'validator.php' will be added */
@@ -518,7 +655,9 @@ $components = array(
      *  Set any of these to an empty array if you don't need them.
      *  **********************************/
 
-    /* If this is false, the rest of this section will be ignored */
+    /* If this is false, the following items will be ignored *EXCEPT*
+       processors, connectors, and controllers, which will be created
+       if they are not empty regardless of the createCmpFiles value */
 
     'createCmpFiles' => true,
 
@@ -535,14 +674,18 @@ $components = array(
 
     'cssFile' => 'mgr.css',
 
-    /* These will automatically go to core/components/yourcomponent/processors/
-       format directory:filename
-       '.class.php' will be appended to the filename
+    /* Processor files will automatically go in or under
+       core/components/yourcomponent/processors/
+       format is [directory/]object:action (colon is required).
+
+       '.class.php' will be appended to the filename (works in both MODX 2 and 3)
 
        Built-in processor classes include getlist, create, update, duplicate,
-       import, and export. */
+       remove, import, and export, or a custom action */
 
     'processors' => array(
+         /* By default, getlist file will be at MODX_CORE_PATH .
+         'components/yourcomponent/processors/mgr/snippet/getlist.class.php */
         'mgr/snippet:getlist',
         'mgr/snippet:changecategory',
         'mgr/snippet:remove',
@@ -550,11 +693,16 @@ $components = array(
         'mgr/chunk:getlist',
         'mgr/chunk:changecategory',
         'mgr/chunk:remove',
+        /* File below would go to MODX_CORE_PATH .
+           components/yourcomponent/processors/chunk/remove.class.php */
+
+        // 'plugin:remove', // will go to processors/plugin/ dir
     ),
 
-    /* These will automatically go to core/components/yourcomponent/controllers[/directory]/filename
-       Format: directory:filename */
+    /* Controllers -- Format: [directory]:filename
 
+    This will  go to core/components/yourcomponent/controllers[/directory]/filename
+    */
     'controllers' => array(
         ':home.class.php',
     ),
@@ -586,6 +734,7 @@ $components = array(
          'mgr:<div id="example-panel-home-div"></div>',
     ),
 
+    /* End of CMP section */
 
     /* *******************************************
      * These settings control exportObjects.php  *
@@ -614,7 +763,9 @@ $components = array(
         'systemSettings',
         'contextSettings',
         'systemEvents',
-        'menus'
+        'menus',
+        'dashboards',
+        'widgets',
     ),
     /*  Array  of resources to process. You can specify specific resources
         or parent (container) resources, or both.
