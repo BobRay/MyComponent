@@ -79,7 +79,7 @@
             ,{
                 xtype: 'button'
                 , id: '[[+packageNameLower]]-[[+element]]s-reload'
-                , text: 'reload'
+                , text: 'Reload'
                 , listeners: {
                     'click': {fn: this.reload[[+Element]]s, scope: this}
                 }
@@ -171,8 +171,8 @@ Ext.extend([[+packageName]].grid.[[+Element]]s, MODx.grid.Grid, {
         var cs = this.getSelectedAsList();
         if (cs === false) return false;
         MODx.msg.confirm({
-             title: _('[[+packageNameLower]].delete')
-             , text: _('[[+packageNameLower]].confirm_delete')
+             title: 'Delete Objects'
+             , text: 'Are your sure?'
              , url: this.config.url
              , params: {
                 action: 'mgr/[[+element]]/remove'
