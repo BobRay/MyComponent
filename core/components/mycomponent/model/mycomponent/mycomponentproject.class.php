@@ -1617,7 +1617,7 @@ class MyComponentProject {
             'mc_processor_name' => $this->packageName . ucfirst($object)
                 . ucfirst($action) . 'Processor',
             'mc_Element' => ucfirst($object),
-            'mc_element' => $object,
+            'mc_element' => lcfirst($object),
         );
         /* If parent processor file doesn't exist, set extends to basic processor */
         if (! file_exists($replaceFields['mc_modx2_include'])) {
