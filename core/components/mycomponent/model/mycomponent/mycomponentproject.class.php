@@ -1587,6 +1587,8 @@ class MyComponentProject {
      * @return mixed|string
      */
     public function getProcessorTpl( string $file, string $object, string $action, string $dir) {
+        // $mod2InFix = '';
+        $mod3InFix = '';
 
         $tpl = $this->helpers->getTpl($file);
         if (empty($tpl)) {
