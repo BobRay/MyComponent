@@ -79,7 +79,7 @@ class ExampleHomeManagerController extends controller_parent {
         return true;
     }
     public function getTemplateFile() {
-        return ('../../templates/mgr.tpl');
+        return (MODX_CORE_PATH . 'components/[[+packageNameLower]]/templates/mgr.tpl');
     }
 
     /* Argument is required in PHP 8 */
