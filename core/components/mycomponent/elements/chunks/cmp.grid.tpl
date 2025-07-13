@@ -171,8 +171,8 @@ Ext.extend([[+packageName]].grid.[[+Element]]s, MODx.grid.Grid, {
         var cs = this.getSelectedAsList();
         if (cs === false) return false;
         MODx.msg.confirm({
-             title: _('[[+packageNameLower]]).delete~~Delete Objects'
-             , text: _('[[+packageNameLower]].confirm_delete~~Are you sure?'
+             title: _('[[+packageNameLower]]).delete~~Delete Objects')
+             , text: _('[[+packageNameLower]].confirm_delete~~Are you sure?')
              , url: this.config.url
              , params: {
                 action: 'mgr/[[+element]]/remove'
