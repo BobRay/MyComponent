@@ -1,7 +1,7 @@
-/** 
+/**
  * JS file for Example extra
- * 
- * Copyright 2012-2017 Bob Ray <https://bobsguides.com>
+ *
+ * Copyright 2012-2025 Bob Ray <https://bobsguides.com>
  * Created on 08-13-2012
  *
  * Example is free software; you can redistribute it and/or modify it under the
@@ -19,6 +19,8 @@
  * @package example
  */
 
+c = _('example_delete~~Delete Objects')
+d = _('example_confirm_delete~~Are you sure?')
 x = _("string1~~Hello 'columbus'");
 y = _('string2~~Hello "columbus"');
 z = _('string3');
