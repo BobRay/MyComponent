@@ -650,6 +650,9 @@ class LexiconCodeFile extends AbstractLexiconCodeFile {
         if (strstr($this->fileName, 'min.js')) {
             return;
         }
+        if (strstr($this->fileName, 'build.transport.php')) {
+            return;
+        }
 
         $this->used = array();
         /* Iterate over lines to find lexicon strings
