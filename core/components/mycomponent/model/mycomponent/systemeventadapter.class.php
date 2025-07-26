@@ -10,7 +10,10 @@ class SystemEventAdapter extends ObjectAdapter
     public $modx;
     /* @var $helpers Helpers */
     public $helpers;
-
+    protected $createProcessor = 'system/event/create';
+    protected $updateProcessor = 'system/event/update';
+    protected string $modx3CreateProcessor = 'MODX\Revolution\Processors\System\Event\Create';
+    protected string $modx3UpdateProcessor = 'MODX\Revolution\Processors\System\Event\Update';
 
 // Database Columns for the XPDO Object
     protected $myFields;
@@ -39,7 +42,7 @@ class SystemEventAdapter extends ObjectAdapter
         $obj = $this->modx->getObject($this->classPrefix . 'modEvent', array('name'=> $name));
         if (! $obj) {
             $event = $this->modx->newObject($this->classPrefix . 'modEvent');
-            if ($event && $event instanceof modEvent) {
+            if ($event && $event instanceof $this->classPrefix . 'modEvent') {
                 $event->fromArray($this->myFields, "", true, true);
                 if ($event->save()) {
                     $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
