@@ -9,6 +9,10 @@ class ChunkAdapter extends ElementAdapter
     protected $dbClassParentKey = 'category';
     protected $createProcessor = 'element/chunk/create';
     protected $updateProcessor = 'element/chunk/update';
+    protected string $modx3CreateProcessor =
+        'MODX\Revolution\Processors\Element\Chunk\Create';
+    protected string $modx3UpdateProcessor =
+        'MODX\Revolution\Processors\Element\Chunk\Update';
     
 // Database fields for the XPDO Object
     protected $myFields;

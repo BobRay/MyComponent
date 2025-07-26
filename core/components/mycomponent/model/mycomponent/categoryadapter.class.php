@@ -11,7 +11,8 @@ class CategoryAdapter extends ObjectAdapter {
     protected $name;
     protected $createProcessor = 'element/category/create';
     protected $updateProcessor = 'element/category/update';
-
+    protected string $modx3CreateProcessor = 'MODX\Revolution\Processors\Element\Category\Create';
+    protected string $modx3UpdateProcessor = 'MODX\Revolution\Processors\Element\Category\Update';
     /* @var $modx modX */
     public $modx;
     /* @var $helpers Helpers */

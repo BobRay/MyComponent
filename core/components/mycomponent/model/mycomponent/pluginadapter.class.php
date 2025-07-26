@@ -10,6 +10,8 @@ class PluginAdapter extends ElementAdapter
     protected $dbClassParentKey = 'category';
     protected $createProcessor = 'element/plugin/create';
     protected $updateProcessor = 'element/plugin/update';
+    protected string $modx3CreateProcessor = 'MODX\Revolution\Processors\Element\Plugin\Create';
+    protected string $modx3UpdateProcessor = 'MODX\Revolution\Processors\Element\Plugin\Update';
 
 // Database Fields for the XPDO Object
     protected $myParent;

@@ -6,6 +6,10 @@ class ContextAdapter extends ObjectAdapter {
     protected $dbClassNameKey = 'key'; /* pagetitle, templatename, name, etc. */
     protected $createProcessor = 'context/create';
     protected $updateProcessor = 'context/update';
+    protected string $modx3CreateProcessor =
+        'MODX\Revolution\Processors\Context\Create';
+    protected string $modx3UpdateProcessor =
+        'MODX\Revolution\Processors\Context\Update';
 
 
     final public function __construct(&$modx, &$helpers, $fields, $mode = MODE_BOOTSTRAP) {

@@ -8,7 +8,10 @@ class ContextSettingAdapter extends ObjectAdapter {
     protected $dbClassParentKey = 'namespace';
     protected $createProcessor = 'context/setting/create';
     protected $updateProcessor = 'context/setting/update';
-
+   protected string $modx3CreateProcessor =
+        'MODX\Revolution\Processors\Context\Setting\Create';
+    protected string $modx3UpdateProcessor =
+        'MODX\Revolution\Processors\Context\Setting\Update';
 
     /* Database Columns for the XPDO Object */
     protected $myFields;

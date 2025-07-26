@@ -7,6 +7,10 @@ class PropertySetAdapter extends ElementAdapter { //This will never change.
     protected $dbClassParentKey = 'category';
     protected $createProcessor = 'element/propertyset/create';
     protected $updateProcessor = 'element/propertyset/update';
+    protected string $modx3CreateProcessor =
+        'MODX\Revolution\Processors\Element\PropertySet\Create';
+    protected string $modx3UpdateProcessor =
+        'MODX\Revolution\Processors\Element\PropertySet\Update';
 
 // Database fields for the XPDO Object
     protected $myFields;

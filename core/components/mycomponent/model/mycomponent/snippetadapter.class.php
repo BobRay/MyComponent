@@ -10,7 +10,9 @@ class SnippetAdapter extends ElementAdapter
     protected $dbClassParentKey = 'category';
     protected $createProcessor = 'element/snippet/create';
     protected $updateProcessor = 'element/snippet/update';
-    
+    protected string $modx3CreateProcessor = 'MODX\Revolution\Processors\Element\Snippet\Create';
+    protected string $modx3UpdateProcessor = 'MODX\Revolution\Processors\Element\Snippet\Update';
+
 // Database Columns for the XPDO Object
     protected $myFields;
 

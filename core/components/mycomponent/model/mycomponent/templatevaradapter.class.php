@@ -7,6 +7,8 @@ class TemplateVarAdapter extends ElementAdapter
     protected $dbClassParentKey = 'category';
     protected $createProcessor = 'element/tv/create';
     protected $updateProcessor = 'element/tv/update';
+    protected string $modx3CreateProcessor = 'MODX\Revolution\Processors\Element\TemplateVar\Create';
+    protected string $modx3UpdateProcessor = 'MODX\Revolution\Processors\Element\TemplateVar\Update';
 
 
     protected $fields;

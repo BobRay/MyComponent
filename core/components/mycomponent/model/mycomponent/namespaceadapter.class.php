@@ -23,6 +23,8 @@ class NamespaceAdapter extends ObjectAdapter {
     protected $dbClassParentKey = '';
     protected $createProcessor = 'workspace/namespace/create';
     protected $updateProcessor = 'workspace/namespace/update';
+    protected string $modx3CreateProcessor = 'MODX\Revolution\Processors\Workspace\PackageNamespace\Create';
+    protected string $modx3UpdateProcessor = 'MODX\Revolution\Processors\Workspace\PackageNamespace\Update';
     /* @var $modx modX */
     public $modx;
     /* @var $helpers Helpers */

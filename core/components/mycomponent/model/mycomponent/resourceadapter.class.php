@@ -35,6 +35,11 @@ class ResourceAdapter extends ObjectAdapter {
      */
     protected $updateProcessor = 'resource/update';
 
+    protected string $modx3CreateProcessor =
+        'MODX\Revolution\Processors\Resource\Create';
+    protected string $modx3UpdateProcessor =
+        'MODX\Revolution\Processors\Resource\Update';
+
     /**
      * @var $defaults array - array of default settings
      */

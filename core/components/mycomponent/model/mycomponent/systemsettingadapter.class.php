@@ -10,6 +10,10 @@ class SystemSettingAdapter extends ObjectAdapter
     protected $dbClassParentKey = 'namespace';
     protected $createProcessor = 'system/settings/create';
     protected $updateProcessor = 'system/settings/update';
+    protected string $modx3CreateProcessor =
+        'MODX\Revolution\Processors\System\Settings\Create';
+    protected string $modx3UpdateProcessor =
+        'MODX\Revolution\Processors\System\Settings\Update';
 
     /* Database Columns for the XPDO Object */
     protected $myFields;

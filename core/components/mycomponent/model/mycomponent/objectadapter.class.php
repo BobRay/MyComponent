@@ -53,6 +53,8 @@ abstract class ObjectAdapter {
      */
     protected $myId;
 
+    protected string $processorPrefix = 'MODX\Revolution\Processors\\';
+
     /**
      * @var $myFields array - associative array of field names/values for current object
      */
@@ -62,7 +64,6 @@ abstract class ObjectAdapter {
 
     protected bool $isMODX3;
 
-
     protected string $transportPrefix;
 
     /**
@@ -70,7 +71,6 @@ abstract class ObjectAdapter {
      * by MyComponent
      */
     public static $myObjects = array();
-
 
     /**
      * @param $modx modX
@@ -111,9 +111,22 @@ abstract class ObjectAdapter {
      * @return string
      */
     public function getProcessor($mode) {
+         if ($mode == 'create') {
+             $p = $this->isMODX3
+                 ? $this->modx3CreateProcessor
+                 : $this->createProcessor;
+        } else {
+             $p = $this->isMODX3
+                 ? $this->modx3UpdateProcessor
+                 : $this->updateProcessor;
+        }
+
+        return $p;
+
+        /*$prefix = $this->isMODX3 ? $this->processorPrefix : '';
         return $mode == 'create'
-            ? $this->createProcessor
-            : $this->updateProcessor;
+            ? $prefix . $this->createProcessor
+            : $prefix . $this->updateProcessor;*/
 
     }
 
@@ -179,14 +192,15 @@ abstract class ObjectAdapter {
      *    properties: properties.myobject.plugin.php
      */
     public function getFileName($fileType = 'code') {
-        if ($fileType == 'transport')
+        if ($fileType == 'transport') {
             return $this->getTransportFileName();
-        elseif ($fileType == 'code')
+        } elseif ($fileType == 'code') {
             return $this->getCodeFileName();
-        elseif ($fileType == 'properties')
+        } elseif ($fileType == 'properties') {
             return $this->getPropertiesFileName();
-        else
+        } else {
             return '';
+        }
     }
 
 

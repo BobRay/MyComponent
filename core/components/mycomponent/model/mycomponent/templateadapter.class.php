@@ -10,6 +10,8 @@ class TemplateAdapter extends ElementAdapter
     protected $dbClassParentKey = 'category';
     protected $createProcessor = 'element/template/create';
     protected $updateProcessor = 'element/template/update';
+    protected string $modx3CreateProcessor = 'MODX\Revolution\Processors\Element\Template\Create';
+    protected string $modx3UpdateProcessor = 'MODX\Revolution\Processors\Element\Template\Update';
     
 // Database fields for the XPDO Object
     protected $myFields;
