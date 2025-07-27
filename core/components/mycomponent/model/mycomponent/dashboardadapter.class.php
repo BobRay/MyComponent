@@ -111,7 +111,7 @@ class DashboardAdapter extends ObjectAdapter {
                 $code .= "\n";
                 $code .= "\$";
                 $code .= "dashboards[";
-                $code .= $i+1 . '] = ' . "\$modx->newObject(" . $prefix .  "'modDashboard');\n";
+                $code .= $i+1 . '] = ' . "\$modx->newObject('" . $prefix .  "modDashboard');\n";
                 $code .= "\$";
                 $code .= "dashboard[";
                 $code .= $i + 1 . ']->fromArray( ';

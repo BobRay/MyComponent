@@ -93,7 +93,7 @@ class MenuAdapter extends ObjectAdapter {
                 $code .= "\n";
                 $code .= "\$";
                 $code .= "menus[";
-                $code .= $i+1 . '] = ' . "\$modx->newObject(" . $prefix . "'modMenu');\n";
+                $code .= $i+1 . '] = ' . "\$modx->newObject('" . $prefix . "modMenu');\n";
                 $code .= "\$";
                 $code .= "menus[";
                 $code .= $i + 1 . ']->fromArray( ';
