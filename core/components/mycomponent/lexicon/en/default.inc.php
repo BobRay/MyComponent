@@ -144,7 +144,6 @@ $_lang['mc_menu_has_no_action'] = 'Menu has no action';
 $_lang['mc_menu_action_no_namespace'] = 'Menu Action has no namespace';
 $_lang['mc_created_menu'] = 'Created Menu';
 $_lang['mc_menu_already_exists'] = 'Menu already exists';
-$_lang['mc_removed_menu_item'] = 'Removed menu item';
 $_lang['mc_removed_action'] = 'Removed action for menu';
 $_lang['mc_creating_resolver'] = 'Creating resolver';
 $_lang['mc_creating_tv_resolver'] = 'Creating TV resolver';
@@ -287,3 +286,8 @@ $_lang['mc_element.category_err_nf'] = 'Category not found';
 $_lang['mc_packageName.invalid_category'] = 'Invalid category';
 $_lang['mc_packageName.none'] = 'None';
 $_lang['mc_packageName.invalid_template'] = 'Invalid template';
+
+/* Used in remove objects */
+$_lang['mc_processing_new_context_settings '] = 'Processing new context settings';
+$_lang['mc_removed_dashboard '] = 'Removed Dashboard';
+$_lang['mc_removed_menu_item'] = 'Removed menu item';

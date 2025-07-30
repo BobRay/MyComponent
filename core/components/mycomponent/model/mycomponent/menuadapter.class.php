@@ -125,7 +125,7 @@ class MenuAdapter extends ObjectAdapter {
             if ($menu->remove()) {
                 $temp = $this->modx->setLogLevel(modX::LOG_LEVEL_INFO);
                 $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
-                    $this->modx->lexicon('mc_removed_menu item')
+                    $this->modx->lexicon('mc_removed_menu_item')
                     . ': '. $fields['text']);
                 $this->modx->setLogLevel($temp);
             }
