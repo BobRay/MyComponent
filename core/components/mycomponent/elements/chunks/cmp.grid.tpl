@@ -38,22 +38,22 @@
         , cls: '[[+packageNameLower]]-grid'
         , sm: this.sm
         , columns: [this.sm, {
-            header: _('id')
+            header: 'id'
             ,dataIndex: 'id'
             ,sortable: true
             ,width: 50
         }, {
-            header: _('name')
+            header: 'name'
             ,dataIndex: 'name'
             ,sortable: true
             ,width: 100
                                                                                                            }, {
-           header: _('category'),
+           header: 'category',
             dataIndex: 'category',
             sortable: true,
             width: 120
         }, {
-            header: _('description')
+            header: 'description'
             , dataIndex: 'description'
             , sortable: false
             , width: 300
@@ -171,8 +171,8 @@ Ext.extend([[+packageName]].grid.[[+Element]]s, MODx.grid.Grid, {
         var cs = this.getSelectedAsList();
         if (cs === false) return false;
         MODx.msg.confirm({
-             title: _('[[+packageNameLower]]_delete~~Delete Objects')
-             , text: _('[[+packageNameLower]]_confirm_delete~~Are you sure?')
+             title: '[[+packageNameLower]]_delete_objects'
+             , text: '[[+packageNameLower]]_confirm_delete_objects'
              , url: this.config.url
              , params: {
                 action: 'mgr/[[+element]]/remove'
@@ -206,13 +206,13 @@ Ext.extend([[+packageName]].grid.[[+Element]]s, MODx.grid.Grid, {
         var bm = [];
         bm.push(
             {
-                text: _('new_category')
+                text: 'new_category'
                 , handler: this.changeCategory
                 , scope: this
             }
             , '-'
             , {
-                text: _('remove_[[+element]]')+'(s)'
+                text: 'remove_[[+element]]'+'(s)'
                 ,handler: this.[[+element]]Remove
                 , scope: this
             });
@@ -228,7 +228,7 @@ Ext.reg('[[+packageNameLower]]-grid-[[+element]]', [[+packageName]].grid.[[+Elem
     var selectedRecords = grid.getSelectedAsList();
     config = config || {};
     Ext.applyIf(config, {
-        title: _('new_category')
+        title: 'new_category'
         , url: [[+packageName]].config.connector_url
         , baseParams: {
             action: 'mgr/[[+element]]/changecategory'
@@ -241,7 +241,7 @@ Ext.reg('[[+packageNameLower]]-grid-[[+element]]', [[+packageName]].grid.[[+Elem
         },{
             xtype: 'modx-combo-category'
             ,id: '[[+packageNameLower]]-[[+element]]-category-combo'
-            ,fieldLabel: _('category')
+            ,fieldLabel: 'category'
             ,name: 'category'
             ,hiddenName: 'category'
             ,anchor: '90%'
