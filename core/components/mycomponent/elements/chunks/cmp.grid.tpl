@@ -91,7 +91,7 @@
 Ext.extend([[+packageName]].grid.[[+Element]]s, MODx.grid.Grid, {
      reload[[+Element]]s: function () {
         this.getStore().baseParams = {
-            action: 'mgr/[[+element]]/getList'
+            action: 'mgr/[[+element]]/getlist'
             ,orphanSearch: 'mod[[+Element]]'
         };
 
