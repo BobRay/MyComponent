@@ -18,7 +18,9 @@ class mc_ElementChangeCategoryProcessor extends modProcessor {
     public $languageTopics = array('[[+packageNameLower]]:default');
 
     public function process() {
-
+        $prefix = $this->modx->getVersionData()['version'] >= 3
+            ? 'MODX\Revolution\\'
+            : '';
         if (!$this->modx->hasPermission('save_mc_element')) {
             return $this->modx->error->failure($this->modx->lexicon('access_denied'));
         }
@@ -28,7 +30,7 @@ class mc_ElementChangeCategoryProcessor extends modProcessor {
         }
         /* get parent */
         if (!empty($scriptProperties['category'])) {
-            $category = $this->modx->getObject('modCategory',$scriptProperties['category']);
+            $category = $this->modx->getObject($prefix . 'modCategory',$scriptProperties['category']);
             if (empty($category)) {
                 return $this->failure($this->modx->lexicon('mc_element.category_err_nf'));
             }
@@ -38,7 +40,7 @@ class mc_ElementChangeCategoryProcessor extends modProcessor {
         /** @var $mc_element modElement */
         $mc_elementIds = explode(',',$scriptProperties['mc_elements']);
         foreach ($mc_elementIds as $mc_elementId) {
-            $mc_element = $this->modx->getObject($this->classKey,$mc_elementId);
+            $mc_element = $this->modx->getObject($prefix . $this->classKey,$mc_elementId);
             if ($mc_element == null) continue;
 
             $mc_element->set('category',$scriptProperties['category']);

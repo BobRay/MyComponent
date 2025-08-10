@@ -58,13 +58,15 @@ $modx->getService('error', 'error.modError', '', '');
 $modx->setLogLevel(xPDO::LOG_LEVEL_INFO);
 $modx->setLogTarget(XPDO_CLI_MODE ? 'ECHO' : 'HTML');
 
-
+$prefix = $modx->getVersionData()['version'] >= 3
+    ? 'MODX\Revolution\\'
+    : '';
 /* create category */
 
-$category = $modx->getObject('modCategory', array('category'=>'MyComponent'));
+$category = $modx->getObject($prefix . 'modCategory', array('category'=>'MyComponent'));
 
 if (! $category) {
-    $category= $modx->newObject('modCategory');
+    $category= $modx->newObject($prefix . 'modCategory');
     $category->set('category','MyComponent');
 }
 
