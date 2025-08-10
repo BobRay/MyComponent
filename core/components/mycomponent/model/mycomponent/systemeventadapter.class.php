@@ -42,7 +42,7 @@ class SystemEventAdapter extends ObjectAdapter
         $obj = $this->modx->getObject($this->classPrefix . 'modEvent', array('name'=> $name));
         if (! $obj) {
             $event = $this->modx->newObject($this->classPrefix . 'modEvent');
-            if ($event && $event instanceof $this->classPrefix . 'modEvent') {
+            if ($event && ($event instanceof ($this->classPrefix . 'modEvent'))) {
                 $event->fromArray($this->myFields, "", true, true);
                 if ($event->save()) {
                     $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .

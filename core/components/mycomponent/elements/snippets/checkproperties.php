@@ -22,7 +22,7 @@
  * @author Bob Ray <https://bobsguides.com>
  *
  * Description: The CheckProperties script identifies properties
- * used in code with $modx->getOption() or some version of $scriptProperties and checks 
+ * used in code with $modx->getOption() or some version of $scriptProperties and checks
  * them against properties in the properties file.
  *
  * Output can be pasted into the properties file.
@@ -66,6 +66,10 @@ if (!defined('MODX_CORE_PATH')) {
         ? 'ECHO'
         : 'HTML');
 
+    $prefix = $modx->getVersionData()['version'] >= 3
+        ? 'MODX\Revolution\\'
+        : '';
+
     /* This section will only run when operating outside of MODX */
     if (php_sapi_name() == 'cli') {
         $cliMode = true;
@@ -74,9 +78,9 @@ if (!defined('MODX_CORE_PATH')) {
          * other people's plugins from crashing us */
         $modx->getRequest();
         $homeId = $modx->getOption('site_start');
-        $homeResource = $modx->getObject('modResource', $homeId);
+        $homeResource = $modx->getObject($prefix . 'modResource', $homeId);
 
-        if ($homeResource instanceof modResource) {
+        if ($homeResource instanceof ($prefix . 'modResource')) {
             $modx->resource = $homeResource;
         } else {
             echo "\nNo Resource\n";

@@ -129,6 +129,10 @@ if (!defined('MODX_CORE_PATH')) {
         ? 'ECHO'
         : 'HTML');
 
+    $prefix = $modx->getVersionData()['version'] >= 3
+        ? 'MODX\Revolution\\'
+        : '';
+
     /* This section will only run when operating outside of MODX */
     if (php_sapi_name() == 'cli') {
 
@@ -137,9 +141,9 @@ if (!defined('MODX_CORE_PATH')) {
          * other people's plugins from crashing us */
         $modx->getRequest();
         $homeId = $modx->getOption('site_start');
-        $homeResource = $modx->getObject('modResource', $homeId);
+        $homeResource = $modx->getObject($prefix . 'modResource', $homeId);
 
-        if ($homeResource instanceof modResource) {
+        if ($homeResource instanceof ($prefix . 'modResource')) {
             $modx->resource = $homeResource;
         } else {
             echo "\nNo Resource\n";
