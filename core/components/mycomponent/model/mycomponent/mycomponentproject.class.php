@@ -1082,13 +1082,6 @@ class MyComponentProject {
         DashboardAdapter::createTransportFiles($this->helpers, $mode);
         ContextSettingAdapter::createTransportFiles($this->helpers, $mode);
         DashboardWidgetAdapter::CreateTransportFiles($this->helpers, $mode);
-
-        if (is_dir($this->myPaths['targetBuild'] . 'subpackages')) {
-            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n    " .
-                $this->modx->lexicon('mc_processing_subpackages'));
-            $o = new SubpackageAdapter();
-            $o->createSubpackages($this->modx, $this->helpers, $this->myPaths['targetBuild'], $mode);
-        }
     }
 
     /** Create main build.transport.php, build.config.php and
