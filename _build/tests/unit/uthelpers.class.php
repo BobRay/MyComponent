@@ -200,6 +200,18 @@ class UtHelpers {
         }
     }
 
+    public function removeContextSettings(&$modx, &$mc) {
+        /* @var $modx modX */
+        /* @var $setting modContextSetting */
+        foreach ($mc->props['namespaces'] as $namespace => $fields) {
+            $settings = $modx->getCollection('modContextSetting',
+                array('namespace' => $namespace));
+            foreach ($settings as $setting) {
+                $setting->remove();
+            }
+        }
+    }
+
     public function removeNamespaces(&$modx, &$mc) {
         /* @var $modx modX */
         foreach ($mc->props['namespaces'] as $namespace => $fields) {
