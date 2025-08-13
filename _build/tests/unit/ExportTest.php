@@ -58,8 +58,8 @@ class ExportTest extends \Codeception\Test\Unit {
         $this->utHelpers = new UtHelpers();
         $this->mc = Fixtures::get('myComponentProject');
         $this->mc->init(array(), 'unittest');
-        $this->mc->createCategories();
-        $this->mc->createBasics();
+        /*$this->mc->createCategories();
+        $this->mc->createBasics();*/
         $this->modx =& $this->mc->modx;
 
         if ($this->mc->props['categories']['UnitTest']['category'] != 'UnitTest') {
@@ -74,6 +74,8 @@ class ExportTest extends \Codeception\Test\Unit {
 
         $this->modx->setLogLevel(modX::LOG_LEVEL_INFO);
         $this->modx->setLogTarget('ECHO');
+
+        $this->mc->bootstrap();
     }
 
     /**
