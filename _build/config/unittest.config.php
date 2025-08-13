@@ -120,6 +120,30 @@ $components = array(
         )
     ),
 
+    'contextSettings' => array(
+        'example_context_setting1' => array(
+            'context_key' => 'example',
+            'key' => 'example_context_setting1',
+            'name' => 'Example Setting One',
+            'description' => 'Description for setting one',
+            'namespace' => 'unittest',
+            'xtype' => 'textfield',
+            'value' => 'value1',
+            'area' => '',
+        ),
+        'example_context_setting2' => array(
+            'context_key' => 'example',
+            'key' => 'example_context_setting2',
+            'name' => 'Example Setting Two',
+            'description' => 'Description for setting two',
+            'namespace' => 'unittest',
+            'xtype' => 'combo-boolean',
+            'value' => true,
+            'area' => '',
+        ),
+    ),
+
+
     /* *************************** MENUS ****************************** */
 
     /* If your extra needs Menus, set this to true, create them
@@ -627,6 +651,7 @@ $components = array(
         'templateVars',
         'templates',
         'chunks',
+        'contextSettings',
         'resources',
         'propertySets',
         'systemSettings',
