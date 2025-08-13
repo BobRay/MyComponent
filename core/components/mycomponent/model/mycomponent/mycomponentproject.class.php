@@ -612,7 +612,7 @@ class MyComponentProject {
      * @param int $mode - MODE_BOOTSTRAP, MODE_EXPORT, MODE_REMOVE
      */
     public function createContextSettings($mode = MODE_BOOTSTRAP) {
-        $newContextSettings = $this->modx->getOption('newSystemSettings', $this->props, array());
+        $newContextSettings = $this->modx->getOption('contextSettings', $this->props, array());
         if (empty($newContextSettings) && $mode == MODE_BOOTSTRAP) {
             return;
         }
