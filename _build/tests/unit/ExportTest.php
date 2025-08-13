@@ -287,6 +287,28 @@ class ExportTest extends \Codeception\Test\Unit {
         $this->utHelpers->removeSystemSettings($this->modx, $this->mc);
     }
 
+    public function testCreateContextSettings() {
+
+        $this->utHelpers->removeContextSettings($this->modx, $this->mc);
+        $this->mc->createNamespaces();
+        $this->mc->createContextSettings();
+        $configSettings = count($this->mc->props['contextSettings']);
+        $settings = $this->modx->getCollection('modContextSetting', array('namespace' => 'example'));
+        $this->assertEquals(2, count($settings));
+        $this->assertEquals(2, $configSettings);
+        $this->mc->exportComponent();
+
+        $fileName = $this->mc->targetRoot . '_build/data/transport.settings.php';
+        $this->assertFileExists($fileName);
+        $content = file_get_contents($fileName);
+        $this->assertNotEmpty($content);
+        $this->assertEmpty(strstr($content, '{{+'));
+        /* Need this for the include */
+        $modx =& $this->modx;
+        $objects = include $fileName;
+        $this->assertEquals($configSettings, count($objects));
+        $this->utHelpers->removeContextSettings($this->modx, $this->mc);
+    }
     public function testBuild() {
         /* define sources */
         $root = 'C:\xampp\htdocs\addons\assets\mycomponents\unittest' . '/';
