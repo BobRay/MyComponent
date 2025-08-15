@@ -3,7 +3,7 @@
 * Resource resolver  for MyComponent extra.
 * Sets template, parent, and (optionally) TV values
 *
-* Copyright 2012-2017 Bob Ray <https://bobsguides.com>
+* Copyright 2012-2025 Bob Ray <https://bobsguides.com>
 * Created on 10-30-2012
 *
  * MyComponent is free software; you can redistribute it and/or modify it under the
@@ -18,6 +18,7 @@
  * You should have received a copy of the GNU General Public License along with
  * MyComponent; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place, Suite 330, Boston, MA 02111-1307 USA
+
 * @package mycomponent
 * @subpackage build
 */
@@ -31,6 +32,7 @@
 
 if (!function_exists('checkFields')) {
     function checkFields($modx, $required, $objectFields) {
+
         $fields = explode(',', $required);
         foreach ($fields as $field) {
             if (! isset($objectFields[$field])) {
@@ -41,17 +43,21 @@ if (!function_exists('checkFields')) {
         return true;
     }
 }
-/** @var $transport modTransportPackage */
+
+/** @var modTransportPackage $transport */
+
 if ($transport) {
     $modx =& $transport->xpdo;
 } else {
     $modx =& $object->xpdo;
 }
 
-$classPrefix = $modx->getVersionData()['version'] >= 3
-    ? 'MODX\Revolution\\'
-    : '';
-
+$isMODX3Plus = $modx->getVersionData()['version'] >= 3;
+if ($isMODX3Plus) {
+    $classPrefix = 'MODX\Revolution\\';
+} else {
+    $classPrefix = '';
+}
 
 switch ($options[xPDOTransport::PACKAGE_ACTION]) {
     case xPDOTransport::ACTION_INSTALL:
@@ -59,9 +65,9 @@ switch ($options[xPDOTransport::PACKAGE_ACTION]) {
 
         $intersects = array (
             0 =>  array (
-              'pagetitle' => 'MyComponent',
-              'parent' => 'default',
-              'template' => 'MyComponentTemplate',
+                'pagetitle' => 'MyComponent',
+                'parent' => 0,
+                'template' => 'MyComponentTemplate',
             ),
         );
 
@@ -71,16 +77,19 @@ switch ($options[xPDOTransport::PACKAGE_ACTION]) {
                 if (! checkFields($modx, 'pagetitle,parent,template', $fields)) {
                     continue;
                 }
-                $resource = $modx->getObject($classPrefix . 'modResource', array('pagetitle' => $fields['pagetitle']));
+                $resource = $modx->getObject($classPrefix . 'modResource',
+                    array('pagetitle' => $fields['pagetitle']));
                 if (! $resource) {
                     continue;
                 }
+
                 if ($fields['template'] == 'default') {
                     $resource->set('template', $modx->getOption('default_template'));
                 } elseif (empty($fields['template'])) {
                     $resource->set('template', 0);
                 } else {
-                    $templateObj = $modx->getObject($classPrefix . 'modTemplate', array('templatename' => $fields['template']));
+                    $templateObj = $modx->getObject($classPrefix . 'modTemplate',
+                        array('templatename' => $fields['template']));
                     if ($templateObj) {
                         $resource->set('template', $templateObj->get('id'));
                     } else {
@@ -102,14 +111,17 @@ switch ($options[xPDOTransport::PACKAGE_ACTION]) {
                     foreach($fields['tvValues'] as $tvName => $value) {
                         $resource->setTVValue($tvName, $value);
                     }
+
                 }
                 $resource->save();
             }
+
         }
         break;
 
     case xPDOTransport::ACTION_UNINSTALL:
         break;
 }
+
 
 return true;
