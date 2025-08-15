@@ -2,7 +2,7 @@
 /**
  * resources transport file for MyComponent extra
  *
- * Copyright 2012-2017 Bob Ray <https://bobsguides.com>
+ * Copyright 2012-2025 Bob Ray <https://bobsguides.com>
  * Created on 10-30-2012
  *
  * @package mycomponent
@@ -26,20 +26,40 @@ if (! function_exists('stripPhpTags')) {
 $resources = array();
 
 $resources[1] = $modx->newObject('modResource');
-$resources[1]->fromArray(array(
-    'id' => 1,
-    'pagetitle' => 'MyComponent',
-    'alias' => 'mycomponent',
-    'longtitle' => 'MyComponent Control Center',
-    'description' => 'MyComponent Control Center',
-    'published' => '1',
-    'hidemenu' => '1',
-    'richtext' => '0',
-    'template' => 'MyComponentTemplate',
-    'class_key' => 'modDocument',
-    'cacheable' => '1',
-    'searchable' => '1',
-    'properties' => '',
+$resources[1]->fromArray(array (
+  'id' => 1,
+  'type' => 'document',
+  'contentType' => 'text/html',
+  'pagetitle' => 'MyComponent',
+  'longtitle' => 'MyComponent Control Center',
+  'description' => 'MyComponent Control Center',
+  'alias' => 'mycomponent',
+  'alias_visible' => true,
+  'link_attributes' => '',
+  'published' => true,
+  'isfolder' => false,
+  'introtext' => '',
+  'richtext' => false,
+  'template' => 'MyComponentTemplate',
+  'menuindex' => 1,
+  'searchable' => true,
+  'cacheable' => true,
+  'createdby' => 0,
+  'editedby' => 1,
+  'deleted' => false,
+  'deletedon' => 0,
+  'deletedby' => 0,
+  'menutitle' => '',
+  'donthit' => false,
+  'privateweb' => false,
+  'privatemgr' => false,
+  'content_dispo' => 0,
+  'hidemenu' => false,
+  'context_key' => 'web',
+  'content_type' => 1,
+  'hide_children_in_tree' => 0,
+  'show_in_tree' => 1,
+  'properties' => '',
 ), '', true, true);
 $resources[1]->setContent(file_get_contents($sources['data'].'resources/mycomponent.content.html'));
 
