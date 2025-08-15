@@ -1904,6 +1904,7 @@ class MyComponentProject {
      * processed.
      */
     public function exportComponent() {
+        $mode = MODE_EXPORT;
         //Only run if MC is installed
         if (!$this->isMCInstalled()) {
             $this->helpers->sendLog(modX::LOG_LEVEL_ERROR, '[MyComponentProject] ' .
