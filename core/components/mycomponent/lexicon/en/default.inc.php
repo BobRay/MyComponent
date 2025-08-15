@@ -39,6 +39,7 @@
 $_lang['mc_you_must_specify_a_project_name'] = 'You must specify a project name';
 $_lang['mc_project_already_exists'] = 'Project already exists';
 $_lang['mc_using'] = 'Using';
+$_lang['mc_processing_new_context_settings'] = 'Processing new Context Settings';
 
 /* Used in import objects */
 $_lang['mc_resource_nf'] = 'Resource not found';
