@@ -380,7 +380,7 @@ class Helpers {
         }
         $matches = array();
         /* Get first $maxLen bytes of original file */
-        $originalContent = file_get_contents($fullPath, null, null, 0, 500);
+        $originalContent = file_get_contents($fullPath, false, null, 0, 500);
         preg_match($pattern, $originalContent, $matches);
 
         if (isset($matches[1])) {
