@@ -639,6 +639,12 @@ abstract class ObjectAdapter {
                 $fields['description'] = 'setting_' . $fields['key'] . '_desc';
             }
 
+            if ($type == 'modResource') {
+                if (isset($fields['class_key']) && ($fields['class_key'] !== 'Article')) {
+                    unset ($fields['class)key']);
+                }
+            }
+
             $tpl .= self::writeObject($helpers, $fields, $type, $fileName, $i);
             $i++;
         }
