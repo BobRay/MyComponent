@@ -3,7 +3,7 @@ MyComponent
 
 
 Author: Bob Ray <https://bobsguides.com>
-Copyright 2012-2017 Bob Ray
+Copyright 2012-2025 Bob Ray
 
 Official Documentation: https://bobsguides.com/mycomponent-tutorial.html
 

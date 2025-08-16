@@ -2,7 +2,7 @@
 /**
  * Utility snippet for MyComponent development
  *
- * Copyright 2011-2017 Bob Ray
+ * Copyright 2011-2025 Bob Ray
  * @author Bob Ray <https://bobsguides.com>
  * 1/1/11
  *

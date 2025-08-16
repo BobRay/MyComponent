@@ -2,7 +2,7 @@
 /**
  * CheckProperties Utility Script for My Component
  * @author Bob Ray
- * Copyright 2012-2017 Bob Ray
+ * Copyright 2012-2025 Bob Ray
  * Modified: July, 2012
  *
  * CheckProperties is free software; you can redistribute it and/or modify it

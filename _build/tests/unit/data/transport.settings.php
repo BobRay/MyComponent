@@ -2,7 +2,7 @@
 /**
  * SystemSettings transport file for Example extra
  *
- * Copyright 2012-2017 Bob Ray <https://bobsguides.com>
+ * Copyright 2012-2025 Bob Ray <https://bobsguides.com>
  * Created on 08-25-2012
  *
  * @package example

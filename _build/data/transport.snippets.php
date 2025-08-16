@@ -1,7 +1,7 @@
 <?php
 /**
  * MyComponent transport snippets
- * Copyright 2011-2017 Bob Ray <https://bobsguides.com>
+ * Copyright 2011-2025 Bob Ray <https://bobsguides.com>
  * @author Bob Ray <https://bobsguides.com>
  * 1/1/11
  *

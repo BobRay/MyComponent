@@ -1,7 +1,7 @@
 <?php
 /**
  * MyComponent transport templates
- * Copyright 2-11-2017 Bob Ray <https://bobsguides.com>
+ * Copyright 2-11-2025 Bob Ray <https://bobsguides.com>
  * @author Bob Ray <https://bobsguides.com>
  * 1/1/11
  *

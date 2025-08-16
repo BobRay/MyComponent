@@ -1,7 +1,7 @@
 <?php
 /**
  * MyComponent transport property sets
- * Copyright 2011-2017 Bob Ray <you@yourdomain.com>
+ * Copyright 2011-2025 Bob Ray <you@yourdomain.com>
  * @author Bob Ray <https://bobsguides.com>
  * 1/1/11
  *
