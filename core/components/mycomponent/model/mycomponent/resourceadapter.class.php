@@ -298,9 +298,13 @@ class ResourceAdapter extends ObjectAdapter {
      */
     public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
         /* @var $helpers Helpers */
-        $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
-            $helpers->modx->lexicon('mc_processing_resources'));
+
         $resources = $helpers->modx->getOption('resources', ObjectAdapter::$myObjects, array());
+        if (!empty($resources)) {
+            $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
+                $helpers->modx->lexicon('mc_processing_resources'));
+        }
+
         parent::createTransportFile($helpers, $resources, '', 'modResource', $mode);
     }
 

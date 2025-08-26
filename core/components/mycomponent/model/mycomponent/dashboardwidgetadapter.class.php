@@ -114,8 +114,7 @@ class DashboardWidgetAdapter extends ObjectAdapter {
             : '';
 
         $widgets = array();
-        $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
-            $helpers->modx->lexicon('mc_processing_widgets'));
+
         if ($mode == MODE_BOOTSTRAP) {
             $widgets = $helpers->modx->getOption('widgets', ObjectAdapter::$myObjects, array());
             foreach ($widgets as $widget => $fields) {
@@ -134,6 +133,10 @@ class DashboardWidgetAdapter extends ObjectAdapter {
                     $widgets[] = $fields;
                 }
             }
+        }
+        if (! empty ($widgets)) {
+            $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
+                $helpers->modx->lexicon('mc_processing_widgets'));
         }
         parent::createTransportFile($helpers, $widgets, '', 'modDashboardWidget', $mode);
         return;

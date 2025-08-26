@@ -57,9 +57,12 @@ class ContextSettingAdapter extends ObjectAdapter {
 
     public static function createTransportFiles(&$helpers, $mode = MODE_BOOTSTRAP) {
         /* @var $helpers Helpers */
-        $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
-            $helpers->modx->lexicon('mc_processing_context_settings'));
+
         $settings = $helpers->modx->getOption('contextSettings', ObjectAdapter::$myObjects, array());
+        if (! empty($settings)) {
+            $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
+                $helpers->modx->lexicon('mc_processing_context_settings'));
+        }
         parent::createTransportFile($helpers, $settings, '', 'modContextSetting', $mode);
     }
 }

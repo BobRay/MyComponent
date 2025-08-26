@@ -458,10 +458,13 @@ class Helpers {
         $mainObjectName = 'missing';
         $subsidiaryObjectType = 'missing';
         $subsidiaryObjectName = 'missing';
-        $this->sendLog(modX::LOG_LEVEL_INFO, "\n" .
-            $this->modx->lexicon('mc_creating')
-            . ' ' . $intersectType . ' ' .
-            $this->modx->lexicon('mc_objects'));
+
+        if (! empty ($intersects)) {
+            $this->sendLog(modX::LOG_LEVEL_INFO, "\n" .
+                $this->modx->lexicon('mc_creating')
+                . ' ' . $intersectType . ' ' .
+                $this->modx->lexicon('mc_objects'));
+        }
         foreach ($intersects as $values) {
 
             $mainIdField = 'id';

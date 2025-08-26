@@ -49,8 +49,6 @@ class MenuAdapter extends ObjectAdapter {
             ? 'MODX\Revolution\\'
             : '';
 
-        $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
-            $helpers->modx->lexicon('mc_processing_menus'));
         if ($mode == MODE_BOOTSTRAP) {
             $menus = $helpers->modx->getOption('menus', ObjectAdapter::$myObjects, array());
             foreach($menus as $menu => $fields) {
@@ -76,6 +74,11 @@ class MenuAdapter extends ObjectAdapter {
                         $menuFields[] = $m_fields;
                 }
             }
+        }
+
+        if (!empty($menus)) {
+            $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
+                $helpers->modx->lexicon('mc_processing_menus'));
         }
         if (! empty($menuFields)) {
             $transportFile = 'transport.menus.php';

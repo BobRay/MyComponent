@@ -218,7 +218,7 @@ class CategoryAdapter extends ObjectAdapter {
                 // include 'templatevar.adapter.class.php'
 
                 $o = new $adapterName($this->modx, $this->helpers, $fields, MODE_EXPORT);
-                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
+                 $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '    ' .
                     $this->modx->lexicon('mc_processing')
                 . ' ' . $o->getName());
 

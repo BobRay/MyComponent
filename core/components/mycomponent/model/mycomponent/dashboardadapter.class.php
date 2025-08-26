@@ -61,10 +61,12 @@ class DashboardAdapter extends ObjectAdapter {
             ? 'MODX\Revolution\\'
             : '';
 
-        $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
-            $helpers->modx->lexicon('mc_processing_dashboards'));
-
         $dashboards = $helpers->modx->getOption('dashboards', ObjectAdapter::$myObjects, array());
+
+        if (!empty($dashboards)) {
+            $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
+                $helpers->modx->lexicon('mc_processing_dashboards'));
+        }
 
         if ($mode == MODE_EXPORT) {
             foreach ($dashboards as $key => $fields) {
@@ -78,8 +80,7 @@ class DashboardAdapter extends ObjectAdapter {
         return;
 
         $widgetFields = array();
-        $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
-            $helpers->modx->lexicon('mc_processing_widgets'));
+
         if ($mode == MODE_BOOTSTRAP) {
             $widgets = $helpers->modx->getOption('widgets', ObjectAdapter::$myObjects, array());
             foreach($widgets as $widget => $fields) {
@@ -92,6 +93,11 @@ class DashboardAdapter extends ObjectAdapter {
                 $name = strtolower($name);
                 $widgets = $helpers->modx->getCollection($prefix . 'modDashboardWidget', array('namespace' => $name));
             }
+        }
+
+        if (! empty($widgets)) {
+            $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
+                $helpers->modx->lexicon('mc_processing_widgets'));
         }
         if (! empty($dashboards)) {
             $transportFile = 'transport.dashboards.php';
@@ -142,8 +148,10 @@ class DashboardAdapter extends ObjectAdapter {
 
         $dashboards = $helpers->modx->getOption('dashboards', ObjectAdapter::$myObjects, array());
 
-        $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
-            $helpers->modx->lexicon('mc_processing_dashboards'));
+        if (! empty($dashboards)) {
+            $helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
+                $helpers->modx->lexicon('mc_processing_dashboards'));
+        }
         if ($mode == MODE_BOOTSTRAP) {
             foreach ($dashboards as $dashboard => $fields) {
                 $dashboardFields[] = $fields;

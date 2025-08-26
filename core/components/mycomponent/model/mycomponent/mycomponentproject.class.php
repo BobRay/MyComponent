@@ -770,9 +770,11 @@ class MyComponentProject {
                     $this->modx->lexicon('mc_processing_elements'));
                 $elements = $this->helpers->getProp('elements', array());
                 foreach ($elements as $element => $elementObjects) {
-                    $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n    " .
-                        $this->modx->lexicon('mc_processing')
-                        . ' ' . ucfirst($element));
+                    if (!empty($elementObjects)) {
+                        $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n    " .
+                            $this->modx->lexicon('mc_processing')
+                            . ' ' . ucfirst($element));
+                    }
                     foreach ($elementObjects as $elementName => $fields) {
                         /* @var $adapter elementAdapter */
                         /* @var $o ObjectAdapter */
@@ -1475,6 +1477,10 @@ class MyComponentProject {
      * @param array $processors //
      */
     public function createProcessorFiles($processors) {
+        if (empty($processors)) {
+            return;
+        }
+
         $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    '
             . $this->modx->lexicon('mc_creating_cmp_processors'));
         $processorDir = $this->myPaths['targetProcessors'];
@@ -1635,6 +1641,9 @@ class MyComponentProject {
      * @param $controllers array
      */
     public function createControllerFiles($controllers) {
+        if (empty($controllers)) {
+            return;
+        }
         $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
             $this->modx->lexicon('mc_creating_cmp_controllers'));
         $controllerDir = $this->myPaths['targetControllers'];
@@ -1664,6 +1673,9 @@ class MyComponentProject {
      * @param $connectors
      */
     public function createConnectorFiles($connectors) {
+        if (empty($connectors)) {
+            return;
+        }
         $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
             $this->modx->lexicon('mc_creating_cmp_connectors'));
         $dir = $this->myPaths['targetConnectors'];
@@ -1686,6 +1698,9 @@ class MyComponentProject {
      * @param $jsFiles
      */
     public function createCmpJsFiles($jsFiles) {
+        if (empty($jsFiles)) {
+            return;
+        }
         $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . '    ' .
             $this->modx->lexicon('mc_creating_cmp_js_files'));
         $tpl = $this->helpers->getTpl('js');
@@ -1984,10 +1999,16 @@ class MyComponentProject {
         $toProcess = explode(',', $toProcess);
         foreach ($toProcess as $elementType) {
             $class = 'mod' . ucfirst(substr($elementType, 0, -1));
-            $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
-                $this->modx->lexicon('mc_processing')
-                . ' ' . $elementType);
+
             $elements = $this->modx->getOption($elementType,$this->props['elements'], array());
+
+            if (!empty($elements)) {
+                $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" .
+                    $this->modx->lexicon('mc_processing')
+                    . ' ' . $elementType);
+
+            }
+
             foreach ($elements as $element => $fields) {
                 if (isset($fields['filename'])) {
                     $fileName = $fields['filename'];
