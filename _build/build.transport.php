@@ -866,17 +866,7 @@ if ($hasMenu) {
                xPDOTransport::PRESERVE_KEYS => true,
                xPDOTransport::UPDATE_OBJECT => true,
                xPDOTransport::UNIQUE_KEY => 'text',
-               xPDOTransport::RELATED_OBJECTS => true,
-               xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array(
-                   'Action' => array(
-                       xPDOTransport::PRESERVE_KEYS => false,
-                       xPDOTransport::UPDATE_OBJECT => true,
-                       xPDOTransport::UNIQUE_KEY => array(
-                           'namespace',
-                           'controller'
-                        ),
-                   ),
-               ),
+               xPDOTransport::RELATED_OBJECTS => false,
             ));
             $builder->putVehicle($vehicle);
             unset($vehicle, $menu);
