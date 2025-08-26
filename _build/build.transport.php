@@ -349,10 +349,22 @@ $helper->sendLog(modX::LOG_LEVEL_INFO, $modx->lexicon('mc_created_package')
     . ': ' . PKG_NAME_LOWER . '-' . PKG_VERSION . '-' . PKG_RELEASE);
 $helper->sendLog(modX::LOG_LEVEL_INFO, "\n" . $modx->lexicon('mc_created_namespace')
     . ': ' . PKG_NAME_LOWER);
+
+$isMODX3 = $modx->getVersionData()['version'] >= 3;
+$transportPrefix = $isMODX3
+    ? 'MODX\Revolution\Transport\\'
+    : '';
+
+if (! $isMODX3) {
+    $modx->loadClass('transport.modPackageBuilder', '', false, true);
+}
+
 /* load builder */
+$builderClass = $transportPrefix . 'modPackageBuilder';
+$builder = new $builderClass($modx);
+
 $modx->setLogLevel(modX::LOG_LEVEL_ERROR);
-$modx->loadClass('transport.modPackageBuilder', '', false, true);
-$builder = new modPackageBuilder($modx);
+
 $builder->createPackage(PKG_NAME_LOWER, PKG_VERSION, PKG_RELEASE);
 
 $assetsPath = $hasAssets
