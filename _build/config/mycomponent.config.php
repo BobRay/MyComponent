@@ -443,7 +443,6 @@ $components = array(
         'PropertySetAdapter' => 'propertysetadapter',
         'ResourceAdapter' => 'resourceadapter',
         'SnippetAdapter' => 'snippetadapter',
-        'SubpackageAdapter' => 'subpackageadapter',
         'SystemEventAdapter' => 'systemeventadapter',
         'SystemSettingAdapter' => 'systemsettingadapter',
         'TemplateAdapter' => 'templateadapter',
