@@ -338,6 +338,7 @@ $hasSettings = file_exists($sources['data'] . 'transport.settings.php'); /* Add 
 $hasContextSettings = file_exists($sources['data'] . 'transport.contextsettings.php');
 $hasSubPackages = is_dir($sources['subpackages']);
 $minifyJS = $modx->getOption('minifyJS', $props, false);
+$hasDependencies = $modx->getOption('requires', $props, false, true);
 
 $helper->sendLog(modX::LOG_LEVEL_INFO, "\n" . $modx->lexicon('mc_project')
     . ': ' . $currentProject);
@@ -887,14 +888,19 @@ if ($hasSetupOptions && !empty($props['install.options'])) {
 }
 $builder->setPackageAttributes($attr);
 
-/* Add subpackages */
-
-if ($hasSubPackages) {
+if ($hasDependencies) {
     $helper->sendLog(modX::LOG_LEVEL_INFO,
-        $modx->lexicon('mc_packaging_subpackages'));
-    include $sources['data'] . 'transport.subpackages.php';
+        $modx->lexicon('mc_packaging_dependencies'));
+    $dependencies = $modx->getOption('requires', $props, array(), true);
+    if (!empty($dependencies)) {
+        $attr['requires'] = $dependencies;
+        $helper->sendLog(modX::LOG_LEVEL_INFO, $modx->lexicon('mc_packaged')
+            . ' ' .
+            count($dependencies) . ' ' . $modx->lexicon('mc_dependencies'));
+    }
 }
 
+$builder->setPackageAttributes($attr);
 
 /* Last step - zip up the package */
 $builder->pack();
