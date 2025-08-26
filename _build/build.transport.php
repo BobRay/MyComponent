@@ -906,7 +906,6 @@ if ($hasSetupOptions && !empty($props['install.options'])) {
 } else {
     $attr['setup-options'] = array();
 }
-$builder->setPackageAttributes($attr);
 
 if ($hasDependencies) {
     $helper->sendLog(modX::LOG_LEVEL_INFO,
