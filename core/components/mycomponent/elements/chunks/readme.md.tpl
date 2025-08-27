@@ -8,6 +8,6 @@
 
 **Bugs and Requests** [[[+packageName]] Issues](https://github.com/[[+gitHubUsername]]/[[+gitHubRepository]]/issues)
 
-**Questions about using [[+PackageName]]** [MODX Forums](https://forums.modx.com)
+**Questions about using [[+packageName]]** [MODX Community](https://community.modx.com)
 
 [[+packageDescription]]

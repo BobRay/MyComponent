@@ -9,6 +9,6 @@ Official Documentation: [[+packageUrl]]
 
 Bugs and Feature Requests: https://github.com:[[+gitHubUsername]]/[[+gitHubRepository]]
 
-Questions: https://forums.modx.com
+Questions: https://community.modx.com
 
 Created by MyComponent
