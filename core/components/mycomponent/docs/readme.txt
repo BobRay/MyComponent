@@ -9,4 +9,4 @@ Official Documentation: https://bobsguides.com/mycomponent-tutorial.html
 
 Bugs and Feature Requests: https://github.com/BobRay/MyComponent
 
-Questions: https://forums.modx.com
+Questions: https://community.modx.com
