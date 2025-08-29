@@ -72,14 +72,14 @@
             }
         }
         , tbar: [{
-                text: 'Bulk Actions'
+                text: _('[[+packageNameLower]]_bulk_actions~~Bulk Actions')
                 , menu: this.getBatchMenu()
             }
             ,{xtype: 'tbspacer', width: 200}
             ,{
                 xtype: 'button'
                 , id: '[[+packageNameLower]]-[[+element]]s-reload'
-                , text: 'Reload'
+                , text: _('[[+packageNameLower]]_reload~~Reload')
                 , listeners: {
                     'click': {fn: this.reload[[+Element]]s, scope: this}
                 }
@@ -171,8 +171,8 @@ Ext.extend([[+packageName]].grid.[[+Element]]s, MODx.grid.Grid, {
         var cs = this.getSelectedAsList();
         if (cs === false) return false;
         MODx.msg.confirm({
-             title: '[[+packageNameLower]]_delete_objects'
-             , text: '[[+packageNameLower]]_confirm_delete_objects'
+             title: _('[[+packageNameLower]]_delete_objects~~Delete Objects')
+             , text: _('[[+packageNameLower]]_confirm_delete~~Are You Sure?')
              , url: this.config.url
              , params: {
                 action: 'mgr/[[+element]]/remove'
@@ -206,13 +206,13 @@ Ext.extend([[+packageName]].grid.[[+Element]]s, MODx.grid.Grid, {
         var bm = [];
         bm.push(
             {
-                text: 'new_category'
+                text: _('[[+packageNameLower]]_change_category~~Change Category')
                 , handler: this.changeCategory
                 , scope: this
             }
             , '-'
             , {
-                text: 'remove_[[+element]]'+'(s)'
+                text: _('[[+packageNameLower]]_delete_objects~~Delete Objects')
                 ,handler: this.[[+element]]Remove
                 , scope: this
             });
@@ -228,7 +228,7 @@ Ext.reg('[[+packageNameLower]]-grid-[[+element]]', [[+packageName]].grid.[[+Elem
     var selectedRecords = grid.getSelectedAsList();
     config = config || {};
     Ext.applyIf(config, {
-        title: 'new_category'
+        title: _('[[+packageNameLower]]change_category~~Change Category')
         , url: [[+packageName]].config.connector_url
         , baseParams: {
             action: 'mgr/[[+element]]/changecategory'
