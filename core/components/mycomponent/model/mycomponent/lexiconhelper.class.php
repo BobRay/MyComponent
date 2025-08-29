@@ -142,6 +142,10 @@ class LexiconHelper {
         $this->targetLexDir = $this->targetCore . 'lexicon/';
         $this->rewriteLexiconFiles = $this->helpers->getProp('rewriteLexiconFiles', false);
         $this->rewriteCodeFiles = $this->helpers->getProp('rewriteCodeFiles', false);
+        if ($this->packageNameLower == 'example') {
+            $this->rewriteCodeFiles = true;
+            $this->rewriteLexiconFiles = true;
+        }
 
         if (empty($this->primaryLanguage)) {
             $this->primaryLanguage = 'en';
@@ -221,8 +225,8 @@ class LexiconHelper {
 
     public function processFile($fileName, $fullPath) {
         $indent = '        ';
-        $rewriteLexiconFiles = $this->helpers->getProp('rewriteLexiconFiles', false);
-        $rewriteCodeFiles = $this->helpers->getProp('rewriteCodeFiles', false);
+        $rewriteLexiconFiles = $this->rewriteLexiconFiles;
+        $rewriteCodeFiles = $this->rewriteCodeFiles;
 
         $this->helpers->sendLog(modX::LOG_LEVEL_INFO, "\n" . $indent .
             $this->modx->lexicon('mc_processing') .
