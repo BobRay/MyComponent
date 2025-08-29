@@ -49,7 +49,7 @@ class ExampleHomeManagerController extends controller_parent {
 
     /* Must Return true */
     public function initialize() {
-        $this->modx->lexicon->load('[[+packageNameLower]]:default');
+       // $this->modx->lexicon->load('[[+packageNameLower]]:default');
         /* Instantiate the Example class in the controller */
         $path = $this->modx->getOption('example.core_path',
                 NULL, $this->modx->getOption('core_path') .
@@ -85,6 +85,10 @@ class ExampleHomeManagerController extends controller_parent {
     /* Argument is required in PHP 8 */
     public function process($scriptProperties = array()) {
 
+    }
+
+    public function getLanguageTopics() {
+        return ['[[+packageNameLower]]:default'];
     }
 
     /**
