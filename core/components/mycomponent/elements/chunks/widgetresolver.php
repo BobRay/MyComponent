@@ -88,7 +88,7 @@ switch ($options[xPDOTransport::PACKAGE_ACTION]) {
                     'dashboard' => $dashboardId,
                     'rank' => $rank,
                     'size' => $size,
-                    'user' => '',
+                    'user' => 0,
                 );
 
                 if (! $isMODX3) {
