@@ -243,6 +243,7 @@ if (!defined('MODX_CORE_PATH')) {
     die('build.config.php is not correct');
 }
 
+/** @var string $currentProject */
 @include dirname(__FILE__) . '/config/current.project.php';
 
 if (!$currentProject) {

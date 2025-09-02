@@ -243,10 +243,8 @@ if (!defined('MODX_CORE_PATH')) {
     die('build.config.php is not correct');
 }
 
-/* Non standard setting for mycomponent */
-
-$currentProject = 'mycomponent';
-// @include dirname(__FILE__) . '/config/current.project.php';
+/** @var string $currentProject */
+@include dirname(__FILE__) . '/config/current.project.php';
 
 if (!$currentProject) {
     session_write_close();
