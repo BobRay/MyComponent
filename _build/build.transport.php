@@ -780,16 +780,25 @@ foreach ($categories as $k => $categoryName) {
         }
     }
 
-    /* Transfer _build dir -- this is just for MyComponent. */
-    $helper->sendLog(modX::LOG_LEVEL_INFO, 'Packaged _build/config directory files');
-    $vehicle->resolve('file', array(
-        'source' => $sources['root'] . '/_build/config',
-        'target' => "return MODX_CORE_PATH . 'components/mycomponent/_build/';",
-    ));
-    $vehicle->resolve('file', array(
-        'source' => $sources['root'] . '/_build/utilities',
-        'target' => "return MODX_CORE_PATH . 'components/mycomponent/_build/';",
-    ));
+    /* ***************************************************
+       Transfer part of _build and utilities dirs -- this is just for
+       MyComponent.
+    */
+    if (PKG_NAME_LOWER === 'mycomponent') {
+        $helper->sendLog(modX::LOG_LEVEL_INFO, 'Packaged _build/config.example.config.php file');
+        $vehicle->resolve('file', array(
+            'source' => $sources['root'] . '/_build/config/example.config.php',
+            'target' => "return MODX_CORE_PATH . 'components/mycomponent/_build/config';",
+        ));
+
+        $helper->sendLog(modX::LOG_LEVEL_INFO, 'Packaged _build/utilities');
+        $vehicle->resolve('file', array(
+            'source' => $sources['root'] . '/_build/utilities',
+            'target' => "return MODX_CORE_PATH . 'components/mycomponent/_build';",
+        ));
+    }
+
+    /* ******************************************* */
 
     if ($hasCore && $i == 1) {
         $helper->sendLog(modX::LOG_LEVEL_INFO,
@@ -880,6 +889,7 @@ if ($hasMenu) {
             ));
             $builder->putVehicle($vehicle);
             unset($vehicle, $menu);
+
         }
         $helper->sendLog(modX::LOG_LEVEL_INFO,
             $modx->lexicon('mc_packaged')
