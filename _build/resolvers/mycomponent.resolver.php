@@ -89,9 +89,10 @@ switch ($options[xPDOTransport::PACKAGE_ACTION]) {
                 $modx->log(xPDO::LOG_LEVEL_INFO, 'Could not write Projects File');
             }
         }
-
-    $path = MODX_CORE_PATH . 'components/mycomponent/_build/config/mycomponent.config.php';
-        unlink($path);
+        $path = MODX_CORE_PATH . 'components/mycomponent/_build/config/mycomponent.config.php';
+        if (file_exists($path)) {
+            unlink($path);
+        }
         foreach($oldStuff as $name) {
             $c = $modx->getObject($classPrefix . 'modChunk', array('name' => $name));
             if ($c) {
