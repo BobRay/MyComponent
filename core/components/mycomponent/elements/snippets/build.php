@@ -135,7 +135,7 @@ if (strpos($content, 'dirWalk') === false) {
     die($msg);
 }
 
-if (strpos($content, 'getOption(\'requires\')') === false) {
+if (strpos($content, "'requires'") === false) {
     die($msg);
 }
 
