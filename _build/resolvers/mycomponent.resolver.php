@@ -70,6 +70,9 @@ $classPrefix = $modx->getVersionData()['version'] >= 3
 
 switch ($options[xPDOTransport::PACKAGE_ACTION]) {
     case xPDOTransport::ACTION_INSTALL:
+        if (file_exists($currentProjectFile)) {
+            unlink ($currentProjectFile);
+        }
     case xPDOTransport::ACTION_UPGRADE:
         if (!file_exists($currentProjectFile)) {
             $fp = fopen($currentProjectFile, 'w');
