@@ -148,7 +148,7 @@ directory, so be sure to modify that one for your project rather than the one un
 
 <p>When using a version control system (VCS) like git, it's a good idea to make sure all changes are committed before running ExportObjects. After running ExportObjects, always check the VCS (e.g., <code>git diff</code>) to make sure there are no surprises. Occasionally, you may find that git diff exposes errors you made by editing files, and then running ExportObjects without having imported the changes into the Manager with ImportObjects. Sometimes there are trivial differences in whitespace or end-of-file characters. I generally commit these with the commit message "MC artifacts," so they don't show up again.</p>
 
-<p><b>New System Settings:</b> In the current version, any sensitive System Settings that should not be in your package or at GitHub (e.g., passwords, tokens, private keys, etc.) should be created manually in the core namespace. When exporting, MyComponent will ignore them completely because they are not in your project's namespace. New System Settings no longer need to be in the config file. If you put them in the config file, MyComponent will install them, but it's much easier to just create them in the Manager. See the section below on System Settings.</p>
+<p><b>New System Settings:</b> In the current version, any sensitive System Settings that should not be in your package or at GitHub (e.g., passwords, tokens, private keys, etc.) should be created manually in the core namespace. When exporting, MyComponent will ignore them completely because they are not in your project's namespace. New System Settings no longer need to be in the config file. If you put them in the config file, MyComponent will install them, but it's much easier to just create them in the Manager. See the section below on System Settings. The same is true of menus.</p>
 
 <h3>ImportObjects</h3>
 
@@ -188,7 +188,7 @@ rewriteCodeFiles
 </fixedpre></pre>
 
 
-<p>By default, the first one is true and the second one is false. It is fairly rare, but there are cases where rewriting the code files will mess up one or more lexicon files. There's a tip below on how to avoid this.</p>
+<p>By default, the first one is true and the second one is false. It is very rare, but there are cases where rewriting the code files will mess up one or more lexicon files. There's a tip below on how to avoid this. Note that both of the above are automatically true when working on the Example project. </p>
 
 
 <div class="box">
@@ -239,9 +239,9 @@ $output .= $modx->lexicon('mc_file_nf~~File Not Found')
 <p>LexiconHelper has been completely refactored for MyComponent 3.1.0. It no longer uses the config file to select files, instead, it searches your entire development directory and checks all files that might have lexicon strings in them. It will find lexicon strings in all resources and elements, JavaScript files, controllers, processors, and connectors. In addition, it will process lexicon strings correctly for properties and settings.</p>
 </div>
 
-<h3>System Settings</h3>
+<h3>System Settings and Menus</h3>
 
-<p>If your project has no new System Settings, you can skip this part. System Settings are really easy with MyComponent. They don't need to be in the config file. Just create them in the Manager and fill in all fields. In the Name, Description, and Area fields, put just the Name, Description and Area, in your default language, as you would like them to appear (do *not* user <code>~~</code> tokens or lexicon keys). As long as they are in a namespace associated with your project, MyComponent will create the proper transport files for them and Lexicon Helper will create the proper lexicon strings.</p>
+<p>If your project has no new System Settings or Menus, you can skip this part. System Settings are really easy with MyComponent. They don't need to be in the config file. Just create them in the Manager and fill in all fields. In the Name, Description, and Area fields, put just the Name, Description and Area, in your default language, as you would like them to appear (do *not* user <code>~~</code> tokens or lexicon keys). As long as they are in a namespace associated with your project, MyComponent will create the proper transport files for them and Lexicon Helper will create the proper lexicon strings.</p>
 
 <p>Steps for System Settings</p>
 
@@ -253,7 +253,7 @@ $output .= $modx->lexicon('mc_file_nf~~File Not Found')
     <li>Run Lexicon Helper</li>
 </ol>
 
-<p>Remember that System Settings are not affected by ImportObjects. Bootstrap will set them, and their lexicon stings, but to change them, you have to modify them in MODX and export them.</p>
+<p>Remember that System Settings and Menus are not affected by ImportObjects. Bootstrap will set them, and their lexicon stings, but to change them, you have to modify them in MODX and export them.</p>
 
 <p>The System Setting <code>name</code> and <code>description</code> fields don't actually exist. Lexicon keys for them are computed by MODX in the Manager based on the key of the System Setting. For example, a System Setting with the key <code>delay</code> in the <code>somenamespace</code> namespace will have its name and description lexicon keys in a language file (usually <code>default.inc.php</code>) in this that namespace in this form:</p>
 <pre><fixedpre>
@@ -329,9 +329,11 @@ Look at the Example objects in the Manager. You should see all the Resources and
 
 
 <h2>Customizing MyComponent</h2>
-        <p>Any of the Tpl chunks used by MyComponent (as well as the <code>example.config.php</code> file) can be customized. Rather than modifying the chunks (or files) directly, you should duplicate them and prefix the name with 'my' so your changes will survive upgrades to MyComponent.</p>
+
+    <p>Any of the Tpl chunks used by MyComponent (as well as the <code>example.config.php</code> file) can be customized.
 
     <h3>Customizing the Tpl chunks</h3>
+
     <p>If you'd like to modify any of the MyComponent Tpl chunks, duplicate them and prefix the name with "my". MyComponent will always look first for the prefixed version before using the default chunk or file. Here is the search order for the various Tpl chunks/files (the files are in the <code>core/components/mycomponent/elements/chunks</code> directory):</p>
 
 <pre>
@@ -346,11 +348,11 @@ Look at the Example objects in the Manager. You should see all the Resources and
     <p>If you expect to create multiple extras, the first chunk you'll want to modify is the <code>example.config.php</code> chunk. It's used as a template for all new projects. Duplicate it and call the chunk <code>myexample.config.php</code> (or remove the chunk and rename the <code>example.config.php</code> file in the
     <code>core/components/mycomponent/elements/chunks</code> directory to <code>myexample.config.php)</code>.</p>
 
-<p>There are two important things to remember when editing the file. First, the file is mainly a large PHP array, and it must be valid PHP in order for MyComponent to function. Use a good code editor and edit carefully. Second, do *not* change the word "Example" anywhere &mdash; it's necessary for the file to work properly as a template for new projects. "Example" will be replaced with the name of your project.</p>
+<p>There are two important things to remember when editing the config file. First, the file is mainly a large PHP array, and it must be valid PHP in order for MyComponent to function. Use a good code editor and edit carefully. Second, do *not* change the word "Example" anywhere &mdash; it's necessary for the file to work properly as a template for new projects. "Example" will be replaced with the name of your project.</p>
 
 <p>Keep in mind that the <code>example.config.php</code> file is a template for all future project config files. When you create a new project, the <code>example.config.php</code> file will be your starting point. You edit it to meet the needs of whatever project you are currently working on *after* you create the new project in the UI. Once you have it the way you want it, you should never need to edit it again.</p>
 
-<p>What you mainly want to change is the personal information at the top of the file (e.g., your email address, website, year, copyright, etc.). You may also want to remove some of the example objects (especially the second category) if you're sure that you will never need them. You'll always have the original <code>example.config.php</code> file to refer to.</p>
+<p>What you mainly want to change in the master (Example) config file is the personal information at the top of the file (e.g., your email address, website, year, copyright, etc.). You may also want to remove some of the example objects (especially the second category) if you're sure that you will never need them. You'll always have the original <code>example.config.php</code> file to refer to.</p>
 
 <h2>MyComponent Workflows</h2>
 
@@ -505,7 +507,7 @@ require_once $iFile;
     <p><b>Important</b>: When using the method above, be sure to put the System Settings in the <code>core</code> namespace, not the namespace of your project. Otherwise, it will be part of the project. When your uses install your extra, the code will find the System Setting, and none of your project's paths will be correct.</p>
 </div>
 
-<p>Of course another method is to use static elements linked to your code files, though I generally don't recommend doing that. Any class files will be loaded from the installed location in core/packages but the snippets and plugins will come from your build location. That can be very confusing. It's also very easy to forget what you're doing and lose work with static elements.</p>
+<p>Of course another method is to use static elements linked to your code files, though I generally don't recommend doing that. Any class files will be loaded from the installed location in core/packages but the snippets and plugins will come from your build location. That can be very confusing. It's also very easy to forget what you're doing and lose work with static elements. ALso, since MyComponent creates its own files for all MODX resources and elements, there's not much reason to use static elements. </p>
 
 <p>If you use any of these techniques, don't forget that you are running off the build files. If any files are missing or mis-referenced in the build script, you won't know about it until you run your component in a MODX install that doesn't have the system settings.</p>
 
@@ -550,14 +552,17 @@ require_once $iFile;
 
 <p>MyComponent will do its best to create processors for you, based on the name of the processor, that will work in both MODX 2 and MOD3. MODX 3 has literally hundreds of processors, many with very specific code, so it wasn't practical for MyComponent to handle all of them. It will do a fairly good job with create, update, getlist, and remove processors, but in any case, the processor it creates will probably need some editing. It will usually be much easier than creating a processor from scratch, but you're free to do that.</p>
 
-<p>Once a processor has been created, MyComponent will never alter it, so your modifications will be safe no matter what MyComponent utilities you run (with the rare exception of LexiconHelper, which can mangle code if your <code>$modx->lexicon()</code> calls are malformed). </p>
+<p>Once a processor has been created, MyComponent will never alter it, so your modifications will be safe no matter what MyComponent utilities you run (with the rare exception of LexiconHelper, which can mangle code if your <code>$modx->lexicon()</code> calls are malformed, though this rarely happens). </p>
+
+<h3>Dashboards and Widgets</h3>
+
+<p>It's entirely possible to create Dashboards and Widgets in your config file (see the Example config file), but like Menus and System Settings, it's usually easier to just create them in the Manager and run ExportObjects</p>
 
 <h3>Submitting Your Package</h3>
 
 <p>As we said earlier, when you run build.transport.php the Transport
 Package .zip file will be created in your site's <code>core/packages</code> directory.
-The final step is to submit that .zip file at <a href="https://modx.com/extras">https://modx.com/extras</a>. You'll need to log in and then click on the "submit a new extra"
-link.</p>
+The final step is to submit that .zip file at <a href="https://modx.com/extras">https://modx.com/extras</a>. You'll need to log in and then click on the "submit a new extra" link.</p>
 
 <p>Be sure to fill in all the appropriate sections of the submission form and designate the file you attach as a Transport Package. If you have installed the package on your site, there will also be another file with the same name, but without the .zip extension. Be sure to submit the .zip file rather than the other file.</p>
 
