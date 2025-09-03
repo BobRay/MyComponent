@@ -580,7 +580,10 @@ $components = array(
         'addUsers'
     ),
 
-    /* Dependencies (package name must be lowercase) */
+    /* Dependencies (package name must be lowercase)
+        See this for more info on versions and constraints:
+        https://getcomposer.org/doc/articles/versions.md
+    */
     'requires' => array(
       // 'wayfinder' => '>=2.3.3',
     ),
