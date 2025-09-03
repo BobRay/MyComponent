@@ -71,7 +71,7 @@ class mc_processor_name extends mc_processor_parent {
                 if ($categoryObj) {
                     $fields['category'] = $categoryObj->get('category');
                 } else {
-                    $fields['category'] = $this->modx->lexicon('mc_invalid_category');
+                    $fields['category'] = $this->modx->lexicon('invalid_category~~Invalid Category');
                 }
             } else {
                 $fields['category'] = $this->modx->lexicon('none');
@@ -83,7 +83,7 @@ class mc_processor_name extends mc_processor_parent {
                 if ($templateObj) {
                     $fields['template'] = $templateObj->get('category');
                 } else {
-                    $fields['template'] = $this->modx->lexicon('mc_invalid_template');
+                    $fields['template'] = $this->modx->lexicon('invalid_template~~Invalid Template');
                 }
             } else {
                 $fields['template'] = $this->modx->lexicon('none');
