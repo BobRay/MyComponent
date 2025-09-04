@@ -788,13 +788,13 @@ foreach ($categories as $k => $categoryName) {
         $helper->sendLog(modX::LOG_LEVEL_INFO, 'Packaged _build/config.example.config.php file');
         $vehicle->resolve('file', array(
             'source' => $sources['root'] . '/_build/config/example.config.php',
-            'target' => "return MODX_CORE_PATH . 'components/mycomponent/_build/config';",
+            'target' => "return MODX_CORE_PATH . 'components/mycomponent/_build/config/';",
         ));
 
         $helper->sendLog(modX::LOG_LEVEL_INFO, 'Packaged _build/utilities');
         $vehicle->resolve('file', array(
             'source' => $sources['root'] . '/_build/utilities',
-            'target' => "return MODX_CORE_PATH . 'components/mycomponent/_build';",
+            'target' => "return MODX_CORE_PATH . 'components/mycomponent/_build/';",
         ));
     }
 
