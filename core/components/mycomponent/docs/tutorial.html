@@ -178,9 +178,36 @@ $message = $modx->lexicon('mc_file_nf~~File Not Found');
 [[%mc_file_nf~~File Not Found]]
 </fixedpre></pre>
 
+<p>In both cases above, LexiconHelper will create the following line in your lexicon file:</p>
+
+<pre><fixedpre>
+$_lang[mc_file_nf = 'File Not Found';
+</fixedpre></pre>
+
+<p>This will also work for Menus  in your config file with things like:
+<pre><fixedpre>
+    'description' => 'Description of Menu',</p>
+</fixedpre></pre>
+
+<p>Lexicon strings in JavaScript files in this form will also be found:
+
+<pre><fixedpre>
+text: _('[[+packageNameLower]]_change_category~~Change Category')
+</fixedpre></pre>
+
+<p>Note that for lexicon strings in the format above, you need to add a method to your controller file (which needs to extend a controller class like <code>modManagerController</code>) like the one below:.</p>
+
+<pre><fixedpre>
+public function getLanguageTopics() {
+    return ['example:default'];
+}
+</fixedpre></pre>
+
+<p>In the method above, the method must return an array.</p>
+
 <p>LexiconHelper will find all instances where you use the MODX Lexicon in  your project. It will create a language string and write it into the appropriate lexicon file for you (and optionally remove the part after the ~~ from the file). The only case where this will fail is if you have a file that uses more than one lexicon topic. If that's the case, LexiconHelper doesn't know what file to write the various language strings to. In that case LexiconHelper outputs the lexicon strings to the screen, so you can paste them into the appropriate files.</p>
 
-<p>Whether LexiconHelper modifies the lexicon files and removes the ~~ and it's following string from the code files depends on the following two settings in the project config file:</p>
+<p>Whether LexiconHelper modifies the lexicon files and removes the ~~ and its following string from the code files depends on the following two settings in the project config file:</p>
 
 <pre><fixedpre>
 rewriteLexiconFiles
