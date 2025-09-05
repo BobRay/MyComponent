@@ -216,12 +216,12 @@ abstract class AbstractLexiconCodeFile {
 
         switch ($this->type) {
             case 'Menu':
-                $this->pattern = '#[\'\"]description[\'\"]\s*=>\s*(\'|\")(.*)\1#';
-                $this->subPattern = 'description';
+                $this->pattern = '#[\'\"](?:text|description)[\'\"]\s*=>\s*(\'|\")(.*)\1#';
+                $this->subPattern = '~~';
                 break;
             case 'Php':
                 /* ToDo: Try this -- may prevent need to separate lex lines */
-                // $this->pattern = '#modx->lexicon\s * \(\s * (\'|\")(.+?)\1\)#';
+                // $this->pattern = '#modx->lexicon\s*\(\s*(\'|\")(.+?)\1\)#';
 
                 /*$this->pattern = '#modx->lexicon\s*\(\s*(\'|\")(.*)\1\)#';
                 $this->subPattern = 'modx->lexicon';*/
@@ -954,6 +954,10 @@ class MenuLexiconCodeFile extends LexiconCodeFile {
             $_lang = $this->defined;
             /** @var $object modMenu */
             foreach ($objects as $object) {
+                $string = $object->get('text');
+                if (!empty($string)) {
+                    $this->addLexString($string);
+                }
                 $string = $object->get('description');
                 if (!empty($string)) {
                     $this->addLexString($string);
@@ -963,5 +967,4 @@ class MenuLexiconCodeFile extends LexiconCodeFile {
             $this->_setError($this->modx->lexicon('mc_file_not_found' . ' ' . $fullPath));
         }
     }
-
 }
