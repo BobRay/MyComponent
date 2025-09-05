@@ -91,7 +91,17 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
         $modx = new modX();
         $this->modx =& $modx;
         $modx->initialize('mgr');
-        $modx->getService('error', 'error.modError', '', '');
+        $isMODX3 = $modx->getVersionData()['version'] >= 3;
+        if ($isMODX3) {
+            if (!$modx->error) {
+                if (!$modx->services->has('error')) {
+                    $this->services->add('error', new MODX\Revolution\Error\modError($modx));
+                    $modx->error = $modx->services->get('error');
+                }
+            }
+        } else {
+            $modx->getService('error', 'error.modError', '', '');
+        }
         $modx->getService('lexicon', 'modLexicon');
         $modx->getRequest();
         $homeId = $modx->getOption('site_start');

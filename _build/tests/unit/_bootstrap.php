@@ -13,7 +13,17 @@ require_once 'c:/xampp/htdocs/addons/core/model/modx/modx.class.php';
 echo "Getting MODX";
 $modx = new modX();
 $modx->getRequest();
-$modx->getService('error', 'error.modError', '', '');
+$isMODX3 = $modx->getVersionData()['version'] >= 3;
+if ($isMODX3) {
+    if (!$modx->error) {
+        if (!$modx->services->has('error')) {
+            $this->services->add('error', new MODX\Revolution\Error\modError($modx));
+            $modx->error = $modx->services->get('error');
+        }
+    }
+} else {
+    $modx->getService('error', 'error.modError', '', '');
+}
 $modx->initialize('mgr');
 Fixtures::add('modx', $modx);
 

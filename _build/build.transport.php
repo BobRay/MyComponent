@@ -230,7 +230,18 @@ if ( (! isset($modx)) || (! $modx instanceof modX) ) {
     require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
     $modx = new modX();
     $modx->initialize('mgr');
-    $modx->getService('error', 'error.modError', '', '');
+    $isMODX3 = $modx->getVersionData()['version'] >= 3;
+
+    if ($isMODX3) {
+        if (!$modx->error) {
+            if (!$modx->services->has('error')) {
+                $this->services->add('error', new MODX\Revolution\Error\modError($modx));
+                $modx->error = $modx->services->get('error');
+            }
+        }
+    } else {
+        $modx->getService('error', 'error.modError', '', '');
+    }
 }
 $modx->lexicon->load('mycomponent:default');
 $modx->setLogLevel(xPDO::LOG_LEVEL_INFO);
