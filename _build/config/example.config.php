@@ -169,13 +169,13 @@ $components = array(
      * Be sure to set their namespace to the lowercase package name
      * of your extra.
      *
-     * Every menu should have exactly one action */
+     * Every menu should have exactly one action, which must be a string */
 
     'menus' => array(
         'Example' => array(
-            'text' => 'Example',
+            'text' => 'example_text~~Example Extra',
             'parent' => 'components',
-            'description' => 'Example CMP',
+            'description' => 'example_desc~~Example CMP',
             'icon' => '',
             'menuindex' => 0,
             'params' => '',
