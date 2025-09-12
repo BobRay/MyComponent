@@ -53,7 +53,11 @@ class LexiconCodeFileFactory {
      * @return LexiconCodeFile - object created by factory
      */
     public static function getInstance(&$modx, $helpers, $path, $fileName, $lexDir) {
-        if (strpos($fileName, '.menus.php') !== false) {
+        $project = $helpers->getProp('packageNameLower');
+
+        if (strpos($fileName, $project . '.config.php') !== false) {
+            $type = 'Config';
+        } elseif (strpos($fileName, '.menus.php') !== false) {
             $type = 'Menu';
         } elseif (strpos($fileName, '.settings.php') !== false) {
             $type = 'Settings';
@@ -235,6 +239,10 @@ abstract class AbstractLexiconCodeFile {
             case 'Text':
                 $this->pattern = '#(\[\[)!*%([^\?&\]]+)#';
                 $this->subPattern = '[[';
+                break;
+            case 'Config':
+                $this->pattern = '#\s*[\'|\"](.*)[\'|\"]\s*=>\s*[\'|\"]([^\'\"]*)[\'|\"]#';
+                $this->subPattern = '~~';
                 break;
             case 'Properties':
                 break;
