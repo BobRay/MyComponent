@@ -920,20 +920,10 @@ class MenuLexiconCodeFile extends LexiconCodeFile {
             } else {
                 /** @var $object modMenu */
                 foreach ($objects as $object) {
-                    if (property_exists($object, 'action')) {
-                        $action = $object->getOne('Action');
-                        $topic = $action->get('lang_topics');
-                        if ($topic !== null) {
-                            if ($topic == $this->helpers->props['packageNameLower']) {
-                                /* Correct if just the package name */
-                                $topic = $topic . ':' . 'default';
-                            }
-                            $this->addLexFile($topic);
-                            /* bail out at the first non-empty lexicon specification */
-                            break;
-
-                        }
-                    }
+                    $topic = $this->helpers->props['packageNameLower'];
+                    $topic = $topic . ':' . 'default';
+                    $this->addLexFile($topic);
+                    break;
                 }
             }
             /* assume 'default' topic if no topic specified */
