@@ -203,7 +203,7 @@ abstract class AbstractLexiconCodeFile {
         /* Set pattern and subPattern used to search for lex strings
          * in code file
          */
-        $ns = $this->modx->getOption('namespaces', $this->helpers->props, '');
+        $ns = $this->modx->getOption('namespaces', $this->helpers->props, array());
         $nameSpaces = array();
         if (! empty ($ns)) {
             foreach ($ns as $nsArray) {
