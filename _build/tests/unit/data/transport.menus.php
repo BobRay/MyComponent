@@ -35,6 +35,7 @@ $action->fromArray( array (
 $menus[1] = $modx->newObject('modMenu');
 $menus[1]->fromArray( array (
   'text' => 'Example',
+  'action' => 'home',
   'parent' => 'components',
   'description' => "string21~~Hello 'columbus'",
   'icon' => '',
@@ -42,13 +43,13 @@ $menus[1]->fromArray( array (
   'params' => '',
   'handler' => '',
   'permissions' => '',
-  'id' => 1,
+  'namespace' => 'unittest',
 ), '', true, true);
-$menus[1]->addOne($action);
 
 $menus[2] = $modx->newObject('modMenu');
 $menus[2]->fromArray( array (
   'text' => 'Example',
+  'action' => 'home',
   'parent' => 'components',
   'description' => 'string22~~Hello "columbus"',
   'icon' => '',
@@ -56,13 +57,14 @@ $menus[2]->fromArray( array (
   'params' => '',
   'handler' => '',
   'permissions' => '',
-  'id' => 1,
+  'namespace' => 'unittest',
 ), '', true, true);
-$menus[1]->addOne($action);
+
 
 $menus[3] = $modx->newObject('modMenu');
 $menus[3]->fromArray( array (
   'text' => 'Example',
+  'action' => 'home',
   'parent' => 'components',
   'description' => 'string23',
   'icon' => '',
@@ -70,9 +72,7 @@ $menus[3]->fromArray( array (
   'params' => '',
   'handler' => '',
   'permissions' => '',
-  'id' => 1,
+  'namespace' => 'unittest',
 ), '', true, true);
-$menus[1]->addOne($action);
-
 
 return $menus;
