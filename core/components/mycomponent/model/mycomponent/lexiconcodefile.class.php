@@ -461,7 +461,9 @@ abstract class AbstractLexiconCodeFile {
                 $replace = '';
             }
 
-            $content = preg_replace($pattern, $replace, $content);
+            $content = preg_replace($pattern, $replace, $content, -1, $count);
+
+            $this->squigglesFound+= $count;
 
             if ($naked) {
                 /* Restore naked '~~' */
