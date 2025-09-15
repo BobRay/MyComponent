@@ -171,11 +171,11 @@ class ExportTest extends \Codeception\Test\Unit {
         $pattern = '/intersects[^;]+;/';
         preg_match($pattern, $content, $matches);
         $match = $matches[0];
-        assertStringContainsString('UnittestSnippetWidget', $match);
+        assertStringContainsString('unit_test_snippet_widget', $match);
         assertStringContainsString('half', $match);
         assertStringContainsString('UnittestDashboard', $match);
         assertStringContainsString('Default', $match);
-        assertStringContainsString('UnittestPhpWidget', $match);
+        assertStringContainsString('unit_test_php_widget', $match);
         $x=1;
     }
 
