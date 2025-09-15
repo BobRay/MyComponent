@@ -55,6 +55,7 @@ class LexiconHelper {
     public $primaryLanguage;
     public $usedSomewhere = array();
     public $definedSomewhere = array();
+    public $updateObjects = array();
 
 
     function  __construct(&$modx, &$props = array()) {
@@ -155,7 +156,6 @@ class LexiconHelper {
     }
 
     public function run() {
-        $x = 1;
         $toProcess = array(
             'elements' => array (
                 $this->targetCore . 'elements/chunks/' => 'chunks',
@@ -204,6 +204,7 @@ class LexiconHelper {
                 }
             }
         }
+
         $this->finalAudit();
 
         $src = rtrim($this->targetLexDir, '/\\');
@@ -215,11 +216,17 @@ class LexiconHelper {
 
 
     public function processFiles($files) {
+        $this->updateObjects = array();
         foreach($files as $fileName => $fullPath) {
             if (strstr($fileName, 'min.js') || strstr($fileName, 'build.transport.php')) {
                 continue;
             }
             $this->processFile($fileName, $fullPath );
+        }
+
+        /* If menus or widgets have ~~ strings, remove them */
+        if (!empty($this->updateObjects)) {
+            $this->updateObjects($this->updateObjects);
         }
     }
 
@@ -295,16 +302,103 @@ class LexiconHelper {
             if ($rewriteCodeFiles) {
                 $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '        ' .
                     $this->modx->lexicon('mc_rewriting_code_file'));
-                $lcf->updateCodeFile();
+                if ($lcf->updateCodeFile()) { // $squiggles found
+                    if (strpos($fileName, 'menus') !== false) {
+                        $this->updateObjects['menu'] = true;
+                    }
+                    if (strpos($fileName, 'widgets') !== false) {
+                        $this->updateObjects['widgets'] = true;
+                    }
+                };
+
             }
-
-
         } else {
             $this->helpers->sendLog(modX::LOG_LEVEL_INFO, '            ' .
                 $this->modx->lexicon('mc_no_language_strings_in_file'));
         }
 
+        if (strpos($fileName, 'menus') === false && strpos($fileName, 'dashboardwidgets') === false ) {
+            return;
+        }
+    }
 
+    /* Remove ~~ in menu and widget object fields that contain them;
+       This is called if the current file being processed
+       has ~~ strings, it removes them from relevant object(s) */
+    public function updateObjects($updateObjects, $ns = array()) {
+        $pattern = '/~~.+$/';
+        $replace = '';
+        /*$updateObjects = array(
+            'menus' => true,
+            'widgets' => true,
+        );*/
+        if (empty($ns)) {
+            $ns = $this->modx->getOption('namespaces', $this->helpers->props,
+                array());
+        }
+        foreach ($updateObjects as $key => $value) {
+            foreach ($ns as $nsName => $nsValue) {
+                if (($key == 'menus') && $value) {
+                    $menuObjects = $this->modx->getCollection('modMenu', array('namespace' => $nsName));
+                    /* Fix squiggles in 'text & 'description' fields */
+                    foreach ($menuObjects as $object) {
+                        $dirty = false;
+                        $isRename = false;
+                        $fieldsToChange = array('text', 'description');
+
+                        foreach ($fieldsToChange as $fieldToChange) {
+                            $original = $object->get($fieldToChange);
+                            $t = preg_replace($pattern, $replace, $original);
+                            if ($original !== $t) { // Field has changed
+                                $dirty = true;
+                                if ($fieldToChange === 'text') {
+                                    $newFields = $object->toArray();
+                                    $newFields['action_id'] = $object->get('action');
+                                    $isRename = true;
+                                    $newFields['previous_text'] = $original;
+                                    $newFields[$fieldToChange] = $t;
+                                } else {
+                                    if ($isRename) {
+                                        $newFields[$fieldToChange] = $t;
+                                    } else {
+                                        $object->set($fieldToChange, $t);
+                                    }
+                                }
+                            }
+                        }
+                        if ($dirty) {
+                            /* We only need to run processor if 'text' field (pk) has changed */
+                            if ($isRename) {
+                                $response = $this->modx->runProcessor('system/menu/update', $newFields);
+                            } else {
+                                $success = $object->save();
+                            }
+                        }
+                    }
+                }
+                if ($key == 'widgets' && $value) {
+                    $widgetObjects = $this->modx->getCollection('modDashboardWidget', array('namespace' => $nsName));
+
+                    /* Fix squiggles in 'name' & 'description'  fields */
+                    foreach ($widgetObjects as $object) {
+                        $fields = array('name', 'description');
+                        $dirty = false;
+                        foreach ($fields as $field) {
+                            $original = $object->get($field);
+                            $t = preg_replace($pattern, $replace, $original);
+
+                            if ($original !== $t) {
+                                $object->set($field, $t);
+                                $dirty = true;
+                            }
+                        }
+                        if ($dirty) {
+                            $success = $object->save();
+                        }
+                    }
+                }
+            }
+        }
     }
     public function _formatLexStrings($strings) {
         $code = '';
