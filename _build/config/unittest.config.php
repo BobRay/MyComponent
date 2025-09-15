@@ -149,7 +149,20 @@ $components = array(
     /* If your extra needs Menus, set this to true, create them
      * in the Manager, and export them with exportObjects. Be sure
      * to set their namespace to the lowercase package name of your extra */
-    'menus' => false,
+    'menus' => array(
+        'Unit Test' => array(
+            'text' => 'unit_test~~Unit Test',
+            'parent' => 'components',
+            'description' => 'unit_test_desc~~Unit Test Description',
+            'icon' => '',
+            'menuindex' => 0,
+            'params' => '',
+            'handler' => '',
+            'permissions' => '',
+            'action' => 'home',
+            'namespace' => 'unittest',
+        ),
+    ),
 
     /* ************************ NEW Dashboards ************************* */
 
@@ -167,8 +180,8 @@ $components = array(
         snippet, php, file, html */
     'widgets' => array(
         'UnittestSnippetWidget' => array(
-            'name' => 'UnittestSnippetWidget',
-            'description' => 'UnittestSnippetWidget',
+            'name' => 'unit_test_snippet_widget~~Unit Test Snippet Widget',
+            'description' => 'unittest_snippet_widget_desc~~Unit Test Snippet Widget Description',
             'namespace' => 'unittest',
             /* Type options: 'file' 'snippet' 'html' 'php' */
             'type' => 'snippet',
@@ -187,7 +200,7 @@ $components = array(
                     'dashboard' => 'Default',
 
                     /* This widget's name */
-                    'widget' => 'UnittestSnippetWidget',
+                    'widget' => 'unit_test_snippet_widget',
 
                     'rank' => '0',
                     /* Size options: half, full, one-third, two-thirds. */
@@ -199,7 +212,7 @@ $components = array(
                     'dashboard' => 'UnittestDashboard',
 
                     /* This widget's name or ID */
-                    'widget' => 'UnittestSnippetWidget',
+                    'widget' => 'unit_test_snippet_widget',
 
                     'rank' => '0',
                     /* Size options: half, full, one-third, two-thirds. */
@@ -209,8 +222,8 @@ $components = array(
         ), /* End of this widget */
 
         'UnittestPhpWidget' => array(
-            'name' => 'UnittestPhpWidget',
-            'description' => 'UnittestPhpWidget description',
+            'name' => 'unit_test_php_widget~~Unittest Php Widget',
+            'description' => 'unit_test_php_widget_desc~~ description',
             'namespace' => 'unittest',
             /* Type options: 'file' 'snippet' 'html' 'php' */
             'type' => 'php',
@@ -232,7 +245,7 @@ $components = array(
                     'dashboard' => 'Default',
 
                     /* This widget's name or ID */
-                    'widget' => 'UnittestSnippetWidget',
+                    'widget' => 'unit_test_snippet_widget',
 
                     'rank' => '0',
                     /* Size options: half, full, one-third, two-thirds. */
@@ -242,8 +255,8 @@ $components = array(
         ), /* End of this widget */
 
         'UnittestFileWidget' => array(
-            'name' => 'UnittestFileWidget',
-            'description' => 'UnittestFileWidget description',
+            'name' => 'unit_test_file_widget~~Unit Test File Widget',
+            'description' => 'unittest_file_widget_desc~~ Unit Test File Widget Description',
             'namespace' => 'unittest',
             /* Type options: 'file' 'snippet' 'html' 'php' */
             'type' => 'file',
@@ -260,8 +273,8 @@ $components = array(
         ), /* End of this widget */
 
         'UnittestHTMLWidget' => array(
-            'name' => 'UnittestHTMLWidget',
-            'description' => 'UnittestHTMLWidget description',
+            'name' => 'unit_test_html_widget~~Unit Test HTML Widget',
+            'description' => 'unit_test_html_widget_desc~~ Unit Test HTML Widget Description',
             'namespace' => 'unittest',
             /* Type options: 'file' 'snippet' 'html' 'php' */
             'type' => 'html',
