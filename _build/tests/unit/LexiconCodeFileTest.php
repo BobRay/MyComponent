@@ -194,6 +194,15 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
         $this->assertNotEmpty($this->targetModelDir, 'Empty Model dir');
         $this->assertNotEmpty($this->targetJsDir, 'Empty JS dir');
         $this->assertNotEmpty($this->targetChunkDir, 'Empty chunk dir');
+
+        $menuObjects = $this->modx->getCollection('modMenu', array('namespace' => 'unittest'));
+        foreach ($menuObjects as $menuObject) {
+           $success =  $menuObject->remove();
+        }
+        $widgetObjects = $this->modx->getCollection('modDashboardWidget', array('namespace' => 'unittest'));
+        foreach ($widgetObjects as $widgetObject) {
+            $success = $widgetObject->remove();
+        }
     }
 
     protected function tearDown():void {
@@ -287,7 +296,6 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
         );
         $this->assertNotEmpty($lexFiles);
         $this->assertEquals($expected, $lexFiles);
-
     }
 
     /** Test getting lex strings from php file, js file, and Tpl chunk */
@@ -584,5 +592,71 @@ class LexiconCodeFileTest extends PHPUnit_Framework_TestCase {
         $this->assertStringContainsString("\$_lang['string4'] = 'Updated String'", $content);
         $this->assertStringContainsString("\$_lang['string14'] = 'String in Chunk'", $content);
         $this->assertStringContainsString("\$_lang['string15'] = 'Hello \"Columbus\"'", $content);
+    }
+
+    public function testUpdateObjects() {
+
+        $configFile = 'C:\xampp\htdocs\addons\assets\mycomponents\mycomponent\_build\config\unittest.config.php';
+        $this::assertTrue(file_exists($configFile));
+
+        require_once $this->modx->getOption('mc.core_path', null, $this->modx->getOption('core_path') . 'components/mycomponent/') . 'model/mycomponent/mycomponentproject.class.php';
+
+        $this->modx->lexicon->load('mycomponent:default');
+
+        $project = new MyComponentProject($this->modx);
+        $this->mc->init(array(), 'unittest');
+        $this->mc->createMenus();
+        $this->mc->createWidgets();
+        $namespace = 'unittest';
+
+        $menus = $this->modx->getCollection('modMenu', array('namespace' => $namespace));
+
+        $this::assertNotEmpty($menus);
+
+        foreach($menus as $menu) {
+            $name = $menu->get('text');
+            $this::assertNotEmpty('text');
+            $this::assertStringContainsString('~~', $name);
+            $description = $menu->get('description');
+            $this::assertStringContainsString('~~', $description);
+        }
+
+        $this->mc->createWidgets();
+        $widgets = $this->modx->getCollection('modDashboardWidget', array('namespace' => $namespace ));
+        $this::assertNotEmpty($widgets);
+
+        foreach ($widgets as $widget) {
+            $name = $widget->get('name');
+            $this::assertNotEmpty('name');
+            $this::assertStringContainsString('~~', $name);
+            $description = $widget->get('description');
+            $this::assertStringContainsString('~~', $description);
+        }
+
+        $lh = new LexiconHelper($this->modx);
+
+        $updateObjects = array('menus' => true, 'widgets' => true);
+
+        $lh->updateObjects($updateObjects, array('unittest' => 'unittest'));
+
+        $menus = $this->modx->getCollection('modMenu', array('namespace' => $namespace), false);
+
+        foreach ($menus as $menu) {
+            $name = $menu->get('text');
+            $this::assertNotEmpty('text');
+            $this::assertStringNotContainsString('~~', $name);
+            $description = $menu->get('description');
+            $this::assertStringNotContainsString('~~', $description);
+        }
+        $menuObjects = $this->modx->getCollection('modMenu', array('namespace' => 'unittest'));
+        foreach ($menuObjects as $menuObject) {
+            $success = $menuObject->remove();
+        }
+        $widgetObjects = $this->modx->getCollection('modDashboardWidget', array('namespace' => 'unittest'));
+        foreach ($widgetObjects as $widgetObject) {
+            $success = $widgetObject->remove();
+        }
+
+        $this->modx->getOption('xxx');
     }
 }
