@@ -1,7 +1,7 @@
 <?php
 /**
  * CreatePropertiesTable
- * Copyright 2012-2017 Bob Ray
+ * Copyright 2012-2025 Bob Ray
  *
  * CreatePropertiesTable is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -25,7 +25,7 @@
  * and on a properties language file to pull descriptions from.
  */
 
-$name = 'messagemanager';
+$name = 'Snippet2';
 $base = "c:/xampp/htdocs/addons/assets/mycomponents/{$name}/";
 $propertiesFile = "_build/data/properties/properties.{$name}.snippet.php";
 $propertiesFile = $base . $propertiesFile;
@@ -242,5 +242,3 @@ echo $output;
 //echo print_r($_lang);
 
 return '';
-
-
