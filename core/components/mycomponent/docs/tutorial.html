@@ -1,10 +1,12 @@
+<p>MyComponent provides a development environment for creating MODX Extras. Once you've edited the config file, MyComponent will create all files, directories, and MODX objects for your Extra. It will also write your lexicon files for you and create the build file and resolvers.</p>
+
 <p>Much of the code in this package was inspired by various MODX developer's
 build scripts for existing MODX Revolution components and by the structure
 of the MODX Package Manager code.</p>
 
 <h2>What's New?</h2>
 
-<p>The latest (long-overdue) version had hundreds of changes and improvements. In addition to MODX 2, this version now runs in MODX 3 (without deprecation notices). It also lets you create extras that run in both MODX 2 and MODX 3. The Example project contains a CMP that will run smoothly in either version.  (If you already have the Example project installed, delete the files and objects in the MyComponent UI, and create a new version). <b>Be very sure you've switched to the Example project before doing this</b>.)</p>
+<p>The latest (long-overdue) version has hundreds of changes and improvements. In addition to MODX 2, this version now runs in MODX 3 (without deprecation notices). It also helps you create extras that run in both MODX 2 and MODX 3. The Example project contains a CMP that will run smoothly in either version.  (If you already have the Example project installed, delete the files and objects in the MyComponent UI, and create a new version. <b>Be very sure you've switched to the Example project before doing this</b>.)</p>
 
 <p>The new version of MyComponent also provides support for new objects that will work in both versions of MODX, including processors, dashboards, and widgets. It has far too many bug fixes and improvements to list here, as well as many new unit tests to check its integrity.</p>
 
@@ -36,17 +38,17 @@ that they can be translated into other languages. Any messages
 displayed by the snippet (e.g., prompts and error messages) should also be
 in the form of MODX lexicon strings.</p>
 
-<p>The snippet also needs a namespace with a corresponding namespace
+<p>The Transport Package also needs a namespace with a corresponding namespace
 path so that MODX can find the lexicon strings. In addition, the
-snippet and any other parts of the package should be in a separate category named for
+snippet and any other elements in the package should be in a separate category named for
 your package. The files in the package also need to have appropriate
 comments at the top saying who wrote them, what they do, and in the case of
-executable files, a short version of the GPL license.</p>
+executable files, a short version of the GPL (or other) license.</p>
 
 <p>All that sounds a lot more difficult than it is. The MyComponent
 package is designed to make it as easy as possible by doing most of the work for you.</p>
 
-<p>MyComponent assumes that you will put all the files for your extra under the <code>assets/mycomponents/ directory</code>. When located there, MODX
+<p>MyComponent assumes that you will put all the files for your extra under the <code>assets/mycomponents/</code> directory. When located there, MODX
 will leave them alone during site upgrades, and they will not interfere with
 your component when you install it on the same site. (MyComponent itself, will be installed in the <code>core/components/mycomponent/</code> directory.) If you develop an add-on called MySnippet, all of its files would then go in the
 <code>assets/mycomponents/mysnippet/</code> directory.</p>
@@ -58,11 +60,11 @@ your component when you install it on the same site. (MyComponent itself, will b
 
 <h2>General Usage</h2>
 
-    <p>MyComponent can be used in a variety of ways, but the basic process is to create a new project in the UI. Once that's done, you edit the project config file to meet your needs and run Bootstrap to get things started. After that, you either finish your project in the MODX Manager and run ExportObjects, or finish it by editing the files in your favorite editor and run ImportObjects, then ExportObjects. LexiconHelper writes your Lexicon files and CheckProperties makes sure any properties you use are present in your properties file. Finally, you run the Build utility to create the actual transport package.</p>
+    <p>MyComponent can be used in a variety of ways, but the basic process is to create a new project in the UI. Once that's done, you edit the project config file to meet your needs and run Bootstrap to get things started. After that, you either finish your project in the MODX Manager and run ExportObjects, or finish it by editing the files in your favorite editor and run ImportObjects, then ExportObjects. LexiconHelper writes your Lexicon files and CheckProperties makes sure any properties you use are present in your transport files. Finally, you run the Build utility to create the actual transport package.</p>
 
 <p>After installing MyComponent, you can see the UI by viewing the MyComponent Resource. There, you can create a new project, work on an existing one, or switch to a different project you want to work on. You can also run most of the MyComponent utilities there, such as BootStrap, ImportObjects, and ExportObjects. More on those in a bit.</p>
 
-    <h3>Example Project</h3>
+    <h3>The Example Project</h3>
 
     <p>MyComponent installs with a built-in project called Example that you can play with to get familiar with the various MyComponent utilities. The utilities can be run from the command line, or from inside any good code editor. There is also a User Interface for them that you can see by viewing the "MyComponent" Resource (which executes the MyComponent snippet). The rest of this tutorial will assume that you're using the User Interface, but the principles are the same for the command-line utilities. The command-line utility files are in the <code>core/components/mycomponent/elements/snippets/</code> directory</p>
 
@@ -70,7 +72,7 @@ your component when you install it on the same site. (MyComponent itself, will b
 
     <h3>The Project Config File</h3>
 
-    <p>Every project used with MyComponent must have its own project config file. The file is always named for the lowercase package name of your Extra (<code>packageNameLower.config.php</code>). The files are always stored in the <code> core/components/mycomponent/_build/config</code> directory. That's the file you'll edit (not the one in your project) to add or remove part of the project. The file for the Example project is called <code>example.config.php</code>. If you look at it now, you'll see all the objects that are part of that package.</p>
+    <p>Every project created with MyComponent must have its own project config file. The file is always named for the lowercase package name of your Extra (<code>packageNameLower.config.php</code>). The files are always stored in the <code> core/components/mycomponent/_build/config</code> directory. That's the file you'll edit (not the one in your project) to add or remove Elements, Resources, and other objects in your project. The config file for the Example project is called <code>example.config.php</code>. If you look at it now, you'll see all the objects that are part of that package.</p>
 
 <p>The Example project config file contains every kind of MODX object that MyComponent can handle. Many of them won't be used in a typical component, but they are there as examples in case you need them. When you create a new project, MyComponent will copy the Example config file to make a new project config file for your extra. Once that's done, you just edit the top of the tile with your name, project name, copyright, etc., then you remove the stuff you don't need and edit the rest to meet your needs.</p>
 
@@ -92,9 +94,9 @@ directory, so be sure to modify that one for your project rather than the one un
 
 <p><b>LexiconHelper</b> writes your Lexicon Files for you and checks to make sure that there are no empty, missing, or unused lexicon strings.</p>
 
-<p><b>CheckProperties</b> looks for references to default properties of elements in code and produces code to be pasted into the properties file for the build.</p>
+<p><b>CheckProperties</b> looks for references to default properties of snippets and plugins in their code (and that of files they include) and reports on whether those properties are included in their transport files.</p>
 
-<p><b>Build</b> creates the actual transport package .zip file.</p>
+<p><b>Build</b> creates the actual transport package <code>.zip</code> file.</p>
 
 <p>So, if you work in the Manager to update any part of your package, you'll run "Export Objects" to update the files. If you work on the files in a code editor, you'll run "Import Objects" to update the objects in the Manager and database.</p>
 
@@ -115,7 +117,7 @@ directory, so be sure to modify that one for your project rather than the one un
 
 <p>You may notice that a copy of the project config file is placed in the project directory. This is a copy used by the build process, but it's not the real project config file, <i>and you should never edit it</i>. It is ignored by all the other MyComponent utilities except the Build utility, which uses a small part of it. The *real* project config file (the one used by MyComponent) is always in the <code>core/components/mycomponent/_build/config/</code> directory.</p>
 
-<p>Once you've looked at all the files and directories created by Bootstrap, go back the MODX Manager and look at the objects created. You should see all the objects specified in the Example project config file. Notice too, that the project config file specifies a number of characteristics of some of the objects (e.g., parent, template, category, etc.). You should see these relationships in the Manager as well.</p>
+<p>Once you've looked at all the files and directories created by Bootstrap, go back the MODX Manager and look at the objects created. You should see all the objects specified in the Example project config file. Notice too, that the project config file specifies a number of characteristics of some of the objects (e.g., parent, template, category, etc.). Note that the relationships are described with names rather than IDs, because the IDs won't be determined until your extra is installed. MyComponent will translate the names into IDs when the package is installed. You should see these relationships in the Manager as well.</p>
 
 
 <div class="box">
@@ -126,13 +128,13 @@ directory, so be sure to modify that one for your project rather than the one un
 
 <p>This utility creates code and build files for all the objects in your project based on the objects that exist in the MODX Manager. It will only process the objects listed in the <code>'process'</code> member of the array in the project config file or resources listed in the config file's <code>'exportResources'</code> array.</p>
 
-<p>ExportObjects will now update the copyrights in any files it exports. Be sure to set the current year (or a range of years, like 2021-2025) in your config file before exporting.</p>
+<p>ExportObjects will now update the copyrights in most files created or updated during ExportObjects. Be sure to set the current year (or a range of years, like 2021-2025) in your config file before exporting.</p>
 
 <p>ExportObjects now normalizes file endings, making sure each file ends with a single linefeed and no following spaces. This prevents spurious diff results.</p>
 
 <p>It will skip snippets or plugins with single-line "include" statement as described above. More specifically, it will skip any snippet or plugin that contains exactly one semicolon and also contains the word "include".</p>
 
-<p>While Bootstrap uses the project config file to decide what objects and files to create, ExportObjects (with one exception) uses the categories and namespaces of the actual objects. The exception is Resources. Since there is no way for MyComponent to know what Resources belong to your project, it uses the <code>'exportResources'</code> member in the project config file. Be sure all your resources are listed there. Any missing ones may not get updated in the Manager when you run ImportObjects.</p>
+<p>While Bootstrap uses the project config file to decide what objects and files to create, ExportObjects (with one exception) uses the categories and namespaces of the actual objects. The exception is Resources. Since there is no way for MyComponent to know what Resources belong to your project, it uses the <code>'exportResources'</code> member in the project config file. Be sure all your resources are listed there. Any missing ones won't get updated in the Manager when you run ImportObjects, and will not be exported when you run ExportObjects.</p>
 
 <p>If any exported elements have default properties, ExportObjects will automatically create a properties file that will be used in the build to transport the properties.</p>
 
@@ -152,7 +154,7 @@ directory, so be sure to modify that one for your project rather than the one un
 
 <h3>ImportObjects</h3>
 
-    <p>As you might guess, this is the opposite of ExportObjects, though it's use is more limited. ImportObjects updates any elements or resources in MODX that are listed in the project config file based on the code files on the disk. If you make changes to a snippet's code file, for example, you can use ImportObjects to update the snippet. It's important to remember that ImportObjects processes *only* the elements listed in the <code>'process'</code> member of the project config file *and* it only processes elements that exist in the <code>'elements'</code> member. As of version 3.2.0, ImportObjects also processes any resources listed in the <code>'exportResources'</code> member of the config file.</p>
+    <p>As you might guess, this is the opposite of ExportObjects, though its use is more limited. ImportObjects updates any elements or resources in MODX that are listed in the project config file based on the code files on the disk. If you make changes to a snippet's code file, for example, you can use ImportObjects to update the snippet. It's important to remember that ImportObjects processes *only* the elements listed in the <code>'process'</code> member of the project config file *and* it only processes elements that exist in the <code>'elements'</code> member. As of version 3.2.0, ImportObjects also processes any resources listed in the <code>'exportResources'</code> member of the config file.</p>
 
 <p>Note that ImportObjects will not update element fields when you change them in the transport.<i>element</i>s.php files. To change the values in element fields, you need to modify them in MODX and run ExportObjects. </p>
 
@@ -184,9 +186,9 @@ $message = $modx->lexicon('mc_file_nf~~File Not Found');
 $_lang[mc_file_nf = 'File Not Found';
 </fixedpre></pre>
 
-<p>This will also work for Menus in your config file with things like:
+<p>This will also work for Menus in your config file with things like:</p>
 <pre><fixedpre>
-    'description' => 'Description of Menu',</p>
+    'description' => 'menu_name_desc~~Description of Menu',
 </fixedpre></pre>
 
 <p>You can also handle lexicon string in Menus in the Manager by putting something like this in the <code>lexicon_key</code> and <code>description</code> fields (the lexicon_key field holds the key to the name of the menu option). Try to use keys that will be unique to your extra:</p>
@@ -212,11 +214,11 @@ public function getLanguageTopics() {
 
 <p>In the method above, the method must return an array.</p>
 
-<p><b>Important:</b> The techniques described above cannot be used for Dashboards. The dashboard name and description are not lexicon keys. They are permanent.</p>
+<p><b>Important:</b> The techniques described above cannot be used for Dashboards or Contexts. For those, the name and description are not lexicon keys. They are permanent. The method also doesn't work for Settings of any kind. See the section below on lexicon strings for Settings.</p>
 
 <p>If you want the lexicon strings to go to a specific lexicon file (topic), you can add <code>$modx->lexicon->load(namespaceName:topicName);</code>. Where this isn't appropriate (such as JavaScriptFiles or data files), you can add that line in a comment and LexiconHelper will still see it, even though it won't be executed. If you don't add that code, LexiconHelper will put the lexicon strings in the <code>default.inc.php</code> lexicon file.</p>
 
-<p>LexiconHelper will find all instances where you use the MODX Lexicon in  your project. It will create a language string and write it into the appropriate lexicon file for you (and optionally remove the part after the ~~ from the file). The only case where this will fail is if you have a file that uses more than one lexicon topic. If that's the case, LexiconHelper doesn't know what file to write the various language strings to. In that case LexiconHelper outputs the lexicon strings to the screen, so you can paste them into the appropriate files. LexiconHelper can be safely run again after adding new lexicon strings.</p>
+<p>LexiconHelper will find all instances where you use the MODX Lexicon in  your project. It will create a language string and write it into the appropriate lexicon file for you (and optionally remove the part after the ~~ from the file). The only case where this will fail is if you have a file that uses more than one lexicon topic. If that's the case, LexiconHelper doesn't know what file to write the various language strings to. In that case LexiconHelper outputs the lexicon strings to the screen, so you can paste them into the appropriate lexicon files. LexiconHelper can be safely run again after adding new lexicon strings.</p>
 
 <p>Whether LexiconHelper modifies the lexicon files and removes the ~~ and its following string from the code files depends on the following two settings in the project config file:</p>
 
@@ -225,7 +227,7 @@ rewriteLexiconFiles
 rewriteCodeFiles
 </fixedpre></pre>
 
-<p>By default, the first one is true and the second one is false. It is very rare, but there are cases where rewriting the code files will mess up one or more lexicon files. There's a tip below on how to avoid this. Note that both of the above are automatically true when working on the Example project. </p>
+<p>By default, the first one is true and the second one is false (except for the Example project, where both are forced to <code>true</code>. It is very rare, but there are cases where rewriting the code files will mess up one or more lexicon files. There's a tip below on how to avoid this.</p>
 
 <div class="box">
     <p>Important warning! If any of your <code>$modx->lexicon()</code> calls are malformed, <code>rewriteCodeFiles</code> can trash some of your code. Always back up all your code files, including any properties files (preferably with Git) before running LexiconHelper with <code>rewriteCodeFiles = true</code>.</p>
@@ -298,11 +300,11 @@ $_lang['setting_delay_desc'] = 'Delay between cURL requests';
 </fixedpre></pre>
 
 <h3>CheckProperties</h3>
-        <p>This utility looks for cases in code where you use a default property. It checks any usages against the properties file(s) in the project's <code>_build</code> directory. CheckProperties uses the <code>'scriptPropertiesAliases'</code> member near the end of the project config file to tell it how to find usages. It already knows about most common aliases for the <code>$scriptProperties</code> array, but feel free to add ones you use if they're not there already.</p>
+        <p>This utility looks for cases in snippet and plugin code where you use a default property. It checks any usages against the properties file(s) in the project's <code>_build</code> directory. CheckProperties uses the <code>'scriptPropertiesAliases'</code> member near the end of the project config file to tell it how to find usages. It already knows about most common aliases for the <code>$scriptProperties</code> array, but feel free to add ones you use if they're not there already.</p>
 
-<p>If none of your resources or elements use properties, you can skip using this utility.</p>
+<p>If the snippet being analyzed has properties that are not used in the snippet code, CheckProperties will report this by listing "Properties in properties file not found in code". This means that either you have a property that is never used in your code, or you're using a non-standard alias for your <code>scriptProperties</code> array. If it's the latter, you can update the alias list near the end of the project config file. If the report indicates "0 properties in code," it's normal to see that CheckProperties could not find a properties transport file.</p>
 
-<p>Note that your project may have properties that you don't want included in the default properties. If so, don't add those to the build files.</p>
+<p>If none of your snippets or plugins use properties, you can skip using this utility.</p>
 
 <h3>Build</h3>
 
@@ -316,7 +318,9 @@ $_lang['setting_delay_desc'] = 'Delay between cURL requests';
 
 <h3>CreatePropertiesTable, CreateSettingsTable</h3>
 
-<p>CreatePropertiesTable finds all properties used in the code of a snippet or plugin and their included classes and creates a table to paste into your docs. CreateSettings does the same thing with settings. Because they work on a variety of files, you'll need to edit the beginning of the code to tell it what files you want processed.</p>
+<p>CreatePropertiesTable finds all properties used in the code of a snippet or plugin and their included classes and creates a table to paste into your docs. CreateSettingsTable does the same thing with settings.</p>
+
+<p>These two do not run from the MyComponent UI, because there are settings you may want to change before running them. CreateSettingsTable can be run by putting a tag for it in a resource and viewing the resource. It will run based on the current project setting (set in the UI). CreatePropertiesTable can be run the same way, but you need to enter the name of the snippet in the <fixedpre>$name</fixedpre> variable at the top. Run it for every snippet that has properties.</p>
 
 <h3>Delete Objects and Files</h3>
 
@@ -329,9 +333,9 @@ $_lang['setting_delay_desc'] = 'Delay between cURL requests';
 <ol>
     <li>Install or upgrade MyComponent. Clear the site cache so the MyComponent lexicon strings will be updated.</li>
 
-    <li>If you are upgrading and want to see the new version of the Example project, in the UI, switch to the Example project (be sure you've switched!) and click on remove objects and files.</li>
+    <li>If you are upgrading and want to see the new version of the Example project, in the UI, switch to the Example project (<b>be sure you've switched! Click twice on "Change Project"</b>) and click on remove objects and files.</li>
 
-    <li>Preview the MyComponent Resource. That will take you to the MyComponent UI. The current project should be set to "Example."</li>
+    <li>View the MyComponent Resource. That will take you to the MyComponent UI. The current project should be set to "Example."</li>
 
     <li>Check the "Bootstrap" radio option and click on the "submit" button. Once Bootstrap has finished, you can scroll down to see the log showing everything it has done. Marvel at how much it did and how little time it took.</li>
 
@@ -380,6 +384,8 @@ Look at the Example objects in the Manager. You should see all the Resources and
 <fixedpre>TplName</fixedpre> (chunk)
 <fixedpre>TplName</fixedpre> (file)
 </pre>
+
+    <p>Notice that Chunks in the Manager have precedence over their code files. When you modify a Chunk's code file, it will be ignored until you run ImportObjects.</p>
 
     <p>Each chunk in the MyComponent category is duplicated as a file in the <code>chunks</code> directory mentioned above. If you prefer to work with the files, simply delete or rename the chunks in the MODX Manager and MyComponent will use the files in the <code>chunks</code> directory.</p>
 
@@ -493,7 +499,7 @@ core/mycomponents/yourcomponent/core/yourcomponent
 
 <p>The safest and best solution is to always install the package in a completely separate MODX installation. I use MODX Cloud to do this. I have MODX test installations there for MODX 2, MODX 3, PHP 7, and PHP 8.</p>
 
-<p>In the Manager of the other site, go to Extras -> Installer. Click on the down-arrow in the "Download" box, select "Upload Package," and follow the steps to upload you transport file in the `core/packages` directory. Be sure to use the file that ends in <code>.zip</code>. If the project has ever been installed locally, there will be two files for it. The <code>.zip</code> file will be further down the page.</p>
+<p>In the Manager of the other site, go to Extras -> Installer. Click on the down-arrow in the "Download" box, select "Upload Package," and follow the steps to upload you transport file in the <code>core/packages</code> directory. Be sure to use the file that ends in <code>.zip</code>. If the project has ever been installed locally, there will be two files for it. The <code>.zip</code> file will be further down the page.</p>
 
 <p>The steps above will work on any MODX site, though if it both sites are local, you can just copy your transport file from one <code>core/packages</code> directory to the other, then select "Search Locally for Packages" in Package Manager. I don't recommend this method, though, because it's too easy to copy them in the wrong direction, especially late at night.</p>
 
@@ -614,7 +620,7 @@ The final step is to submit that .zip file at <a href="https://modx.com/extras">
 
 <p>There is another exception to the rule above. You might have custom files of your own in the <code>_build</code> directory that are not files MyComponent would write. You'd need custom code in <code>build.transport.php</code> (which MyComponent will never touch) to install them with your package. For example, you might want to create one or more users, or a custom ACL entry. Editing those files would be required and should cause no problems. </p>
 
-<p>Another common pitfall is to make changes to the code files for some objects and changes to other objects in MODX without running ImportObject or ExportObjects. Whichever of those you run next, will wipe out some of your changes.</p>
+<p>Another common pitfall is to make changes to the code files for some objects and changes to other objects in MODX without running ImportObjects or ExportObjects. Whichever of those you run next, will wipe out some of your changes.</p>
 
 <p>This happened to me recently on MyComponent itself, in spite of the warnings here. Late at night, I made some changes in the MODX Manager without running ImportObjects first. After running ExportObjects, one of my code files contained code from six months ago &mdash; overwriting the changes I had made in the interim. If you only have one project, this is less likely, but I have about four dozen projects and work on them all in MyComponent. While working on them, I often find bugs or improvements for MyComponent and make changes to it before I forget them. In this case, I made a change to a tpl Chunk in MyComponent, but I wanted to get back to working on the current project and forgot to run ImportObjects on MyComponent. Six months later, the old code in MODX was waiting to trip me up when I ran ExportObjects. Luckily, I had remembered to commit the file changes to Git, but I still needed to make notes on the more recent, uncommitted changes to that file before checking it out, so I could redo them. Without Git, this would have been a total disaster.</p>
 
