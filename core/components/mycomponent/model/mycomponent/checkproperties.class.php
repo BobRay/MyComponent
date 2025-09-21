@@ -2,7 +2,7 @@
 /**
  * checkproperties script file for MyComponent extra
  *
- * Copyright 2012-2017 Bob Ray <https://bobsguides.com>
+ * Copyright 2012-2025 Bob Ray <https://bobsguides.com>
  * Created on 08-11-2012
  *
  * MyComponent is free software; you can redistribute it and/or modify it under the
@@ -201,7 +201,7 @@ class CheckProperties {
     /**
      * returns raw code from an element file and all
      * the class files it includes
-     * 
+     *
      * @param $element array member
      * @param $type string - 'modSnippet or modChunk
      */
