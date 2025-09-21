@@ -1,28 +1,76 @@
 Changelog for MyComponent
 
 MyComponent 4.0.3
- - Fixed bug in pattern for text files (chunks)
+ - Update docs
+ - Generate processors that will run in MODX 2 and 3
+ - Fix issues with Example project in MODX 3
+ - Fix bug in pattern for text files (chunks)
  - Fix bootstrap and export to use proper values for name and description
  - Fix issues with widgets
+ - Remove subpackage adapter
+ - Simplify reports
+ - Remove class_key from resource transport files
+ - Set template to 0 if empty
+ - Fix issue with $mode setting in ExportObjects
+ - Fix deprecation messages
+ - Remove all strftime
+ - Fix issue with creating contexts
+ - Fix bug with loading modPackageBuilder in MODX 3
+ - Fix issue with id in grid tpl chunk
+ - Fix home controller Tpl chunk
+ - Fix service number for new events
+ - Unset name_trans field
+ - Fix issue with widget resolver
+ - Correct widgets array in example config
+ - Fix bug with unset $classPrefix
+ - Fix bug with $helpers->tplPath
+ - Force codefile names to lowercase
+ - Add dynamic suffix to codefile names
+ - Add working PluginAdapter and SnippetAdapter unit tests
+ - Get MODX version from file in MyComponentProjectTest.php to prevent require_once bug
+ - Add working, independent chunkAdapter unit test
+ - Fix bug with removing new events
+ - Fix bug in test for property files
+ - Fix resolver chunks for MODX 3
+ - Use Fixtures for $modx and $mc (MyComponentProject) in export test
+ - Prevent repeated injection of Do Not Edit comment to config file during unit tests
+ - Move creation of processors, controllers, and connectors to bootstrap
  - Update dependency code
  - Updates for MODX 3
- - Add setting resolver; add dependencies; remove duplicate resolvers
+ - Updates for PHP 8
+ - Add commented out autoloader in _bootstrap.ph
+ - Fix regex for lexicon tags
+ - Normalize EOF
+ - Do not update context objects
+ - Fix bug in pattern for text files (chunks)
+ - Add setting resolver
+ - Add constraint link in Example config comment
+ - Make rewriteCodeFiles and rewriteLexiconFiles always true for example project
+ - Remove duplicate resolvers
  - Update docs
+- Fix issues with lexicon strings in JavaScript
+ - Have LexiconHelper handle menus and widgets
+ - Add new unit tests for widgets, menus, and dashboards
+ - Improve unit tests for LexiconHelper
+ - Add unit tests for new processors
  - Add unit test notes
  - Fix handling of System Setting lexicon strings
  - Update System Settings section in tutorial
  - Normalize file endings to keep diff happy
  - Handle new menu objects without related action object
+ - Remove Action adapter
  - Fix bug with processor directory
  - Add UpdateCopyrights snippet
  - Update copyrights in ExportObjects
  - Add error checks for array members
  - Add option to skip categories
- - Mods for Articles; add option to export all resources
+ - Mods for Articles
+ - Add option to export all resources
  - Force empty template value to string
  - Allow setting empty template in resource resolver
  - Fix bug with renamed objects not being found
  - Detect old-style build file and explain fix
+ - Remove all instances of global $modx
  - Numerous other bug fixes and improvements
 
 MyComponent 3.2.2
@@ -53,8 +101,8 @@ MyComponent 3.2.0
  - System Setting value in config file overrides actual setting
  - Fix bug with subPackage location
  - Fix bug with user input file
- - LexiconHelper checks processor directories
- - LexiconHelper copies lex files to real core/lexicon dir
+ - Make LexiconHelper check processor directories
+ - Make LexiconHelper copy lex files to real core/lexicon dir
  - Only package property sets if set in config file
  - Fix bug with aborting when subPackages are up-to-date
  - Sort project list for form
