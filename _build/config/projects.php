@@ -7,6 +7,7 @@
   'canonical' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/canonical.config.php',
   'caseinsensitiveurls' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/caseinsensitiveurls.config.php',
   'chimpsync' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/chimpsync.config.php',
+  'chunkinfo' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/chunkinfo.config.php',
   'classextender' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/classextender.config.php',
   'customsearch' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/customsearch.config.php',
   'defaultresourcegroup' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/defaultresourcegroup.config.php',
@@ -49,6 +50,6 @@
   'upgrademodx' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/upgrademodx.config.php',
   'usermanagement' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/usermanagement.config.php',
   'userphotos' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/userphotos.config.php',
-  'chunkinfo' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/chunkinfo.config.php',
+  'tableofcontents' => 'C:/xampp/htdocs/addons/assets/mycomponents/mycomponent/_build/config/tableofcontents.config.php',
 );
  return $projects;
